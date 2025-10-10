@@ -20,7 +20,15 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setMessage("Database constraint violation: " + ex.getRootCause().getMessage());
+        String rootMessage = "Check your input data for unique constraints or foreign key violations.";
+
+        Throwable rootCause = ex.getRootCause();
+
+        if (rootCause != null && rootCause.getMessage() != null) {
+            rootMessage = rootCause.getMessage();
+        }
+
+        errorDetails.setMessage("Database constraint violation: " + rootMessage);
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
