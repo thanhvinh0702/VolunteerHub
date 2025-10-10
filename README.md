@@ -1,106 +1,329 @@
-<div align="center">
-<img src="https://www.google.com/search?q=https://placehold.co/150x150/3498db/ffffff%3Ftext%3DVH" alt="VolunteerHub Logo" width="120">
-<h1>VolunteerHub 💙</h1>
-<p><b>Kết nối những trái tim tình nguyện. Nền tảng tìm kiếm và quản lý hoạt động cộng đồng.</b></p>
-
-<!-- Badges -->
-
-<p>
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/version-1.0.0-green.svg" alt="Version">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/status-%C4%91ang%2520ph%C3%A1t%2520tri%E1%BB%83n-yellow.svg" alt="Status">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/contributions-welcome-orange.svg" alt="Contributions Welcome">
-</p>
-</div>
-
-🚀 Giới thiệu dự án
-
-VolunteerHub là một nền tảng web hiện đại giúp kết nối các tổ chức phi lợi nhuận, sự kiện cộng đồng với những tình nguyện viên nhiệt huyết. Sứ mệnh của chúng tôi là làm cho việc tìm kiếm và tham gia các hoạt động tình nguyện trở nên dễ dàng, minh bạch và ý nghĩa hơn bao giờ hết.
+# 🌟 VolunteerHub
 
 <div align="center">
-<img src="https://www.google.com/search?q=https://placehold.co/800x450/e0e0e0/333%3Ftext%3D%E1%BA%A2nh%2Bch%E1%BB%A5p%2Bm%C3%A0n%2Bh%C3%ACnh%2BVolunteerHub" alt="Project Screenshot" style="border-radius: 8px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
+![VolunteerHub Banner](https://via.placeholder.com/800x200/6366f1/ffffff?text=VolunteerHub)
+
+**Connecting Hearts - Spreading Kindness**
+
+[![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)](https://github.com/yourusername/volunteerhub)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/volunteerhub/pulls)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[Live Demo](https://volunteerhub-demo.com) • [Documentation](https://docs.volunteerhub.com) • [Report Bug](https://github.com/yourusername/volunteerhub/issues) • [Request Feature](https://github.com/yourusername/volunteerhub/pulls)
+
 </div>
 
-✨ Các tính năng nổi bật
+---
 
-🔍 Tìm kiếm & Lọc thông minh: Dễ dàng tìm kiếm các sự kiện tình nguyện theo địa điểm, lĩnh vực, kỹ năng và thời gian.
+## 💡 About The Project
 
-👤 Quản lý hồ sơ: Cả tình nguyện viên và tổ chức đều có trang hồ sơ riêng để quản lý thông tin, theo dõi hoạt động.
+**VolunteerHub** is a modern platform that connects volunteers with non-profit organizations, making it easy for people to discover and participate in meaningful community service activities. We believe everyone has the power to make a difference in their community.
 
-✅ Đăng ký nhanh chóng: Quy trình đăng ký tham gia sự kiện đơn giản chỉ với vài cú nhấp chuột.
+### ✨ Key Features
 
-💬 Hệ thống thông báo: Tự động nhắc nhở về các sự kiện sắp diễn ra và cập nhật từ tổ chức.
+- 🔍 **Smart Search** - Filter opportunities by location, skills, and time commitment
+- 📅 **Calendar Management** - Register and track your volunteer activities
+- 🏆 **Points & Badges System** - Recognize volunteer contributions and achievements
+- 💬 **Real-time Chat** - Connect directly with organizations and fellow volunteers
+- 📊 **Analytics Dashboard** - Track your volunteer impact and statistics
+- 🔔 **Smart Notifications** - Get updates on opportunities that match your interests
+- 🌍 **Multi-language** - Support for English and Vietnamese
+- 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 
-⭐ Ghi nhận & Đánh giá: Tình nguyện viên có thể nhận được chứng nhận điện tử và đánh giá sau khi hoàn thành hoạt động.
+---
 
-🗺️ Tích hợp bản đồ: Trực quan hóa địa điểm diễn ra sự kiện.
+## 🚀 Demo
 
-🛠️ Công nghệ sử dụng
+<div align="center">
 
-Dự án được xây dựng với những công nghệ hiện đại, mạnh mẽ và phổ biến nhất:
+![Dashboard Screenshot](https://via.placeholder.com/400x300/f3f4f6/6366f1?text=Dashboard)
+![Event List Screenshot](https://via.placeholder.com/400x300/f3f4f6/6366f1?text=Event+List)
 
-📦 Cài đặt và Chạy dự án
+</div>
 
-Sẵn sàng để trải nghiệm và đóng góp? Làm theo các bước đơn giản sau:
+---
 
-1. Clone a copy of the repo:
+## 🛠️ Tech Stack
 
-git clone [https://github.com/your-username/volunteerhub.git](https://github.com/your-username/volunteerhub.git)
+### Frontend
+- **Framework:** React 18 + TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
+- **State Management:** Redux Toolkit
+- **Form Handling:** React Hook Form + Zod
+- **Data Visualization:** Recharts
+- **Icons:** Lucide React
+
+### Backend
+- **Runtime:** Node.js + Express
+- **Database:** PostgreSQL + Prisma ORM
+- **Authentication:** JWT + bcrypt
+- **Real-time:** Socket.io
+- **File Storage:** AWS S3
+- **Email:** Nodemailer
+
+### DevOps & Tools
+- **CI/CD:** GitHub Actions
+- **Hosting:** Vercel (Frontend) + Railway (Backend)
+- **Monitoring:** Sentry
+- **Testing:** Jest + React Testing Library + Supertest
+- **Code Quality:** ESLint + Prettier
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+- Node.js 18 or higher
+- PostgreSQL 14 or higher
+- npm or yarn package manager
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/yourusername/volunteerhub.git
 cd volunteerhub
+```
 
+### Step 2: Install dependencies
 
-2. Cài đặt các gói phụ thuộc:
-
-Backend:
-
-cd server
-npm install
-
-
-Frontend:
-
+```bash
+# Install frontend dependencies
 cd client
 npm install
 
+# Install backend dependencies
+cd ../server
+npm install
+```
 
-3. Cấu hình môi trường:
+### Step 3: Environment configuration
 
-Tạo file .env trong thư mục server và thêm các biến môi trường cần thiết (ví dụ: MONGO_URI, JWT_SECRET).
+Create a `.env` file in the `server` directory:
 
-4. Khởi chạy:
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/volunteerhub"
 
-Chạy Backend Server:
+# JWT
+JWT_SECRET="your-super-secret-key"
+JWT_EXPIRES_IN="7d"
 
-# Trong thư mục /server
+# AWS S3
+AWS_ACCESS_KEY_ID="your-aws-key"
+AWS_SECRET_ACCESS_KEY="your-aws-secret"
+AWS_REGION="us-east-1"
+AWS_BUCKET_NAME="volunteerhub-uploads"
+
+# Server
+PORT=5000
+NODE_ENV="development"
+
+# Email
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-password"
+```
+
+Create a `.env` file in the `client` directory:
+
+```env
+VITE_API_URL=http://localhost:5000
+VITE_SOCKET_URL=ws://localhost:5000
+```
+
+### Step 4: Database setup
+
+```bash
+cd server
+npx prisma migrate dev
+npx prisma db seed
+```
+
+### Step 5: Start the application
+
+```bash
+# Terminal 1 - Start backend server
+cd server
 npm run dev
 
+# Terminal 2 - Start frontend dev server
+cd client
+npm run dev
+```
 
-Chạy Frontend App:
+Open `http://localhost:5173` in your browser! 🎉
 
-# Trong thư mục /client
-npm start
+---
 
+## 📚 Project Structure
 
-Bây giờ, hãy mở trình duyệt và truy cập http://localhost:3000!
+```
+volunteerhub/
+├── client/                 # Frontend React application
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Page components
+│   │   ├── hooks/         # Custom React hooks
+│   │   ├── store/         # Redux store configuration
+│   │   ├── utils/         # Utility functions
+│   │   ├── types/         # TypeScript type definitions
+│   │   ├── services/      # API service layer
+│   │   └── assets/        # Static assets
+│   ├── public/            # Public static files
+│   └── package.json
+│
+├── server/                # Backend Express application
+│   ├── src/
+│   │   ├── controllers/   # Route controllers
+│   │   ├── models/        # Database models
+│   │   ├── routes/        # API route definitions
+│   │   ├── middleware/    # Custom middleware
+│   │   ├── services/      # Business logic layer
+│   │   ├── utils/         # Helper functions
+│   │   └── config/        # Configuration files
+│   ├── prisma/            # Database schema & migrations
+│   │   ├── schema.prisma
+│   │   └── migrations/
+│   └── package.json
+│
+├── docs/                  # Project documentation
+└── README.md
+```
 
-🙌 Đóng góp
+---
 
-Chúng tôi luôn chào đón mọi sự đóng góp để dự án ngày càng tốt hơn! Nếu bạn có ý tưởng hay muốn sửa lỗi, đừng ngần ngại:
+## 🚦 Available Scripts
 
-Fork dự án này.
+### Frontend (client/)
 
-Tạo một Branch mới (git checkout -b feature/AmazingFeature).
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run test         # Run tests
+npm run lint         # Lint code
+```
 
-Commit những thay đổi của bạn (git commit -m 'Add some AmazingFeature').
+### Backend (server/)
 
-Push lên branch (git push origin feature/AmazingFeature).
+```bash
+npm run dev          # Start development server with hot reload
+npm run build        # Compile TypeScript
+npm start            # Start production server
+npm run test         # Run tests
+npm run prisma:studio # Open Prisma Studio
+```
 
-Mở một Pull Request.
+---
 
-📄 Giấy phép
+## 🤝 Contributing
 
-Dự án này được cấp phép theo Giấy phép MIT. Xem file LICENSE để biết thêm chi tiết.
+We love contributions! Whether it's bug fixes, feature additions, or documentation improvements, your help is welcome.
+
+### How to Contribute
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Run frontend tests
+cd client
+npm run test
+
+# Run backend tests
+cd server
+npm run test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+---
+
+## 🐛 Bug Reports
+
+Found a bug? Please [open an issue](https://github.com/yourusername/volunteerhub/issues) with a detailed description of the problem and steps to reproduce it.
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Team
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/yourusername">
+        <img src="https://via.placeholder.com/100" width="100px;" alt=""/>
+        <br />
+        <sub><b>Your Name</b></sub>
+      </a>
+      <br />
+      <sub>Full Stack Developer</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/teammate">
+        <img src="https://via.placeholder.com/100" width="100px;" alt=""/>
+        <br />
+        <sub><b>Teammate Name</b></sub>
+      </a>
+      <br />
+      <sub>Frontend Developer</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/teammate2">
+        <img src="https://via.placeholder.com/100" width="100px;" alt=""/>
+        <br />
+        <sub><b>Another Teammate</b></sub>
+      </a>
+      <br />
+      <sub>Backend Developer</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🙏 Acknowledgments
+
+- [React](https://reactjs.org/) - Frontend framework
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Prisma](https://www.prisma.io/) - Database ORM
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- All our amazing contributors!
+
+---
+
+## 📧 Contact
+
+Project Link: [https://github.com/yourusername/volunteerhub](https://github.com/yourusername/volunteerhub)
+
+---
+
+## 🌟 Show Your Support
+
+If you find this project useful, please give it a ⭐️ on GitHub!
 
 <div align="center">
-Cảm ơn bạn đã ghé thăm! ❤️
+
+**Let's make a difference together! 💚**
+
+[⬆ Back to Top](#-volunteerhub)
+
 </div>
