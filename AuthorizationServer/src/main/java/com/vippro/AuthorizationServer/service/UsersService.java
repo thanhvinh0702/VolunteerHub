@@ -28,7 +28,12 @@ public class UsersService {
             throw new IllegalArgumentException("Email already exists");
         }
         String hashedPassword = passwordEncoder.encode(rawPassword);
-        User user = new User(username, name, hashedPassword, email, roles != null ? roles : "USER");
+        User user = User.builder()
+                .username(username)
+                .name(name)
+                .passwordHash(hashedPassword)
+                .email(email)
+                .build();
         usersRepository.save(user);
     }
 
