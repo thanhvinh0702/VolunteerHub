@@ -1,5 +1,6 @@
 package com.vippro.AuthorizationServer.service;
 
+import com.vippro.AuthorizationServer.model.Role;
 import com.vippro.AuthorizationServer.model.User;
 import com.vippro.AuthorizationServer.repository.UsersRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ public class UsersService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void createUser(String username, String name, String email, String rawPassword, String roles) {
+    public void createUser(String username, String name, String email, String rawPassword, Role roles) {
         if (usersRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -28,7 +29,7 @@ public class UsersService {
             throw new IllegalArgumentException("Email already exists");
         }
         String hashedPassword = passwordEncoder.encode(rawPassword);
-        User user = new User(username, name, hashedPassword, email, roles != null ? roles : "USER");
+        User user = new User(username, name, hashedPassword, email, roles);
         usersRepository.save(user);
     }
 
@@ -40,13 +41,13 @@ public class UsersService {
         return usersRepository.findByEmail(email);
     }
 
-    public User updateUser(UUID userId, String newPassword, String newRoles) {
+    public User updateUser(UUID userId, String newPassword, Role newRoles) {
         User user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (newPassword != null && !newPassword.isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(newPassword));
         }
-        if (newRoles != null && !newRoles.isEmpty()) {
+        if (newRoles != null) {
             user.setRoles(newRoles);
         }
         user.setUpdatedAt(LocalDateTime.now());

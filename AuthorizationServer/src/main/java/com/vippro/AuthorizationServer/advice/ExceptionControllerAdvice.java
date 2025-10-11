@@ -4,6 +4,7 @@ import com.vippro.AuthorizationServer.dto.ErrorDetails;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,6 +23,13 @@ public class ExceptionControllerAdvice {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setMessage("Database constraint violation: " + ex.getRootCause().getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDetails> handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
 }

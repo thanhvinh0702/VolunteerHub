@@ -30,8 +30,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
-    private String roles;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role roles;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -43,7 +44,7 @@ public class User {
 
     }
 
-    public User(String username, String name, String passwordHash, String email, String roles) {
+    public User(String username, String name, String passwordHash, String email, Role roles) {
         this.username = username;
         this.name = name;
         this.passwordHash = passwordHash;
@@ -84,11 +85,11 @@ public class User {
         this.email = email;
     }
 
-    public String getRoles() {
+    public Role getRoles() {
         return roles;
     }
 
-    public void setRoles(String roles) {
+    public void setRoles(Role roles) {
         this.roles = roles;
     }
 
