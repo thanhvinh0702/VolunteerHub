@@ -1,16 +1,49 @@
-# React + Vite
+<!-- Banner -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/placeholder/hero-gif/main/react-vite-hero.gif" alt="React + Vite Animated Hero" width="900">
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<h1 align="center">⚡ React + Vite — Motion-First Starter</h1>
 
-Currently, two official plugins are available:
+<p align="center">
+  <i>Blazing-fast dev + buttery-smooth animations. Build fast. Ship delightful.</i>
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<p align="center">
+  <a href="https://img.shields.io/badge/Vite-5+-yellow?style=for-the-badge"> <img src="https://img.shields.io/badge/Vite-5+-yellow?style=for-the-badge" /> </a>
+  <a href="https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react"> <img src="https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react" /> </a>
+  <a href="https://img.shields.io/badge/Framer%20Motion-Enabled-ff69b4?style=for-the-badge"> <img src="https://img.shields.io/badge/Framer%20Motion-Enabled-ff69b4?style=for-the-badge" /> </a>
+  <a href="https://img.shields.io/badge/ESLint-Strict-4c9?style=for-the-badge"> <img src="https://img.shields.io/badge/ESLint-Strict-4c9?style=for-the-badge" /> </a>
+  <a href="https://img.shields.io/badge/License-MIT-green?style=for-the-badge"> <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" /> </a>
+</p>
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ What You Get
 
-## Expanding the ESLint configuration
+- ⚡ **Vite + React 18** with HMR
+- 🎞️ **Framer Motion** page transitions & micro-interactions
+- 🪄 **Shimmer skeletons**, hover effects, parallax tilt
+- 📈 **nprogress** route loading bar
+- 🎬 **Lottie** (optional) for vector animations
+- 👀 **Scroll-Reveal** (IntersectionObserver)
+- 🧼 Strict ESLint & clean structure
+- 🧪 Ready for SWC/Babel Fast Refresh
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> Tip: Animations mặc định tắt ở `prefers-reduced-motion: reduce`.
+
+---
+
+## 🚀 Quickstart
+
+```bash
+# Create app (hoặc clone repo của bạn)
+npm create vite@latest my-app -- --template react
+cd my-app
+
+# Install deps
+npm i framer-motion nprogress lottie-react
+npm i -D eslint
+
+# Start dev
+npm run dev
