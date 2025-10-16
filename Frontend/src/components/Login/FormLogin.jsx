@@ -2,18 +2,50 @@ import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaHome } from "react-icons/fa";
 import { FaBackward } from "react-icons/fa6";
+import { pandaclosed, pandaopen } from "../../assets/Login";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 function FormLogin() {
+  const [isPasswordFocus, setIsPasswordFocused] = useState(false);
   return (
     <div>
-      <form>
-        <div
-          className="flex flex-col justify-around gap-4 font-semibold max-md:text-lg w-[100%] m-auto mr-20 p-4 
+      <div
+        className="flex flex-col justify-around gap-4 font-semibold max-md:text-lg w-[100%] m-auto mr-20 p-4 
         "
-        >
-          <div className="flex flex-col gap-2 justify-center items-center">
-            <div className="text-2xl font-bold">Login</div>
-            <div>Login to your account</div>
+      >
+        <div className="flex flex-col gap-0 justify-center items-center relative">
+          <div className="text-2xl font-bold -mt-[10%] absolute top-0 ">
+            Login
           </div>
+          <div className="size-32">
+            <AnimatePresence>
+              {isPasswordFocus ? (
+                <motion.img
+                  key="closed"
+                  src={pandaclosed}
+                  alt="Panda closed eyes"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-0 left-0 w-full h-full object-contain"
+                />
+              ) : (
+                <motion.img
+                  key="open"
+                  src={pandaopen}
+                  alt="Panda open eyes"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-0 left-0 w-full h-full object-contain"
+                />
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+        <form>
           <div>
             <div className="flex flex-col gap-2 max-md:flex-col align-middle justify-start">
               <label>Email</label>
@@ -31,6 +63,8 @@ function FormLogin() {
                 id="password"
                 name="password"
                 className="border-2 border-gray-300 rounded-md p-1 focus:outline-none focus:border-red-300 focus:ring-blue-500"
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(false)}
               />
             </div>
             <div className="flex flex-row gap-2 justify-between items-center mt-3">
@@ -75,8 +109,8 @@ function FormLogin() {
               <button>Back to home</button>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
