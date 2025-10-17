@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import leaf1 from "../../assets/img/leaf-1.png";
 import leaf2 from "../../assets/img/leaf-2.png";
 import plant1 from "../../assets/img/plant-1.png";
 import plant2 from "../../assets/img/plant-2.png";
 import leaf3 from "../../assets/img/leaf-3.png";
 import review1 from "../../assets/img/review-1.jpg";
-import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { landing1 } from "../../assets/img/index";
@@ -17,9 +16,155 @@ import { AiOutlineFileDone } from "react-icons/ai";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const aboutRef = useRef(null);
+  const statsRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // About section context
+    const ctxAbout = gsap.context(() => {
+      const rows = gsap.utils.toArray(".about-row");
+      rows.forEach((row, index) => {
+        const imgEl = row.querySelector(".about-img");
+        const textEl = row.querySelector(".about-text");
+        const fromXImg = index % 2 === 0 ? -60 : 60;
+        const fromXText = -fromXImg;
+
+        if (imgEl) {
+          gsap.from(imgEl, {
+            x: fromXImg,
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: row,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          // Shoot the image out when the row has been scrolled past
+          ScrollTrigger.create({
+            trigger: row,
+            start: "bottom 10%",
+            onLeave: () => {
+              gsap.to(imgEl, {
+                xPercent: fromXImg < 0 ? -140 : 140,
+                rotation: fromXImg < 0 ? -8 : 8,
+                opacity: 0,
+                scale: 0.9,
+                duration: 0.6,
+                ease: "power2.in",
+              });
+            },
+            onEnterBack: () => {
+              gsap.to(imgEl, {
+                xPercent: 0,
+                x: 0,
+                rotation: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.4,
+                ease: "power2.out",
+              });
+            },
+          });
+        }
+
+        if (textEl) {
+          gsap.from(textEl, {
+            x: fromXText,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power2.out",
+            delay: 0.1,
+            scrollTrigger: {
+              trigger: row,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          });
+
+          const textChildren = Array.from(textEl.children || []);
+          if (textChildren.length) {
+            gsap.from(textChildren, {
+              y: 16,
+              opacity: 0,
+              duration: 0.6,
+              stagger: 0.08,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: row,
+                start: "top 78%",
+                toggleActions: "play none none reverse",
+              },
+            });
+          }
+        }
+      });
+    }, aboutRef);
+
+    // Stats section context
+    const ctxStats = gsap.context(() => {
+      const statCards = gsap.utils.toArray(".stat-card");
+      if (!statCards.length) return;
+
+      // Ensure any old inline styles are cleared
+      gsap.set(statCards, { clearProps: "opacity,visibility,transform" });
+
+      statCards.forEach((card, index) => {
+        const numEl = card.querySelector(".stat-number");
+        const target = numEl
+          ? parseInt(numEl.getAttribute("data-value") || "0", 10)
+          : 0;
+
+        const counter = { value: 0 };
+        const tl = gsap.timeline({ delay: index * 0.12 });
+        tl.fromTo(
+          card,
+          { autoAlpha: 0, y: 24 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1,
+            ease: "back.inOut",
+
+            onComplete: () =>
+              gsap.set(card, { clearProps: "opacity,visibility,transform" }),
+          }
+        );
+
+        if (numEl) {
+          tl.fromTo(
+            counter,
+            { value: 0 },
+            {
+              value: target,
+              duration: 0.6,
+              ease: "power1.out",
+
+              onUpdate: () => {
+                numEl.textContent = Math.floor(counter.value).toLocaleString();
+              },
+            },
+            "<+0.1"
+          );
+        }
+      });
+    }, statsRef);
+
+    return () => {
+      ctxAbout.revert();
+      ctxStats.revert();
+    };
+  }, []);
   const dataLading = [
     {
       title: "Events",
@@ -151,23 +296,28 @@ function LandingPage() {
             </div>
           </div>
         </section>
-        <div className="bg-white text-green-900 py-20">
+        <div className="bg-white text-green-900 py-20" ref={statsRef}>
           <div className="container mx-auto px-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-2xl max-sm:text-xl">
             {dataLading.map((item) => (
-              <div className="border border-green-900 p-5 cursor-pointer rounded-md hover:shadow-2xl hover:-translate-y-1 duration-300 space-y-5 flex flex-col items-center justify-center">
+              <div className="border border-green-900 p-5 cursor-pointer rounded-md hover:shadow-2xl hover:-translate-y-1 duration-300 space-y-5 flex flex-col items-center justify-center stat-card">
                 <div className="text-center text-5xl max-sm:text-3xl">
                   {item.icon}
                 </div>
                 <p className="md:text-lg font-bold text-green-950/60">
                   {item.title}
                 </p>
-                <p className="font-lobster text-4xl">{item.content}</p>
+                <p
+                  className="font-lobster text-4xl stat-number"
+                  data-value={item.content}
+                >
+                  {item.content}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        <section id="about" className="relative overflow-hidden">
+        <section id="about" className="relative overflow-hidden" ref={aboutRef}>
           <div className="absolute -top-8 -right-12 opacity-50">
             <img src={leaf3} alt="leaf3" className="w-40 md:w-60 lg:w-80" />
           </div>
@@ -176,14 +326,14 @@ function LandingPage() {
             <p className="max-w-2xl">Follow us for more</p>
           </div>
           <div className="container space-y-10 xl:space-y-0 mx-auto">
-            <div className="flex flex-col items-center justify-center gap-5 lg:flex-row">
-              <div className="w-full lg:w-1/2 lg:w-1/2">
+            <div className="flex flex-col items-center justify-center gap-5 lg:flex-row about-row">
+              <div className="w-full lg:w-1/2">
                 <img
                   src={plant1}
-                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto"
+                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto about-img"
                 />
               </div>
-              <div className="w-full lg:w-1/2">
+              <div className="w-full lg:w-1/2 about-text">
                 <div className="space-y-5">
                   <h3>
                     🌍 Empowering{" "}
@@ -199,14 +349,14 @@ function LandingPage() {
                 </div>
               </div>
             </div>{" "}
-            <div className="flex flex-col items-center justify-center gap-5 lg:flex-row">
-              <div className="w-full lg:w-1/2 lg:w-1/2 order-1">
+            <div className="flex flex-col items-center justify-center gap-5 lg:flex-row about-row">
+              <div className="w-full lg:w-1/2 order-1">
                 <img
                   src={plant2}
-                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto"
+                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto about-img"
                 />
               </div>
-              <div className="w-full lg:w-1/2 order-0">
+              <div className="w-full lg:w-1/2 order-0 about-text">
                 <div className="space-y-5">
                   <h3>
                     Make your <span className="text-yellow-500">green</span>{" "}
