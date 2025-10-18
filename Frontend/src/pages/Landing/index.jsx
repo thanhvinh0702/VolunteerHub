@@ -18,6 +18,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { voluteerTree, futureVolunteer } from "../../assets/img/index";
 
 function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -321,7 +322,7 @@ function LandingPage() {
           <div className="absolute -top-8 -right-12 opacity-50">
             <img src={leaf3} alt="leaf3" className="w-40 md:w-60 lg:w-80" />
           </div>
-          <div className="flex flex-col items-center justify-center gap-3 text-center mb-10 md:mb-20">
+          <div className="flex flex-col items-center justify-center gap-3 text-center mb-10 md:mb-20 mt-10">
             <h2 className="title-landing">About Us</h2>
             <p className="max-w-2xl">Follow us for more</p>
           </div>
@@ -329,8 +330,8 @@ function LandingPage() {
             <div className="flex flex-col items-center justify-center gap-5 lg:flex-row about-row">
               <div className="w-full lg:w-1/2">
                 <img
-                  src={plant1}
-                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto about-img"
+                  src={voluteerTree}
+                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto rounded-2xl skew-y-3 about-img"
                 />
               </div>
               <div className="w-full lg:w-1/2 about-text">
@@ -350,17 +351,17 @@ function LandingPage() {
               </div>
             </div>{" "}
             <div className="flex flex-col items-center justify-center gap-5 lg:flex-row about-row">
-              <div className="w-full lg:w-1/2 order-1">
+              <div className="w-full lg:w-1/2 lg:order-1 order-0">
                 <img
-                  src={plant2}
-                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto about-img"
+                  src={futureVolunteer}
+                  className="w-full sm:w-2/3 lg:w-full xl:w-2/3 mx-auto -skew-3 rounded-2xl about-img z-10 mb-10"
                 />
               </div>
-              <div className="w-full lg:w-1/2 order-0 about-text">
+              <div className="w-full lg:w-1/2 lg:order-0 about-text order-1">
                 <div className="space-y-5">
                   <h3>
-                    Make your <span className="text-yellow-500">green</span>{" "}
-                    space
+                    Essential Features for Your
+                    <span className="text-yellow-500"> Volunteer Program</span>
                   </h3>
                   <p className="font-lobster">
                     Lorem, ipsum dolor sit amet consectetur adipisicing elit.
@@ -374,7 +375,7 @@ function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="review" className="py-20">
+        <section id="review" className="py-10">
           <div className="flex flex-col items-center gap-3 text-center mb-10 md:mb-20">
             <h2 className="title-landing">Customer Review</h2>
             <p className="max-w-2xl">Follow instruction for more</p>

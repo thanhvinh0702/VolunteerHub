@@ -1,3 +1,4 @@
 import landing1 from './landing1.png'
-
-export { landing1 }
+import voluteerTree from './volunteering-tree.jpg'
+import futureVolunteer from './Future-of-Volunteering.jpg'
+export { landing1, voluteerTree, futureVolunteer }
