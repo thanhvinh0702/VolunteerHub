@@ -54,16 +54,6 @@ public class OAuth2SecurityConfig {
 
     @Bean
     @Order(1)
-    @Deprecated
-    public SecurityFilterChain asFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults());
-        http.formLogin(Customizer.withDefaults());
-        return http.build();
-    }
-
-    @Bean
-    @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigure =
                 new OAuth2AuthorizationServerConfigurer();
@@ -138,6 +128,7 @@ public class OAuth2SecurityConfig {
                 Object principalObj = authentication.getPrincipal();
 
                 if (principalObj instanceof SecurityUsers securityUser) {
+                    context.getClaims().subject(securityUser.getId().toString());
                     context.getClaims().claim("user_id", securityUser.getId());
                     context.getClaims().claim("email", securityUser.getEmail());
                     context.getClaims().claim("roles", securityUser.getAuthorities());
