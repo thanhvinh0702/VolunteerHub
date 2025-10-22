@@ -30,8 +30,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
-    private String roles = "USER";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role roles;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

@@ -1,11 +1,13 @@
 package com.vippro.AuthorizationServer.dto;
 
+import com.vippro.AuthorizationServer.model.Role;
+
 public class CreateUserRequest {
     private String username;
     private String name;
     private String password;
     private String email;
-    private String roles = "USER";
+    private Role roles = Role.USER;
 
     public String getUsername() {
         return username;
@@ -31,11 +33,11 @@ public class CreateUserRequest {
         this.email = email;
     }
 
-    public String getRoles() {
+    public Role getRoles() {
         return roles;
     }
 
-    public void setRoles(String roles) {
+    public void setRoles(Role roles) {
         this.roles = roles;
     }
 
