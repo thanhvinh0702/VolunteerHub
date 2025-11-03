@@ -83,7 +83,7 @@ function LandingPage() {
           gsap.from(textEl, {
             x: fromXText,
             opacity: 0,
-            duration: 0.7,
+            duration: 2,
             ease: "power2.out",
             delay: 0.1,
             scrollTrigger: {
