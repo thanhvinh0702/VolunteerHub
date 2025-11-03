@@ -35,3 +35,26 @@ function AppRouter() {
 }
 
 export default AppRouter;
+
+// export default function AppRouter() {
+//     return (
+//       <Routes>
+//         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+//         <Route path={ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
+
+//         <Route element={<RequireAuth />}>
+//           <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
+//             <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
+//           </Route>
+
+//           <Route element={<RequireRole allowedRoles={[ROLES.MANAGER]} />}>
+//             <Route path={ROUTES.MANAGER} element={<ManagerDashboard />} />
+//           </Route>
+
+//           <Route element={<RequireRole allowedRoles={[ROLES.VOLUNTEER]} />}>
+//             <Route path={ROUTES.VOLUNTEER} element={<VolunteerDashboard />} />
+//           </Route>
+//         </Route>
+//       </Routes>
+//     );
+//   }
