@@ -1,7 +1,6 @@
 package com.volunteerhub.apigateway.config;
 
 import com.volunteerhub.apigateway.filter.AuthenticationHeaderFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
