@@ -96,7 +96,7 @@ public class OAuth2SecurityConfig {
                         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                         .redirectUri(redirectUri)
                         .scope(OidcScopes.OPENID)
-                        .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+                        .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build())
                         .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
