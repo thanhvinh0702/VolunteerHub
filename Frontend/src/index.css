@@ -41,7 +41,8 @@
 
 
 body {
-    @apply bg-[#1D8471] text-white font-jost
+    @apply bg-[#fff] text-black font-jost
+
 }
 
 .nav-link {
@@ -97,3 +98,18 @@ h3 {
     position: relative !important;
     margin-top: 2rem !important;
 }
+
+@keyframes gradient-x {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 2s ease infinite;
+  }
+  

@@ -1,5 +1,5 @@
 // src/routes/AppRouter.jsx
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import RequireRole from "../components/Protected/RequireRole";
 import AdminPage from "../pages/DemoPages/AdminPage";
 import UserPage from "../pages/DemoPages/UserPage";
@@ -7,7 +7,8 @@ import OrganizationPage from "../pages/DemoPages/OrganizationPage";
 import LoginPage from "../pages/DemoPages/LoginPage";
 import Unauthorized from "../pages/DemoPages/Unauthorized";
 import { ROLES } from "../constant/role";
-
+import MainLayout from "../Layout/MainLayout";
+import Home from "../pages/Home/Home";
 function AppRouter() {
   return (
     <Routes>
@@ -16,16 +17,26 @@ function AppRouter() {
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* Protected routes */}
-      <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
-        <Route path="/admin" element={<AdminPage />} />
-      </Route>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route
+          element={
+            <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
+          }
+        >
+          <Route path="/home" element={<Home />} />
+        </Route>
+        <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
 
-      <Route element={<RequireRole allowedRoles={[ROLES.USER]} />}>
-        <Route path="/user" element={<UserPage />} />
-      </Route>
+        <Route element={<RequireRole allowedRoles={[ROLES.USER]} />}>
+          <Route path="/user" element={<UserPage />} />
+        </Route>
 
-      <Route element={<RequireRole allowedRoles={[ROLES.ORG]} />}>
-        <Route path="/organization" element={<OrganizationPage />} />
+        <Route element={<RequireRole allowedRoles={[ROLES.ORG]} />}>
+          <Route path="/organization" element={<OrganizationPage />} />
+        </Route>
       </Route>
 
       {/* Fallback */}

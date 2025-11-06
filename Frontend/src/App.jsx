@@ -2,16 +2,16 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Sidebar from "./pages/DemoPages/Sidebar";
 import AppRouter from "./routes/AppRouter";
+import EventCard from "./components/Dashboard/EventCard";
+import ShortCut from "./components/Dashboard/ShortCut";
+import DashBoardOverview from "./components/Dashboard/DashBoardOverview";
+import NavBar from "./components/Sidebar/NavBar";
+import DashboardLayout from "./pages/DashBoard/DashboardLayout";
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div style={{ display: "flex" }}>
-          <Sidebar />
-          <main style={{ flex: 1, padding: "20px" }}>
-            <AppRouter />
-          </main>
-        </div>
+        <AppRouter />
       </Router>
     </AuthProvider>
   );

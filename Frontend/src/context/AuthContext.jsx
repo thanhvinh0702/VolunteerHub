@@ -5,7 +5,8 @@ import { ROLES } from "../constant/role";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(storage.getUser());
+  const defaultUser = { name: "Demo User", role: ROLES.USER };
+  const [user, setUser] = useState(storage.getUser() || defaultUser);
 
   useEffect(() => {
     if (user) storage.setUser(user);
@@ -17,13 +18,15 @@ export const AuthProvider = ({ children }) => {
     setUser(newUser);
   };
 
+  const hasRole = (role) => user?.role === role;
+  const hasAnyRole = (allowedRoles = []) => allowedRoles.includes(user?.role);
   const logout = () => {
     setUser(null);
     storage.clearUser();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, hasRole, hasAnyRole }}>
       {children}
     </AuthContext.Provider>
   );
