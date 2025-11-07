@@ -1,6 +1,5 @@
 package com.volunteerhub.userservice.dto;
 
-import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.validation.OnCreate;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
