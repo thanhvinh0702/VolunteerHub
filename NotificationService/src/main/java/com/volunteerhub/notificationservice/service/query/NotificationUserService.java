@@ -1,7 +1,7 @@
-package com.ecom.notificationservice.service.query;
+package com.volunteerhub.notificationservice.service.query;
 
-import com.ecom.notificationservice.dto.NotificationEventRequest;
-import com.ecom.notificationservice.repository.query.NotificationUserRepository;
+import com.volunteerhub.notificationservice.dto.NotificationEventRequest;
+import com.volunteerhub.notificationservice.repository.query.NotificationUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package com.ecom.notificationservice.dto;
+package com.volunteerhub.notificationservice.dto;
 
-import com.ecom.notificationservice.model.NotificationType;
+import com.volunteerhub.notificationservice.model.NotificationType;
 import lombok.Data;
 import lombok.ToString;
 

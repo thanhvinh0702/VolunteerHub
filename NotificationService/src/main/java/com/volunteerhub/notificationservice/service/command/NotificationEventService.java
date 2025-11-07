@@ -1,9 +1,9 @@
-package com.ecom.notificationservice.service.command;
+package com.volunteerhub.notificationservice.service.command;
 
-import com.ecom.notificationservice.dto.NotificationEventRequest;
-import com.ecom.notificationservice.model.command.NotificationEvent;
-import com.ecom.notificationservice.publisher.NotificationCreatedPublisher;
-import com.ecom.notificationservice.repository.command.NotificationEventRepository;
+import com.volunteerhub.notificationservice.dto.NotificationEventRequest;
+import com.volunteerhub.notificationservice.model.command.NotificationEvent;
+import com.volunteerhub.notificationservice.publisher.NotificationCreatedPublisher;
+import com.volunteerhub.notificationservice.repository.command.NotificationEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

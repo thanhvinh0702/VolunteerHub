@@ -1,6 +1,6 @@
-package com.ecom.notificationservice.repository.command;
+package com.volunteerhub.notificationservice.repository.command;
 
-import com.ecom.notificationservice.model.command.NotificationEvent;
+import com.volunteerhub.notificationservice.model.command.NotificationEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

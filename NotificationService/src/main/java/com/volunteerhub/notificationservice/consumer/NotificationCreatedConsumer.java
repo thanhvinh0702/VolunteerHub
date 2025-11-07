@@ -1,8 +1,8 @@
-package com.ecom.notificationservice.consumer;
+package com.volunteerhub.notificationservice.consumer;
 
-import com.ecom.notificationservice.config.RabbitMQConfig;
-import com.ecom.notificationservice.dto.NotificationEventRequest;
-import com.ecom.notificationservice.service.query.NotificationUserService;
+import com.volunteerhub.notificationservice.config.RabbitMQConfig;
+import com.volunteerhub.notificationservice.dto.NotificationEventRequest;
+import com.volunteerhub.notificationservice.service.query.NotificationUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

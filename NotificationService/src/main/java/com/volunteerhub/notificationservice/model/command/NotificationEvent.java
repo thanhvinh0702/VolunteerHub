@@ -1,6 +1,6 @@
-package com.ecom.notificationservice.model.command;
+package com.volunteerhub.notificationservice.model.command;
 
-import com.ecom.notificationservice.model.NotificationType;
+import com.volunteerhub.notificationservice.model.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

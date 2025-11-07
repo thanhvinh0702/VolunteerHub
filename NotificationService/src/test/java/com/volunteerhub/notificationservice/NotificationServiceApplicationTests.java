@@ -1,4 +1,4 @@
-package com.ecom.notificationservice;
+package com.volunteerhub.notificationservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

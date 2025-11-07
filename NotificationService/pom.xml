@@ -8,7 +8,7 @@
 		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.ecom</groupId>
+	<groupId>com.volunteerhub</groupId>
 	<artifactId>NotificationService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>NotificationService</name>

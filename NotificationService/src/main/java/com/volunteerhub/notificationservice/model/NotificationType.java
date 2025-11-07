@@ -1,4 +1,4 @@
-package com.ecom.notificationservice.model;
+package com.volunteerhub.notificationservice.model;
 
 public enum NotificationType {
     EVENT_REQUESTED,

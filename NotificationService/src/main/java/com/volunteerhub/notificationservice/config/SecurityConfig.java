@@ -1,4 +1,4 @@
-package com.ecom.notificationservice.config;
+package com.volunteerhub.notificationservice.config;
 
 
 import jakarta.servlet.FilterChain;

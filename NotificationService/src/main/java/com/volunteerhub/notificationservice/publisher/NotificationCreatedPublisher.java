@@ -1,7 +1,7 @@
-package com.ecom.notificationservice.publisher;
+package com.volunteerhub.notificationservice.publisher;
 
-import com.ecom.notificationservice.config.RabbitMQConfig;
-import com.ecom.notificationservice.dto.NotificationEventRequest;
+import com.volunteerhub.notificationservice.config.RabbitMQConfig;
+import com.volunteerhub.notificationservice.dto.NotificationEventRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
