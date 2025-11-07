@@ -1,6 +1,6 @@
 spring:
   application:
-    name: UserService
+    name: NotificationService
 
   config:
     import: optional:file:.env[.properties]
@@ -10,6 +10,14 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
+  data:
+    mongodb:
+      authentication-database: admin
+      username: ${MONGO_USER}
+      password: ${MONGO_PASSWORD}
+      host: ${HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB}
   jpa:
     hibernate:
       ddl-auto: update
