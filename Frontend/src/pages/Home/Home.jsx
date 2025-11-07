@@ -1,18 +1,15 @@
-import { useState } from "react";
 import DashBoardOverview from "../../components/Dashboard/DashBoardOverview";
 import ModalConfirm from "../../components/Modal/ModalConfirm";
 import DashboardLayout from "../DashBoard/DashboardLayout";
 
-export default function Home() {
-  const [open, setOpen] = useState(false);
+import QuickActionsUser from "../../components/QuickActionButton/QuickActionsUser";
 
-  const handleDelete = () => {
-    alert("DELETE");
-  };
+export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col gap-10">
       <DashboardLayout />
       <DashBoardOverview />
+      <QuickActionsUser />
     </div>
   );
 }

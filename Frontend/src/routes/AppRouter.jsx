@@ -24,7 +24,7 @@ function AppRouter() {
             <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
           }
         >
-          <Route path="/dashboard" element={<Home />}>
+          <Route path="/home" element={<Home />}>
             <Route path="opportunities" />
             <Route path="opportunities/:id" />
           </Route>
