@@ -10,6 +10,7 @@ import com.volunteerhub.communityservice.repository.CommentRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
     private final CommentMapper commentMapper;
+    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
 
     public Comment findEntityById(Long id) {
         return commentRepository.findById(id).orElseThrow(() ->
@@ -56,6 +58,11 @@ public class CommentService {
         Comment createdComment = commentRepository.save(comment);
         createdComment.setPostId(postId);
         createdComment.setParentId(commentRequest.getParentId());
+        // Store count in cache
+        String commentCountKey = "comment_count:" + postId;
+        if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(commentCountKey))) {
+            stringIntegerRedisTemplate.opsForValue().increment(commentCountKey);
+        }
         return commentMapper.toDto(createdComment);
     }
 
@@ -76,6 +83,11 @@ public class CommentService {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
         commentRepository.delete(comment);
+        // Store count in cache
+        String commentCountKey = "comment_count:" + comment.getPostId();
+        if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(commentCountKey))) {
+            stringIntegerRedisTemplate.opsForValue().decrement(commentCountKey);
+        }
         return commentMapper.toDto(comment);
     }
 }

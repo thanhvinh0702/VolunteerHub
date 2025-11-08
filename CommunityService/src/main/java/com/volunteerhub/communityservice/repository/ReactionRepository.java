@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     Page<Reaction> findByPostId(Long postId, PageRequest pageRequest);
+
+    int countByPostId(Long postId);
 }

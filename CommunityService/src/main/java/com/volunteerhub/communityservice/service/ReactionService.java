@@ -10,6 +10,7 @@ import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ReactionService {
     private final ReactionRepository reactionRepository;
     private final PostService postService;
     private final ReactionMapper reactionMapper;
+    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
 
     public Reaction findEntityById(Long id) {
         return reactionRepository.findById(id).orElseThrow(() ->
@@ -51,6 +53,11 @@ public class ReactionService {
                 .build();
         Reaction createdReaction = reactionRepository.save(reaction);
         createdReaction.setPostId(postId);
+        // Store count in cache
+        String reactionCountKey = "reaction_count:" + postId;
+        if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(reactionCountKey))) {
+            stringIntegerRedisTemplate.opsForValue().increment(reactionCountKey);
+        }
         return reactionMapper.toDto(createdReaction);
     }
 
@@ -71,6 +78,11 @@ public class ReactionService {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
         reactionRepository.delete(reaction);
+        // Store count in cache
+        String reactionCountKey = "reaction_count:" + reaction.getPostId();
+        if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(reactionCountKey))) {
+            stringIntegerRedisTemplate.opsForValue().decrement(reactionCountKey);
+        }
         return reactionMapper.toDto(reaction);
     }
 }

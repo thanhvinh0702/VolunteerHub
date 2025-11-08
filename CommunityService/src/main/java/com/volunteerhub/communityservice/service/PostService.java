@@ -5,15 +5,19 @@ import com.volunteerhub.communityservice.dto.PostRequest;
 import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.mapper.PostMapper;
 import com.volunteerhub.communityservice.model.Post;
+import com.volunteerhub.communityservice.repository.CommentRepository;
 import com.volunteerhub.communityservice.repository.PostRepository;
+import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,8 +26,29 @@ import java.util.NoSuchElementException;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final ReactionRepository reactionRepository;
     private final EventRegistrationService eventRegistrationService;
     private final PostMapper postMapper;
+    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
+
+    public Integer getCachedCommentCount(Long postId) {
+        Integer cachedCommentCount = stringIntegerRedisTemplate.opsForValue().get("comment_count:" + postId);
+        if (cachedCommentCount == null) {
+            cachedCommentCount = commentRepository.countByPostId(postId);
+            stringIntegerRedisTemplate.opsForValue().set("comment_count:" + postId, cachedCommentCount, Duration.ofHours(1));
+        }
+        return cachedCommentCount;
+    }
+
+    public Integer getCachedReactionCount(Long postId) {
+        Integer cachedReactionCount = stringIntegerRedisTemplate.opsForValue().get("reaction_count:" + postId);
+        if (cachedReactionCount == null) {
+            cachedReactionCount = reactionRepository.countByPostId(postId);
+            stringIntegerRedisTemplate.opsForValue().set("reaction_count:" + postId, cachedReactionCount, Duration.ofHours(1));
+        }
+        return cachedReactionCount;
+    }
 
     public Post findEntityById(Long id) {
         return postRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Post with id " + id + " does not exist"));
@@ -33,8 +58,8 @@ public class PostService {
     public PostResponse findById(Long id) {
         return postMapper.toDto(
                 postRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Post with id " + id + " does not exist")),
-                0,
-                0
+                getCachedReactionCount(id),
+                getCachedCommentCount(id)
         );
     }
 
@@ -44,7 +69,11 @@ public class PostService {
         return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
                 .getContent()
                 .stream()
-                .map(p -> postMapper.toDto(p, 0, 0))
+                .map(p -> {
+                    int reactionCount = getCachedReactionCount(p.getId());
+                    int commentCount = getCachedCommentCount(p.getId());
+                    return postMapper.toDto(p, reactionCount, commentCount);
+                })
                 .toList();
     }
 
@@ -71,7 +100,7 @@ public class PostService {
         if (postRequest.getImageUrls() != null) {
             post.setImageUrls(postRequest.getImageUrls());
         }
-        return postMapper.toDto(postRepository.save(post), 0, 0);
+        return postMapper.toDto(postRepository.save(post), getCachedReactionCount(postId), getCachedCommentCount(postId));
     }
 
     public PostResponse delete(String userId, Long postId) {
@@ -80,7 +109,7 @@ public class PostService {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
         postRepository.delete(post);
-        return postMapper.toDto(post, 0, 0);
+        return postMapper.toDto(post, getCachedReactionCount(postId), getCachedCommentCount(postId));
     }
 
     public boolean canAccessPost(String userId, Long postId) {
