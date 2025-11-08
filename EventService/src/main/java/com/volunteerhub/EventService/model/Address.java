@@ -27,9 +27,6 @@ public class Address {
     @Column (nullable = false)
     private String street;
 
-    @Column
-    private String optional;
-
     @Builder.Default
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

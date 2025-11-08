@@ -3,6 +3,8 @@ package com.volunteerhub.EventService.service;
 import com.volunteerhub.EventService.dto.EventRequest;
 import com.volunteerhub.EventService.dto.EventResponse;
 import com.volunteerhub.EventService.mapper.EventMapper;
+import com.volunteerhub.EventService.model.Address;
+import com.volunteerhub.EventService.model.Category;
 import com.volunteerhub.EventService.model.Event;
 import com.volunteerhub.EventService.model.Status;
 import com.volunteerhub.EventService.repository.EventRepository;
@@ -53,22 +55,25 @@ public class EventService {
     // TODO: publish event an event has been requested
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse createEvent(String userId, EventRequest eventRequest) {
+        Category category = categoryService.findByName(eventRequest.getCategoryName());
+
+        Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
         Event event = Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .imageUrl(eventRequest.getImageUrl())
-                .category(categoryService.findByID(eventRequest.getCategoryId()))
                 .startTime(eventRequest.getStartTime())
                 .endTime(eventRequest.getEndTime())
-                .address(addressService.findById(eventRequest.getAddressId()))
-                .capacity(eventRequest.getCapacity())
+                .category(category)
                 .status(Status.PENDING)
                 .ownerId(userId)
+                .address(address)
+                .optional(eventRequest.getOptional())
                 .build();
 
         Event savedEvent = eventRepository.save(event);
-        savedEvent.setCategoryId(eventRequest.getCategoryId());
-        savedEvent.setAddressId(eventRequest.getAddressId());
+        savedEvent.setCategoryId(category.getId());
+        savedEvent.setAddressId(address.getId());
         return eventMapper.toDto(savedEvent);
     }
 
@@ -76,24 +81,37 @@ public class EventService {
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest) {
         Event event = findEntityById(eventId);
+
         if (!event.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to modify this record.");
         }
+
         if (eventRequest.getName() != null) event.setName(eventRequest.getName());
         if (eventRequest.getDescription() != null) event.setDescription(eventRequest.getDescription());
-        if (eventRequest.getAddressId() != null)
-            event.setCategory(categoryService.findByID(eventRequest.getCategoryId()));
-        if (eventRequest.getAddressId() != null)
-            event.setAddress(addressService.findById(eventRequest.getAddressId()));
+        if (eventRequest.getImageUrl() != null) event.setImageUrl(eventRequest.getImageUrl());
+
+        if (eventRequest.getCategoryName() != null && !eventRequest.getCategoryName().isBlank()) {
+            Category category = categoryService.findByName(eventRequest.getCategoryName());
+            event.setCategory(category);
+            event.setCategoryId(category.getId());
+        }
+
+        if (eventRequest.getAddress().getCity() != null && eventRequest.getAddress().getProvince() != null && eventRequest.getAddress().getStreet() != null) {
+            Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
+            event.setAddress(address);
+            event.setAddressId(address.getId());
+        }
+
         if (eventRequest.getStartTime() != null) event.setStartTime(eventRequest.getStartTime());
         if (eventRequest.getEndTime() != null) event.setEndTime(eventRequest.getEndTime());
-        event.setCapacity(eventRequest.getCapacity());
 
+        if (eventRequest.getCapacity() > 0) event.setCapacity(eventRequest.getCapacity());
+
+        if (eventRequest.getOptional() != null) event.setOptional(eventRequest.getOptional());
         Event savedEvent = eventRepository.save(event);
-        savedEvent.setCategoryId(eventRequest.getCategoryId());
-        savedEvent.setAddressId(eventRequest.getAddressId());
         return eventMapper.toDto(savedEvent);
     }
+
 
     // TODO: publish event an event has been deleted
     @PreAuthorize("hasRole('MANAGER')")

@@ -23,6 +23,7 @@ public class EventMapper {
                 .createdAt(event.getCreatedAt())
                 .updatedAt(event.getUpdatedAt())
                 .approvedBy(event.getApprovedBy())
+                .optional(event.getOptional())
                 .build();
     }
 }

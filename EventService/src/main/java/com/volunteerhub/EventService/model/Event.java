@@ -66,6 +66,9 @@ public class Event {
     @Column(name = "owner_id", nullable = false)
     private String ownerId;
 
+    @Column
+    private String optional;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

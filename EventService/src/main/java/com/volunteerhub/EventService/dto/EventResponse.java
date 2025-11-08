@@ -37,4 +37,6 @@ public class EventResponse {
     private LocalDateTime updatedAt;
 
     private String approvedBy;
+
+    private String optional;
 }
