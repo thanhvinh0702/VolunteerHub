@@ -1,5 +1,6 @@
 package com.volunteerhub.EventService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "addresses")
 public class Address {
 
     @Id
@@ -30,6 +30,8 @@ public class Address {
     @Column
     private String optional;
 
+    @Builder.Default
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 }

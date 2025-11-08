@@ -15,18 +15,20 @@
 
         private String description;
 
+        private String imageUrl;
+
+        @NotNull(message = "Category cannot be null", groups = OnCreate.class)
+        private Long categoryId;
+
         @NotNull(message = "StartTime cannot be null", groups = OnCreate.class)
         private LocalDateTime startTime;
 
         @NotNull(message = "EndTime cannot be null", groups = OnCreate.class)
         private LocalDateTime endTime;
 
-        @NotNull(message = "Category cannot be null", groups = OnCreate.class)
-        private Long categoryID;
-
-        @Min(value = 1, message = "Capacity must be at least 1")
-        private int capacity;
-
         @NotNull(message = "Address cannot be null", groups = OnCreate.class)
-        private Long addressID;
+        private Long addressId;
+
+        @Min(value = 1, message = "Capacity must be at least 1", groups = OnCreate.class)
+        private int capacity;
     }

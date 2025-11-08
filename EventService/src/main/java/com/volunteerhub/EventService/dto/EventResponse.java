@@ -16,6 +16,8 @@ public class EventResponse {
 
     private String description;
 
+    private String imageUrl;
+
     private Long categoryId;
 
     private Long addressId;
@@ -25,6 +27,8 @@ public class EventResponse {
     private LocalDateTime endTime;
 
     private int capacity;
+
+    private String ownerId;
 
     private Status status;
 

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,11 +28,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(headerFilterAuth(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/users/users/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .build();
     }
 
@@ -39,26 +39,15 @@ public class SecurityConfig {
     public OncePerRequestFilter headerFilterAuth() {
         return new OncePerRequestFilter() {
 
-            private final List<String> publicPaths = List.of(
-                    "/swagger-ui/",
-                    "/v3/api-docs",
-                    "/swagger-resources/",
-                    "/webjars/"
-            );
-
             @Override
             protected void doFilterInternal(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain filterChain) throws ServletException, IOException {
                 String path = request.getRequestURI();
-                if (publicPaths.stream().anyMatch(path::startsWith)) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
                 String role = request.getHeader("X-USER-ROLE");
                 String userId = request.getHeader("X-USER-ID");
                 if (role == null || role.isBlank() || userId == null || userId.isBlank()) {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication headers");
+                    filterChain.doFilter(request, response);
                     return;
                 }
                 String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;

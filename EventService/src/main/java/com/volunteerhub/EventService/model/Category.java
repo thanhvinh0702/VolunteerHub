@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "category")
 public class Category {
 
     @Id
@@ -26,6 +25,7 @@ public class Category {
     @Column
     private String description;
 
+    @Builder.Default
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Event> events = new ArrayList<>();
