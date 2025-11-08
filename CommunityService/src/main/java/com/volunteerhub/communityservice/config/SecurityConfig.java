@@ -1,4 +1,4 @@
-package com.volunteerhub.userservice.config;
+package com.volunteerhub.communityservice.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,8 +31,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(headerFilterAuth(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/users/users/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .anyRequest().authenticated())
                 .build();
     }
@@ -41,22 +39,11 @@ public class SecurityConfig {
     public OncePerRequestFilter headerFilterAuth() {
         return new OncePerRequestFilter() {
 
-            private final List<String> publicPaths = List.of(
-                    "/swagger-ui/",
-                    "/v3/api-docs",
-                    "/swagger-resources/",
-                    "/webjars/"
-            );
-
             @Override
             protected void doFilterInternal(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain filterChain) throws ServletException, IOException {
                 String path = request.getRequestURI();
-                if (publicPaths.stream().anyMatch(path::startsWith)) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
                 String role = request.getHeader("X-USER-ROLE");
                 String userId = request.getHeader("X-USER-ID");
                 if (role == null || role.isBlank() || userId == null || userId.isBlank()) {
@@ -76,3 +63,4 @@ public class SecurityConfig {
         };
     }
 }
+

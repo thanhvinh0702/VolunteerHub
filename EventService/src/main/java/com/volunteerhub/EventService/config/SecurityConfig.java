@@ -1,4 +1,4 @@
-package com.volunteerhub.userservice.config;
+package com.volunteerhub.EventService.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,12 +27,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(headerFilterAuth(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/users/users/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .build();
     }
 
@@ -60,7 +58,7 @@ public class SecurityConfig {
                 String role = request.getHeader("X-USER-ROLE");
                 String userId = request.getHeader("X-USER-ID");
                 if (role == null || role.isBlank() || userId == null || userId.isBlank()) {
-                    filterChain.doFilter(request, response);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication headers");
                     return;
                 }
                 String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
