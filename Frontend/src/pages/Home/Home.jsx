@@ -3,6 +3,7 @@ import ModalConfirm from "../../components/Modal/ModalConfirm";
 import DashboardLayout from "../DashBoard/DashboardLayout";
 
 import QuickActionsUser from "../../components/QuickActionButton/QuickActionsUser";
+import UpcomingEvents from "../../components/ModalActivity/UpcomingEvents";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <DashboardLayout />
       <DashBoardOverview />
       <QuickActionsUser />
+      <UpcomingEvents />
     </div>
   );
 }
