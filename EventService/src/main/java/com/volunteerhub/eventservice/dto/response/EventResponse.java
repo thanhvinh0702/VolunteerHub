@@ -1,8 +1,8 @@
-package com.volunteerhub.EventService.dto;
+package com.volunteerhub.eventservice.dto.response;
 
-import com.volunteerhub.EventService.model.Address;
-import com.volunteerhub.EventService.model.Category;
-import com.volunteerhub.EventService.model.Status;
+import com.volunteerhub.common.dto.AddressResponse;
+import com.volunteerhub.common.dto.CategoryResponse;
+import com.volunteerhub.common.enums.EventStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -32,7 +32,7 @@ public class EventResponse {
 
     private String ownerId;
 
-    private Status status;
+    private EventStatus status;
 
     private LocalDateTime createdAt;
 

@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService;
+package com.volunteerhub.eventservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

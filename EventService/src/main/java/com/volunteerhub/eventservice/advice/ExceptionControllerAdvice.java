@@ -1,6 +1,6 @@
-package com.volunteerhub.EventService.advice;
+package com.volunteerhub.eventservice.advice;
 
-import com.volunteerhub.EventService.dto.ErrorDetails;
+import com.volunteerhub.common.dto.ErrorDetails;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;

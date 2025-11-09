@@ -1,4 +1,4 @@
-package com.volunteerhub.notificationservice.dto;
+package com.volunteerhub.notificationservice.dto.message.comment;
 
 import lombok.Builder;
 import lombok.Data;

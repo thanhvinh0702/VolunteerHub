@@ -1,7 +1,6 @@
-package com.volunteerhub.EventService.repository;
+package com.volunteerhub.eventservice.repository;
 
-import com.volunteerhub.EventService.model.Address;
-import com.volunteerhub.EventService.model.Category;
+import com.volunteerhub.eventservice.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
-package com.volunteerhub.EventService.mapper;
+package com.volunteerhub.eventservice.mapper;
 
-import com.volunteerhub.EventService.dto.AddressResponse;
-import com.volunteerhub.EventService.model.Address;
+import com.volunteerhub.eventservice.model.Address;
+import com.volunteerhub.common.dto.AddressResponse;
 import org.springframework.stereotype.Component;
 
 @Component

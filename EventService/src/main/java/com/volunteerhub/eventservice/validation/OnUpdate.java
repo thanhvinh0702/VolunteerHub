@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService.validation;
+package com.volunteerhub.eventservice.validation;
 
 public interface OnUpdate {
 }

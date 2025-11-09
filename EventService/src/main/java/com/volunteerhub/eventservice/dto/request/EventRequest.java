@@ -1,6 +1,6 @@
-    package com.volunteerhub.EventService.dto;
+    package com.volunteerhub.eventservice.dto.request;
 
-    import com.volunteerhub.EventService.validation.OnCreate;
+    import com.volunteerhub.eventservice.validation.OnCreate;
     import jakarta.validation.Valid;
     import jakarta.validation.constraints.Min;
     import jakarta.validation.constraints.NotBlank;

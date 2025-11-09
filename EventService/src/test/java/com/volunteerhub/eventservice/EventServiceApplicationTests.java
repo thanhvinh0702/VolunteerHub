@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService;
+package com.volunteerhub.eventservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

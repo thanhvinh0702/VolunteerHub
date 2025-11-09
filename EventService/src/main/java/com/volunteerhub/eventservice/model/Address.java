@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService.model;
+package com.volunteerhub.eventservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"city", "province", "street"})
+)
 public class Address {
 
     @Id

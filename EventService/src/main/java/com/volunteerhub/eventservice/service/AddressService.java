@@ -1,8 +1,8 @@
-package com.volunteerhub.EventService.service;
+package com.volunteerhub.eventservice.service;
 
-import com.volunteerhub.EventService.dto.AddressRequest;
-import com.volunteerhub.EventService.model.Address;
-import com.volunteerhub.EventService.repository.AddressRepository;
+import com.volunteerhub.eventservice.dto.request.AddressRequest;
+import com.volunteerhub.eventservice.model.Address;
+import com.volunteerhub.eventservice.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

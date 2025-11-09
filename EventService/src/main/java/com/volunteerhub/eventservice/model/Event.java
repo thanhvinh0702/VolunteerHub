@@ -1,6 +1,7 @@
-package com.volunteerhub.EventService.model;
+package com.volunteerhub.eventservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.volunteerhub.common.enums.EventStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -41,7 +42,7 @@ public class Event {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.PENDING;
+    private EventStatus status = EventStatus.PENDING;
 
     @Column(name = "approved_by")
     private String approvedBy;

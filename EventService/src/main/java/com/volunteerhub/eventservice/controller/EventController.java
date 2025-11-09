@@ -1,11 +1,11 @@
-package com.volunteerhub.EventService.controller;
+package com.volunteerhub.eventservice.controller;
 
-import com.volunteerhub.EventService.dto.EventRequest;
-import com.volunteerhub.EventService.dto.EventResponse;
-import com.volunteerhub.EventService.model.Status;
-import com.volunteerhub.EventService.service.EventService;
-import com.volunteerhub.EventService.validation.OnCreate;
-import com.volunteerhub.EventService.validation.OnUpdate;
+import com.volunteerhub.eventservice.dto.request.EventRequest;
+import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.eventservice.service.EventService;
+import com.volunteerhub.eventservice.validation.OnCreate;
+import com.volunteerhub.eventservice.validation.OnUpdate;
+import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class EventController {
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
-                                                            @RequestParam(required = false) Status status)  {
+                                                            @RequestParam(required = false) EventStatus status)  {
         return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status));
     }
 

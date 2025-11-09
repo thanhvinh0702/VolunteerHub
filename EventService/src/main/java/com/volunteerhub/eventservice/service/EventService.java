@@ -1,13 +1,14 @@
-package com.volunteerhub.EventService.service;
+package com.volunteerhub.eventservice.service;
 
-import com.volunteerhub.EventService.dto.EventRequest;
-import com.volunteerhub.EventService.dto.EventResponse;
-import com.volunteerhub.EventService.mapper.EventMapper;
-import com.volunteerhub.EventService.model.Address;
-import com.volunteerhub.EventService.model.Category;
-import com.volunteerhub.EventService.model.Event;
-import com.volunteerhub.EventService.model.Status;
-import com.volunteerhub.EventService.repository.EventRepository;
+import com.volunteerhub.eventservice.dto.request.EventRequest;
+import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.eventservice.mapper.EventMapper;
+import com.volunteerhub.eventservice.model.Address;
+import com.volunteerhub.eventservice.model.Category;
+import com.volunteerhub.eventservice.model.Event;
+import com.volunteerhub.eventservice.publisher.EventPublisher;
+import com.volunteerhub.eventservice.repository.EventRepository;
+import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +26,7 @@ public class EventService {
     private final CategoryService categoryService;
     private final AddressService addressService;
     private final EventMapper eventMapper;
+    private final EventPublisher eventPublisher;
 
     public Event findEntityById(Long id) {
         return eventRepository.findById(id)
@@ -36,7 +38,7 @@ public class EventService {
                 .orElseThrow(() -> new NoSuchElementException("No such event with id " + id)));
     }
 
-    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, Status status) {
+    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status) {
         int page = (pageNum == null) ? 0 : pageNum;
         int size = (pageSize == null) ? 10 : pageSize;
         if (page < 0) {
@@ -52,7 +54,6 @@ public class EventService {
         return events.stream().map(eventMapper::toDto).toList();
     }
 
-    // TODO: publish event an event has been requested
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse createEvent(String userId, EventRequest eventRequest) {
         Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
@@ -63,7 +64,7 @@ public class EventService {
                 .description(eventRequest.getDescription())
                 .imageUrl(eventRequest.getImageUrl())
                 .category(category)
-                .status(Status.PENDING)
+                .status(EventStatus.PENDING)
                 .startTime(eventRequest.getStartTime())
                 .endTime(eventRequest.getEndTime())
                 .address(address)
@@ -75,6 +76,7 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
         savedEvent.setCategoryId(category.getId());
         savedEvent.setAddressId(address.getId());
+        eventPublisher.publishEventCreated(eventMapper.toCreatedMessage(savedEvent));
         return eventMapper.toDto(savedEvent);
     }
 
@@ -130,7 +132,7 @@ public class EventService {
     @PreAuthorize("hasRole('ADMIN')")
     public EventResponse approveEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
-        event.setStatus(Status.APPROVED);
+        event.setStatus(EventStatus.APPROVED);
         event.setApprovedBy(userId);
         return eventMapper.toDto(eventRepository.save(event));
     }

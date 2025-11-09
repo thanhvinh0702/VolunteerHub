@@ -1,6 +1,6 @@
-package com.volunteerhub.EventService.repository;
+package com.volunteerhub.eventservice.repository;
 
-import com.volunteerhub.EventService.model.Event;
+import com.volunteerhub.eventservice.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventRepository extends JpaRepository<Event, Long> {

@@ -1,6 +1,6 @@
 package com.volunteerhub.communityservice.advice;
 
-import com.volunteerhub.communityservice.dto.ErrorDetails;
+import com.volunteerhub.common.dto.ErrorDetails;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;

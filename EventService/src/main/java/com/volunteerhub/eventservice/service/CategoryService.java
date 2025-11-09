@@ -1,7 +1,7 @@
-package com.volunteerhub.EventService.service;
+package com.volunteerhub.eventservice.service;
 
-import com.volunteerhub.EventService.model.Category;
-import com.volunteerhub.EventService.repository.CategoryRepository;
+import com.volunteerhub.eventservice.model.Category;
+import com.volunteerhub.eventservice.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
-package com.volunteerhub.EventService.mapper;
+package com.volunteerhub.eventservice.mapper;
 
-import com.volunteerhub.EventService.dto.CategoryResponse;
-import com.volunteerhub.EventService.model.Category;
+import com.volunteerhub.eventservice.model.Category;
+import com.volunteerhub.common.dto.CategoryResponse;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,7 @@
 package com.volunteerhub.communityservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.volunteerhub.common.enums.ReactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

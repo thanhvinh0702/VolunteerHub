@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService.model;
+package com.volunteerhub.eventservice.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +23,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column (nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
 
     @Column

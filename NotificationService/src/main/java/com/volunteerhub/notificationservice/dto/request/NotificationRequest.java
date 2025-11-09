@@ -1,4 +1,4 @@
-package com.volunteerhub.notificationservice.dto;
+package com.volunteerhub.notificationservice.dto.request;
 
 import com.volunteerhub.notificationservice.model.NotificationType;
 import lombok.Builder;

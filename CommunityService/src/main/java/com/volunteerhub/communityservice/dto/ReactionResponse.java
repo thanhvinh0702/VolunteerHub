@@ -1,6 +1,6 @@
 package com.volunteerhub.communityservice.dto;
 
-import com.volunteerhub.communityservice.model.ReactionType;
+import com.volunteerhub.common.enums.ReactionType;
 import lombok.Builder;
 import lombok.Data;
 

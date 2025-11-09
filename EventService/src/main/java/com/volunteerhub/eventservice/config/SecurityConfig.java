@@ -1,4 +1,4 @@
-package com.volunteerhub.EventService.config;
+package com.volunteerhub.eventservice.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

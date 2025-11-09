@@ -1,7 +1,8 @@
-package com.volunteerhub.EventService.mapper;
+package com.volunteerhub.eventservice.mapper;
 
-import com.volunteerhub.EventService.dto.EventResponse;
-import com.volunteerhub.EventService.model.Event;
+import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.eventservice.model.Event;
+import com.volunteerhub.common.dto.message.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,18 @@ public class EventMapper {
                 .updatedAt(event.getUpdatedAt())
                 .approvedBy(event.getApprovedBy())
                 .optional(event.getOptional())
+                .build();
+    }
+
+    public EventCreatedMessage toCreatedMessage(Event event) {
+        return EventCreatedMessage.builder()
+                .id(event.getId())
+                .name(event.getName())
+                .category(categoryMapper.toDto(event.getCategory()))
+                .ownerId(event.getOwnerId())
+                .status(event.getStatus())
+                .startTime(event.getStartTime())
+                .endTime(event.getEndTime())
                 .build();
     }
 }
