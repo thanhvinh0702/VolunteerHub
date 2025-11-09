@@ -27,4 +27,50 @@ public class RouteConfig {
                 )
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> communityServiceRoute() {
+        return route("communityservice")
+                .nest(RequestPredicates.path("/api/v1/events/{eventId}/posts/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("COMMUNITYSERVICE"))
+                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> eventServiceRoute() {
+        return route("eventservice")
+                .nest(RequestPredicates.path("/api/v1/events/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("EVENTSERVICE"))
+                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> notificationServiceRoute() {
+        return route("notificationservice")
+                .nest(RequestPredicates.path("/api/v1/notifications/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("NOTIFICATIONSERVICE"))
+                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+    }
 }
