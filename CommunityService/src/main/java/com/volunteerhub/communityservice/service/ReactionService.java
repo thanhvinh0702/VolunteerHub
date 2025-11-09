@@ -4,7 +4,7 @@ import com.volunteerhub.communityservice.dto.*;
 import com.volunteerhub.communityservice.mapper.ReactionMapper;
 import com.volunteerhub.communityservice.model.Post;
 import com.volunteerhub.communityservice.model.Reaction;
-import com.volunteerhub.communityservice.publisher.ReactionCreatedPublisher;
+import com.volunteerhub.communityservice.publisher.ReactionPublisher;
 import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class ReactionService {
     private final PostService postService;
     private final ReactionMapper reactionMapper;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
-    private final ReactionCreatedPublisher reactionCreatedPublisher;
+    private final ReactionPublisher reactionPublisher;
 
     public Reaction findEntityById(Long id) {
         return reactionRepository.findById(id).orElseThrow(() ->
@@ -59,13 +59,7 @@ public class ReactionService {
         }
 
         // Publish event
-        ReactionMessage reactionMessage = ReactionMessage.builder()
-                .ownerId(userId)
-                .postId(postId)
-                .type(reactionRequest.getType())
-                .userId(post.getOwnerId())
-                .build();
-        reactionCreatedPublisher.publish(reactionMessage);
+        reactionPublisher.publicReactionCreatedEvent(reactionMapper.toReactionCreatedMessage(reaction));
         return reactionMapper.toDto(createdReaction);
     }
 

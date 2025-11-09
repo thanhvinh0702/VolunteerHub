@@ -37,9 +37,9 @@ rabbitmq:
   exchange:
     notification: ${NOTIFICATION_EXCHANGE}
   routingKey:
-    commentCreated: ${COMMENT_CREATED_ROUTING_KEY}
-    reactionCreated: ${REACTION_CREATED_ROUTING_KEY}
-    postCreated: ${POST_CREATED_ROUTING_KEY}
+    comment: ${COMMENT_ROUTING_KEY}
+    reaction: ${REACTION_ROUTING_KEY}
+    post: ${POST_ROUTING_KEY}
 
 eureka:
   client:

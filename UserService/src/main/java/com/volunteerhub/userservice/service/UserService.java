@@ -42,6 +42,10 @@ public class UserService {
         return userRepository.findAll(PageRequest.of(page, pageSize)).getContent();
     }
 
+    public List<String> findAllIds(Role role) {
+        return userRepository.findAllIdsByRole(role);
+    }
+
     public User create(String userId, Role userRole, UserRequest userRequest) {
         User user = User.builder()
                 .id(userId)
