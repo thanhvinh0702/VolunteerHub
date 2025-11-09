@@ -42,7 +42,14 @@ function Opportunities() {
     [events, query, selectedCategories, status, timeRange]
   );
   return (
-    <div>
+    <div className="flex flex-col gap-2 p-5">
+      <div className="flex flex-col gap-2">
+        <p className="text-2xl font-bold text-md">Volunteer Opportunities</p>
+        <p className="text-sm text-gray-600 mb-4">
+          {" "}
+          Discover meaningful ways to make a difference
+        </p>
+      </div>
       <FilterHorizontal
         query={query}
         setQuery={setQuery}
@@ -55,13 +62,7 @@ function Opportunities() {
         toggleCategory={toogleCategory}
         resetFilters={resetFilters}
       />
-      <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold text-md">Volunteer Opportunities</p>
-        <p className="text-sm text-gray-600 mb-4">
-          {" "}
-          Discover meaningful ways to make a difference
-        </p>
-      </div>
+
       <div></div>
       <div></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">

@@ -12,6 +12,8 @@ export default function FilterHorizontal({
   categories,
   selectedCategories,
   toggleCategory,
+  filter,
+  setFilter,
 }) {
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -31,7 +33,7 @@ export default function FilterHorizontal({
 
         {/* Controls */}
         <div className="flex justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-5">
             <DropdownSelect
               value={status}
               onChange={setStatus}
@@ -66,21 +68,44 @@ export default function FilterHorizontal({
 
         {/* Categories */}
         {openFilter && (
-          <div className="mt-3 md:flex gap-2 overflow-x-auto">
-            {categories.map((c) => {
-              const active = selectedCategories.includes(c);
-              return (
-                <button
-                  key={c}
-                  onClick={() => toggleCategory(c)}
-                  className={`whitespace-nowrap px-3 py-1 rounded-full border ${
-                    active ? "bg-blue-500 text-white" : "bg-white text-gray-700"
-                  }`}
-                >
-                  {c}
-                </button>
-              );
-            })}
+          <div className="flex flex-row bg-gray-100 py-4 px-4 rounded-xl">
+            <div className="basis-1/2 flex-col">
+              <p className="font-bold">Category</p>
+              <div className="max-md:basis-1/2 mt-3 md:flex flex-col overflow-y-auto scroll-smooth max-h-[200px] scrollbar-thin scrollbar-thumb-red-400/20 scrollbar-track-white">
+                {categories.map((c) => {
+                  const active = selectedCategories.includes(c);
+                  return (
+                    <label
+                      key={c}
+                      className={`flex items-center gap-3 bg-gray-100${
+                        active ? "" : "bg-white"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        value={c}
+                        onChange={(e) => toggleCategory(e.target.value)}
+                        checked={active}
+                        className=""
+                      />
+                      <span className="text-gray-600">{c}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="basis-1/2 pl-10">
+              <DropdownSelect
+                className="w-full"
+                value={filter}
+                onChange={setFilter}
+                options={[
+                  { value: "Date", label: "Date" },
+                  { value: "Name", label: "Name" },
+                  { value: "Size", label: "Size" },
+                ]}
+              />
+            </div>
           </div>
         )}
       </div>

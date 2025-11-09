@@ -1,8 +1,11 @@
 @import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+@plugin "tailwind-scrollbar" {
+    nocompatible: true;
+}
 @theme {
     --font-lobster: "Lobster", cursive;
     --font-jost: "Jost", sans-serif;
