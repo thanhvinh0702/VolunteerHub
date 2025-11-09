@@ -1,8 +1,7 @@
 package com.volunteerhub.common.dto.message;
 
 import com.volunteerhub.common.enums.ReactionType;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @Builder

@@ -1,5 +1,6 @@
 package com.volunteerhub.notificationservice.service;
 
+import com.volunteerhub.common.dto.message.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
@@ -36,7 +37,7 @@ public class NotificationService {
     }
 
     /**
-     * This method should take in the event created message, and create notification for all admins.
+     * This method should handle the creation of notifications when an event is created.
      * @param eventCreatedMessage: the message publish by event service when an event created.
      */
     public void handleEventCreatedNotification(EventCreatedMessage eventCreatedMessage) {
@@ -57,5 +58,24 @@ public class NotificationService {
                         .build())
                 .toList();
         notificationRepository.saveAll(notifications);
+    }
+
+    /**
+     * This method should handle the creation of notifications when an event is approved.
+     * @param eventApprovedMessage: the message publish by event service when an event approved.
+     */
+    public void handleEventApprovedNotification(EventApprovedMessage eventApprovedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("category", eventApprovedMessage.getCategory().getName());
+        payload.put("name", eventApprovedMessage.getEventName());
+        payload.put("approved_time", eventApprovedMessage.getApprovedTime());
+        Notification notification = Notification.builder()
+                .type(NotificationType.EVENT_APPROVED)
+                .actorId(eventApprovedMessage.getApprovedBy())
+                .contextId(eventApprovedMessage.getEventId())
+                .userId(eventApprovedMessage.getOwnerId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
     }
 }

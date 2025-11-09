@@ -1,6 +1,8 @@
 package com.volunteerhub.notificationservice.consumer;
 
+import com.volunteerhub.common.dto.message.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
+import com.volunteerhub.common.dto.message.EventMessage;
 import com.volunteerhub.notificationservice.config.RabbitMQConfig;
 import com.volunteerhub.notificationservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,13 @@ public class EventConsumer {
 
     private final NotificationService notificationService;
 
-    @RabbitListener(queues = RabbitMQConfig.EVENT_CREATED_QUEUE)
-    public void handleEVentCreated(EventCreatedMessage eventCreatedMessage) {
-        notificationService.handleEventCreatedNotification(eventCreatedMessage);
+    @RabbitListener(queues = RabbitMQConfig.EVENT_QUEUE)
+    public void handleEventEvent(EventMessage eventMessage) {
+        if (eventMessage instanceof EventCreatedMessage) {
+            notificationService.handleEventCreatedNotification((EventCreatedMessage) eventMessage);
+        }
+        else if (eventMessage instanceof EventApprovedMessage) {
+            notificationService.handleEventApprovedNotification((EventApprovedMessage) eventMessage);
+        }
     }
 }

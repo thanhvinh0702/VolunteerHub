@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class EventCreatedMessage implements EventMessage{
+public class EventApprovedMessage implements EventMessage{
 
-    private Long id;
-    private String name;
+    private Long eventId;
+    private String eventName;
     private CategoryResponse category;
     private String ownerId;
+    private String approvedBy;
     private EventStatus status;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    @Builder.Default
+    private LocalDateTime approvedTime = LocalDateTime.now();
 }
-

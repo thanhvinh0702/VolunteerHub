@@ -1,5 +1,6 @@
 package com.volunteerhub.eventservice.publisher;
 
+import com.volunteerhub.common.dto.message.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,13 +16,21 @@ public class EventPublisher {
     @Value("${rabbitmq.exchange.notification}")
     private String exchange;
 
-    @Value("${rabbitmq.routingKey.eventCreated}")
-    private String eventCreatedRoutingKey;
+    @Value("${rabbitmq.routingKey.event}")
+    private String eventRoutingKey;
 
     public void publishEventCreated(EventCreatedMessage eventMessage) {
         rabbitTemplate.convertAndSend(
                 exchange,
-                eventCreatedRoutingKey,
+                eventRoutingKey,
+                eventMessage
+        );
+    }
+
+    public void publishEventApproved(EventApprovedMessage eventMessage) {
+        rabbitTemplate.convertAndSend(
+                exchange,
+                eventRoutingKey,
                 eventMessage
         );
     }

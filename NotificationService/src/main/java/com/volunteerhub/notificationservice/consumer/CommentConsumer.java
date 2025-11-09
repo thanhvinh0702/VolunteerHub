@@ -1,7 +1,7 @@
 package com.volunteerhub.notificationservice.consumer;
 
+import com.volunteerhub.common.dto.message.CommentCreatedMessage;
 import com.volunteerhub.notificationservice.config.RabbitMQConfig;
-import com.volunteerhub.notificationservice.dto.message.comment.CommentMessage;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
 import com.volunteerhub.notificationservice.model.NotificationType;
 import com.volunteerhub.notificationservice.service.NotificationService;
@@ -17,20 +17,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CommentConsumer {
 
-    private final NotificationService notificationEventService;
+    private final NotificationService notificationService;
 
-    @RabbitListener(queues = RabbitMQConfig.COMMENT_CREATED_QUEUE)
-    public void handleCommentCreated(CommentMessage commentMessage) {
+    @RabbitListener(queues = RabbitMQConfig.COMMENT_QUEUE)
+    public void handleCommentEvent(CommentCreatedMessage commentMessage) {
         Map<String, Object> map = new HashMap<>();
-        map.put("content", commentMessage.getContent());
+        map.put("content", ((CommentCreatedMessage) commentMessage).getContent());
         NotificationRequest notificationRequest = NotificationRequest
                 .builder()
                 .type(NotificationType.COMMENT)
-                .actorId(commentMessage.getOwnerId())
-                .contextId(commentMessage.getPostId())
+                .actorId(((CommentCreatedMessage) commentMessage).getOwnerId())
+                .contextId(((CommentCreatedMessage) commentMessage).getPostId())
                 .payload(map)
-                .userIds(List.of(commentMessage.getUserId()))
+                .userIds(List.of(((CommentCreatedMessage) commentMessage).getUserId()))
                 .build();
-        notificationEventService.create(notificationRequest);
+        notificationService.create(notificationRequest);
     }
 }

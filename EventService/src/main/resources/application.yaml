@@ -29,7 +29,7 @@ rabbitmq:
   exchange:
     notification: ${NOTIFICATION_EXCHANGE}
   routingKey:
-    eventCreated: ${EVENT_CREATED_ROUTING_KEY}
+    event: ${EVENT_ROUTING_KEY}
 
 eureka:
   client:

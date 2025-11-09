@@ -15,7 +15,7 @@ public class ReactionPublisher {
     @Value("${rabbitmq.exchange.notification}")
     private String exchange;
 
-    @Value("${rabbitmq.routingKey.reactionCreated}")
+    @Value("${rabbitmq.routingKey.reaction}")
     private String routingKey;
 
     public void publicReactionCreatedEvent(ReactionCreatedMessage reactionCreatedMessage) {

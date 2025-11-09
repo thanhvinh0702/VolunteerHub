@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     public static final String EXCHANGE = "notification-exchange";
 
-    public static final String EVENT_CREATED_QUEUE = "notification-event-created-queue";
-    public static final String COMMENT_CREATED_QUEUE = "notification-comment-created-queue";
-    public static final String REACTION_CREATED_QUEUE = "notification-reaction-created-queue";
+    public static final String EVENT_QUEUE = "notification-event-queue";
+    public static final String COMMENT_QUEUE = "notification-comment-queue";
+    public static final String REACTION_QUEUE = "notification-reaction-queue";
 
-    public static final String EVENT_CREATED_ROUTING_KEY = "notification.event.created";
-    public static final String COMMENT_CREATED_ROUTING_KEY = "notification.comment.created";
-    public static final String REACTION_CREATED_ROUTING_KEY = "notification.reaction.created";
+    public static final String EVENT_ROUTING_KEY = "notification.event";
+    public static final String COMMENT_ROUTING_KEY = "notification.comment";
+    public static final String REACTION_ROUTING_KEY = "notification.reaction";
 
     @Bean
     public TopicExchange exchange() {
@@ -28,33 +28,33 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue commentCreatedQueue() {
-        return new Queue(COMMENT_CREATED_QUEUE, true);
+    public Queue commentQueue() {
+        return new Queue(COMMENT_QUEUE, true);
     }
 
     @Bean
-    public Queue reactionCreatedQueue() {
-        return new Queue(REACTION_CREATED_QUEUE, true);
+    public Queue reactionQueue() {
+        return new Queue(REACTION_QUEUE, true);
     }
 
     @Bean
-    public Queue eventCreatedQueue() {
-        return new Queue(EVENT_CREATED_QUEUE, true);
+    public Queue eventQueue() {
+        return new Queue(EVENT_QUEUE, true);
     }
 
     @Bean
-    public Binding commentCreatedBinding(TopicExchange exchange, Queue commentCreatedQueue) {
-        return BindingBuilder.bind(commentCreatedQueue).to(exchange).with(COMMENT_CREATED_ROUTING_KEY);
+    public Binding commentBinding(TopicExchange exchange, Queue commentQueue) {
+        return BindingBuilder.bind(commentQueue).to(exchange).with(COMMENT_ROUTING_KEY);
     }
 
     @Bean
-    public Binding reactionCreatedBinding(TopicExchange exchange, Queue reactionCreatedQueue) {
-        return BindingBuilder.bind(reactionCreatedQueue).to(exchange).with(REACTION_CREATED_ROUTING_KEY);
+    public Binding reactionBinding(TopicExchange exchange, Queue reactionQueue) {
+        return BindingBuilder.bind(reactionQueue).to(exchange).with(REACTION_ROUTING_KEY);
     }
 
     @Bean
-    public Binding eventCreatedBinding(TopicExchange exchange, Queue eventCreatedQueue) {
-        return BindingBuilder.bind(eventCreatedQueue).to(exchange).with(EVENT_CREATED_ROUTING_KEY);
+    public Binding eventBinding(TopicExchange exchange, Queue eventQueue) {
+        return BindingBuilder.bind(eventQueue).to(exchange).with(EVENT_ROUTING_KEY);
     }
 
     @Bean

@@ -128,12 +128,15 @@ public class EventService {
         return eventMapper.toDto(event);
     }
 
-    // TODO: publish event an event has been approved
     @PreAuthorize("hasRole('ADMIN')")
     public EventResponse approveEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
+        if (event.getStatus().equals(EventStatus.APPROVED)) {
+            throw new IllegalArgumentException("Event has already been approved");
+        }
         event.setStatus(EventStatus.APPROVED);
         event.setApprovedBy(userId);
+        eventPublisher.publishEventApproved(eventMapper.toApprovedMessage(event));
         return eventMapper.toDto(eventRepository.save(event));
     }
 }

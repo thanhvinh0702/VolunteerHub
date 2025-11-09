@@ -15,7 +15,7 @@ public class CommentPublisher {
     @Value("${rabbitmq.exchange.notification}")
     private String exchange;
 
-    @Value("${rabbitmq.routingKey.commentCreated}")
+    @Value("${rabbitmq.routingKey.comment}")
     private String routingKey;
 
     public void publishCommentCreatedEvent(CommentCreatedMessage commentCreatedMessage) {

@@ -1,5 +1,6 @@
 package com.volunteerhub.eventservice.mapper;
 
+import com.volunteerhub.common.dto.message.EventApprovedMessage;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
@@ -42,6 +43,17 @@ public class EventMapper {
                 .status(event.getStatus())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
+                .build();
+    }
+
+    public EventApprovedMessage toApprovedMessage(Event event) {
+        return EventApprovedMessage.builder()
+                .eventId(event.getId())
+                .eventName(event.getName())
+                .category(categoryMapper.toDto(event.getCategory()))
+                .ownerId(event.getOwnerId())
+                .approvedBy(event.getApprovedBy())
+                .status(event.getStatus())
                 .build();
     }
 }
