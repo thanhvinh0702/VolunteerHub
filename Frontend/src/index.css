@@ -44,7 +44,7 @@
 
 
 body {
-    @apply bg-[#fff] text-black font-jost
+    @apply bg-green-950 text-black font-jost
 
 }
 
