@@ -9,6 +9,7 @@ import Unauthorized from "../pages/DemoPages/Unauthorized";
 import { ROLES } from "../constant/role";
 import MainLayout from "../Layout/MainLayout";
 import Home from "../pages/Home/Home";
+import Opportunities from "../pages/Opportunities/Opportunities";
 function AppRouter() {
   return (
     <Routes>
@@ -24,10 +25,9 @@ function AppRouter() {
             <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
           }
         >
-          <Route path="/home" element={<Home />}>
-            <Route path="opportunities" />
-            <Route path="opportunities/:id" />
-          </Route>
+          <Route path="/home" element={<Home />} />
+          <Route path="/opportunities" element={<Opportunities />} />
+          <Route path="/opportunities/:id" element={<Opportunities />} />
         </Route>
         <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
           <Route path="/admin" element={<AdminPage />} />

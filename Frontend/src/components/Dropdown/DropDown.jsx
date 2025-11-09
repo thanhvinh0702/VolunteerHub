@@ -13,7 +13,7 @@ function DropDown({ children, trigger }) {
       <div>{trigger}</div>
       {show && (
         <ul
-          className={`min-w-[145px] absolute left-0 mt-2 bg-white rounded-md shadow-md overflow-hidden`}
+          className={`w-full absolute left-0 mt-2 bg-white rounded-md shadow-md overflow-hidden`}
         >
           {children}
         </ul>
