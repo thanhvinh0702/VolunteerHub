@@ -33,6 +33,14 @@ spring:
       password: ${REDIS_PASSWORD}
       timeout: 60000
 
+rabbitmq:
+  exchange:
+    notification: ${NOTIFICATION_EXCHANGE}
+  routingKey:
+    commentCreated: ${COMMENT_CREATED_ROUTING_KEY}
+    reactionCreated: ${REACTION_CREATED_ROUTING_KEY}
+    postCreated: ${POST_CREATED_ROUTING_KEY}
+
 eureka:
   client:
     serviceUrl:

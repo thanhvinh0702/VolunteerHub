@@ -1,17 +1,18 @@
 package com.volunteerhub.notificationservice.dto;
 
 import com.volunteerhub.notificationservice.model.NotificationType;
+import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
-@ToString
-public class NotificationEventRequest {
-
+@Builder
+public class NotificationRequest {
     private NotificationType type;
     private String actorId;
-    private String contextId;
+    private Long contextId;
+    private List<String> userIds;
     private Map<String, Object> payload;
 }

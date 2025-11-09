@@ -13,8 +13,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     public static final String EXCHANGE = "notification-exchange";
-    public static final String ROUTING_KEY = "notification.created";
-    public static final String NOTIFICATION_CREATED_QUEUE = "notification-created-queue";
+    public static final String COMMENT_CREATED_QUEUE = "notification-comment-created-queue";
+    public static final String REACTION_CREATED_QUEUE = "notification-reaction-created-queue";
+    public static final String COMMENT_CREATED_ROUTING_KEY = "notification.comment.created";
+    public static final String REACTION_CREATED_ROUTING_KEY = "notification.reaction.created";
+
 
     @Bean
     public TopicExchange exchange() {
@@ -22,13 +25,23 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue notificationCreatedQueue() {
-        return new Queue(NOTIFICATION_CREATED_QUEUE, true);
+    public Queue commentCreatedQueue() {
+        return new Queue(COMMENT_CREATED_QUEUE, true);
     }
 
     @Bean
-    public Binding binding(TopicExchange exchange, Queue notificationCreatedQueue) {
-        return BindingBuilder.bind(notificationCreatedQueue).to(exchange).with(ROUTING_KEY);
+    public Queue reactionCreatedQueue() {
+        return new Queue(REACTION_CREATED_QUEUE, true);
+    }
+
+    @Bean
+    public Binding commentCreatedBinding(TopicExchange exchange, Queue commentCreatedQueue) {
+        return BindingBuilder.bind(commentCreatedQueue).to(exchange).with(COMMENT_CREATED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding reactionCreatedBinding(TopicExchange exchange, Queue reactionCreatedQueue) {
+        return BindingBuilder.bind(reactionCreatedQueue).to(exchange).with(REACTION_CREATED_ROUTING_KEY);
     }
 
     @Bean

@@ -5,15 +5,6 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
-  security:
-    oauth2:
-      google:
-        issuer: ${GOOGLE_AS_URI}
-        jwk-uri: ${GOOGLE_AS_JWK_URI}
-      volunteerhub:
-        issuer: ${VOLUNTEER_HUB_AS_URI}
-        jwk-uri: ${VOLUNTEER_HUB_AS_JWK_URI}
-
   datasource:
     url: jdbc:postgresql://${HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}

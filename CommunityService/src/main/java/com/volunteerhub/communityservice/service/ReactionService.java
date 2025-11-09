@@ -1,11 +1,10 @@
 package com.volunteerhub.communityservice.service;
 
-import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
-import com.volunteerhub.communityservice.dto.ReactionRequest;
-import com.volunteerhub.communityservice.dto.ReactionResponse;
+import com.volunteerhub.communityservice.dto.*;
 import com.volunteerhub.communityservice.mapper.ReactionMapper;
 import com.volunteerhub.communityservice.model.Post;
 import com.volunteerhub.communityservice.model.Reaction;
+import com.volunteerhub.communityservice.publisher.ReactionCreatedPublisher;
 import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,7 @@ public class ReactionService {
     private final PostService postService;
     private final ReactionMapper reactionMapper;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
+    private final ReactionCreatedPublisher reactionCreatedPublisher;
 
     public Reaction findEntityById(Long id) {
         return reactionRepository.findById(id).orElseThrow(() ->
@@ -42,7 +42,6 @@ public class ReactionService {
                 .toList();
     }
 
-    // TODO: publish event a reaction have been created
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")
     public ReactionResponse create(String userId, Long postId, ReactionRequest reactionRequest) {
         Post post = postService.findEntityById(postId);
@@ -58,6 +57,15 @@ public class ReactionService {
         if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(reactionCountKey))) {
             stringIntegerRedisTemplate.opsForValue().increment(reactionCountKey);
         }
+
+        // Publish event
+        ReactionMessage reactionMessage = ReactionMessage.builder()
+                .ownerId(userId)
+                .postId(postId)
+                .type(reactionRequest.getType())
+                .userId(post.getOwnerId())
+                .build();
+        reactionCreatedPublisher.publish(reactionMessage);
         return reactionMapper.toDto(createdReaction);
     }
 

@@ -1,6 +1,5 @@
-package com.volunteerhub.notificationservice.model.command;
+package com.volunteerhub.notificationservice.model;
 
-import com.volunteerhub.notificationservice.model.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NotificationEvent {
+@Table(
+        indexes = {
+                @Index(name = "idx_notification_user_id", columnList = "user_id")
+        }
+)
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +36,18 @@ public class NotificationEvent {
     private String actorId;
 
     @Column(name = "context_id")
-    private String contextId;
+    private Long contextId;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> payload;
+
+    @Builder.Default
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
