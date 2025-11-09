@@ -1,0 +1,44 @@
+package com.volunteerhub.eventservice.dto.response;
+
+import com.volunteerhub.common.dto.AddressResponse;
+import com.volunteerhub.common.dto.CategoryResponse;
+import com.volunteerhub.common.enums.EventStatus;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class EventResponse {
+
+    private Long id;
+
+    private String name;
+
+    private String description;
+
+    private String imageUrl;
+
+    private CategoryResponse category;
+
+    private AddressResponse address;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
+    private int capacity;
+
+    private String ownerId;
+
+    private EventStatus status;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private String approvedBy;
+
+    private String optional;
+}

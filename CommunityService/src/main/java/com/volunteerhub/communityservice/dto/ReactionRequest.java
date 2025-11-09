@@ -1,6 +1,6 @@
 package com.volunteerhub.communityservice.dto;
 
-import com.volunteerhub.communityservice.model.ReactionType;
+import com.volunteerhub.common.enums.ReactionType;
 import com.volunteerhub.communityservice.validation.OnCreate;
 import com.volunteerhub.communityservice.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;

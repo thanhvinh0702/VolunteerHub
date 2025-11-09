@@ -33,6 +33,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/users/users/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .requestMatchers("/api/v1/users/system/**").hasRole("SYSTEM")
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
                         .anyRequest().authenticated())
                 .build();
     }
