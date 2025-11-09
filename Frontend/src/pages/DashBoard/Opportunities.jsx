@@ -23,7 +23,7 @@ export default function Opportunities() {
 
   const CardComponent = ComponentMap[activeTab];
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-6 rounded-xl shadow-sm gap-4 flex flex-col">
       <div>
         <h4 className="text-2xl font-semibold mb-1">Opportunities</h4>
         <p className="text-gray-500">Nội dung cơ hội sẽ hiển thị ở đây.</p>

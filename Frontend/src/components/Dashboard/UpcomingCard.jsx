@@ -7,6 +7,7 @@ function UpcomingCard({ title, organization, date, status, location }) {
     status.toLowerCase() === "confirm"
       ? "bg-black text-white"
       : "bg-white text-black";
+  /* chưa có hàm thêm vào button nhé nếu viết thì thêm để checkout */
   return (
     <Card>
       <div className="flex flex-row justify-between px-3 py-1 max-sm:px-0 max-sm:py-0">
@@ -18,10 +19,17 @@ function UpcomingCard({ title, organization, date, status, location }) {
             <div className="text-gray-600">{location}</div>
           </div>
         </div>
-        <div
-          className={`flex self-center px-2 py-1 rounded-full border-1 border-gray-600/20 ${bgColor} max-sm:py-0 max-sm:min-w-20 items-center`}
-        >
-          <div>{status}</div>
+        <div className="flex self-center flex-col gap-3 items-center">
+          <div
+            className={` px-2 py-1 rounded-full border-1 border-gray-600/20 ${bgColor} max-sm:py-0 max-sm:min-w-20 items-center`}
+          >
+            <div>{status}</div>
+          </div>
+          <div>
+            <button className="bg-black text-white px-2 py-1 rounded-md">
+              Checkout
+            </button>
+          </div>
         </div>
       </div>
     </Card>

@@ -35,6 +35,7 @@ export async function mockApiFetch(path) {
                 statusVariant: "light",
                 notes: "Waiting for slot confirmation.",
             },
+
         ];
     }
 
