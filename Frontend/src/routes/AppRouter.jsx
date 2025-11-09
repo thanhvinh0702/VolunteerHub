@@ -8,8 +8,12 @@ import LoginPage from "../pages/DemoPages/LoginPage";
 import Unauthorized from "../pages/DemoPages/Unauthorized";
 import { ROLES } from "../constant/role";
 import MainLayout from "../Layout/MainLayout";
-import Home from "../pages/Home/Home";
-import Opportunities from "../pages/Opportunities/Opportunities";
+import DashboardShell from "../pages/DashBoard/DashboardShell";
+import Overview from "../pages/DashBoard/Overview";
+import OpportunitiesTab from "../pages/DashBoard/Opportunities";
+import Activity from "../pages/DashBoard/Activity";
+import Badges from "../pages/DashBoard/Badges";
+import Notifications from "../pages/DashBoard/Notifications";
 function AppRouter() {
   return (
     <Routes>
@@ -19,15 +23,20 @@ function AppRouter() {
 
       {/* Protected routes */}
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route
           element={
             <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
           }
         >
-          <Route path="/home" element={<Home />} />
-          <Route path="/opportunities" element={<Opportunities />} />
-          <Route path="/opportunities/:id" element={<Opportunities />} />
+          {/* Dashboard with persistent header and nested content */}
+          <Route path="/dashboard" element={<DashboardShell />}>
+            <Route index element={<Overview />} />
+            <Route path="opportunities" element={<OpportunitiesTab />} />
+            <Route path="activity" element={<Activity />} />
+            <Route path="badges" element={<Badges />} />
+            <Route path="notifications" element={<Notifications />} />
+          </Route>
         </Route>
         <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
           <Route path="/admin" element={<AdminPage />} />

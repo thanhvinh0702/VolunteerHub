@@ -25,7 +25,7 @@ function RecentActivityCard({
   return (
     <div className="text-gray-600 max-md:text-sm">
       <Card>
-        <div className="flex flex-col justify-between relative px-4 py-2 gap-1 max-sm:gap-2">
+        <div className="flex flex-col justify-between relative px-4 py-0 gap-1 max-sm:gap-2">
           <div className="text-black font-semibold">{title}</div>
           <div className="flex flex-row gap-5">
             <p className="inline-flex gap-1 mb-1">

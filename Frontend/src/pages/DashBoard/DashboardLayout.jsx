@@ -3,7 +3,7 @@ import Tabs from "../../components/Tabs.jsx/Tabs";
 import { useAuth } from "../../hook/useAuth";
 
 const headerItems = [
-  { key: "overview", label: "Overview", to: "/home" },
+  { key: "overview", label: "Overview", to: "/dashboard" },
   { key: "opps", label: "Opportunities", to: "/dashboard/opportunities" },
   { key: "activity", label: "Activity Log", to: "/dashboard/activity" },
   { key: "badges", label: "Badges", to: "/dashboard/badges" },
