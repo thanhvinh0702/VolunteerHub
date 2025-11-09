@@ -13,7 +13,7 @@
 	<artifactId>volunteerhub-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>Volunteer Hub Common</name>
+	<name>Common</name>
 	<description>Shared DTOs and Enums for Volunteer Hub microservices</description>
 
 	<properties>

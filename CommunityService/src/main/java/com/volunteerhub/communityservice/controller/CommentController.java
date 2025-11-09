@@ -6,6 +6,8 @@ import com.volunteerhub.communityservice.service.CommentService;
 import com.volunteerhub.communityservice.validation.OnCreate;
 import com.volunteerhub.communityservice.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -21,30 +23,30 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public List<CommentResponse> findAll(@PathVariable Long postId,
-                                         @RequestParam(required = false) Integer pageNum,
-                                         @RequestParam(required = false) Integer pageSize) {
-        return commentService.findByPostId(postId, pageNum, pageSize);
+    public ResponseEntity<List<CommentResponse>> findAll(@PathVariable Long postId,
+                                                        @RequestParam(required = false) Integer pageNum,
+                                                        @RequestParam(required = false) Integer pageSize) {
+        return ResponseEntity.ok(commentService.findByPostId(postId, pageNum, pageSize));
     }
 
     @PostMapping
-    public CommentResponse create(@PathVariable Long postId,
+    public ResponseEntity<CommentResponse> create(@PathVariable Long postId,
                                   @RequestBody @Validated(OnCreate.class) CommentRequest commentRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return commentService.create(authentication.getName(), postId, commentRequest);
+        return new ResponseEntity<>(commentService.create(authentication.getName(), postId, commentRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{commentId}")
-    public CommentResponse update(@PathVariable Long commentId,
+    public ResponseEntity<CommentResponse> update(@PathVariable Long commentId,
                                   @RequestBody @Validated(OnUpdate.class) CommentRequest commentRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return commentService.update(authentication.getName(), commentId, commentRequest);
+        return ResponseEntity.ok(commentService.update(authentication.getName(), commentId, commentRequest));
     }
 
     @DeleteMapping("/{commentId}")
-    public CommentResponse delete(@PathVariable Long commentId) {
+    public ResponseEntity<CommentResponse> delete(@PathVariable Long commentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return commentService.delete(authentication.getName(), commentId);
+        return ResponseEntity.ok(commentService.delete(authentication.getName(), commentId));
     }
 
 }

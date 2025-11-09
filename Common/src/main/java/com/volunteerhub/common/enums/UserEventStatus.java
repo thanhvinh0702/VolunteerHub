@@ -1,7 +1,8 @@
 package com.volunteerhub.common.enums;
 
-public enum EventStatus {
+public enum UserEventStatus {
     PENDING,
     APPROVED,
-    REJECTED
+    REJECTED,
+    COMPLETED
 }
