@@ -5,15 +5,20 @@ import com.volunteerhub.common.dto.message.EventCreatedMessage;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
+import com.volunteerhub.notificationservice.dto.response.NotificationResponse;
+import com.volunteerhub.notificationservice.mapper.NotificationMapper;
 import com.volunteerhub.notificationservice.model.Notification;
 import com.volunteerhub.notificationservice.model.NotificationType;
 import com.volunteerhub.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,12 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserServiceClient userServiceClient;
+    private final NotificationMapper notificationMapper;
+
+    public Notification findEntityById(Long id) {
+        return notificationRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("Notification with id " + id + " does not exist"));
+    }
 
     public void create(NotificationRequest notificationRequest) {
         List<Notification> notifications = notificationRequest.getUserIds()
@@ -34,6 +45,42 @@ public class NotificationService {
                         .build())
                 .toList();
         notificationRepository.saveAll(notifications);
+    }
+
+    public List<NotificationResponse> getAllNotification(String userId, Integer pageNum, Integer pageSize) {
+        int page = (pageNum == null) ? 0 : pageNum;
+        int size = (pageSize == null) ? 10 : pageSize;
+        if (page < 0) {
+            throw new IllegalArgumentException("Page number must be greater than or equal to 0");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than 0");
+        }
+        return notificationRepository.findByUserIdOrderByIdDesc(userId, PageRequest.of(page, size)).getContent()
+                .stream()
+                .map(notificationMapper::toResponseDTO)
+                .toList();
+    }
+
+    public NotificationResponse markAsRead(String userId, Long notificationId) {
+        Notification notification = findEntityById(notificationId);
+        if (!notification.getUserId().equals(userId)) {
+            throw new AccessDeniedException("Insufficient permission to modify this record.");
+        }
+        if (!Boolean.TRUE.equals(notification.getIsRead())) {
+            notification.setIsRead(true);
+            notificationRepository.save(notification);
+        }
+        return notificationMapper.toResponseDTO(notification);
+    }
+
+    public NotificationResponse delete(String userId, Long notificationId) {
+        Notification notification = findEntityById(notificationId);
+        if (!userId.equals(notification.getUserId())) {
+            throw new AccessDeniedException("Insufficient permission to modify this record.");
+        }
+        notificationRepository.delete(notification);
+        return notificationMapper.toResponseDTO(notification);
     }
 
     /**
