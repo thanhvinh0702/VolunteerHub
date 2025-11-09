@@ -7,6 +7,6 @@ public enum NotificationType {
     USER_EVENT_APPROVED,
     USER_EVENT_COMPLETED,
     POST_CREATED,
-    LIKE,
+    REACTION,
     COMMENT
 }

@@ -16,4 +16,13 @@ public class CategoryService {
         return categoryRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such category with id " + id));
     }
+
+    public Category findByNameOrCreate(String name) {
+        return categoryRepository.findByName(name)
+                .orElseGet(() -> {
+            Category newCategory = new Category();
+            newCategory.setName(name);
+            return categoryRepository.save(newCategory);
+        });
+    }
 }

@@ -1,5 +1,7 @@
 package com.volunteerhub.EventService.dto;
 
+import com.volunteerhub.EventService.model.Address;
+import com.volunteerhub.EventService.model.Category;
 import com.volunteerhub.EventService.model.Status;
 import lombok.Builder;
 import lombok.Data;
@@ -16,15 +18,19 @@ public class EventResponse {
 
     private String description;
 
-    private Long categoryId;
+    private String imageUrl;
 
-    private Long addressId;
+    private CategoryResponse category;
+
+    private AddressResponse address;
 
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
 
     private int capacity;
+
+    private String ownerId;
 
     private Status status;
 
@@ -33,4 +39,6 @@ public class EventResponse {
     private LocalDateTime updatedAt;
 
     private String approvedBy;
+
+    private String optional;
 }

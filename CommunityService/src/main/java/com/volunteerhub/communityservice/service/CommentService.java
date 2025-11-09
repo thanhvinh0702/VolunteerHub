@@ -1,11 +1,13 @@
 package com.volunteerhub.communityservice.service;
 
+import com.volunteerhub.communityservice.dto.CommentMessage;
 import com.volunteerhub.communityservice.dto.CommentRequest;
 import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
 import com.volunteerhub.communityservice.mapper.CommentMapper;
 import com.volunteerhub.communityservice.model.Comment;
 import com.volunteerhub.communityservice.model.Post;
+import com.volunteerhub.communityservice.publisher.CommentCreatedPublisher;
 import com.volunteerhub.communityservice.repository.CommentRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
     private final CommentMapper commentMapper;
+    private final CommentCreatedPublisher commentCreatedPublisher;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
 
     public Comment findEntityById(Long id) {
@@ -41,7 +44,6 @@ public class CommentService {
                 .toList();
     }
 
-    // TODO: publish event a comment has been created
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")
     public CommentResponse create(String userId, Long postId, CommentRequest commentRequest) {
         Post post = postService.findEntityById(postId);
@@ -63,6 +65,16 @@ public class CommentService {
         if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(commentCountKey))) {
             stringIntegerRedisTemplate.opsForValue().increment(commentCountKey);
         }
+        // Publish event
+        CommentMessage commentMessage = CommentMessage.builder()
+                .commentId(comment.getId())
+                .postId(postId)
+                .parentId(commentRequest.getParentId())
+                .ownerId(userId)
+                .content(commentRequest.getContent())
+                .userId(post.getOwnerId())
+                .build();
+        commentCreatedPublisher.publish(commentMessage);
         return commentMapper.toDto(createdComment);
     }
 
