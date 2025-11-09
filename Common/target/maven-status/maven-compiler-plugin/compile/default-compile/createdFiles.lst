@@ -1,0 +1,14 @@
+com/volunteerhub/common/dto/AddressResponse.class
+com/volunteerhub/common/dto/message/EventCreatedMessage$EventCreatedMessageBuilder.class
+com/volunteerhub/common/dto/ErrorDetails.class
+com/volunteerhub/common/dto/message/EventCreatedMessage.class
+com/volunteerhub/common/dto/message/ReactionCreatedMessage.class
+com/volunteerhub/common/enums/EventStatus.class
+com/volunteerhub/common/dto/message/CommentCreatedMessage.class
+com/volunteerhub/common/dto/AddressResponse$AddressResponseBuilder.class
+com/volunteerhub/common/dto/CategoryResponse$CategoryResponseBuilder.class
+com/volunteerhub/common/enums/UserRole.class
+com/volunteerhub/common/dto/message/CommentCreatedMessage$CommentCreatedMessageBuilder.class
+com/volunteerhub/common/dto/message/ReactionCreatedMessage$ReactionCreatedMessageBuilder.class
+com/volunteerhub/common/enums/ReactionType.class
+com/volunteerhub/common/dto/CategoryResponse.class

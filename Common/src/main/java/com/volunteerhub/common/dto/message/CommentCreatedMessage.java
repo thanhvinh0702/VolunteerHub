@@ -1,13 +1,11 @@
-package com.volunteerhub.communityservice.dto;
+package com.volunteerhub.common.dto.message;
 
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @Builder
-public class CommentMessage {
+public class CommentCreatedMessage {
     private Long commentId;
     private Long postId;
     private Long parentId;

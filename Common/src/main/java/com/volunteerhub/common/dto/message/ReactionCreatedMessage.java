@@ -1,12 +1,12 @@
-package com.volunteerhub.communityservice.dto;
+package com.volunteerhub.common.dto.message;
 
-import com.volunteerhub.communityservice.model.ReactionType;
+import com.volunteerhub.common.enums.ReactionType;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ReactionMessage {
+public class ReactionCreatedMessage {
 
     private String ownerId;
     private Long postId;

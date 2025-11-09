@@ -1,4 +1,4 @@
-package com.volunteerhub.communityservice.model;
+package com.volunteerhub.common.enums;
 
 public enum ReactionType {
     LIKE,
