@@ -1,6 +1,7 @@
 package com.volunteerhub.eventservice.mapper;
 
 import com.volunteerhub.common.dto.message.EventApprovedMessage;
+import com.volunteerhub.common.dto.message.EventRejectedMessage;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
@@ -54,6 +55,18 @@ public class EventMapper {
                 .ownerId(event.getOwnerId())
                 .approvedBy(event.getApprovedBy())
                 .status(event.getStatus())
+                .build();
+    }
+
+    public EventRejectedMessage toRejectedMessage(Event event, String reason) {
+        return EventRejectedMessage.builder()
+                .eventId(event.getId())
+                .eventName(event.getName())
+                .category(categoryMapper.toDto(event.getCategory()))
+                .ownerId(event.getOwnerId())
+                .approvedBy(event.getApprovedBy())
+                .status(event.getStatus())
+                .reason(reason)
                 .build();
     }
 }

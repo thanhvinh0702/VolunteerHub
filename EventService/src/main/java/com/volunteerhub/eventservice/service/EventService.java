@@ -1,6 +1,7 @@
 package com.volunteerhub.eventservice.service;
 
 import com.volunteerhub.eventservice.dto.request.EventRequest;
+import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
@@ -81,7 +82,7 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
         savedEvent.setCategoryId(category.getId());
         savedEvent.setAddressId(address.getId());
-        eventPublisher.publishEventCreated(eventMapper.toCreatedMessage(savedEvent));
+        eventPublisher.publishEvent(eventMapper.toCreatedMessage(savedEvent));
         return eventMapper.toDto(savedEvent);
     }
 
@@ -136,12 +137,24 @@ public class EventService {
     @PreAuthorize("hasRole('ADMIN')")
     public EventResponse approveEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
-        if (event.getStatus().equals(EventStatus.APPROVED)) {
-            throw new IllegalArgumentException("Event has already been approved");
+        if (!event.getStatus().equals(EventStatus.PENDING)) {
+            throw new IllegalArgumentException("Unable to approve this event.");
         }
         event.setStatus(EventStatus.APPROVED);
         event.setApprovedBy(userId);
-        eventPublisher.publishEventApproved(eventMapper.toApprovedMessage(event));
+        eventPublisher.publishEvent(eventMapper.toApprovedMessage(event));
+        return eventMapper.toDto(eventRepository.save(event));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public EventResponse rejectEvent(String userId, Long eventId, RejectRequest request) {
+        Event event = findEntityById(eventId);
+        if (!event.getStatus().equals(EventStatus.PENDING)) {
+            throw new IllegalArgumentException("Unable to reject this event.");
+        }
+        event.setStatus(EventStatus.REJECTED);
+        event.setApprovedBy(userId);
+        eventPublisher.publishEvent(eventMapper.toRejectedMessage(event, request.getReason()));
         return eventMapper.toDto(eventRepository.save(event));
     }
 }

@@ -2,6 +2,7 @@ package com.volunteerhub.notificationservice.service;
 
 import com.volunteerhub.common.dto.message.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.EventCreatedMessage;
+import com.volunteerhub.common.dto.message.EventRejectedMessage;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
@@ -121,6 +122,26 @@ public class NotificationService {
                 .actorId(eventApprovedMessage.getApprovedBy())
                 .contextId(eventApprovedMessage.getEventId())
                 .userId(eventApprovedMessage.getOwnerId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    /**
+     * This method should handle the creation of notifications when an event is rejected.
+     * @param eventRejectedMessage: the message publish by event service when an event rejected.
+     */
+    public void handleEventRejectedNotification(EventRejectedMessage eventRejectedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("category", eventRejectedMessage.getCategory().getName());
+        payload.put("name", eventRejectedMessage.getEventName());
+        payload.put("approved_time", eventRejectedMessage.getApprovedTime());
+        payload.put("reason", eventRejectedMessage.getReason());
+        Notification notification = Notification.builder()
+                .type(NotificationType.EVENT_REJECTED)
+                .actorId(eventRejectedMessage.getApprovedBy())
+                .contextId(eventRejectedMessage.getEventId())
+                .userId(eventRejectedMessage.getOwnerId())
                 .payload(payload)
                 .build();
         notificationRepository.save(notification);

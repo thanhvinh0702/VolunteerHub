@@ -1,6 +1,7 @@
 package com.volunteerhub.eventservice.controller;
 
 import com.volunteerhub.eventservice.dto.request.EventRequest;
+import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.service.EventService;
 import com.volunteerhub.eventservice.validation.OnCreate;
@@ -53,6 +54,13 @@ public class EventController {
     public ResponseEntity<EventResponse> approveEvent(@PathVariable Long eventId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.approveEvent(auth.getName(), eventId));
+    }
+
+    @PutMapping("/{eventId}/reject")
+    public ResponseEntity<EventResponse> rejectEvent(@PathVariable Long eventId,
+                                                     @RequestBody RejectRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.rejectEvent(authentication.getName(), eventId, request));
     }
 
     @DeleteMapping("/{eventId}")
