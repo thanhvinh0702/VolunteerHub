@@ -32,8 +32,8 @@ export default function FilterHorizontal({
         </div>
 
         {/* Controls */}
-        <div className="flex justify-between gap-2">
-          <div className="flex items-center gap-5">
+        <div className="flex justify-between gap-2 max-sm:block flex-row">
+          <div className="flex items-center gap-4 flex-4/5">
             <DropdownSelect
               value={status}
               onChange={setStatus}
@@ -42,7 +42,7 @@ export default function FilterHorizontal({
                 { value: "open", label: "Open" },
                 { value: "closed", label: "Closed" },
               ]}
-              className="w-32"
+              className="flex-1 max-sm:block lg:max-w-32"
             />
 
             <DropdownSelect
@@ -54,24 +54,26 @@ export default function FilterHorizontal({
                 { value: "this_week", label: "This week" },
                 { value: "this_month", label: "This month" },
               ]}
-              className="w-36"
+              className="flex-1 max-sm:block lg:max-w-32"
             />
           </div>
 
-          <button
-            onClick={() => setOpenFilter(!openFilter)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-          >
-            Filter
-          </button>
+          <div className="max-md:justify-end flex">
+            <button
+              onClick={() => setOpenFilter(!openFilter)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg max-sm:mt-2"
+            >
+              Filter
+            </button>
+          </div>
         </div>
 
         {/* Categories */}
         {openFilter && (
           <div className="flex flex-row bg-gray-100 py-4 px-4 rounded-xl">
-            <div className="basis-1/2 flex-col">
+            <div className="basis-1/2 max-md:basis-3/4 flex-col">
               <p className="font-bold">Category</p>
-              <div className="max-md:basis-1/2 mt-3 md:flex flex-col overflow-y-auto scroll-smooth max-h-[200px] scrollbar-thin scrollbar-thumb-red-400/20 scrollbar-track-white">
+              <div className="mt-3 md:flex flex-col overflow-y-auto scroll-smooth max-h-[200px] scrollbar-thin scrollbar-thumb-red-400/20 scrollbar-track-white">
                 {categories.map((c) => {
                   const active = selectedCategories.includes(c);
                   return (
@@ -94,7 +96,7 @@ export default function FilterHorizontal({
                 })}
               </div>
             </div>
-            <div className="basis-1/2 pl-10">
+            <div className="basis-1/2 max-md:basis-1/4 pl-10 max-md:pl-0">
               <DropdownSelect
                 className="w-full"
                 value={filter}

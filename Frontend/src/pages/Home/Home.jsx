@@ -4,6 +4,7 @@ import DashboardLayout from "../DashBoard/DashboardLayout";
 
 import QuickActionsUser from "../../components/QuickActionButton/QuickActionsUser";
 import UpcomingEvents from "../../components/ModalActivity/UpcomingEvents";
+import RecentActivity from "../../components/ModalActivity/RecentActivity";
 
 export default function Home() {
   return (
@@ -11,7 +12,12 @@ export default function Home() {
       <DashboardLayout />
       <DashBoardOverview />
       <QuickActionsUser />
-      <UpcomingEvents />
+      <div className="w-full">
+        <div className="grid grid-cols-2 gap-10 max-lg:block">
+          <UpcomingEvents className="basis-1/2" />
+          <RecentActivity className="basis-1/2" />
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function NavBar() {
   };
   const { user } = useAuth();
   return (
-    <div className="flex flex-row items-center justify-between w-full">
+    <div className="flex flex-row items-center-safe justify-between w-full">
       <div className="flex items-center gap-0 w-8 relative flex-row">
         <img src={Logo} alt="logo" className="max-h-max" />
         <span className="font-semibold font-lobster text-2xl max-sm:text-xl">
@@ -24,6 +24,12 @@ export default function NavBar() {
       </div>
 
       <ul className="hidden md:flex items-center gap-8 text-lg  text-gray-700">
+        <li
+          onClick={() => navigate("/home")}
+          className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
+        >
+          DashBoard
+        </li>
         <li
           onClick={() => navigate("/opportunities")}
           className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
