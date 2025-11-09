@@ -47,11 +47,16 @@ public class EventService {
         if (size <= 0) {
             throw new IllegalArgumentException("Page size must be greater than 0");
         }
-        List<Event> events = eventRepository.findAll(PageRequest.of(page, size)).getContent();
         if (status != null) {
-            return events.stream().filter(e -> e.getStatus() == status).map(eventMapper::toDto).toList();
+            return eventRepository.findByStatus(status, PageRequest.of(page, size)).getContent()
+                    .stream()
+                    .map(eventMapper::toDto)
+                    .toList();
         }
-        return events.stream().map(eventMapper::toDto).toList();
+        return eventRepository.findAll(PageRequest.of(page, size)).getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
     }
 
     @PreAuthorize("hasRole('MANAGER')")

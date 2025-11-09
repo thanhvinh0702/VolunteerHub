@@ -41,17 +41,18 @@ public class EventController {
         return new ResponseEntity<>(eventService.createEvent(auth.getName(), eventRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{eventId}/approve")
-    public ResponseEntity<EventResponse> approveEvent(@PathVariable Long eventId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(eventService.approveEvent(auth.getName(), eventId));
-    }
-
     @PutMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long eventId,
                                                      @RequestBody @Validated(OnUpdate.class) EventRequest eventRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.updateEvent(auth.getName(), eventId, eventRequest));
+    }
+
+
+    @PutMapping("/{eventId}/approve")
+    public ResponseEntity<EventResponse> approveEvent(@PathVariable Long eventId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.approveEvent(auth.getName(), eventId));
     }
 
     @DeleteMapping("/{eventId}")
