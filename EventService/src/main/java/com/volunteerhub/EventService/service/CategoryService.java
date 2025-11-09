@@ -17,7 +17,7 @@ public class CategoryService {
                 new NoSuchElementException("No such category with id " + id));
     }
 
-    public Category findByName(String name) {
+    public Category findByNameOrCreate(String name) {
         return categoryRepository.findByName(name)
                 .orElseGet(() -> {
             Category newCategory = new Category();

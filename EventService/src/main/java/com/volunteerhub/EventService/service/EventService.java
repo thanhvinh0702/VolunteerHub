@@ -55,19 +55,20 @@ public class EventService {
     // TODO: publish event an event has been requested
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse createEvent(String userId, EventRequest eventRequest) {
-        Category category = categoryService.findByName(eventRequest.getCategoryName());
+        Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
 
         Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
         Event event = Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .imageUrl(eventRequest.getImageUrl())
-                .startTime(eventRequest.getStartTime())
-                .endTime(eventRequest.getEndTime())
                 .category(category)
                 .status(Status.PENDING)
-                .ownerId(userId)
+                .startTime(eventRequest.getStartTime())
+                .endTime(eventRequest.getEndTime())
                 .address(address)
+                .capacity(eventRequest.getCapacity())
+                .ownerId(userId)
                 .optional(eventRequest.getOptional())
                 .build();
 
@@ -91,12 +92,13 @@ public class EventService {
         if (eventRequest.getImageUrl() != null) event.setImageUrl(eventRequest.getImageUrl());
 
         if (eventRequest.getCategoryName() != null && !eventRequest.getCategoryName().isBlank()) {
-            Category category = categoryService.findByName(eventRequest.getCategoryName());
+            Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
             event.setCategory(category);
             event.setCategoryId(category.getId());
         }
 
-        if (eventRequest.getAddress().getCity() != null && eventRequest.getAddress().getProvince() != null && eventRequest.getAddress().getStreet() != null) {
+        if (eventRequest.getAddress() != null && eventRequest.getAddress().getCity() != null &&
+                eventRequest.getAddress().getProvince() != null && eventRequest.getAddress().getStreet() != null) {
             Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
             event.setAddress(address);
             event.setAddressId(address.getId());
