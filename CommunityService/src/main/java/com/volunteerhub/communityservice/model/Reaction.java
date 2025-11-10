@@ -21,6 +21,9 @@ import java.time.LocalDateTime;
         name = "reaction",
         indexes = {
                 @Index(name = "idx_reaction_post_id", columnList = "post_id")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_owner_post", columnNames = {"owner_id", "post_id"})
         })
 public class Reaction {
 

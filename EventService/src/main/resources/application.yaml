@@ -28,7 +28,9 @@ spring:
 rabbitmq:
   exchange:
     notification: ${NOTIFICATION_EXCHANGE}
+    event: ${EVENT_EXCHANGE}
   routingKey:
+    notification: ${NOTIFICATION_ROUTING_KEY}
     event: ${EVENT_ROUTING_KEY}
 
 eureka:
