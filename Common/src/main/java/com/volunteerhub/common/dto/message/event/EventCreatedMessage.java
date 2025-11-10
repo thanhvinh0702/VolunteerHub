@@ -1,4 +1,4 @@
-package com.volunteerhub.common.dto.message;
+package com.volunteerhub.common.dto.message.event;
 
 import com.volunteerhub.common.dto.CategoryResponse;
 import com.volunteerhub.common.enums.EventStatus;

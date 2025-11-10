@@ -17,10 +17,12 @@ public class RabbitMQConfig {
     public static final String EVENT_QUEUE = "notification-event-queue";
     public static final String COMMENT_QUEUE = "notification-comment-queue";
     public static final String REACTION_QUEUE = "notification-reaction-queue";
+    public static final String REGISTRATION_QUEUE = "notification-registration-queue";
 
     public static final String EVENT_ROUTING_KEY = "notification.event";
     public static final String COMMENT_ROUTING_KEY = "notification.comment";
     public static final String REACTION_ROUTING_KEY = "notification.reaction";
+    public static final String REGISTRATION_ROUTING_KEY = "notification.registration";
 
     @Bean
     public TopicExchange exchange() {
@@ -43,6 +45,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue registrationQueue() {
+        return new Queue(REGISTRATION_QUEUE, true);
+    }
+
+    @Bean
     public Binding commentBinding(TopicExchange exchange, Queue commentQueue) {
         return BindingBuilder.bind(commentQueue).to(exchange).with(COMMENT_ROUTING_KEY);
     }
@@ -55,6 +62,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding eventBinding(TopicExchange exchange, Queue eventQueue) {
         return BindingBuilder.bind(eventQueue).to(exchange).with(EVENT_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding registratioinBinding(TopicExchange exchange, Queue registrationQueue) {
+        return BindingBuilder.bind(registrationQueue).to(exchange).with(REGISTRATION_ROUTING_KEY);
     }
 
     @Bean

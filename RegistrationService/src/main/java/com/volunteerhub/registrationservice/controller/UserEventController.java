@@ -48,8 +48,14 @@ public class UserEventController {
         return new ResponseEntity<>(userEventService.registerUserEvent(authentication.getName(), eventId), HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/events/{eventId}")
+    public ResponseEntity<UserEventResponse> deleteUserEventRegister(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.deleteUserEventRegistrationRequest(authentication.getName(), eventId));
+    }
+
     @PutMapping("/events/{eventId}/participants/{participantId}")
-    public ResponseEntity<UserEventResponse> rejectUserEventRegistrationRequest(@PathVariable Long eventId,
+    public ResponseEntity<UserEventResponse> reviewUserEventRegistration(@PathVariable Long eventId,
                                                                                 @PathVariable String participantId,
                                                                                 @RequestBody UserEventRequest userEventRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,12 +65,5 @@ public class UserEventController {
                 eventId,
                 userEventRequest)
         );
-    }
-
-    @DeleteMapping("/events/{eventId}/participants/{participantId}")
-    public ResponseEntity<UserEventResponse> deleteUserEventRegister(@PathVariable Long eventId,
-                                                                     @PathVariable String participantId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(userEventService.deleteUserEventRegistrationRequest(authentication.getName(), participantId, eventId));
     }
 }

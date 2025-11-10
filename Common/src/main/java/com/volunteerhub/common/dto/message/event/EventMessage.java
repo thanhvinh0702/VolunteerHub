@@ -1,4 +1,4 @@
-package com.volunteerhub.common.dto.message;
+package com.volunteerhub.common.dto.message.event;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

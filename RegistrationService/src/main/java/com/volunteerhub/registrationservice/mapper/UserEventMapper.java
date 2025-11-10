@@ -1,5 +1,9 @@
 package com.volunteerhub.registrationservice.mapper;
 
+import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import org.springframework.stereotype.Component;
@@ -18,6 +22,49 @@ public class UserEventMapper {
                 .completedAt(userEvent.getCompletedAt())
                 .createdAt(userEvent.getCreatedAt())
                 .updatedAt(userEvent.getUpdatedAt())
+                .build();
+    }
+
+    public RegistrationCreatedMessage toCreatedMessage(UserEvent userEvent, String eventOwnerId) {
+        return RegistrationCreatedMessage.builder()
+                .registrationId(userEvent.getId())
+                .userId(userEvent.getUserId())
+                .eventId(userEvent.getEventId())
+                .eventOwnerId(eventOwnerId)
+                .status(userEvent.getStatus())
+                .createdAt(userEvent.getCreatedAt())
+                .build();
+    }
+
+    public RegistrationApprovedMessage toApprovedMessage(UserEvent userEvent) {
+        return RegistrationApprovedMessage.builder()
+                .registrationId(userEvent.getId())
+                .userId(userEvent.getUserId())
+                .eventId(userEvent.getEventId())
+                .status(userEvent.getStatus())
+                .reviewedAt(userEvent.getReviewedAt())
+                .build();
+    }
+
+    public RegistrationRejectedMessage toRejectedMessage(UserEvent userEvent) {
+        return RegistrationRejectedMessage.builder()
+                .registrationId(userEvent.getId())
+                .userId(userEvent.getUserId())
+                .eventId(userEvent.getEventId())
+                .status(userEvent.getStatus())
+                .note(userEvent.getNote())
+                .reviewedAt(userEvent.getReviewedAt())
+                .build();
+    }
+
+    public RegistrationCompletedMessage toCompletedMessage(UserEvent userEvent) {
+        return RegistrationCompletedMessage.builder()
+                .registrationId(userEvent.getId())
+                .eventId(userEvent.getEventId())
+                .userId(userEvent.getUserId())
+                .status(userEvent.getStatus())
+                .note(userEvent.getNote())
+                .completedAt(userEvent.getCompletedAt())
                 .build();
     }
 }

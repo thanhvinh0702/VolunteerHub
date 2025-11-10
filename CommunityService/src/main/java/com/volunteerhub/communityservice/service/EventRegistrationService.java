@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EventRegistrationService {
 
-
     // TODO: call registration service api to check
     public boolean isParticipant(String userId, Long eventId) {
         return true;

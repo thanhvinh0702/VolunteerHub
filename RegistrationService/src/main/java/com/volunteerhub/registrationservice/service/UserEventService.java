@@ -8,6 +8,7 @@ import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;
 import com.volunteerhub.registrationservice.model.EventSnapshot;
 import com.volunteerhub.registrationservice.model.UserEvent;
+import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ public class UserEventService {
     private final UserEventRepository userEventRepository;
     private final EventSnapshotService eventSnapshotService;
     private final UserEventMapper userEventMapper;
+    private final RegistrationPublisher registrationPublisher;
 
     public UserEvent findEntityByUserIdAndEventId(String userId, Long eventId) {
         return userEventRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
@@ -77,16 +79,17 @@ public class UserEventService {
                 .toList();
     }
 
-    // TODO: publish event to notify owner of event
     public UserEventResponse registerUserEvent(String userId, Long eventId) {
+        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
         UserEvent userEvent = UserEvent.builder()
                 .userId(userId)
                 .eventId(eventId)
                 .build();
-        return userEventMapper.toResponseDto(userEventRepository.save(userEvent));
+        UserEvent savedUserEvent = userEventRepository.save(userEvent);
+        registrationPublisher.publishEvent(userEventMapper.toCreatedMessage(userEvent, eventSnapshot.getOwnerId()));
+        return userEventMapper.toResponseDto(savedUserEvent);
     }
 
-    // TODO: publish event to notify user
     @PreAuthorize("hasRole('MANAGER')")
     public UserEventResponse reviewUserEventRegistrationRequest(String userId, String participantId, Long eventId, UserEventRequest request) {
         UserEvent userEvent = findEntityByUserIdAndEventId(participantId, eventId);
@@ -94,15 +97,25 @@ public class UserEventService {
         if (!eventSnapshot.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to review user's request to event with id " + eventId);
         }
-
+        boolean validTransition = (userEvent.getStatus() == UserEventStatus.PENDING
+                        && (request.getStatus() == UserEventStatus.APPROVED || request.getStatus() == UserEventStatus.REJECTED))
+                        || (userEvent.getStatus() == UserEventStatus.APPROVED && request.getStatus() == UserEventStatus.COMPLETED);
+        if (!validTransition) {
+            throw new IllegalArgumentException("Invalid status transition");
+        }
         switch (request.getStatus()) {
             case APPROVED -> approveUserEvent(userEvent, eventSnapshot);
             case REJECTED -> rejectUserEvent(userEvent, request.getNote());
             case COMPLETED -> completeUserEvent(userEvent, request.getNote());
             default -> throw new IllegalArgumentException("Unsupported status: " + request.getStatus());
         }
-
-        return userEventMapper.toResponseDto(userEventRepository.save(userEvent));
+        UserEvent updatedUserEvent = userEventRepository.save(userEvent);
+        switch (request.getStatus()) {
+            case APPROVED -> registrationPublisher.publishEvent(userEventMapper.toApprovedMessage(updatedUserEvent));
+            case REJECTED -> registrationPublisher.publishEvent(userEventMapper.toRejectedMessage(updatedUserEvent));
+            case COMPLETED -> registrationPublisher.publishEvent(userEventMapper.toCompletedMessage(updatedUserEvent));
+        }
+        return userEventMapper.toResponseDto(updatedUserEvent);
     }
 
     private void approveUserEvent(UserEvent userEvent, EventSnapshot snapshot) {
@@ -125,14 +138,8 @@ public class UserEventService {
         userEvent.setCompletedAt(LocalDateTime.now());
     }
 
-    // TODO: publish event to notify user
-    @PreAuthorize("hasRole('MANAGER')")
-    public UserEventResponse deleteUserEventRegistrationRequest(String userId, String participantId, Long eventId) {
-        UserEvent userEvent = findEntityByUserIdAndEventId(participantId, eventId);
-        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
-        if (!eventSnapshot.getOwnerId().equals(userId)) {
-            throw new AccessDeniedException("Insufficient permission to delete user's request to event with id " + eventId);
-        }
+    public UserEventResponse deleteUserEventRegistrationRequest(String userId, Long eventId) {
+        UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
         userEventRepository.delete(userEvent);
         return userEventMapper.toResponseDto(userEvent);
     }
