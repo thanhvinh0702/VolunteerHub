@@ -5,6 +5,7 @@ import com.volunteerhub.communityservice.dto.PostRequest;
 import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.mapper.PostMapper;
 import com.volunteerhub.communityservice.model.Post;
+import com.volunteerhub.communityservice.publisher.PostPublisher;
 import com.volunteerhub.communityservice.repository.CommentRepository;
 import com.volunteerhub.communityservice.repository.PostRepository;
 import com.volunteerhub.communityservice.repository.ReactionRepository;
@@ -31,6 +32,7 @@ public class PostService {
     private final EventRegistrationService eventRegistrationService;
     private final PostMapper postMapper;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
+    private final PostPublisher postPublisher;
 
     public Integer getCachedCommentCount(Long postId) {
         Integer cachedCommentCount = stringIntegerRedisTemplate.opsForValue().get("comment_count:" + postId);
@@ -54,7 +56,7 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Post with id " + id + " does not exist"));
     }
 
-    @PostAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(authentication.name, returnObject.eventId)")
+    @PostAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(returnObject.eventId)")
     public PostResponse findById(Long id) {
         return postMapper.toDto(
                 postRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Post with id " + id + " does not exist")),
@@ -63,7 +65,7 @@ public class PostService {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(authentication.name, #eventId)")
+    @PreAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(#eventId)")
     public List<PostResponse> findByEventId(Long eventId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
         return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
@@ -77,8 +79,7 @@ public class PostService {
                 .toList();
     }
 
-    // TODO: publish event a post have been created
-    @PreAuthorize("@eventRegistrationService.isParticipant(authentication.name, #eventId)")
+    @PreAuthorize("@eventRegistrationService.isParticipant(#eventId)")
     public PostResponse create(String ownerId, Long eventId, PostRequest postRequest) {
         Post post = Post.builder()
                 .eventId(eventId)
@@ -86,7 +87,9 @@ public class PostService {
                 .imageUrls(postRequest.getImageUrls())
                 .ownerId(ownerId)
                 .build();
-        return postMapper.toDto(postRepository.save(post), 0, 0);
+        Post savedPost = postRepository.save(post);
+        postPublisher.publishPostCreatedEvent(postMapper.toPostCreatedMessage(savedPost));
+        return postMapper.toDto(savedPost, 0, 0);
     }
 
     public PostResponse update(String userId, Long postId, PostRequest postRequest) {
@@ -114,6 +117,6 @@ public class PostService {
 
     public boolean canAccessPost(String userId, Long postId) {
         Post post = findEntityById(postId);
-        return eventRegistrationService.isParticipant(userId, post.getEventId());
+        return eventRegistrationService.isParticipant(post.getEventId());
     }
 }

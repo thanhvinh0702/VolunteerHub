@@ -28,6 +28,12 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByUserId(authentication.getName(), status, pageNum, pageSize));
     }
 
+    @GetMapping("/events/{eventId}/isParticipant")
+    public Boolean checkIsParticipant(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userEventService.isParticipant(authentication.getName(), eventId);
+    }
+
     @GetMapping("/events/{eventId}")
     public ResponseEntity<List<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
                                                                     @RequestParam(required = false) UserEventStatus status,

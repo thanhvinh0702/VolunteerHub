@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.mapper;
 
+import com.volunteerhub.common.dto.message.post.PostCreatedMessage;
 import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.model.Post;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,16 @@ public class PostMapper {
                 .commentCount(commentCount)
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
+                .build();
+    }
+
+    public PostCreatedMessage toPostCreatedMessage(Post post) {
+        return PostCreatedMessage.builder()
+                .postId(post.getId())
+                .eventId(post.getEventId())
+                .content(post.getContent())
+                .ownerId(post.getOwnerId())
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 }

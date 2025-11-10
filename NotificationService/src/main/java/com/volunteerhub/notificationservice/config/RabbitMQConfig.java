@@ -15,11 +15,13 @@ public class RabbitMQConfig {
     public static final String EXCHANGE = "notification-exchange";
 
     public static final String EVENT_QUEUE = "notification-event-queue";
+    public static final String POST_QUEUE = "notification-post-queue";
     public static final String COMMENT_QUEUE = "notification-comment-queue";
     public static final String REACTION_QUEUE = "notification-reaction-queue";
     public static final String REGISTRATION_QUEUE = "notification-registration-queue";
 
     public static final String EVENT_ROUTING_KEY = "notification.event";
+    public static final String POST_ROUTING_KEY = "notification.post";
     public static final String COMMENT_ROUTING_KEY = "notification.comment";
     public static final String REACTION_ROUTING_KEY = "notification.reaction";
     public static final String REGISTRATION_ROUTING_KEY = "notification.registration";
@@ -27,6 +29,11 @@ public class RabbitMQConfig {
     @Bean
     public TopicExchange exchange() {
         return new TopicExchange(EXCHANGE);
+    }
+
+    @Bean
+    public Queue postQueue() {
+        return new Queue(POST_QUEUE, true);
     }
 
     @Bean
@@ -47,6 +54,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue registrationQueue() {
         return new Queue(REGISTRATION_QUEUE, true);
+    }
+
+    @Bean
+    public Binding postBinding(TopicExchange exchange, Queue postQueue) {
+        return BindingBuilder.bind(postQueue).to(exchange).with(POST_ROUTING_KEY);
     }
 
     @Bean

@@ -79,6 +79,20 @@ public class UserEventService {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('SYSTEM')")
+    public List<String> findUserIdsByEventId(Long eventId) {
+        return userEventRepository.findAllUserIdsByEventId(eventId);
+    }
+
+    public Boolean isParticipant(String userId, Long eventId) {
+        try {
+            UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
+            return userEvent.getStatus().equals(UserEventStatus.APPROVED) || userEvent.getStatus().equals(UserEventStatus.COMPLETED);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public UserEventResponse registerUserEvent(String userId, Long eventId) {
         EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
         UserEvent userEvent = UserEvent.builder()
