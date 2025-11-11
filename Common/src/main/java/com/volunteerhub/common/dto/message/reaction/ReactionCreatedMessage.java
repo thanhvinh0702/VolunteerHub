@@ -1,4 +1,4 @@
-package com.volunteerhub.common.dto.message;
+package com.volunteerhub.common.dto.message.reaction;
 
 import com.volunteerhub.common.enums.ReactionType;
 import lombok.*;

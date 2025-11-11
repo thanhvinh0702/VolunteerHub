@@ -1,6 +1,6 @@
 package com.volunteerhub.notificationservice.consumer;
 
-import com.volunteerhub.common.dto.message.CommentCreatedMessage;
+import com.volunteerhub.common.dto.message.comment.CommentCreatedMessage;
 import com.volunteerhub.notificationservice.config.RabbitMQConfig;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
 import com.volunteerhub.notificationservice.model.NotificationType;

@@ -1,9 +1,15 @@
 package com.volunteerhub.notificationservice.service;
 
-import com.volunteerhub.common.dto.message.EventApprovedMessage;
-import com.volunteerhub.common.dto.message.EventCreatedMessage;
-import com.volunteerhub.common.dto.message.EventRejectedMessage;
+import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
+import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
+import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
+import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
+import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
 import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.notificationservice.client.RegistrationServiceClient;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
 import com.volunteerhub.notificationservice.dto.response.NotificationResponse;
@@ -28,6 +34,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserServiceClient userServiceClient;
     private final NotificationMapper notificationMapper;
+    private final RegistrationServiceClient registrationServiceClient;
 
     public Notification findEntityById(Long id) {
         return notificationRepository.findById(id).orElseThrow(() ->
@@ -142,6 +149,74 @@ public class NotificationService {
                 .actorId(eventRejectedMessage.getApprovedBy())
                 .contextId(eventRejectedMessage.getEventId())
                 .userId(eventRejectedMessage.getOwnerId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    public void handleEventUpdatedNotification(EventUpdatedMessage eventUpdatedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("updated_fields", eventUpdatedMessage.getUpdatedFields());
+        List<String> userIds = registrationServiceClient.findAllUserIdsByEventId(eventUpdatedMessage.getId());
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .type(NotificationType.POST_UPDATED)
+                .actorId(eventUpdatedMessage.getOwnerId())
+                .contextId(eventUpdatedMessage.getId())
+                .userIds(userIds)
+                .payload(payload)
+                .build();
+        create(notificationRequest);
+    }
+
+    public void handleRegistrationCreatedNotification(RegistrationCreatedMessage registrationCreatedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("requested_at", registrationCreatedMessage.getCreatedAt());
+        Notification notification = Notification.builder()
+                .type(NotificationType.USER_EVENT_REQUESTED)
+                .actorId(registrationCreatedMessage.getUserId())
+                .contextId(registrationCreatedMessage.getEventId())
+                .userId(registrationCreatedMessage.getEventOwnerId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    public void handleRegistrationApprovedNotification(RegistrationApprovedMessage registrationApprovedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("reviewed_at", registrationApprovedMessage.getReviewedAt());
+        Notification notification = Notification.builder()
+                .type(NotificationType.USER_EVENT_APPROVED)
+                .actorId(registrationApprovedMessage.getEventId().toString())
+                .contextId(registrationApprovedMessage.getEventId())
+                .userId(registrationApprovedMessage.getUserId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    public void handleRegistrationRejectedNotification(RegistrationRejectedMessage registrationRejectedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("requested_at", registrationRejectedMessage.getReviewedAt());
+        payload.put("note", registrationRejectedMessage.getNote());
+        Notification notification = Notification.builder()
+                .type(NotificationType.USER_EVENT_REJECTED)
+                .actorId(registrationRejectedMessage.getEventId().toString())
+                .contextId(registrationRejectedMessage.getEventId())
+                .userId(registrationRejectedMessage.getUserId())
+                .payload(payload)
+                .build();
+        notificationRepository.save(notification);
+    }
+
+    public void handleRegistrationCompletedNotification(RegistrationCompletedMessage registrationCompletedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("completed_at", registrationCompletedMessage.getCompletedAt());
+        payload.put("note", registrationCompletedMessage.getNote());
+        Notification notification = Notification.builder()
+                .type(NotificationType.USER_EVENT_COMPLETED)
+                .actorId(registrationCompletedMessage.getEventId().toString())
+                .contextId(registrationCompletedMessage.getEventId())
+                .userId(registrationCompletedMessage.getUserId())
                 .payload(payload)
                 .build();
         notificationRepository.save(notification);

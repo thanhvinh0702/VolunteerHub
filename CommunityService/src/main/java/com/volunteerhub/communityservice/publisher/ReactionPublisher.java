@@ -1,6 +1,6 @@
 package com.volunteerhub.communityservice.publisher;
 
-import com.volunteerhub.common.dto.message.ReactionCreatedMessage;
+import com.volunteerhub.common.dto.message.reaction.ReactionCreatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

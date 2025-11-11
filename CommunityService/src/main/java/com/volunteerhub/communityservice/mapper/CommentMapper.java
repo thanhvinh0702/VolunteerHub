@@ -1,6 +1,6 @@
 package com.volunteerhub.communityservice.mapper;
 
-import com.volunteerhub.common.dto.message.CommentCreatedMessage;
+import com.volunteerhub.common.dto.message.comment.CommentCreatedMessage;
 import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.model.Comment;
 import org.springframework.stereotype.Component;
