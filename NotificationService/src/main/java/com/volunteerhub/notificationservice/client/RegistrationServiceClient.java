@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient(name = "REGISTRATIONSERVICE", configuration = FeignConfig.class)
 public interface RegistrationServiceClient {
 
-    @GetMapping("/events/{eventId}/participant-ids")
+    @GetMapping("/api/v1/registrations/events/{eventId}/participant-ids")
     List<String> findAllUserIdsByEventId(@PathVariable Long eventId);
 }

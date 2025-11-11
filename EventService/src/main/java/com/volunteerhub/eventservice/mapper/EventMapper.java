@@ -2,11 +2,14 @@ package com.volunteerhub.eventservice.mapper;
 
 import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
+import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -68,6 +71,15 @@ public class EventMapper {
                 .approvedBy(event.getApprovedBy())
                 .status(event.getStatus())
                 .reason(reason)
+                .build();
+    }
+
+    public EventUpdatedMessage toUpdatedMessage(Event event, Map<String, Object> updatedFields) {
+        return EventUpdatedMessage.builder()
+                .id(event.getId())
+                .ownerId(event.getOwnerId())
+                .updatedAt(event.getUpdatedAt())
+                .updatedFields(updatedFields)
                 .build();
     }
 }

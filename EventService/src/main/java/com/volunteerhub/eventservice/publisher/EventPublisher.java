@@ -2,6 +2,7 @@ package com.volunteerhub.eventservice.publisher;
 
 import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.event.EventMessage;
+import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,13 +27,15 @@ public class EventPublisher {
     private String notificationRoutingKey;
 
     public void publishEvent(EventMessage eventMessage) {
-        if (eventMessage instanceof EventApprovedMessage) {
+        if (eventMessage instanceof EventApprovedMessage || eventMessage instanceof EventUpdatedMessage) {
+            // Publish to event exchange
             rabbitTemplate.convertAndSend(
                     eventExchange,
                     eventRoutingKey,
                     eventMessage
             );
         }
+        // Publish to notification exchange
         rabbitTemplate.convertAndSend(
                 notificationExchange,
                 notificationRoutingKey,

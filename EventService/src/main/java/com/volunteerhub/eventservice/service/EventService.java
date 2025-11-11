@@ -16,7 +16,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -86,7 +88,6 @@ public class EventService {
         return eventMapper.toDto(savedEvent);
     }
 
-    // TODO: publish event an event has been updated
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest) {
         Event event = findEntityById(eventId);
@@ -95,14 +96,26 @@ public class EventService {
             throw new AccessDeniedException("Insufficient permission to modify this record.");
         }
 
-        if (eventRequest.getName() != null) event.setName(eventRequest.getName());
-        if (eventRequest.getDescription() != null) event.setDescription(eventRequest.getDescription());
-        if (eventRequest.getImageUrl() != null) event.setImageUrl(eventRequest.getImageUrl());
+        Map<String, Object> updatedFields = new HashMap<>();
+
+        if (eventRequest.getName() != null) {
+            event.setName(eventRequest.getName());
+            updatedFields.put("name", eventRequest.getName());
+        }
+        if (eventRequest.getDescription() != null) {
+            event.setDescription(eventRequest.getDescription());
+            updatedFields.put("description", eventRequest.getDescription());
+        }
+        if (eventRequest.getImageUrl() != null) {
+            event.setImageUrl(eventRequest.getImageUrl());
+            updatedFields.put("image_url", eventRequest.getImageUrl());
+        }
 
         if (eventRequest.getCategoryName() != null && !eventRequest.getCategoryName().isBlank()) {
             Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
             event.setCategory(category);
             event.setCategoryId(category.getId());
+            updatedFields.put("category", eventRequest.getCategoryName());
         }
 
         if (eventRequest.getAddress() != null && eventRequest.getAddress().getCity() != null &&
@@ -110,15 +123,29 @@ public class EventService {
             Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
             event.setAddress(address);
             event.setAddressId(address.getId());
+            updatedFields.put("address", address);
         }
 
-        if (eventRequest.getStartTime() != null) event.setStartTime(eventRequest.getStartTime());
-        if (eventRequest.getEndTime() != null) event.setEndTime(eventRequest.getEndTime());
+        if (eventRequest.getStartTime() != null) {
+            event.setStartTime(eventRequest.getStartTime());
+            updatedFields.put("start_time", eventRequest.getStartTime());
+        }
+        if (eventRequest.getEndTime() != null) {
+            event.setEndTime(eventRequest.getEndTime());
+            updatedFields.put("end_time", eventRequest.getEndTime());
+        }
 
-        if (eventRequest.getCapacity() > 0) event.setCapacity(eventRequest.getCapacity());
+        if (eventRequest.getCapacity() > 0) {
+            event.setCapacity(eventRequest.getCapacity());
+            updatedFields.put("capacity", eventRequest.getCapacity());
+        }
 
-        if (eventRequest.getOptional() != null) event.setOptional(eventRequest.getOptional());
+        if (eventRequest.getOptional() != null) {
+            event.setOptional(eventRequest.getOptional());
+            updatedFields.put("optional", eventRequest.getOptional());
+        }
         Event savedEvent = eventRepository.save(event);
+        eventPublisher.publishEvent(eventMapper.toUpdatedMessage(savedEvent, updatedFields));
         return eventMapper.toDto(savedEvent);
     }
 

@@ -1,9 +1,6 @@
 package com.volunteerhub.notificationservice.consumer;
 
-import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
-import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
-import com.volunteerhub.common.dto.message.event.EventMessage;
-import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
+import com.volunteerhub.common.dto.message.event.*;
 import com.volunteerhub.notificationservice.config.RabbitMQConfig;
 import com.volunteerhub.notificationservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +23,9 @@ public class EventConsumer {
         }
         else if (eventMessage instanceof EventRejectedMessage) {
             notificationService.handleEventRejectedNotification((EventRejectedMessage) eventMessage);
+        }
+        else if (eventMessage instanceof EventUpdatedMessage) {
+            notificationService.handleEventUpdatedNotification((EventUpdatedMessage) eventMessage);
         }
     }
 }
