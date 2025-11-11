@@ -3,11 +3,13 @@ package com.volunteerhub.notificationservice.service;
 import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
 import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
+import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
 import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.notificationservice.client.RegistrationServiceClient;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
 import com.volunteerhub.notificationservice.dto.response.NotificationResponse;
@@ -32,6 +34,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserServiceClient userServiceClient;
     private final NotificationMapper notificationMapper;
+    private final RegistrationServiceClient registrationServiceClient;
 
     public Notification findEntityById(Long id) {
         return notificationRepository.findById(id).orElseThrow(() ->
@@ -149,6 +152,20 @@ public class NotificationService {
                 .payload(payload)
                 .build();
         notificationRepository.save(notification);
+    }
+
+    public void handleEventUpdatedNotification(EventUpdatedMessage eventUpdatedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("updated_fields", eventUpdatedMessage.getUpdatedFields());
+        List<String> userIds = registrationServiceClient.findAllUserIdsByEventId(eventUpdatedMessage.getId());
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .type(NotificationType.POST_UPDATED)
+                .actorId(eventUpdatedMessage.getOwnerId())
+                .contextId(eventUpdatedMessage.getId())
+                .userIds(userIds)
+                .payload(payload)
+                .build();
+        create(notificationRequest);
     }
 
     public void handleRegistrationCreatedNotification(RegistrationCreatedMessage registrationCreatedMessage) {

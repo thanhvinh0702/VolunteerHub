@@ -9,6 +9,7 @@ public enum NotificationType {
     USER_EVENT_REJECTED,
     USER_EVENT_COMPLETED,
     POST_CREATED,
+    POST_UPDATED,
     REACTION,
     COMMENT
 }
