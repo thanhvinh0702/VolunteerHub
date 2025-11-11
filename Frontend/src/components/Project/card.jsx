@@ -1,6 +1,8 @@
 import React from "react";
 import { formatDateTime } from "../../utils/date";
+import { useNavigate } from "react-router-dom";
 function ProjectCard({
+  id,
   title,
   date,
   location,
@@ -12,6 +14,7 @@ function ProjectCard({
   ctaText,
   status,
 }) {
+  const navigate = useNavigate();
   const getPercentage = (registered, capacity) => {
     return (registered / capacity) * 100;
   };
@@ -78,8 +81,9 @@ function ProjectCard({
                 ? "cursor-not-allowed bg-gray-500/80"
                 : "cursor-pointer bg-red-500/80"
             } text-white rounded-xl py-2 font-bold text-sm  transition-all duration-500 ease-in-out hover:scale-105 font-lobster tracking-widest border-none active:scale-95`}
+            onClick={() => navigate(`/opportunities/${id}`)}
           >
-            {registered === capacity ? "Full Slot" : "Join Now"}
+            {registered === capacity ? "Full Slot" : "View Details"}
           </button>
         </div>
       </div>

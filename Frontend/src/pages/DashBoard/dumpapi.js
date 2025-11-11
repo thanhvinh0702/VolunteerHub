@@ -35,6 +35,16 @@ export async function mockApiFetch(path) {
                 statusVariant: "light",
                 notes: "Waiting for slot confirmation.",
             },
+            {
+                id: 3,
+                title: "Tree Planting Event",
+                organization: "Urban Earth Foundation",
+                date: "Nov 15, 2025 • 09:00 AM - 12:00 PM",
+                location: "City Arboretum",
+                status: "waitlisted",
+                statusVariant: "light",
+                notes: "Waiting for slot confirmation.",
+            },
 
         ];
     }

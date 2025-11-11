@@ -3,7 +3,7 @@ import ProjectCard from "../../components/Project/card";
 import FilterHorizontal from "../../components/Filter/FilterHorizontal";
 import { getOpenEvents } from "./events";
 import { applyFilters } from "../../utils/filters";
-function Opportunities() {
+function OpportunitiesEvent() {
   const [events, setEvents] = useState([]);
   useEffect(() => {
     setEvents(getOpenEvents());
@@ -74,4 +74,4 @@ function Opportunities() {
   );
 }
 
-export default Opportunities;
+export default OpportunitiesEvent;

@@ -14,6 +14,10 @@ import OpportunitiesTab from "../pages/DashBoard/Opportunities";
 import Activity from "../pages/DashBoard/Activity";
 import Badges from "../pages/DashBoard/Badges";
 import Notifications from "../pages/DashBoard/Notifications";
+import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
+import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
+import EventLayout from "../pages/EventPage/EventLayout";
+
 function AppRouter() {
   return (
     <Routes>
@@ -23,13 +27,16 @@ function AppRouter() {
 
       {/* Protected routes */}
       <Route element={<MainLayout />}>
+        {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Shared protected area */}
         <Route
           element={
             <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
           }
         >
-          {/* Dashboard with persistent header and nested content */}
+          {/* Dashboard (with nested tabs) */}
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route index element={<Overview />} />
             <Route path="opportunities" element={<OpportunitiesTab />} />
@@ -37,15 +44,24 @@ function AppRouter() {
             <Route path="badges" element={<Badges />} />
             <Route path="notifications" element={<Notifications />} />
           </Route>
+
+          {/* 👇 Đây là route riêng biệt cho /opportunities */}
+          {/* 👇 Đây là route riêng biệt cho /opportunities */}
+          <Route path="/opportunities" element={<OpportunitiesEvent />} />
+          <Route path="/opportunities/:id" element={<EventLayout />} />
         </Route>
+
+        {/* Admin-only route */}
         <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
           <Route path="/admin" element={<AdminPage />} />
         </Route>
 
+        {/* User-only route */}
         <Route element={<RequireRole allowedRoles={[ROLES.USER]} />}>
           <Route path="/user" element={<UserPage />} />
         </Route>
 
+        {/* Organization-only route */}
         <Route element={<RequireRole allowedRoles={[ROLES.ORG]} />}>
           <Route path="/organization" element={<OrganizationPage />} />
         </Route>
@@ -58,26 +74,3 @@ function AppRouter() {
 }
 
 export default AppRouter;
-
-// export default function AppRouter() {
-//     return (
-//       <Routes>
-//         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-//         <Route path={ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
-
-//         <Route element={<RequireAuth />}>
-//           <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
-//             <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
-//           </Route>
-
-//           <Route element={<RequireRole allowedRoles={[ROLES.MANAGER]} />}>
-//             <Route path={ROUTES.MANAGER} element={<ManagerDashboard />} />
-//           </Route>
-
-//           <Route element={<RequireRole allowedRoles={[ROLES.VOLUNTEER]} />}>
-//             <Route path={ROUTES.VOLUNTEER} element={<VolunteerDashboard />} />
-//           </Route>
-//         </Route>
-//       </Routes>
-//     );
-//   }
