@@ -43,18 +43,19 @@ export default function CreatePost({ onCreate }) {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Bạn đang nghĩ gì?"
-          className="w-full resize-none p-2 border rounded-md focus:ring focus:ring-blue-200"
+          placeholder="What do you think about this event?"
+          className="w-full resize-none p-2 border rounded-md focus:ring-2 focus:border-blue-500"
+          rows={4}
         />
 
         {images.length > 0 && (
-          <div className="mt-3 grid gap-2 grid-cols-2">
+          <div className="mt-3 grid gap-2 grid-cols-4">
             {images.map((img, i) => (
               <div key={i} className="relative">
                 <img
                   src={img.url}
                   alt=""
-                  className="h-40 w-full object-cover rounded-md"
+                  className="h-40 w-full object-cover rounded-md cursor-pointer aspect-square"
                 />
                 <button
                   type="button"
@@ -71,7 +72,7 @@ export default function CreatePost({ onCreate }) {
         <div className="mt-3 flex justify-between items-center">
           <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
             <Camera className="w-5 h-5" />
-            <span>Ảnh</span>
+            <span>Upload Images</span>
             <input
               type="file"
               multiple
@@ -84,7 +85,7 @@ export default function CreatePost({ onCreate }) {
             disabled={!text.trim() && !images.length}
             className="bg-blue-600 text-white px-4 py-1 rounded-md disabled:opacity-60"
           >
-            Đăng
+            Post
           </button>
         </div>
       </form>

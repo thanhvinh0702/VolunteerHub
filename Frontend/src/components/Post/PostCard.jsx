@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactionBar from "./ReactionBar";
 
 export default function PostCard({ post, onOpenPost, onReactLocal }) {
@@ -9,7 +9,7 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
   const openModal = (options = {}) => onOpenPost(post, options);
 
   return (
-    <article className="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <article className="rounded-lg shadow-sm p-4 mb-6">
       <header className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-medium">
           {post.author.name[0]}
@@ -67,15 +67,35 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
         </button>
       </footer>
 
-      {/* 5 comments preview */}
+      {/* 5 comment */}
       {inlineComments.length > 0 && (
-        <div className="mt-3 border-t pt-2 space-y-1">
-          {inlineComments.map((c) => (
-            <div key={c.id} className="text-sm">
-              <span className="font-semibold">{c.author}: </span>
-              {c.text}
-            </div>
-          ))}
+        <div className="border-t pt-2 space-y-1">
+          {inlineComments.map((c) => {
+            // Mock user
+            const getUserName = (ownerId) => {
+              const userMap = {
+                10: "Bạn",
+                1: "Nguyễn Văn A",
+                2: "Trần Thị B",
+                3: "Lê Văn C",
+                4: "Phạm Thị D",
+                5: "Hoàng Văn E",
+                6: "Vũ Thị F",
+                7: "Đặng Văn G",
+                8: "Bùi Thị H",
+              };
+              return userMap[ownerId] || `User ${ownerId}`;
+            };
+
+            return (
+              <div key={c.id} className="text-sm">
+                <span className="font-semibold">
+                  {getUserName(c.ownerId)}:{" "}
+                </span>
+                {c.content}
+              </div>
+            );
+          })}
           {moreCount > 0 && (
             <button
               onClick={() => openModal({ openComments: true })}

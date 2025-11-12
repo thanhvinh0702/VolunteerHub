@@ -11,13 +11,13 @@ export default function Modal({ open, onClose, children, className = "" }) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 flex justify-center items-center bg-black/50 z-50 p-4"
+      className="fixed inset-0 flex justify-center items-center bg-black/50 z-50 w-full h-full"
       aria-modal="true"
       role="dialog"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 transform transition-all duration-200 ${className}`}
+        className={`bg-white rounded-lg shadow-lg w-[95vw] h-[95vh] transform transition-all duration-200 ${className} flex justify-start`}
       >
         {children}
       </div>
