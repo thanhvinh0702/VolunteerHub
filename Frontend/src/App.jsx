@@ -9,6 +9,7 @@ import NavBar from "./components/Sidebar/NavBar";
 import DashboardLayout from "./pages/DashBoard/DashboardLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // Import apidump để kích hoạt mock API fetch interceptor
+import { NavbarProvider } from "./context/NavbarContext";
 import "./pages/EventPage/apidump";
 
 const queryClient = new QueryClient();
@@ -18,7 +19,9 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <AppRouter />
+          <NavbarProvider>
+            <AppRouter />
+          </NavbarProvider>
         </Router>
       </QueryClientProvider>
     </AuthProvider>

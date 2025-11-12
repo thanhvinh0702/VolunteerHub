@@ -4,6 +4,7 @@ import CommentInput from "./CommentInput";
 import CommentList from "./CommentList";
 import ImageLightbox from "./ImageLightbox";
 import { FaCommentAlt } from "react-icons/fa";
+import { useNavbar } from "../../hook/useNavbar";
 
 export default function PostModal({
   open,

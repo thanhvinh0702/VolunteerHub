@@ -2,8 +2,9 @@ import React from "react";
 import NavBar from "../components/Sidebar/NavBar";
 import { Outlet } from "react-router-dom";
 import BottomNav from "../components/Sidebar/BottomNav";
-
+import { useNavbar } from "../hook/useNavbar";
 export default function MainLayout() {
+  const { showNavbar } = useNavbar();
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navbar fixed (desktop / tablet) */}
@@ -22,7 +23,7 @@ export default function MainLayout() {
       </main>
 
       {/* Bottom Navigation (mobile only) */}
-      <BottomNav />
+      {showNavbar && <BottomNav />}
     </div>
   );
 }

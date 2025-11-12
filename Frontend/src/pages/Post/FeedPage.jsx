@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import CreatePost from "../../components/Post/CreatPost";
 import PostCard from "../../components/Post/PostCard";
 import PostModal from "../../components/Post/PostModal";
+import { useNavbar } from "../../hook/useNavbar";
 
 /**
  * FeedPage: quản lý state posts + modal
@@ -11,7 +12,7 @@ import PostModal from "../../components/Post/PostModal";
 
 export default function FeedPage() {
   const currentUser = { name: "Bạn" };
-
+  const { setShowNavbar } = useNavbar();
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -237,6 +238,7 @@ export default function FeedPage() {
 
   // Open modal
   const openPost = (post, options = {}) => {
+    setShowNavbar(false);
     setActivePost(post);
     setModalOptions({
       startImageIndex: options.startImageIndex ?? 0,
@@ -245,6 +247,7 @@ export default function FeedPage() {
   };
 
   const closePost = () => {
+    setShowNavbar(true);
     setActivePost(null);
     setModalOptions({ startImageIndex: 0, openComments: false });
   };
