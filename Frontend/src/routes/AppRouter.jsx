@@ -45,8 +45,7 @@ function AppRouter() {
             <Route path="notifications" element={<Notifications />} />
           </Route>
 
-          {/* 👇 Đây là route riêng biệt cho /opportunities */}
-          {/* 👇 Đây là route riêng biệt cho /opportunities */}
+          {/* opportunities */}
           <Route path="/opportunities" element={<OpportunitiesEvent />} />
           <Route path="/opportunities/:id" element={<EventLayout />} />
         </Route>

@@ -21,10 +21,6 @@ export default function FeedPage() {
         "Hôm nay đi dọn biển, cực nhưng vui quá! " + "Lorem ipsum ".repeat(50),
       images: [
         "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1000",
-        "https://images.unsplash.com/photo-1493558103817-58b2924bce98?w=1000",
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1000",
-        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1000",
-        "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1000",
       ],
       createdAt: new Date().toISOString(),
       comments: [

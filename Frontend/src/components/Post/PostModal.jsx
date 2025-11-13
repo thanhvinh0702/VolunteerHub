@@ -4,7 +4,8 @@ import CommentInput from "./CommentInput";
 import CommentList from "./CommentList";
 import ImageLightbox from "./ImageLightbox";
 import ReactionBar from "./ReactionBar";
-
+import { X } from "lucide-react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 export default function PostModal({
   open,
   post,
@@ -20,6 +21,7 @@ export default function PostModal({
 
   const commentsRef = useRef(null);
   const inputRef = useRef(null);
+  const [lightboxIndex, setLightboxIndex] = useState(startImageIndex ?? 0);
   const [showMore, setShowMore] = useState(false);
   const toggleShowMore = () => {
     setShowMore(!showMore);
@@ -28,6 +30,12 @@ export default function PostModal({
     commentsRef.current?.scrollIntoView({ behavior: "smooth" });
     inputRef.current?.focus();
   };
+
+  useEffect(() => {
+    if (open) {
+      setLightboxIndex(startImageIndex ?? 0);
+    }
+  }, [startImageIndex, open]);
 
   useEffect(() => {
     if (open) {
@@ -69,20 +77,26 @@ export default function PostModal({
   }
 
   return (
-    <div className="min-w-[95vw] min-h-[95vh] max-md:min-w-[100vw] max-md:min-h-[100vh]">
-      <Modal open={open} onClose={onClose}>
-        <div className="grid grid-cols-8 w-full h-full gap-1 md:overflow-hidden max-md:flex max-md:flex-col max-md:gap-4 max-md:p-4 max-md:overflow-y-auto">
-          <div className="md:col-span-6 flex justify-center items-center bg-black md:rounded-l-lg max-md:rounded-lg md:h-full max-md:h-auto">
-            <div className="w-full h-full">
+    <div className="min-w-[95vw] min-h-[95vh] max-md:min-w-[100vw] max-md:min-h-[100vh] max-sm:flex max-sm:justify-start relative">
+      <Modal open={true} onClose={onClose}>
+        <div className="flex flex-col md:grid md:grid-cols-8 w-full h-full gap-1 md:overflow-hidden max-md:gap-0 max-md:px-1 max-md:overflow-y-auto">
+          <div className="md:col-span-6 order-1 flex justify-center items-center bg-black md:rounded-l-lg">
+            <div className="w-full h-full max-sm:hidden">
               <ImageLightbox
                 images={post.images}
-                startIndex={startImageIndex}
+                onIndexChange={(i) => setLightboxIndex(i)}
+                startIndex={lightboxIndex}
+                currentIndex={lightboxIndex}
+                className=""
               />
             </div>
           </div>
-          <div className="md:col-span-2 flex flex-col bg-white md:rounded-r-lg max-md:rounded-lg md:h-full md:overflow-hidden">
-            <div className="md:flex-1 md:overflow-y-auto px-6 py-4 pr-4 max-md:px-4 max-md:py-4">
+          <div className="md:col-span-2 order-2 flex flex-col bg-white md:rounded-r-lg md:overflow-hidden">
+            <div className="md:flex-1 md:overflow-y-auto px-6 py-4 pr-4 max-sm:pr-1 max-md:px-3 max-md:py-0">
               <div className="flex flex-col gap-2 lg:mt-10 max-md:mt-4">
+                <div className="flex justify-start items-center p-0 border-b-1 border-gray-400 pb-2 lg:hidden ">
+                  <IoMdArrowRoundBack className="text-white bg-black rounded-full p-0 h-5 w-5" />
+                </div>
                 <div className="flex items-center gap-2 flex-row">
                   <div className="flex items-center gap-2 flex-row">
                     <img
@@ -98,9 +112,17 @@ export default function PostModal({
                     </p>
                   </div>
                 </div>
+                <div className="max-sm:flex align-middle justify-center hidden max-sm:bg-black">
+                  <ImageLightbox
+                    images={post.images}
+                    startIndex={lightboxIndex}
+                    className=""
+                    onIndexChange={(i) => setLightboxIndex(i)}
+                  />
+                </div>
                 <div className="">
                   <p
-                    className={`text-start line-clamp-5 ${
+                    className={`text-start line-clamp-5 max-sm:text-sm max-sm:pt-4 ${
                       showMore ? "line-clamp-none" : ""
                     }`}
                   >
