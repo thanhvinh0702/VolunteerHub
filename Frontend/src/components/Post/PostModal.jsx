@@ -3,8 +3,7 @@ import Modal from "./Modal";
 import CommentInput from "./CommentInput";
 import CommentList from "./CommentList";
 import ImageLightbox from "./ImageLightbox";
-import { FaCommentAlt } from "react-icons/fa";
-import { useNavbar } from "../../hook/useNavbar";
+import ReactionBar from "./ReactionBar";
 
 export default function PostModal({
   open,
@@ -24,6 +23,10 @@ export default function PostModal({
   const [showMore, setShowMore] = useState(false);
   const toggleShowMore = () => {
     setShowMore(!showMore);
+  };
+  const focusComments = () => {
+    commentsRef.current?.scrollIntoView({ behavior: "smooth" });
+    inputRef.current?.focus();
   };
 
   useEffect(() => {
@@ -111,25 +114,12 @@ export default function PostModal({
                   </span>
                 </div>
               </div>
-              <div className="mt-4 flex justify-around gap-4">
-                <div>
-                  <button onClick={() => onReact(post.id, "like")}>
-                    👍 {post.reactions.like}
-                  </button>
-                  <button onClick={() => onReact(post.id, "love")}>
-                    ❤️ {post.reactions.love}
-                  </button>
-                </div>
-                <div className="text-gray-600">
-                  <button onClick={() => onReact(post.id, "love")}>
-                    <p className="inline-flex items-center gap-2">
-                      <span>
-                        <FaCommentAlt />
-                      </span>{" "}
-                      <span>Comments ({post.comments.length})</span>
-                    </p>
-                  </button>
-                </div>
+              <div className="mt-4">
+                <ReactionBar
+                  post={post}
+                  onReact={onReact}
+                  onCommentClick={focusComments}
+                />
               </div>
 
               <div ref={commentsRef} className="flex-1 flex-col flex px-0 py-4">

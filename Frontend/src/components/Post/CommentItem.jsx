@@ -1,3 +1,4 @@
+import { Send } from "lucide-react";
 import React, { useState } from "react";
 
 export default function CommentItem({
@@ -100,9 +101,9 @@ export default function CommentItem({
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Vừa xong";
-    if (diffInHours < 24) return `${diffInHours} giờ trước`;
-    if (diffInHours < 48) return "Hôm qua";
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    if (diffInHours < 48) return "Yesterday";
     return date.toLocaleDateString("vi-VN");
   };
 
@@ -137,7 +138,7 @@ export default function CommentItem({
                 onClick={() => handleReplyClick(comment)}
                 className="text-gray-600 hover:underline font-semibold"
               >
-                Trả lời
+                Reply
               </button>
               <span className="text-gray-500">
                 {formatDate(comment.createdAt)}
@@ -148,42 +149,51 @@ export default function CommentItem({
                     onClick={handleEdit}
                     className="text-gray-600 hover:underline"
                   >
-                    Sửa
+                    Edit
                   </button>
                   <button
                     onClick={handleDelete}
                     className="text-gray-600 hover:underline"
                   >
-                    Xóa
+                    Remove
                   </button>
                 </>
               )}
             </div>
 
             {showReplyInput && (
-              <form onSubmit={handleReplySubmit} className="mt-2 flex gap-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+              <form
+                onSubmit={handleReplySubmit}
+                className="lg:mt-5 mt-2 flex gap-2 items-center relative py-0"
+              >
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 absolute -left-0 top-2">
                   {getUserName(currentUserId)[0]}
                 </div>
-                <div className="flex-1 flex gap-2">
-                  <input
+                <div className="flex-1 flex gap-2 bg-gray-200 rounded-xl px-2 py-2 pl-8 pr-5 pb-5">
+                  <textarea
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
+                    onInput={(e) => {
+                      const el = e.target;
+                      el.style.height = "auto";
+                      el.style.height = el.scrollHeight + "px";
+                    }}
                     placeholder={
                       replyToUser && isReply
-                        ? `Trả lời ${replyToUser.name}...`
-                        : "Viết câu trả lời..."
+                        ? `Reply to ${replyToUser.name}...`
+                        : "Write a reply..."
                     }
-                    className="flex-1 px-3 py-2 text-sm border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                    className="flex-1 px-3 py-2 text-sm focus:outline-none   bg-gray-200 resize-none overflow-auto"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                     autoFocus
                   />
                   <button
                     type="submit"
                     disabled={!replyText.trim()}
-                    className="text-blue-600 hover:text-blue-700 disabled:text-gray-400 text-sm font-semibold"
+                    className="text-blue-600 hover:text-blue-700 disabled:text-gray-400 text-sm font-semibold absolute bottom-2 right-2"
                   >
-                    ↵
+                    <Send />
                   </button>
                 </div>
               </form>
@@ -200,7 +210,7 @@ export default function CommentItem({
               className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 font-semibold"
             >
               <span className="text-lg">⤷</span>
-              <span>Xem thêm {hiddenRepliesCount}</span>
+              <span>View more {hiddenRepliesCount}</span>
             </button>
           )}
           {visibleReplies.map((reply) => (
@@ -210,7 +220,7 @@ export default function CommentItem({
               postId={postId}
               onEdit={onEdit}
               onDelete={onDelete}
-              onReply={onReply}
+              onReply={(postId, newReply) => onReply(postId, newReply)}
               replies={[]}
               currentUserId={currentUserId}
               depth={depth + 1}
@@ -222,7 +232,7 @@ export default function CommentItem({
               className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-semibold"
             >
               <span className="text-lg">⤴</span>
-              <span>Ẩn bớt phản hồi</span>
+              <span>Hide replies</span>
             </button>
           )}
         </div>

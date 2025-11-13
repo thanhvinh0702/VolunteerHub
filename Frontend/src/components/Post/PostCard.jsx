@@ -26,7 +26,7 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
 
       {post.images.length > 0 && (
         <div className="mt-2 grid grid-cols-2 gap-2">
-          {post.images.slice(0, 4).map((src, i) => (
+          {post.images.slice(0, 1).map((src, i) => (
             <img
               key={i}
               src={src}
@@ -53,18 +53,12 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
         </div>
       )}
 
-      <footer className="mt-3 flex items-center justify-between text-sm text-gray-600">
+      <footer className="mt-3">
         <ReactionBar
-          reactions={post.reactions}
-          userReaction={post.userReaction}
-          onReact={(t) => onReactLocal(post.id, t)}
+          post={post}
+          onReact={onReactLocal}
+          onCommentClick={() => openModal({ openComments: true })}
         />
-        <button
-          onClick={() => openModal({ openComments: true })}
-          className="text-gray-600 hover:text-blue-600"
-        >
-          💬 {post.comments.length}
-        </button>
       </footer>
 
       {/* 5 comment */}
