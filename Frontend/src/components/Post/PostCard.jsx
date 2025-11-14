@@ -7,119 +7,182 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
   // const moreCount = Math.max(0, post.comments.length - INLINE_COUNT);
 
   const openModal = (options = {}) => onOpenPost(post, options);
+  const imageCount = Array.isArray(post.images) ? post.images.length : 0;
+
+  const renderImageGrid = () => {
+    if (!imageCount) return null;
+
+    const baseWrapperClass =
+      "relative overflow-hidden rounded-2xl border border-blue-50 shadow-sm";
+    const baseImageClass =
+      "w-full object-cover transition-transform duration-200 hover:scale-[1.02] cursor-pointer";
+
+    const renderWrapper = (
+      src,
+      idx,
+      wrapperClass = "",
+      imgClass = "h-full"
+    ) => (
+      <div
+        key={`post-image-${idx}`}
+        className={`${baseWrapperClass} ${wrapperClass}`}
+        onClick={() => openModal({ startImageIndex: idx })}
+      >
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          className={`${baseImageClass} ${imgClass}`}
+        />
+      </div>
+    );
+
+    if (imageCount === 1) {
+      return (
+        <div className="mt-6">
+          {renderWrapper(
+            post.images[0],
+            0,
+            "w-full max-h-[520px]",
+            "h-auto max-h-[520px]"
+          )}
+        </div>
+      );
+    }
+
+    if (imageCount === 2) {
+      return (
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 max-sm:grid-cols-1">
+          {post.images.map((src, idx) =>
+            renderWrapper(
+              src,
+              idx,
+              "min-h-[220px] max-sm:min-h-[180px]",
+              "h-full"
+            )
+          )}
+        </div>
+      );
+    }
+
+    if (imageCount === 3) {
+      return (
+        <div className="mt-6 grid gap-3 grid-cols-2 grid-rows-2">
+          {renderWrapper(
+            post.images[0],
+            0,
+            "row-span-2 min-h-[360px] max-sm:min-h-[280px]",
+            "h-full"
+          )}
+          {post.images
+            .slice(1)
+            .map((src, idx) =>
+              renderWrapper(
+                src,
+                idx + 1,
+                "min-h-[150px] max-sm:min-h-[140px]",
+                "h-full"
+              )
+            )}
+        </div>
+      );
+    }
+
+    if (imageCount === 4) {
+      return (
+        <div className="mt-6 grid gap-3 grid-cols-2 grid-rows-2">
+          {post.images
+            .slice(0, 4)
+            .map((src, idx) =>
+              renderWrapper(
+                src,
+                idx,
+                "min-h-[200px] max-sm:min-h-[150px]",
+                "h-full"
+              )
+            )}
+        </div>
+      );
+    }
+
+    const remainingCount = imageCount - 4;
+
+    const renderOverlayTile = (wrapperClass = "", key = "post-image-more") => (
+      <div
+        key={key}
+        className={`${baseWrapperClass} ${wrapperClass} cursor-pointer`}
+        onClick={() => openModal({ startImageIndex: 3 })}
+      >
+        <img
+          src={post.images[3]}
+          alt=""
+          loading="lazy"
+          className={`${baseImageClass} h-full brightness-50`}
+        />
+        <div className="absolute inset-0 flex items-center justify-center text-white text-3xl font-semibold tracking-wide bg-black/50">
+          +{remainingCount}
+        </div>
+      </div>
+    );
+
+    return (
+      <div className="mt-6 space-y-0">
+        <div className="hidden sm:grid sm:grid-cols-[1.2fr_0.8fr] sm:gap-3">
+          {renderWrapper(
+            post.images[0],
+            0,
+            "min-h-[320px] sm:h-full",
+            "h-full"
+          )}
+          <div className="flex flex-col gap-3">
+            {post.images
+              .slice(1, 3)
+              .map((src, idx) =>
+                renderWrapper(src, idx + 1, "min-h-[150px]", "h-full")
+              )}
+            {renderOverlayTile("min-h-[150px]", "post-image-more-desktop")}
+          </div>
+        </div>
+
+        <div className="grid gap-3 grid-cols-2 grid-rows-2 sm:hidden">
+          {post.images
+            .slice(0, 3)
+            .map((src, idx) =>
+              renderWrapper(src, idx, "min-h-[160px]", "h-full")
+            )}
+          {renderOverlayTile("min-h-[160px]", "post-image-more-mobile")}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <article className="rounded-lg shadow-sm p-4 mb-6 bg-gray-200/80 ">
-      <header className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-medium">
+    <article className="rounded-xl shadow-lg p-6 mb-6 bg-white border border-blue-100">
+      <header className="flex items-center gap-4">
+        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white text-lg shadow-md">
           {post.author.name[0]}
         </div>
         <div>
-          <div className="font-semibold">{post.author.name}</div>
-          <div className="text-xs text-gray-500">
-            {new Date(post.createdAt).toLocaleString()}
+          <div className="font-bold text-gray-900 text-lg leading-tight">
+            {post.author.name}
+          </div>
+          <div className="text-sm text-gray-500 font-medium">
+            {new Date(post.createdAt).toLocaleString("vi-VN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              day: "numeric",
+              month: "short",
+            })}
           </div>
         </div>
       </header>
 
-      <p className="mt-5 text-sm text-gray-800">{post.text}</p>
-      {post.images.length == 1 && (
-        <div
-          className="mt-8 gap-2 bg-black p-2"
-          onClick={() => openModal({ startImageIndex: 0 })}
-        >
-          {post.images.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt=""
-              className="w-full h-90 object-cover rounded-md cursor-pointer"
-            />
-          ))}
-        </div>
-      )}
-      {post.images.length == 2 && (
-        <div
-          className="rouned-xl mt-8 p-4 gap-5 bg-black grid grid-cols-2 max-sm:h-[15rem] md:h-[500px] flex items-center justify-center"
-          onClick={() => openModal({ startImageIndex: 0 })}
-        >
-          {post.images.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt=""
-              className="w-full h-full object-cover rounded-md cursor-pointer"
-            />
-          ))}
-        </div>
-      )}
-      {post.images.length == 3 && (
-        <div
-          className="mt-8 px-5 py-8 gap-4 bg-black grid grid-cols-2 grid-rows-2 max-sm:h-[25rem] md:h-[500px]"
-          onClick={() => openModal({ startImageIndex: 0 })}
-        >
-          <img
-            src={post.images[0]}
-            alt=""
-            className="w-full h-full object-cover col-span-1 row-span-2 rounded-lg cursor-pointer"
-          />
+      <p className="mt-6 text-gray-800 text-base leading-relaxed font-medium">
+        {post.text}
+      </p>
+      {renderImageGrid()}
 
-          <img
-            src={post.images[1]}
-            alt=""
-            className="w-full h-full object-cover col-span-1 row-span-1 rounded-lg cursor-pointer"
-          />
-
-          <img
-            src={post.images[2]}
-            alt=""
-            className="w-full h-full object-cover col-span-1 row-span-1 rounded-lg cursor-pointer"
-          />
-        </div>
-      )}
-      {post.images.length == 4 && (
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {post.images.slice(0, 4).map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt=""
-              className="w-full h-48 object-cover rounded-md cursor-pointer"
-              onClick={() => openModal({ startImageIndex: i })}
-            />
-          ))}
-        </div>
-      )}
-      {post.images.length > 4 && (
-        <div className="mt-2 grid grid-cols-2 gap-2 bg-black p-2 rounded-xl">
-          {post.images.slice(0, 3).map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt=""
-              className="w-full h-48 object-cover rounded-md cursor-pointer"
-              onClick={() => openModal({ startImageIndex: i })}
-            />
-          ))}
-          {post.images.length > 4 && (
-            <div className="relative">
-              <img
-                src={post.images[4]}
-                alt=""
-                className="w-full h-48 object-cover rounded-md"
-              />
-              <div
-                className="absolute inset-0 bg-black/50 text-white flex items-center justify-center text-lg font-semibold rounded-md cursor-pointer"
-                onClick={() => openModal({ startImageIndex: 4 })}
-              >
-                +{post.images.length - 4}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      <footer className="mt-5">
+      <footer className="mt-6 pt-4 border-t border-blue-100">
         <ReactionBar
           post={post}
           onReact={onReactLocal}

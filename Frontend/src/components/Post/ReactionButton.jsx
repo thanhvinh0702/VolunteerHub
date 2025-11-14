@@ -166,20 +166,22 @@ export default function ReactionButton({
       {showBar && (
         <div
           ref={barRef}
-          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 select-none z-90"
+          className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 select-none z-90"
           onPointerEnter={onBarPointerEnter}
           onPointerMove={onBarPointerMove}
           onPointerLeave={onBarPointerLeave}
           onPointerUp={onBarPointerUp}
         >
-          <div className="bg-white rounded-3xl px-1 py-2 shadow-lg flex items-center gap-2">
+          <div className="bg-white rounded-3xl px-2 py-3 shadow-xl border border-blue-200 flex items-center gap-3">
             {REACTIONS.map((r, i) => {
               const isHover = i === hoverIndex;
               return (
                 <div
                   key={r.key}
-                  className={`w-10 h-10 flex items-center justify-center text-xl transition-transform duration-150 ${
-                    isHover ? "transform -translate-y-2 scale-125" : ""
+                  className={`w-12 h-12 flex items-center justify-center text-2xl transition-all duration-200 rounded-full ${
+                    isHover
+                      ? "transform -translate-y-3 scale-125 bg-blue-50"
+                      : "hover:bg-gray-50"
                   }`}
                 >
                   <span>{r.label}</span>
@@ -195,9 +197,11 @@ export default function ReactionButton({
         ref={holderRef}
         role="button"
         tabIndex={0}
-        className={`inline-flex items-center gap-2 px-3 py-1 rounded-md ${
-          current ? "bg-blue-50" : "bg-transparent"
-        } text-sm cursor-pointer select-none`}
+        className={`inline-flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+          current
+            ? "bg-blue-100 text-blue-700 shadow-md"
+            : "bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600"
+        } cursor-pointer select-none font-semibold`}
         onClick={handleClick}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
@@ -206,10 +210,12 @@ export default function ReactionButton({
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className={`w-6 h-6 flex items-center justify-center text-lg`}>
-          {current ? "👍" : "👍"}
+        <div className={`w-7 h-7 flex items-center justify-center text-xl`}>
+          {current
+            ? REACTIONS.find((r) => r.key === current)?.label || "👍"
+            : "👍"}
         </div>
-        <span className="font-semibold">{small ? "" : "Like"}</span>
+        <span>{small ? "" : "Thích"}</span>
       </div>
     </div>
   );

@@ -12,30 +12,34 @@ export default function CommentInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="flex items-center gap-3 w-full bg-white p-5"
+      className="flex items-center gap-3 w-full bg-white p-4 border-t border-blue-100"
     >
       <div className="flex flex-1 relative">
         <input
           ref={inputRef}
           value={value}
           onChange={onChange}
-          className="w-full bg-gray-100 rounded-full pl-4 pr-28 py-2 text-sm outline-none focus:ring-1 focus:ring-gray-300 focus:bg-white transition"
-          placeholder="Viết bình luận của bạn..."
+          className="w-full bg-blue-50 rounded-full pl-5 pr-24 py-3 text-base outline-none focus:ring-2 focus:ring-blue-300 focus:bg-white transition-all placeholder-gray-400 font-medium"
+          placeholder="Chia sẻ suy nghĩ của bạn..."
         />
-        <div className="absolute inset-y-0 right-3 flex items-center space-x-5 text-gray-500">
+        <div className="absolute inset-y-0 right-2 flex items-center space-x-3">
+          {upLoadImg && (
+            <button
+              type="button"
+              onClick={upLoadImg}
+              className="p-2 text-blue-500 hover:bg-blue-100 rounded-full transition-colors"
+              title="Thêm ảnh"
+            >
+              <Camera className="w-5 h-5" />
+            </button>
+          )}
           <button
             type="submit"
-            className=" text-blue w-5 h-5 disabled:text-gray-200 disabled:cursor-not-allowed"
+            className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors disabled:text-gray-300 disabled:hover:bg-transparent disabled:cursor-not-allowed"
             disabled={!value.trim()}
+            title="Gửi bình luận"
           >
-            <Camera />
-          </button>
-          <button
-            type="submit"
-            className=" text-blue w-5 h-5 disabled:text-gray-200 disabled:cursor-not-allowed"
-            disabled={!value.trim()}
-          >
-            <Send />
+            <Send className="w-5 h-5" />
           </button>
         </div>
       </div>

@@ -225,9 +225,7 @@ function EventOverview({
                 <UserCard key={item.id} {...item} />
               ))}
             </div>
-            <p className="font-light text-xs mt-2">
-              +{dumpData.length - 5} more volunteers
-            </p>
+            <p className="font-light text-xs mt-2">More volunteers</p>
           </div>
         </Card>
       </div>

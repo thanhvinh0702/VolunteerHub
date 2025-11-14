@@ -32,21 +32,21 @@ export default function ReactionBar({
     : `Comments (${commentCount ?? 0})`;
 
   return (
-    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
-      <div className="flex flex-row gap-1 items-stretch">
+    <div className="flex flex-wrap items-center gap-3 text-gray-700">
+      <div className="flex flex-row gap-2 items-stretch">
         <ReactionButton
           initialReaction={post.userReaction ?? null}
           onReact={(r) => onReact?.(post.id, r)}
           small={compact}
         />
         {!compact && reactionEntries.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+          <div className="flex flex-wrap items-center gap-3 px-3 py-2 bg-blue-50 rounded-lg">
             {reactionEntries.map(([key, count]) => (
               <span
                 key={key}
-                className="inline-flex items-center gap-1 font-medium"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700"
               >
-                <span>{REACTION_ICONS[key] ?? "👍"}</span>
+                <span className="text-lg">{REACTION_ICONS[key] ?? "👍"}</span>
                 <span>{count}</span>
               </span>
             ))}
@@ -56,23 +56,19 @@ export default function ReactionBar({
 
       <button
         onClick={() => onCommentClick?.(post.id)}
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100"
+        className="inline-flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-blue-600 font-semibold"
       >
-        <FaCommentAlt className="w-4 h-4" />
-        {commentLabel && (
-          <span className="font-semibold">
-            {compact ? commentLabel : commentLabel}
-          </span>
-        )}
+        <FaCommentAlt className="w-5 h-5" />
+        {commentLabel && <span>{compact ? commentLabel : commentLabel}</span>}
       </button>
 
       {onShare && (
         <button
           onClick={() => onShare?.(post.id)}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100"
+          className="inline-flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-blue-600 font-semibold"
         >
-          <FaShare className="w-4 h-4" />
-          <span className="font-semibold">{compact ? "" : "Share"}</span>
+          <FaShare className="w-5 h-5" />
+          <span>{compact ? "" : "Chia sẻ"}</span>
         </button>
       )}
     </div>

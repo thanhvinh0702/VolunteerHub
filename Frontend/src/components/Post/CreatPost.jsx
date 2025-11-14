@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, Smile, Tag, Heart } from "lucide-react";
 
 export default function CreatePost({ onCreate }) {
   const [text, setText] = useState("");
@@ -38,29 +38,48 @@ export default function CreatePost({ onCreate }) {
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+    <div className="bg-white p-6 rounded-xl shadow-lg mb-6 border border-blue-100">
       <form onSubmit={submit}>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="What do you think about this event?"
-          className="w-full resize-none p-2 border rounded-md focus:ring-2 focus:border-blue-500"
-          rows={4}
-        />
+        <div className="relative">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Hãy chia sẻ suy nghĩ của bạn về sự kiện này... ✨
+Bạn nghĩ sao về hoạt động tình nguyện? Ai đã truyền cảm hứng cho bạn?"
+            className="w-full resize-none p-4 border-2 border-blue-200 rounded-xl focus:ring-2 focus:border-blue-500 focus:outline-none text-gray-700 placeholder-gray-400 text-base leading-relaxed"
+            rows={4}
+          />
+          <div className="absolute bottom-3 right-3 flex gap-2">
+            <button
+              type="button"
+              className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Thêm emoji"
+            >
+              <Smile className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Tag người khác"
+            >
+              <Tag className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
 
         {images.length > 0 && (
-          <div className="mt-3 grid gap-2 grid-cols-4">
+          <div className="mt-4 grid gap-3 grid-cols-4">
             {images.map((img, i) => (
-              <div key={i} className="relative">
+              <div key={i} className="relative group">
                 <img
                   src={img.url}
                   alt=""
-                  className="h-40 w-full object-cover rounded-md cursor-pointer aspect-square"
+                  className="h-32 w-full object-cover rounded-lg cursor-pointer aspect-square border-2 border-blue-100"
                 />
                 <button
                   type="button"
                   onClick={() => removeImage(i)}
-                  className="absolute top-2 right-2 bg-black/60 text-white rounded-full px-1"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                 >
                   ✕
                 </button>
@@ -69,23 +88,33 @@ export default function CreatePost({ onCreate }) {
           </div>
         )}
 
-        <div className="mt-3 flex justify-between items-center">
-          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-            <Camera className="w-5 h-5" />
-            <span>Upload Images</span>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImages}
-              className="hidden"
-            />
-          </label>
+        <div className="mt-4 flex justify-between items-center">
+          <div className="flex gap-3">
+            <label className="flex items-center gap-2 text-sm text-blue-600 cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors">
+              <Camera className="w-5 h-5" />
+              <span className="font-medium">Ảnh</span>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImages}
+                className="hidden"
+              />
+            </label>
+            <button
+              type="button"
+              className="flex items-center gap-2 text-sm text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors"
+              title="Biểu cảm"
+            >
+              <Heart className="w-5 h-5" />
+              <span className="font-medium">Cảm xúc</span>
+            </button>
+          </div>
           <button
             disabled={!text.trim() && !images.length}
-            className="bg-blue-600 text-white px-4 py-1 rounded-md disabled:opacity-60"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-md"
           >
-            Post
+            Đăng bài
           </button>
         </div>
       </form>
