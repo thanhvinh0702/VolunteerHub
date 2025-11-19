@@ -3,7 +3,7 @@ import { ROLES } from "./role";
 export const MENU_ITEMS = [
   {
     label: "Dashboard",
-    path: "/user",
+    path: "/dashboard",
     allowedRoles: [ROLES.ADMIN, ROLES.USER, ROLES.ORG],
   },
   {

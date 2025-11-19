@@ -5,8 +5,8 @@ import { ROLES } from "../constant/role";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const defaultUser = { name: "Demo User", role: ROLES.USER };
-  const [user, setUser] = useState(storage.getUser() || defaultUser);
+  const defaultUser = { name: "Demo User", role: ROLES.ORG };
+  const [user, setUser] = useState(defaultUser);
 
   useEffect(() => {
     if (user) storage.setUser(user);

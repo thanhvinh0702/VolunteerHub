@@ -17,6 +17,7 @@ import Notifications from "../pages/DashBoard/Notifications";
 import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
 import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
 import EventLayout from "../pages/EventPage/EventLayout";
+import EventManager from "../pages/EventManager/EventManager";
 
 function AppRouter() {
   return (
@@ -43,6 +44,7 @@ function AppRouter() {
             <Route path="activity" element={<Activity />} />
             <Route path="badges" element={<Badges />} />
             <Route path="notifications" element={<Notifications />} />
+            <Route path="eventmanager" element={<EventManager />} />
           </Route>
 
           {/* opportunities */}

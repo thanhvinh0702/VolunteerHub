@@ -25,7 +25,7 @@ export default function NavBar() {
 
       <ul className="hidden md:flex items-center gap-8 text-lg  text-gray-700">
         <li
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/dashboard")}
           className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
         >
           DashBoard

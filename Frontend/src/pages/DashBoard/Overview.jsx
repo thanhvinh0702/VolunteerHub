@@ -3,16 +3,28 @@ import DashBoardOverview from "../../components/Dashboard/DashBoardOverview";
 import QuickActionsUser from "../../components/QuickActionButton/QuickActionsUser";
 import UpcomingEvents from "../../components/ModalActivity/UpcomingEvents";
 import RecentActivity from "../../components/ModalActivity/RecentActivity";
+import { useAuth } from "../../hook/useAuth";
+import { ROLES } from "../../constant/role";
+import NewEventsAnnounced from "./NewEventsAnnounced";
+import TrendingEvent from "../../components/TrendingEvent/TrendingEvent";
+import RequestCard from "../../components/RequestEventAd/RequestCard";
+import RequestCardOverview from "../../components/RequestEventAd/RequestCardOverview";
 
 export default function Overview() {
+  const { user } = useAuth();
+  console.log(user.role + " hhh");
   return (
     <div className="flex flex-col gap-10">
       <DashBoardOverview />
       <QuickActionsUser />
       <div className="grid grid-cols-2 gap-10 max-lg:block">
-        <UpcomingEvents className="basis-1/2" />
+        {user.role === ROLES.ORG && (
+          <NewEventsAnnounced className="basis-1/2" />
+        )}
         <RecentActivity className="basis-1/2" />
       </div>
+      <TrendingEvent />
+      <RequestCardOverview />
     </div>
   );
 }
