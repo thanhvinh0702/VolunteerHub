@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
 import EventManagerCard from "../../components/Project/eventManagerCard";
 import { mockEventManagerData, EVENT_STATUS } from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
+import CreateEvent from "../../components/Form/CreateEvent";
+import useClickOutside from "../../hook/ClickOutside";
 
 function EventManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-
+  const [openCreateForm, setOpenCreateForm] = useState(false);
   const {
     data: events,
     isLoading,
@@ -20,6 +22,23 @@ function EventManager() {
     staleTime: 1000 * 60,
   });
 
+  useEffect(() => {
+    if (openCreateForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [openCreateForm]);
+
+  const handleCreateNew = () => {
+    setOpenCreateForm(true);
+  };
+  const modalRef = useClickOutside(() => {
+    setOpenCreateForm(false);
+  });
   const filteredEvents = events?.filter((event) => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -64,11 +83,6 @@ function EventManager() {
     // TODO: Show confirmation modal and delete
   };
 
-  const handleCreateNew = () => {
-    console.log("Create new event");
-    // TODO: Navigate to create page or open modal
-  };
-
   if (isLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -92,7 +106,7 @@ function EventManager() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm gap-6 flex flex-col">
+    <div className="bg-white p-6 rounded-xl shadow-sm gap-6 flex flex-col ">
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold text-gray-900">Your Events</h2>
@@ -128,8 +142,8 @@ function EventManager() {
           />
 
           <button
-            onClick={handleCreateNew}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            onClick={() => setOpenCreateForm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
           >
             <Plus className="w-5 h-5" />
             <span>New Event</span>
@@ -206,6 +220,25 @@ function EventManager() {
                 {events.reduce((sum, e) => sum + e.registered, 0)}
               </span>
             </span>
+          </div>
+        </div>
+      )}
+      {openCreateForm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div ref={modalRef} className="w-full max-w-3xl my-8">
+            <div className="relative bg-white rounded-2xl shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+              <button
+                onClick={() => setOpenCreateForm(false)}
+                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition"
+                aria-label="Close"
+              >
+                <span className="text-xl font-bold leading-none">×</span>
+              </button>
+              <CreateEvent
+                onSuccess={() => setOpenCreateForm(false)}
+                onCancel={() => setOpenCreateForm(false)}
+              />
+            </div>
           </div>
         </div>
       )}

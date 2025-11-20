@@ -18,6 +18,7 @@ export default function DropdownSelect({
     <div ref={ref} className={`relative inline-block ${className}`}>
       {/* Trigger */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 text-gray-800 hover:bg-gray-200 focus:outline-none"
       >

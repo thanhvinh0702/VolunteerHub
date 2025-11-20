@@ -18,6 +18,7 @@ import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
 import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
 import EventLayout from "../pages/EventPage/EventLayout";
 import EventManager from "../pages/EventManager/EventManager";
+import RegistrationPage from "../pages/DashBoard/RegistrationPage";
 
 function AppRouter() {
   return (
@@ -65,6 +66,15 @@ function AppRouter() {
         {/* Organization-only route */}
         <Route element={<RequireRole allowedRoles={[ROLES.ORG]} />}>
           <Route path="/organization" element={<OrganizationPage />} />
+          <Route path="/dashboard" element={<DashboardShell />}>
+            <Route index element={<Overview />} />
+            <Route path="opportunities" element={<OpportunitiesTab />} />
+            <Route path="approve-registration" element={<RegistrationPage />} />
+            <Route path="" element={<Badges />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="eventmanager" element={<EventManager />} />
+            <Route path="badges" element={<Badges />} />
+          </Route>
         </Route>
       </Route>
 

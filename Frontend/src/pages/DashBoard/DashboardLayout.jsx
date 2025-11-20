@@ -25,7 +25,7 @@ const roleSpecificItems = {
     {
       key: "approve_registration",
       label: "Approve Registration",
-      to: "/dashboard/activity",
+      to: "/dashboard/approve-registration",
     },
     {
       key: "mark_completion",
