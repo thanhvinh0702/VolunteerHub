@@ -6,8 +6,9 @@ import {
   EVENT_STATUS,
   canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
-
+import { useNavigate } from "react-router-dom";
 function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
+  const navigate = useNavigate();
   const { id, title, category, date, location, status, registered, capacity } =
     data;
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -196,7 +197,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
             <Edit className="w-4 h-4 text-gray-600" />
           </button>
           <button
-            onClick={() => onView?.(id)}
+            onClick={() => navigate(`/dashboard/eventmanager/${id}`)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             title="View"
           >

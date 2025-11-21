@@ -192,7 +192,7 @@ function LandingPage() {
     setMenuOpen(!menuOpen);
   };
   return (
-    <div className="">
+    <div className="bg-green-950">
       <header className="bg-[#FFF8F0] fixed w-full top-0 left-0 z-50">
         <nav className="max-w-screen-xl mx-auto flex items-center justify-between h-16 sm:h-20 px-6 sm:px-16">
           <div className="font-lobster text-2xl sm:text-[32px] text-green-900">

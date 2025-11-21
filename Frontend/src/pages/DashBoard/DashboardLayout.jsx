@@ -30,7 +30,7 @@ const roleSpecificItems = {
     {
       key: "mark_completion",
       label: "Mark Completion",
-      to: "/dashboard/badges",
+      to: "/dashboard/markcompletion",
     },
   ],
   [ROLES.USER]: [

@@ -45,7 +45,7 @@
 
 
 body {
-    @apply bg-green-950 text-black font-jost
+    @apply bg-gray-50 text-black font-jost overflow-x-hidden
 
 }
 

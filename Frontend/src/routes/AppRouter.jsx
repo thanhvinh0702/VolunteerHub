@@ -18,7 +18,11 @@ import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
 import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
 import EventLayout from "../pages/EventPage/EventLayout";
 import EventManager from "../pages/EventManager/EventManager";
-import RegistrationPage from "../pages/DashBoard/RegistrationPage";
+import MarkCompletionList from "../components/MarkCompletion/MarkCompletionList";
+import ManagerEventForManager from "../pages/ManageEventForManager/ManagerEventForManager";
+import EventManagerMarkComplete from "../components/ManageEventDb/EventManagerMarkComplete";
+import OverviewEventManager from "../components/ManageEventDb/OverviewEventManager";
+import VolunteerList from "../components/ManageEventDb/VolunteerList";
 
 function AppRouter() {
   return (
@@ -68,12 +72,31 @@ function AppRouter() {
           <Route path="/organization" element={<OrganizationPage />} />
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route index element={<Overview />} />
-            <Route path="opportunities" element={<OpportunitiesTab />} />
-            <Route path="approve-registration" element={<RegistrationPage />} />
-            <Route path="" element={<Badges />} />
+            <Route path="markcompletion" element={<MarkCompletionList />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="eventmanager" element={<EventManager />} />
-            <Route path="badges" element={<Badges />} />
+          </Route>
+
+          {/* Event Manager Detail with nested tabs */}
+          <Route
+            path="/dashboard/eventmanager/:id"
+            element={<ManagerEventForManager />}
+          >
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<OverviewEventManager />} />
+            <Route path="manage-volunteers" element={<VolunteerList />} />
+            <Route
+              path="verify-registration"
+              element={
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  Verify Registration - Coming soon
+                </div>
+              }
+            />
+            <Route
+              path="mark-completion"
+              element={<EventManagerMarkComplete />}
+            />
           </Route>
         </Route>
       </Route>

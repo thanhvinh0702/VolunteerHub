@@ -105,7 +105,12 @@ export default function EventLayout() {
 
           {/* tab links */}
           <div className="w-full border-b border-gray-300 mb-4">
-            <Tabs items={headerItems} asLink variant="header" />
+            <Tabs
+              items={headerItems}
+              defaultKey={"overview"}
+              asLink
+              variant="header"
+            />
           </div>
 
           {/*<EventOverview description={eventData.description} />*/}

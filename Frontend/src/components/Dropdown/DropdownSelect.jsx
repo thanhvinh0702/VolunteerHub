@@ -15,12 +15,15 @@ export default function DropdownSelect({
   const selected = options.find((opt) => opt.value === value);
 
   return (
-    <div ref={ref} className={`relative inline-block ${className}`}>
+    <div
+      ref={ref}
+      className={`relative inline-block ${className} max-sm:text-sm min-w-[160px] max-sm:min-w-[90px]`}
+    >
       {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 text-gray-800 hover:bg-gray-200 focus:outline-none"
+        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 max-sm:py-1 text-gray-800 hover:bg-gray-200 focus:outline-none"
       >
         <span>{selected ? selected.label : placeholder}</span>
         <FiChevronDown
@@ -37,7 +40,7 @@ export default function DropdownSelect({
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`flex justify-between items-center px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 cursor-pointer ${
+              className={`flex justify-between items-center px-4 py-2  text-gray-800 hover:bg-gray-100 cursor-pointer ${
                 opt.value === value ? "bg-gray-100 text-blue-600" : ""
               }`}
             >
