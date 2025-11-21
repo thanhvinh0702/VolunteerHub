@@ -1,0 +1,25 @@
+import { Calendar } from "lucide-react";
+import RegistrationStatusBadge from "../Registration/RegistrationStatusBadge";
+
+export default function RegistrationRowSingle({ reg, onSelect }) {
+  return (
+    <tr className="border-b border-b-gray-600/20 hover:bg-gray-50 max-sm:text-sm">
+      <td className="p-4 font-medium">{reg.name}</td>
+
+      <td className="p-4 inline-flex gap-2 items-center">
+        <span>
+          <Calendar className="w-4 h-4 text-blue-400" />
+        </span>
+        <span>{reg.registrationDate}</span>
+      </td>
+      <td className="p-4">
+        <RegistrationStatusBadge status={reg.status} />
+      </td>
+      <td className="p-4">
+        <button className="text-blue-600 hover:underline" onClick={onSelect}>
+          View details
+        </button>
+      </td>
+    </tr>
+  );
+}

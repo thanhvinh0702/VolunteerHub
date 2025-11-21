@@ -23,6 +23,8 @@ import ManagerEventForManager from "../pages/ManageEventForManager/ManagerEventF
 import EventManagerMarkComplete from "../components/ManageEventDb/EventManagerMarkComplete";
 import OverviewEventManager from "../components/ManageEventDb/OverviewEventManager";
 import VolunteerList from "../components/ManageEventDb/VolunteerList";
+import EventVolunteerRegister from "../components/ManageEventDb/EventVolunteerRegister";
+import RegistrationPage from "../pages/DashBoard/RegistrationPage";
 
 function AppRouter() {
   return (
@@ -72,6 +74,7 @@ function AppRouter() {
           <Route path="/organization" element={<OrganizationPage />} />
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route index element={<Overview />} />
+            <Route path="approve-registration" element={<RegistrationPage />} />
             <Route path="markcompletion" element={<MarkCompletionList />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="eventmanager" element={<EventManager />} />
@@ -87,11 +90,7 @@ function AppRouter() {
             <Route path="manage-volunteers" element={<VolunteerList />} />
             <Route
               path="verify-registration"
-              element={
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  Verify Registration - Coming soon
-                </div>
-              }
+              element={<EventVolunteerRegister />}
             />
             <Route
               path="mark-completion"
