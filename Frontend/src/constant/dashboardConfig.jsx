@@ -67,7 +67,12 @@ export const dashboardConfig = {
       icon: <FiAward className="text-green-500" />,
     },
     {
-      label: "Reports",
+      label: "Active Events",
+      value: "5",
+      icon: <FiTrendingUp className="text-purple-500" />,
+    },
+    {
+      label: "Active Events",
       value: "5",
       icon: <FiTrendingUp className="text-purple-500" />,
     },

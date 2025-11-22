@@ -5,7 +5,7 @@ import { ROLES } from "../constant/role";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const defaultUser = { name: "Demo User", role: ROLES.ORG };
+  const defaultUser = { name: "Demo User", role: ROLES.ADMIN };
   const [user, setUser] = useState(defaultUser);
 
   useEffect(() => {

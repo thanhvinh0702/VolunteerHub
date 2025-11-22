@@ -9,6 +9,7 @@ import NewEventsAnnounced from "./NewEventsAnnounced";
 import TrendingEvent from "../../components/TrendingEvent/TrendingEvent";
 import RequestCard from "../../components/RequestEventAd/RequestCard";
 import RequestCardOverview from "../../components/RequestEventAd/RequestCardOverview";
+import GrowthMetric from "../../components/Admin/GrowthMetric";
 
 export default function Overview() {
   const { user } = useAuth();
@@ -21,10 +22,10 @@ export default function Overview() {
         {user.role === ROLES.ORG && (
           <NewEventsAnnounced className="basis-1/2" />
         )}
+        {user.role === ROLES.ADMIN && <GrowthMetric />}
         <RecentActivity className="basis-1/2" />
       </div>
       <TrendingEvent />
-      <RequestCardOverview />
     </div>
   );
 }

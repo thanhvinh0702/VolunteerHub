@@ -25,6 +25,9 @@ import OverviewEventManager from "../components/ManageEventDb/OverviewEventManag
 import VolunteerList from "../components/ManageEventDb/VolunteerList";
 import EventVolunteerRegister from "../components/ManageEventDb/EventVolunteerRegister";
 import RegistrationPage from "../pages/DashBoard/RegistrationPage";
+import EventAdminManager from "../components/Admin/EventAdminManager";
+import UserManager from "../components/Admin/UserManager";
+import ExportData from "../components/Admin/ExportData";
 
 function AppRouter() {
   return (
@@ -62,6 +65,11 @@ function AppRouter() {
         {/* Admin-only route */}
         <Route element={<RequireRole allowedRoles={[ROLES.ADMIN]} />}>
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/dashboard" element={<DashboardShell />}>
+            <Route path="eventAdminManager" element={<EventAdminManager />} />
+            <Route path="userAdminManager" element={<UserManager />} />
+            <Route path="exportData" element={<EventManager />} />
+          </Route>
         </Route>
 
         {/* User-only route */}

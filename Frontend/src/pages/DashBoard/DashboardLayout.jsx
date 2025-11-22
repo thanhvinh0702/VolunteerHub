@@ -13,6 +13,21 @@ const roleSpecificItems = {
   [ROLES.ADMIN]: [
     // Admin có thể có thêm tab quản lý hệ thống
     // { key: "admin-tools", label: "Admin Tools", to: "/dashboard/admin-tools" },
+    {
+      key: "Events",
+      label: "Events",
+      to: "/dashboard/eventAdminManager",
+    },
+    {
+      key: "Users",
+      label: "Users",
+      to: "/dashboard/userAdminManager",
+    },
+    {
+      key: "Export Data",
+      label: "Export Data",
+      to: "/dashboard/exportData",
+    },
   ],
   [ROLES.ORG]: [
     // Organization có thể có thêm tab quản lý sự kiện
