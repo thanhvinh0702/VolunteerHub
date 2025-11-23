@@ -68,7 +68,7 @@ function AppRouter() {
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route path="eventAdminManager" element={<EventAdminManager />} />
             <Route path="userAdminManager" element={<UserManager />} />
-            <Route path="exportData" element={<EventManager />} />
+            <Route path="exportData" element={<RegistrationPage />} />
           </Route>
         </Route>
 

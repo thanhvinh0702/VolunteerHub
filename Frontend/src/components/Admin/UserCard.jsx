@@ -8,23 +8,25 @@ import {
   ChevronUp,
   Calendar,
   Clock,
-  MapPin,
   Users,
 } from "lucide-react";
-import {
-  getStatusColor,
-  STATUS_CONFIG,
-  EVENT_STATUS,
-  canCancelEvent,
-} from "../../pages/EventManager/eventManagerData";
-import { useNavigate } from "react-router-dom";
+import { getStatusColor, STATUS_CONFIG, USER_STATUS, canBan } from "./dumpData";
+import { Mail, User } from "lucide-react";
 
-function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
-  const navigate = useNavigate();
-  const { id, title, category, date, location, status, registered, capacity } =
-    data;
+function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
+  const {
+    id,
+    name,
+    email,
+    avatar,
+    type,
+    status,
+    joinDate,
+    lastActive,
+    activity,
+  } = data;
   const [currentStatus, setCurrentStatus] = useState(status);
-  const [isCancelling, setIsCancelling] = useState(false);
+  const [isBan, setBan] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatDate = (dateString) => {
@@ -45,36 +47,32 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
     });
   };
 
-  const handleCancelEvent = async () => {
-    if (!canCancelEvent(currentStatus)) {
-      alert("Only approved events can be cancelled");
+  const BanUser = async () => {
+    if (!canBan(currentStatus)) {
+      alert("Only active users can be banned");
       return;
     }
 
     const confirmed = window.confirm(
-      `Are you sure you want to cancel "${title}"?\n\nThis will notify all ${registered} registered volunteers.`
+      `Are you sure you want to ban "${name}"?\n\nThis user will no longer be able to access the platform.`
     );
 
     if (!confirmed) return;
 
     const previousStatus = currentStatus;
-    setCurrentStatus(EVENT_STATUS.CANCELLED);
-    setIsCancelling(true);
+    setCurrentStatus(USER_STATUS.BAN);
+    setBan(true);
 
     try {
-      await onCancelEvent?.(id);
-      console.log(`✅ Event cancelled successfully`);
+      await onBanUser?.(id);
+      console.log(`✅ User banned successfully`);
     } catch (error) {
-      console.error("Failed to cancel event:", error);
+      console.error("Failed to ban user:", error);
       setCurrentStatus(previousStatus);
-      alert(`Failed to cancel event: ${error.message || "Unknown error"}`);
+      alert(`Failed to ban user: ${error.message || "Unknown error"}`);
     } finally {
-      setIsCancelling(false);
+      setBan(false);
     }
-  };
-
-  const getProgressPercentage = () => {
-    return Math.round((registered / capacity) * 100);
   };
 
   return (
@@ -82,54 +80,26 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
       {/* Desktop View - Table Row */}
       <tr className="hidden lg:table-row border-b border-gray-200 hover:bg-gray-50 transition-colors">
         <td className="px-6 py-4">
+          <span className="font-semibold text-gray-900">{id}</span>
+        </td>
+        <td className="px-6 py-4">
+          <img
+            src={avatar}
+            alt={name}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        </td>
+        <td className="px-6 py-4">
           <div className="flex flex-col">
-            <span className="font-semibold text-gray-900">{title}</span>
-            <span className="text-sm text-gray-500">{category}</span>
+            <span className="font-medium text-gray-900">{name}</span>
+            <span className="text-sm text-gray-500">{email}</span>
           </div>
         </td>
-
         <td className="px-6 py-4">
-          <div className="flex flex-col text-sm">
-            <div className="flex items-center gap-1 text-gray-700">
-              <i className="ri-calendar-line"></i>
-              <span>{formatDate(date)}</span>
-            </div>
-            <div className="flex items-center gap-1 text-gray-500">
-              <i className="ri-time-line"></i>
-              <span>{formatTime(date)}</span>
-            </div>
-          </div>
+          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-sm font-medium capitalize">
+            {type}
+          </span>
         </td>
-
-        <td className="px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-700">
-            <i className="ri-map-pin-fill text-gray-400"></i>
-            <span className="max-w-[150px] truncate">{location}</span>
-          </div>
-        </td>
-
-        <td className="px-6 py-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-semibold text-gray-700">
-                {registered}/{capacity}
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all ${
-                  registered === capacity
-                    ? "bg-red-500"
-                    : registered >= capacity * 0.8
-                    ? "bg-orange-500"
-                    : "bg-blue-500"
-                }`}
-                style={{ width: `${getProgressPercentage()}%` }}
-              ></div>
-            </div>
-          </div>
-        </td>
-
         <td className="px-6 py-4">
           <span
             className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize min-w-[90px] inline-block text-center ${getStatusColor(
@@ -140,29 +110,57 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             {STATUS_CONFIG[currentStatus]?.label || currentStatus}
           </span>
         </td>
+        <td className="px-6 py-4">
+          <div className="flex flex-col text-sm">
+            <div className="flex items-center gap-1 text-gray-700">
+              <Calendar className="w-4 h-4" />
+              <span>{formatDate(joinDate)}</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-500">
+              <Clock className="w-4 h-4" />
+              <span>{formatTime(lastActive)}</span>
+            </div>
+          </div>
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex flex-col gap-1 text-sm">
+            {activity?.hours && (
+              <span className="text-gray-700">{activity.hours} hours</span>
+            )}
+            {activity?.events !== null && (
+              <span className="text-gray-500">{activity.events} events</span>
+            )}
+            {activity?.volunteers !== null && (
+              <span className="text-gray-500">
+                {activity.volunteers} volunteers
+              </span>
+            )}
+          </div>
+        </td>
 
         <td className="px-6 py-4">
           <div className="flex items-center gap-2">
-            {currentStatus === EVENT_STATUS.APPROVED && (
+            {currentStatus === USER_STATUS.ACTIVE && (
               <button
-                onClick={() => onEdit?.(id)}
-                className="p-2 hover:bg-red-500 rounded-lg transition-colors bg-red-800/80"
-                title="Cancel Event"
+                onClick={BanUser}
+                disabled={isBan}
+                className="p-2 bg-red-500/90 text-white hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50"
+                title="Ban user"
               >
-                <Ban className="w-4 h-4 text-white" />
+                <Ban className="w-4 h-4" />
               </button>
             )}
-            {currentStatus === EVENT_STATUS.PENDING && (
+            {currentStatus === USER_STATUS.PENDING && (
               <button
                 onClick={() => onEdit?.(id)}
-                className="p-2 bg-green-500/90 text-white hover:bg-green-500 rounded-lg transition-colors"
-                title="Approve Event"
+                className="p-2 bg-green-500/90 text-white hover:bg-green-600 rounded-lg transition-colors"
+                title="Approve User"
               >
                 <CircleCheckBig className="w-4 h-4" />
               </button>
             )}
             <button
-              onClick={() => navigate(`/dashboard/eventmanager/${id}`)}
+              onClick={() => onView?.(id)}
               className="p-2 border-gray-500/20 border hover:bg-gray-100 rounded-lg transition-colors"
               title="View Details"
             >
@@ -171,7 +169,7 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             <button
               onClick={() => onDelete?.(id)}
               className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors"
-              title="Delete Event"
+              title="Delete User"
             >
               <Trash2 className="w-4 h-4 text-white" />
             </button>
@@ -192,12 +190,14 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                 <div className="flex-1 min-w-0">
                   {/* Title */}
                   <p className="font-semibold text-gray-900 text-base leading-tight mb-1">
-                    {title}
+                    {name}
                   </p>
 
-                  {/* Category & Status */}
+                  {/* Type & Status */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-gray-500">{category}</span>
+                    <span className="text-xs text-gray-500 capitalize">
+                      {type}
+                    </span>
                     <span
                       className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${getStatusColor(
                         currentStatus
@@ -229,14 +229,14 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                 <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
-                    <span>{formatDate(date)}</span>
+                    <span>{formatDate(joinDate)}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5" />
-                    <span>
-                      {registered}/{capacity}
-                    </span>
-                  </div>
+                  {activity?.hours && (
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{activity.hours} hours</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -247,64 +247,73 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                 {/* Date & Time */}
                 <div className="flex items-center gap-2 text-sm pt-3">
                   <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-700">{formatDate(date)}</span>
+                  <span className="text-gray-700">{formatDate(joinDate)}</span>
                   <Clock className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
-                  <span className="text-gray-600">{formatTime(date)}</span>
+                  <span className="text-gray-600">
+                    {formatTime(lastActive)}
+                  </span>
                 </div>
 
-                {/* Location */}
+                {/* Email & Type */}
                 <div className="flex items-start gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 break-words">{location}</span>
+                  <Mail className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 break-words">{email}</span>
+                </div>
+                <div className="flex items-start gap-2 text-sm">
+                  <User className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 break-words capitalize">
+                    {type}
+                  </span>
                 </div>
 
-                {/* Volunteers Progress */}
+                {/* Activity */}
                 <div className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between text-sm mb-2">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-gray-500" />
                       <span className="text-gray-600 font-medium">
-                        Volunteers
+                        Activity
                       </span>
                     </div>
-                    <span className="font-semibold text-gray-900">
-                      {registered}/{capacity}
-                    </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        registered === capacity
-                          ? "bg-red-500"
-                          : registered >= capacity * 0.8
-                          ? "bg-orange-500"
-                          : "bg-blue-500"
-                      }`}
-                      style={{ width: `${getProgressPercentage()}%` }}
-                    ></div>
+                  <div className="flex flex-col gap-1 text-sm">
+                    {activity?.hours && (
+                      <span className="text-gray-700">
+                        {activity.hours} hours volunteered
+                      </span>
+                    )}
+                    {activity?.events !== null && (
+                      <span className="text-gray-500">
+                        {activity.events} events{" "}
+                        {type === "organization" ? "created" : "joined"}
+                      </span>
+                    )}
+                    {activity?.volunteers !== null && (
+                      <span className="text-gray-500">
+                        {activity.volunteers} volunteers
+                      </span>
+                    )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {getProgressPercentage()}% filled
-                  </p>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-4 gap-2 pt-2">
-                  {currentStatus === EVENT_STATUS.APPROVED && (
+                  {currentStatus === USER_STATUS.ACTIVE && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCancelEvent();
+                        BanUser();
                       }}
-                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      disabled={isBan}
+                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       <Ban className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
-                        Cancel Event
+                        Ban User
                       </span>
                     </button>
                   )}
-                  {currentStatus === EVENT_STATUS.PENDING && (
+                  {currentStatus === USER_STATUS.PENDING && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -314,14 +323,14 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                     >
                       <CircleCheckBig className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
-                        Approve Event
+                        Approve User
                       </span>
                     </button>
                   )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/dashboard/eventmanager/${id}`);
+                      onView?.(id);
                     }}
                     className="col-span-2 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
@@ -347,4 +356,4 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
   );
 }
 
-export default EventManagerCardAd;
+export default UserCard;
