@@ -28,4 +28,17 @@ public class AdminController {
     public ResponseEntity<List<UserLoginHistory>> findByUserId(@PathVariable String userId) {
         return ResponseEntity.ok(userLoginHistoryService.findByUserId(userId));
     }
+
+    @PatchMapping("/{userId}/lock")
+    public ResponseEntity<User> lockUser(@PathVariable String userId) {
+        User updatedUser = userService.lockUser(userId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PatchMapping("/{userId}/unlock")
+    public ResponseEntity<User> unlockUser(@PathVariable String userId) {
+        User updatedUser = userService.unlockUser(userId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
 }

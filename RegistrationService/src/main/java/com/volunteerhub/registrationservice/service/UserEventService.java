@@ -9,26 +9,33 @@ import com.volunteerhub.registrationservice.mapper.UserEventMapper;
 import com.volunteerhub.registrationservice.model.EventSnapshot;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
+import com.volunteerhub.registrationservice.repository.EventSnapshotRepository;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
 public class UserEventService {
 
     private final UserEventRepository userEventRepository;
+    private final EventSnapshotRepository eventSnapshotRepository;
     private final EventSnapshotService eventSnapshotService;
     private final UserEventMapper userEventMapper;
     private final RegistrationPublisher registrationPublisher;
-
+    private final RedisTemplate<String, Long> stringLongRedisTemplate;
+    private final String templateAnalytic = "analytic:owner:";
     public UserEvent findEntityByUserIdAndEventId(String userId, Long eventId) {
         return userEventRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
                 new NoSuchElementException("User-event registration with user id " + userId + " and event id " + eventId + " does not exits"));
@@ -101,6 +108,7 @@ public class UserEventService {
                 .build();
         UserEvent savedUserEvent = userEventRepository.save(userEvent);
         registrationPublisher.publishEvent(userEventMapper.toCreatedMessage(userEvent, eventSnapshot.getOwnerId()));
+        changedApply(eventSnapshot.getOwnerId(), true);
         return userEventMapper.toResponseDto(savedUserEvent);
     }
 
@@ -138,12 +146,14 @@ public class UserEventService {
         }
         userEvent.setStatus(UserEventStatus.APPROVED);
         userEvent.setReviewedAt(LocalDateTime.now());
+        changedApprove(snapshot.getOwnerId(),  true);
     }
 
     private void rejectUserEvent(UserEvent userEvent, String note) {
         userEvent.setStatus(UserEventStatus.REJECTED);
         userEvent.setNote(note);
         userEvent.setReviewedAt(LocalDateTime.now());
+
     }
 
     private void completeUserEvent(UserEvent userEvent, String note) {
@@ -154,7 +164,91 @@ public class UserEventService {
 
     public UserEventResponse deleteUserEventRegistrationRequest(String userId, Long eventId) {
         UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
+        EventSnapshot tmp = eventSnapshotRepository.findById(eventId)
+                .orElseThrow(() -> new NoSuchElementException("Event not found"));
+            changedApprove(tmp.getOwnerId(), false);
+        changedApply(tmp.getOwnerId(), false);
         userEventRepository.delete(userEvent);
+
         return userEventMapper.toResponseDto(userEvent);
     }
+
+    private Long safeGetOrInit(String key, Supplier<Long> computeInitial) {
+        Long val = stringLongRedisTemplate.opsForValue().get(key);
+        if (val != null) return val;
+
+        Long computed = computeInitial.get();
+        stringLongRedisTemplate.opsForValue().set(key, computed, Duration.ofHours(1));
+        return computed;
+    }
+
+    public Long getTotalCapacityForOwner(String ownerId) {
+        String key = templateAnalytic + ownerId + ":total_capacity";
+
+        return safeGetOrInit(key, () -> eventSnapshotRepository.findCapacityPerOrganisation(ownerId));
+    }
+
+    public Long getTotalApplicationForOwner(String ownerId) {
+        String key = templateAnalytic + ownerId + ":total_application";
+
+        return safeGetOrInit(key, () -> userEventRepository.countApplicationsByOwnerId(ownerId));
+    }
+
+    public Long getTotalApprovalForOwner(String ownerId) {
+        String key = templateAnalytic + ownerId + ":total_approval";
+
+        return safeGetOrInit(key, () -> userEventRepository.countApprovedByOwnerId(ownerId));
+    }
+
+    private void updateApplicationRateCache(String ownerId) {
+        String rateApplication = templateAnalytic + ownerId + ":rate_application";
+        Long capacity = getTotalCapacityForOwner(ownerId);
+        Long appl = getTotalApplicationForOwner(ownerId);
+        long rate = 0;
+
+        if (capacity > 0) {
+            rate = Math.round((double) appl / capacity * 100);
+        }
+
+        stringLongRedisTemplate.opsForValue().set(rateApplication, rate, Duration.ofHours(1));
+    }
+
+    public Long changedApply(String ownerId, boolean add) {
+        String key = templateAnalytic + ownerId + ":total_application";
+
+        getTotalApplicationForOwner(ownerId);
+        Long updated = add
+                ? stringLongRedisTemplate.opsForValue().increment(key)
+                : stringLongRedisTemplate.opsForValue().decrement(key);
+
+        updateApplicationRateCache(ownerId);
+
+        return updated;
+    }
+
+    public Long changedApprove(String ownerId, boolean add) {
+        String key = templateAnalytic + ownerId + ":total_approval";
+
+        getTotalApprovalForOwner(ownerId);
+        Long updated = add
+                ? stringLongRedisTemplate.opsForValue().increment(key)
+                : stringLongRedisTemplate.opsForValue().decrement(key);
+
+        updateApprovalRateCache(ownerId);
+        return updated;
+    }
+
+    private void updateApprovalRateCache(String ownerId) {
+        String key = templateAnalytic + ownerId + ":approval_rate";
+        Long totalReq = getTotalApplicationForOwner(ownerId);
+        Long totalAppr = getTotalApprovalForOwner(ownerId);
+
+        Long rate = 0L;
+        if (totalReq > 0) {
+            rate = Math.round((double) totalAppr / totalReq * 100);
+        }
+
+        stringLongRedisTemplate.opsForValue().set(key, rate, Duration.ofHours(1));
+    }
+
 }

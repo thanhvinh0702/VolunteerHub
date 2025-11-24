@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class EventCreatedMessage implements EventMessage{
+public class EventCreatedMessage implements EventMessage {
 
     private Long id;
     private String name;

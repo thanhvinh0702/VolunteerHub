@@ -24,4 +24,21 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     Long countByEventId(Long eventId);
     @Query("SELECT ue.userId FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN ('APPROVED', 'COMPLETED')")
     List<String> findAllUserIdsByEventId(@Param("eventId") Long eventId);
+
+    @Query("""
+    SELECT COUNT(ue.id)
+    FROM UserEvent ue
+    JOIN EventSnapshot es ON ue.eventId = es.eventId
+    WHERE es.ownerId = :ownerId
+""")
+    Long countApplicationsByOwnerId(@Param("ownerId") String ownerId);
+
+    @Query("""
+    SELECT COUNT(ue.id)
+    FROM UserEvent ue
+    JOIN EventSnapshot es ON ue.eventId = es.eventId
+    WHERE es.ownerId = :ownerId
+      AND ue.status = 'APPROVED'
+""")
+    Long countApprovedByOwnerId(@Param("ownerId") String ownerId);
 }

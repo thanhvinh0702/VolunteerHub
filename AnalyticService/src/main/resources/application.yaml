@@ -1,14 +1,9 @@
 spring:
   application:
-    name: EventService
+    name: AnalyticService
 
   config:
     import: optional:file:.env[.properties]
-
-  datasource:
-    url: jdbc:postgresql://${HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
@@ -19,6 +14,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  rabbitmq:
+    host: ${HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
+
   data:
     redis:
       database: 0
@@ -27,19 +28,13 @@ spring:
       password: ${REDIS_PASSWORD}
       timeout: 60000
 
-  rabbitmq:
-    host: ${HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_DEFAULT_USER}
-    password: ${RABBITMQ_DEFAULT_PASS}
-
 rabbitmq:
   exchange:
     notification: ${NOTIFICATION_EXCHANGE}
-    event: ${EVENT_EXCHANGE}
   routingKey:
-    notification: ${NOTIFICATION_ROUTING_KEY}
-    event: ${EVENT_ROUTING_KEY}
+    comment: ${COMMENT_ROUTING_KEY}
+    reaction: ${REACTION_ROUTING_KEY}
+    post: ${POST_ROUTING_KEY}
 
 eureka:
   client:

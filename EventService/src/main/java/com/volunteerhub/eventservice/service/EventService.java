@@ -12,10 +12,12 @@ import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +26,12 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class EventService {
-
     private final EventRepository eventRepository;
     private final CategoryService categoryService;
     private final AddressService addressService;
     private final EventMapper eventMapper;
     private final EventPublisher eventPublisher;
+    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
 
     public Event findEntityById(Long id) {
         return eventRepository.findById(id)
@@ -85,6 +87,7 @@ public class EventService {
         savedEvent.setCategoryId(category.getId());
         savedEvent.setAddressId(address.getId());
         eventPublisher.publishEvent(eventMapper.toCreatedMessage(savedEvent));
+        incrementTotalEvents();
         return eventMapper.toDto(savedEvent);
     }
 
@@ -157,6 +160,8 @@ public class EventService {
         if (!event.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
+
+        decrementTotalEvents();
         eventRepository.delete(event);
         return eventMapper.toDto(event);
     }
@@ -179,9 +184,65 @@ public class EventService {
         if (!event.getStatus().equals(EventStatus.PENDING)) {
             throw new IllegalArgumentException("Unable to reject this event.");
         }
+
         event.setStatus(EventStatus.REJECTED);
         event.setApprovedBy(userId);
         eventPublisher.publishEvent(eventMapper.toRejectedMessage(event, request.getReason()));
         return eventMapper.toDto(eventRepository.save(event));
     }
+
+    public Integer getCacheTotalEvents() {
+        String keyTotal = "analytic:event:total";
+        Integer cachedValue = stringIntegerRedisTemplate.opsForValue()
+                .get(keyTotal);
+
+        if (cachedValue == null) {
+            Integer total = eventRepository.countById();
+            stringIntegerRedisTemplate
+                    .opsForValue()
+                    .set(keyTotal, total, Duration.ofHours(1));
+            return total;
+        }
+        return cachedValue;
+    }
+
+    public Integer incrementTotalEvents() {
+        String keyTotal = "analytic:event:total";
+        Integer cachedValue = stringIntegerRedisTemplate.opsForValue().get(keyTotal);
+
+        if (cachedValue != null) {
+            Long newValue = stringIntegerRedisTemplate.opsForValue().increment(keyTotal, 1);
+            return newValue.intValue();
+        } else {
+            Integer initial = getCacheTotalEvents();
+            stringIntegerRedisTemplate.opsForValue().set(keyTotal, initial);
+            return initial;
+        }
+    }
+
+    public Integer decrementTotalEvents() {
+        String keyTotal = "analytic:event:total";
+        Integer cached = stringIntegerRedisTemplate.opsForValue().get(keyTotal);
+
+        if (cached == null) {
+            long total = eventRepository.count();
+            cached = (int) total;
+            stringIntegerRedisTemplate.opsForValue().set(keyTotal, cached, Duration.ofMinutes(30));
+        }
+
+        if (cached <= 0) {
+            stringIntegerRedisTemplate.opsForValue().set(keyTotal, 0);
+            return 0;
+        }
+
+        Long newValue = stringIntegerRedisTemplate.opsForValue().decrement(keyTotal, 1);
+
+        if (newValue < 0) {
+            stringIntegerRedisTemplate.opsForValue().set(keyTotal, 0);
+            return 0;
+        }
+
+        return newValue.intValue();
+    }
+
 }

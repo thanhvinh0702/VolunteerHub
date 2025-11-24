@@ -72,7 +72,21 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.8.13</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.volunteerhub</groupId>
+            <artifactId>volunteerhub-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+    </dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

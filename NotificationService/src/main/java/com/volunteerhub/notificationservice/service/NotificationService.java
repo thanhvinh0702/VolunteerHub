@@ -8,7 +8,9 @@ import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMess
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
+import com.volunteerhub.common.dto.message.user.UserUpdatedMessage;
 import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.enums.UserStatus;
 import com.volunteerhub.notificationservice.client.RegistrationServiceClient;
 import com.volunteerhub.notificationservice.client.UserServiceClient;
 import com.volunteerhub.notificationservice.dto.request.NotificationRequest;
@@ -221,4 +223,23 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
+
+//    public void handleUserUpdatedNotification(UserUpdatedMessage userUpdatedMessage) {
+//        Map<String, Object> payload = new HashMap<>();
+//        payload.put("email", userUpdatedMessage.getEmail());
+//        payload.put("status", userUpdatedMessage.getStatus().name());
+//        payload.put("updated_at", userUpdatedMessage.getUpdatedAt());
+//
+//        Notification notification = Notification.builder()
+//                .type(userUpdatedMessage.getStatus() == UserStatus.BANNED
+//                        ? NotificationType.USER_BANNED
+//                        : NotificationType.USER_ACTIVE)
+//                .actorId(userUpdatedMessage.getAdminId().toString())
+//                .contextId(userUpdatedMessage.getUserId().toString())
+//                .userId(userUpdatedMessage.getUserId())
+//                .payload(payload)
+//                .build();
+//
+//        notificationRepository.save(notification);
+//    }
 }

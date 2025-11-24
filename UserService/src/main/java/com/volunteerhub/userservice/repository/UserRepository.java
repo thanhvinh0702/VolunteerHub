@@ -14,6 +14,11 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
+    int countById();
+
     @Query("SELECT u.id FROM User u WHERE u.role = :role")
     List<String> findAllIdsByRole(@Param("role") Role role);
+
+    @Query("SELECT u FROM User u WHERE u.name = :name AND u.role = com.volunteerhub.userservice.model.Role.ADMIN")
+    Optional<User> findByNameAdmin(@Param("name") String name);
 }

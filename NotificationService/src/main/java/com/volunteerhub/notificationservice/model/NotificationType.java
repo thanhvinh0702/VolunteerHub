@@ -11,5 +11,7 @@ public enum NotificationType {
     POST_CREATED,
     POST_UPDATED,
     REACTION,
-    COMMENT
+    COMMENT,
+    USER_ACTIVE,
+    USER_BANNED
 }
