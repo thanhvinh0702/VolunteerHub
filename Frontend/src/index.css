@@ -66,7 +66,7 @@ h1 {
 }
 
 .btn {
-    @apply border border-yellow-500 bg-yellow-500 rounded-2xl px-5 py-2 duration-300 cursor-pointer;
+    @apply border border-yellow-500 text-white bg-red-400 rounded-2xl px-5 py-2 duration-300 cursor-pointer;
 }
 
 .btn span {
@@ -82,12 +82,15 @@ h1 {
 }
 
 .btn_outline:hover {
-    @apply bg-yellow-500 text-white;
+    @apply bg-red-400 text-white;
 }
 
+.btn_outline {
+    @apply border border-red-400 text-red-400;
+}
 
 .title-landing {
-    @apply font-lobster text-yellow-400
+    @apply font-lobster text-red-400
 }
 
 h2 {
@@ -116,4 +119,59 @@ h3 {
     background-size: 200% 200%;
     animation: gradient-x 2s ease infinite;
   }
+
+/* Fade in animation for hero section */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for brand consistency */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #6366f1, #a855f7, #ec4899);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #4f46e5, #9333ea, #db2777);
+}
+
+/* Enhanced button hover effects */
+button {
+    transition: all 0.3s ease;
+}
+
+/* Swiper pagination custom styling for brand colors */
+.swiper-pagination-bullet {
+    background: linear-gradient(to right, #6366f1, #a855f7, #ec4899) !important;
+    opacity: 0.5 !important;
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1 !important;
+    transform: scale(1.2);
+}
   

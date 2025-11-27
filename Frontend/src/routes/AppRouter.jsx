@@ -13,7 +13,7 @@ import Overview from "../pages/DashBoard/Overview";
 import OpportunitiesTab from "../pages/DashBoard/Opportunities";
 import Activity from "../pages/DashBoard/Activity";
 import Badges from "../pages/DashBoard/Badges";
-import Notifications from "../pages/DashBoard/Notifications";
+
 import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
 import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
 import EventLayout from "../pages/EventPage/EventLayout";
@@ -28,6 +28,9 @@ import RegistrationPage from "../pages/DashBoard/RegistrationPage";
 import EventAdminManager from "../components/Admin/EventAdminManager";
 import UserManager from "../components/Admin/UserManager";
 import ExportData from "../components/Admin/ExportData";
+import ReportAdmin from "../components/Report/ReportAdmin";
+import Notifications from "../pages/Notification/Notifications";
+import LandingPage from "../pages/Landing";
 
 function AppRouter() {
   return (
@@ -35,7 +38,7 @@ function AppRouter() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
-
+      <Route path="/" element={<LandingPage />} />
       {/* Protected routes */}
       <Route element={<MainLayout />}>
         {/* Redirect root to dashboard */}
@@ -68,7 +71,7 @@ function AppRouter() {
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route path="eventAdminManager" element={<EventAdminManager />} />
             <Route path="userAdminManager" element={<UserManager />} />
-            <Route path="exportData" element={<RegistrationPage />} />
+            <Route path="exportData" element={<ReportAdmin />} />
           </Route>
         </Route>
 

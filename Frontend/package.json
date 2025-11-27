@@ -21,6 +21,8 @@
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^6.30.1",
+    "react-scroll-to-top": "^3.1.0",
+    "react-virtuoso": "^4.15.0",
     "swiper": "^12.0.2"
   },
   "devDependencies": {
