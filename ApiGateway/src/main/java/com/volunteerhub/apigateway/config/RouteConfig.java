@@ -73,4 +73,19 @@ public class RouteConfig {
                 )
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> registrationServiceRoute() {
+        return route("registrationservice")
+                .nest(RequestPredicates.path("/api/v1/registrations/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("REGISTRATIONSERVICE"))
+                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+    }
 }

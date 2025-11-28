@@ -14,6 +14,10 @@ spring:
         issuer: ${VOLUNTEER_HUB_AS_URI}
         jwk-uri: ${VOLUNTEER_HUB_AS_JWK_URI}
 
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
+
 eureka:
   client:
     serviceUrl:
