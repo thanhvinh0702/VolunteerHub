@@ -28,10 +28,13 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 @Configuration
@@ -52,6 +55,9 @@ public class OAuth2SecurityConfig {
     @Value("${spring.security.oauth2.key.private-key}")
     private String privateKeyBase64;
 
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -66,7 +72,7 @@ public class OAuth2SecurityConfig {
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
                 .with(authorizationServerConfigure, authorizationServer -> authorizationServer
                         .oidc(Customizer.withDefaults()))
-                .formLogin(Customizer.withDefaults());
+                .formLogin(form -> form.loginPage("/login").permitAll());
         return http.build();
     }
 
@@ -81,6 +87,16 @@ public class OAuth2SecurityConfig {
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/v1/users/register", "/api/v1/users/login")
         );
+        http.cors(c -> {
+            CorsConfigurationSource source = request -> {
+                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                corsConfiguration.setAllowedOrigins(List.of(allowedOrigins));
+                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+                corsConfiguration.setAllowedHeaders(List.of("*"));
+                return corsConfiguration;
+            };
+            c.configurationSource(source);
+        });
         return http.build();
     }
 

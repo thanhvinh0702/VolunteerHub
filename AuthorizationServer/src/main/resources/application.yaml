@@ -22,6 +22,10 @@ spring:
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
+
   jpa:
     hibernate:
       ddl-auto: update
