@@ -8,6 +8,14 @@ export default defineConfig({
       'smirkingly-nonspalling-awilda.ngrok-free.dev'
     ],
     host: true,
-    port: 5173
+    port: 3000,
+    // Optional: Add proxy if needed (not required with CORS enabled)
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:7070',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   }
+    // }
   }
 })

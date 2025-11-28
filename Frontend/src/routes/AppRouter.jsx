@@ -31,14 +31,21 @@ import ExportData from "../components/Admin/ExportData";
 import ReportAdmin from "../components/Report/ReportAdmin";
 import Notifications from "../pages/Notification/Notifications";
 import LandingPage from "../pages/Landing";
+import SignUpForm from "../pages/Home/SignUp";
+import OAuth2Callback from "../pages/Auth/OAuth2Callback";
 
 function AppRouter() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login/oauth2/code/volunteerhub"
+        element={<OAuth2Callback />}
+      />
+      <Route path="/login/*" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" />
       {/* Protected routes */}
       <Route element={<MainLayout />}>
         {/* Redirect root to dashboard */}

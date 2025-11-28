@@ -1,5 +1,4 @@
 import { BrowserRouter as Router } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
 import Sidebar from "./pages/DemoPages/Sidebar";
 import AppRouter from "./routes/AppRouter";
 import EventCard from "./components/Dashboard/EventCard";
@@ -13,18 +12,23 @@ import { NavbarProvider } from "./context/NavbarContext";
 import "./pages/EventPage/apidump";
 
 const queryClient = new QueryClient();
+import dotenv from "dotenv";
+dotenv.config();
 
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <NavbarProvider>
-            <AppRouter />
-          </NavbarProvider>
-        </Router>
-      </QueryClientProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <NavbarProvider>
+          <AppRouter />
+        </NavbarProvider>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
