@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.vippro.AuthorizationServer.security.SecurityUsers;
 import com.vippro.AuthorizationServer.utils.Key;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -95,20 +97,20 @@ public class OAuth2SecurityConfig {
                 .formLogin(c -> c.loginPage("/login").permitAll())
                 .authorizeHttpRequests(
                 c -> c
-                        .requestMatchers("/login", "/login.html").permitAll()
+                        .requestMatchers("/login", "/login.html", "/logout").permitAll()
                         .requestMatchers("/api/v1/users/register", "/api/v1/users/login").permitAll()
                         .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
                 );
+        http.logout(logout -> logout
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                })
+        );
         http.csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/v1/users/register", "/api/v1/users/login")
+                .ignoringRequestMatchers("/logout", "/api/v1/users/register", "/api/v1/users/login")
         );
         http.cors(c -> {
             CorsConfigurationSource source = request -> {
