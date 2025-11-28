@@ -69,4 +69,8 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEvent(auth.getName(), eventId));
     }
 
+    @GetMapping("/count_events")
+    public ResponseEntity<Long> countEvents() {
+        return ResponseEntity.ok(eventService.countEvents());
+    }
 }

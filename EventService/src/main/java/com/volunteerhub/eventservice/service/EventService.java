@@ -87,7 +87,6 @@ public class EventService {
         savedEvent.setCategoryId(category.getId());
         savedEvent.setAddressId(address.getId());
         eventPublisher.publishEvent(eventMapper.toCreatedMessage(savedEvent));
-        incrementTotalEvents();
         return eventMapper.toDto(savedEvent);
     }
 
@@ -152,7 +151,6 @@ public class EventService {
         return eventMapper.toDto(savedEvent);
     }
 
-
     // TODO: publish event an event has been deleted
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse deleteEvent(String userId, Long eventId) {
@@ -161,7 +159,6 @@ public class EventService {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
 
-        decrementTotalEvents();
         eventRepository.delete(event);
         return eventMapper.toDto(event);
     }
@@ -191,58 +188,8 @@ public class EventService {
         return eventMapper.toDto(eventRepository.save(event));
     }
 
-    public Integer getCacheTotalEvents() {
-        String keyTotal = "analytic:event:total";
-        Integer cachedValue = stringIntegerRedisTemplate.opsForValue()
-                .get(keyTotal);
-
-        if (cachedValue == null) {
-            Integer total = eventRepository.countById();
-            stringIntegerRedisTemplate
-                    .opsForValue()
-                    .set(keyTotal, total, Duration.ofHours(1));
-            return total;
-        }
-        return cachedValue;
+    @PreAuthorize("hasRole('ADMIN')")
+    public Long countEvents() {
+        return eventRepository.countEvents();
     }
-
-    public Integer incrementTotalEvents() {
-        String keyTotal = "analytic:event:total";
-        Integer cachedValue = stringIntegerRedisTemplate.opsForValue().get(keyTotal);
-
-        if (cachedValue != null) {
-            Long newValue = stringIntegerRedisTemplate.opsForValue().increment(keyTotal, 1);
-            return newValue.intValue();
-        } else {
-            Integer initial = getCacheTotalEvents();
-            stringIntegerRedisTemplate.opsForValue().set(keyTotal, initial);
-            return initial;
-        }
-    }
-
-    public Integer decrementTotalEvents() {
-        String keyTotal = "analytic:event:total";
-        Integer cached = stringIntegerRedisTemplate.opsForValue().get(keyTotal);
-
-        if (cached == null) {
-            long total = eventRepository.count();
-            cached = (int) total;
-            stringIntegerRedisTemplate.opsForValue().set(keyTotal, cached, Duration.ofMinutes(30));
-        }
-
-        if (cached <= 0) {
-            stringIntegerRedisTemplate.opsForValue().set(keyTotal, 0);
-            return 0;
-        }
-
-        Long newValue = stringIntegerRedisTemplate.opsForValue().decrement(keyTotal, 1);
-
-        if (newValue < 0) {
-            stringIntegerRedisTemplate.opsForValue().set(keyTotal, 0);
-            return 0;
-        }
-
-        return newValue.intValue();
-    }
-
 }

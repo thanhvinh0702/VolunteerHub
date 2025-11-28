@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -84,4 +85,17 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userService.update(authentication.getName(), userRequest), HttpStatus.OK);
     }
+
+    @GetMapping("/total_users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Long> countUsers() {
+        return ResponseEntity.ok(userService.countUsers());
+    }
+
+    @GetMapping("/total_managers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Long> countManagers() {
+        return ResponseEntity.ok(userService.countManagers());
+    }
+
 }

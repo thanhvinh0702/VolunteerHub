@@ -15,10 +15,12 @@ spring:
         format_sql: true
 
   rabbitmq:
-    host: ${HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_DEFAULT_USER}
-    password: ${RABBITMQ_DEFAULT_PASS}
+    exchange:
+      notification: ${NOTIFICATION_EXCHANGE}
+      event: ${EVENT_EXCHANGE}
+    routingKey:
+      notification: ${NOTIFICATION_ROUTING_KEY}
+      event: ${EVENT_ROUTING_KEY}
 
   data:
     redis:

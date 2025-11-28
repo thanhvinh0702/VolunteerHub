@@ -45,4 +45,13 @@ public class EventSnapshotService {
         EventSnapshot eventSnapshot = findEntityById(eventSnapshotId);
         eventSnapshotRepository.delete(eventSnapshot);
     }
+
+    public Long countEventPerManager(String ownerId) {
+        return eventSnapshotRepository.countEventPerManager(ownerId);
+    }
+
+    public Long countEventActivePerManager(String ownerId) {
+        return eventSnapshotRepository.countActiveSnapshots(ownerId);
+    }
+
 }

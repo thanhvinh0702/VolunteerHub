@@ -7,6 +7,7 @@ import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +72,29 @@ public class UserEventController {
                 eventId,
                 userEventRequest)
         );
+    }
+
+    @GetMapping("/event/{ownerId}/application_rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApplicationRate(@PathVariable String ownerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+        if (!currentUserId.equals(ownerId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(userEventService.getApplicationRate(ownerId));
+    }
+
+    @GetMapping("/event/{ownerId}/approved_rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApprovedRate(@PathVariable String ownerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+        if (!currentUserId.equals(ownerId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(userEventService.getApprovalRate(ownerId));
     }
 }

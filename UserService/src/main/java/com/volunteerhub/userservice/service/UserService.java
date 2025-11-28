@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,8 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserPublisher userPublisher;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
-    private final String keyUser = "analytic:user:total";
-
+    private final String keyUser = "analytic:total_users";
     public User findById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
@@ -88,7 +86,6 @@ public class UserService {
                 .username(userRequest.getUsername())
                 .isDarkMode(userRequest.isDarkMode() ? true : false)
                 .build();
-        incrementUsers();
         return userRepository.save(user);
     }
 
@@ -176,39 +173,11 @@ public class UserService {
         }
     }
 
-    public Integer countUsers() {
-        Integer cachedValue = stringIntegerRedisTemplate.opsForValue()
-                .get(keyUser);
-
-        if (cachedValue == null) {
-            Integer total = userRepository.countById();
-            stringIntegerRedisTemplate
-                    .opsForValue()
-                    .set(keyUser, total, Duration.ofHours(1));
-            return total;
-        }
-        return cachedValue;
+    public Long countManagers() {
+        return userRepository.countUsers(Role.MANAGER);
     }
 
-    public Integer incrementUsers() {
-        Integer cachedValue = stringIntegerRedisTemplate.opsForValue()
-                .get(keyUser);
-
-        if (cachedValue != null) {
-            Long newValue = stringIntegerRedisTemplate.opsForValue().increment(keyUser, 1);
-            return newValue.intValue();
-        }
-        return countUsers();
-    }
-
-    public Integer decrementUsers() {
-        Integer cachedValue = stringIntegerRedisTemplate.opsForValue()
-                .get(keyUser);
-
-        if (cachedValue != null) {
-            Long newValue = stringIntegerRedisTemplate.opsForValue().decrement(keyUser, 1);
-            return newValue.intValue();
-        }
-        return countUsers();
+    public Long countUsers() {
+        return userRepository.countUsers(Role.USER);
     }
 }
