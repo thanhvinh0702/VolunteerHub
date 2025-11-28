@@ -8,6 +8,6 @@ export const useRole = () => {
     return {
         isAdmin: user.role === ROLES.ADMIN,
         isUser: user.role === ROLES.USER,
-        isOrg: user.role === ROLES.ORG,
+        isOrg: user.role === ROLES.MANAGER,
     }
 }

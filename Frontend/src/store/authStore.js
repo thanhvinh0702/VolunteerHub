@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { ROLES } from "../constant/role";
+import { logout as logoutService } from "../services/authService";
 
 // helper lưu trữ user vào localStorage
 const persistUser = (user) => {
@@ -15,10 +16,18 @@ const persistUser = (user) => {
 const getInitialUser = () => {
     try {
         const userData = localStorage.getItem("user");
-        return userData ? JSON.parse(userData) : { name: "Demo User", role: ROLES.ADMIN };
+        const token = localStorage.getItem("token");
+
+        // Chỉ load user nếu có cả user data VÀ token
+        if (userData && token) {
+            return JSON.parse(userData);
+        }
+
+        // Nếu không có token hoặc user → chưa login → return null
+        return null;
     } catch (err) {
         console.error("Lỗi khi đọc user từ localStorage:", err);
-        return { name: "Demo User", role: ROLES.ADMIN };
+        return null;
     }
 };
 
@@ -32,10 +41,23 @@ export const useAuthStore = create((set, get) => ({
         set({ user });
     },
 
-    logout: () => {
+    logout: async () => {
+        try {
+            // Gọi backend logout endpoint để invalidate session (gửi cookie)
+            await logoutService();
+        } catch (error) {
+            console.error("Backend logout failed, clearing local data anyway:", error);
+            // Continue với local logout dù backend fail
+        }
+
+        // Xóa tất cả auth data từ localStorage (always execute)
         persistUser(null);
-        localStorage.removeItem("token"); // Xóa token nếu có
-        set({ user: null, error: null });
+        localStorage.removeItem("token");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+
+        // Clear state
+        set({ user: null, error: null, loading: false });
     },
 
     login: (role) => {

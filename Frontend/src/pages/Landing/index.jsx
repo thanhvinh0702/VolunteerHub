@@ -18,7 +18,7 @@ import "swiper/css/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { voluteerTree, futureVolunteer } from "../../assets/img/index";
-
+import { LOGIN_LINK } from "../../constant/constNavigate";
 function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -26,6 +26,9 @@ function LandingPage() {
   const aboutRef = useRef(null);
   const statsRef = useRef(null);
   const navigate = useNavigate();
+  const naviageLogin = () => {
+    window.location.href = LOGIN_LINK;
+  };
 
   // Handle scroll for navbar styling
   useEffect(() => {
@@ -284,7 +287,7 @@ function LandingPage() {
               ))}
               <li>
                 <button
-                  onClick={() => navigate("/login")}
+                  onClick={() => naviageLogin()}
                   className="px-6 py-2.5 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-white rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
                 >
                   Get Started
@@ -360,7 +363,9 @@ function LandingPage() {
                 {/* CTA Buttons with enhanced styling */}
                 <div className="flex flex-col gap-3 sm:flex-row md:gap-4 lg:pt-5">
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={() => {
+                      naviageLogin();
+                    }}
                     className="group px-6 py-3.5 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     <span>Get Started</span>

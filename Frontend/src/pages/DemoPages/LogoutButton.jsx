@@ -6,9 +6,10 @@ function LogoutButton() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    // Force reload to clear all state
+    window.location.href = "/";
   };
   return (
     <button onClick={handleLogout} style={{ marginTop: 20 }}>

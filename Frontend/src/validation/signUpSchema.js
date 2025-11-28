@@ -8,7 +8,7 @@ const signUpSchema = yup.object().shape({
     password: yup.string().min(6).required(),
     confirmPassword: yup.string()
         .oneOf([yup.ref("password"), null], "Passwords must match"),
-    roles: yup.string().oneOf([ROLES.ADMIN, ROLES.MANAGER, ROLES.USER, ROLES.ORG], "Invalid role").required("Role is required"),
+    roles: yup.string().oneOf([ROLES.ADMIN, ROLES.MANAGER, ROLES.USER], "Invalid role").required("Role is required"),
     bio: yup.string(),
     avatarUrl: yup.string().url(),
     preferences: yup.string(),

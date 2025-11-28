@@ -18,11 +18,11 @@ const useSignUp = () => {
 
             // 3. Redirect sang OAuth2 login
             window.location.href =
-                "http://localhost:7070/oauth2/authorize" +
-                "?response_type=code" +
-                "&client_id=7fcdbb6c-fc1d-4921-a52d-0466557b6132" +
-                "&scope=openid" +
-                "&redirect_uri=http://localhost:3000/login/oauth2/code/volunteerhub";
+                `${import.meta.env.VITE_API_URL}/oauth2/authorize` +
+                `?response_type=${import.meta.env.VITE_OAUTH_RESPONSE_TYPE}` +
+                `&client_id=${import.meta.env.VITE_OAUTH_CLIENT_ID}` +
+                `&scope=${import.meta.env.VITE_OAUTH_SCOPE}` +
+                `&redirect_uri=${import.meta.env.VITE_OAUTH_REDIRECT_URI}`;
         },
         onError: (error) => {
             console.error("Sign up failed:", error.response?.data || error.message);

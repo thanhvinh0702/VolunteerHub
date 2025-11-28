@@ -65,16 +65,14 @@ public class OAuth2SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigure =
-                new OAuth2AuthorizationServerConfigurer();
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigure = new OAuth2AuthorizationServerConfigurer();
 
         http.securityMatcher(authorizationServerConfigure.getEndpointsMatcher())
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigure.getEndpointsMatcher()))
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-                )
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
                 .with(authorizationServerConfigure, authorizationServer -> authorizationServer
                         .oidc(Customizer.withDefaults()));
         http.cors(c -> {
@@ -96,28 +94,26 @@ public class OAuth2SecurityConfig {
         http
                 .formLogin(c -> c.loginPage("/login").permitAll())
                 .authorizeHttpRequests(
-                c -> c
-                        .requestMatchers("/login", "/login.html", "/logout").permitAll()
-                        .requestMatchers("/api/v1/users/register", "/api/v1/users/login").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        c -> c
+                                .requestMatchers("/login", "/login.html", "/logout").permitAll()
+                                .requestMatchers("/api/v1/users/register", "/api/v1/users/login").permitAll()
+                                .anyRequest().authenticated());
         http.logout(logout -> logout
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.setStatus(HttpServletResponse.SC_OK);
-                })
-        );
+                }));
         http.csrf(csrf -> csrf
-                .ignoringRequestMatchers("/logout", "/api/v1/users/register", "/api/v1/users/login")
-        );
+                .ignoringRequestMatchers("/logout", "/api/v1/users/register", "/api/v1/users/login"));
         http.cors(c -> {
             CorsConfigurationSource source = request -> {
                 CorsConfiguration corsConfiguration = new CorsConfiguration();
                 corsConfiguration.setAllowedOrigins(List.of(allowedOrigins));
                 corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
                 corsConfiguration.setAllowedHeaders(List.of("*"));
+                corsConfiguration.setAllowCredentials(true);
                 return corsConfiguration;
             };
             c.configurationSource(source);
@@ -128,17 +124,16 @@ public class OAuth2SecurityConfig {
     // Config Client Registry
     @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder) {
-        RegisteredClient registeredClient =
-                RegisteredClient
-                        .withId(UUID.randomUUID().toString())
-                        .clientId(clientId)
-                        .clientSecret(passwordEncoder.encode(clientSecret))
-                        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                        .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                        .redirectUri(redirectUri)
-                        .scope(OidcScopes.OPENID)
-                        .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build())
-                        .build();
+        RegisteredClient registeredClient = RegisteredClient
+                .withId(UUID.randomUUID().toString())
+                .clientId(clientId)
+                .clientSecret(passwordEncoder.encode(clientSecret))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri(redirectUri)
+                .scope(OidcScopes.OPENID)
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build())
+                .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 

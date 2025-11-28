@@ -25,9 +25,6 @@ export default function SignUpForm() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(signUpSchema),
-    defaultValues: {
-      roles: ROLES.USER,
-    },
   });
 
   const mutation = useSignUp();

@@ -32,7 +32,7 @@ export const dashboardConfig = {
     },
   ],
 
-  ORGANIZATION: [
+  MANAGER: [
     {
       label: "Total Events",
       value: "3",

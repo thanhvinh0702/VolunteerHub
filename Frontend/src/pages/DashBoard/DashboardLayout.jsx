@@ -29,7 +29,7 @@ const roleSpecificItems = {
       to: "/dashboard/exportData",
     },
   ],
-  [ROLES.ORG]: [
+  [ROLES.MANAGER]: [
     // Organization có thể có thêm tab quản lý sự kiện
     // { key: "manage-events", label: "Manage Events", to: "/dashboard/manage-events" },
     {

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
+import { LOGIN_LINK } from "../../constant/constNavigate";
+import { ROLES } from "../../constant/role";
+import storage from "../../utils/storage";
 
 export default function OAuth2Callback() {
   const [searchParams] = useSearchParams();
@@ -8,9 +11,16 @@ export default function OAuth2Callback() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+  const [hasProcessed, setHasProcessed] = useState(false);
 
   useEffect(() => {
+    // Prevent multiple executions (React Strict Mode)
+    if (hasProcessed) {
+      return;
+    }
+
     const handleCallback = async () => {
+      setHasProcessed(true);
       const code = searchParams.get("code");
       const errorParam = searchParams.get("error");
 
@@ -18,7 +28,7 @@ export default function OAuth2Callback() {
       if (errorParam) {
         setError(`Authentication failed: ${errorParam}`);
         setLoading(false);
-        setTimeout(() => navigate("/login"), 3000);
+        setTimeout(() => (window.location.href = LOGIN_LINK), 3000);
         return;
       }
 
@@ -26,7 +36,7 @@ export default function OAuth2Callback() {
       if (!code) {
         setError("No authorization code received");
         setLoading(false);
-        setTimeout(() => navigate("/login"), 3000);
+        setTimeout(() => (window.location.href = LOGIN_LINK), 3000);
         return;
       }
 
@@ -41,7 +51,11 @@ export default function OAuth2Callback() {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
               // Basic Auth: base64(client_id:client_secret)
-              Authorization: "Basic " + btoa(""),
+              Authorization:
+                "Basic " +
+                btoa(
+                  "7fcdbb6c-fc1d-4921-a52d-0466557b6132:f584278e-be8a-4f55-9c64-8e7be8f9e846"
+                ),
             },
             body: new URLSearchParams({
               grant_type: "authorization_code",
@@ -63,8 +77,8 @@ export default function OAuth2Callback() {
         const tokenData = await tokenResponse.json();
         console.log("Token received successfully");
 
-        // Save tokens
-        localStorage.setItem("access_token", tokenData.access_token);
+        // Save tokens using storage utility
+        storage.setToken(tokenData.access_token);
         if (tokenData.refresh_token) {
           localStorage.setItem("refresh_token", tokenData.refresh_token);
         }
@@ -74,9 +88,14 @@ export default function OAuth2Callback() {
         console.log("User info from token:", userInfo);
 
         // Extract role from authorities array
-        const role =
-          userInfo.roles?.[0]?.authority?.replace("ROLE_", "").toLowerCase() ||
-          "user";
+        const role = userInfo.roles?.[0]?.role;
+
+        // Validate role - only allow ADMIN, USER, MANAGER
+        const allowedRoles = [ROLES.ADMIN, ROLES.USER, ROLES.MANAGER];
+        if (!role || !allowedRoles.includes(role)) {
+          console.error("Invalid or unauthorized role:", role);
+          throw new Error("Unauthorized role. Only ADMIN, USER, and MANAGER roles are allowed.");
+        }
 
         // Update auth store
         const user = {
@@ -85,6 +104,11 @@ export default function OAuth2Callback() {
           email: userInfo.email,
           role: role,
         };
+        console.log(user);
+
+        console.log("==== DEBUG: Setting user to Zustand ====");
+        console.log("User object:", user);
+        console.log("User role:", user.role);
 
         setUser(user);
 
@@ -100,12 +124,12 @@ export default function OAuth2Callback() {
           err.message || "Failed to complete authentication. Please try again."
         );
         setLoading(false);
-        setTimeout(() => navigate("/login"), 3000);
+        setTimeout(() => (window.location.href = LOGIN_LINK), 3000);
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate, setUser]);
+  }, [searchParams, navigate, setUser, hasProcessed]);
 
   // Helper to decode JWT
   const parseJwt = (token) => {

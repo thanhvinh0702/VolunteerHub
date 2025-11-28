@@ -45,16 +45,15 @@ function AppRouter() {
       <Route path="/login/*" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
-      <Route path="/" />
+      <Route path="/" element={<LandingPage />} />
       {/* Protected routes */}
       <Route element={<MainLayout />}>
-        {/* Redirect root to dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
         {/* Shared protected area */}
         <Route
           element={
-            <RequireRole allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.ORG]} />
+            <RequireRole
+              allowedRoles={[ROLES.ADMIN, ROLES.USER, ROLES.MANAGER]}
+            />
           }
         >
           {/* Dashboard (with nested tabs) */}
@@ -87,8 +86,7 @@ function AppRouter() {
           <Route path="/user" element={<UserPage />} />
         </Route>
 
-        {/* Organization-only route */}
-        <Route element={<RequireRole allowedRoles={[ROLES.ORG]} />}>
+        <Route element={<RequireRole allowedRoles={[ROLES.MANAGER]} />}>
           <Route path="/organization" element={<OrganizationPage />} />
           <Route path="/dashboard" element={<DashboardShell />}>
             <Route index element={<Overview />} />
@@ -98,7 +96,6 @@ function AppRouter() {
             <Route path="eventmanager" element={<EventManager />} />
           </Route>
 
-          {/* Event Manager Detail with nested tabs */}
           <Route
             path="/dashboard/eventmanager/:id"
             element={<ManagerEventForManager />}

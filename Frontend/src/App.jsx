@@ -12,8 +12,6 @@ import { NavbarProvider } from "./context/NavbarContext";
 import "./pages/EventPage/apidump";
 
 const queryClient = new QueryClient();
-import dotenv from "dotenv";
-dotenv.config();
 
 function App() {
   return (

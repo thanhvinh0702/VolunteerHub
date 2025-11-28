@@ -10,10 +10,10 @@ export default function NavBar() {
   const navigate = useNavigate();
   const normalizeRole = (role) => {
     if (role === ROLES.ADMIN) return "Admin";
-    if (role === ROLES.ORG) return "Manager";
+    if (role === ROLES.MANAGER) return "Manager";
     if (role === ROLES.USER) return "User";
   };
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   return (
     <div className="flex flex-row items-center-safe justify-between w-full">
       <div className="flex items-center gap-0 w-8 relative flex-row">
@@ -75,7 +75,15 @@ export default function NavBar() {
             <span onClick={() => navigate("/setting")}>Setting</span>
           </DropDownItem>
           <DropDownItem className="cursor-pointer">
-            <span>Logout</span>
+            <span
+              onClick={async () => {
+                await logout();
+                // Force reload to clear all state and redirect to login
+                window.location.href = "/";
+              }}
+            >
+              Logout
+            </span>
           </DropDownItem>
         </DropDown>
       </div>
