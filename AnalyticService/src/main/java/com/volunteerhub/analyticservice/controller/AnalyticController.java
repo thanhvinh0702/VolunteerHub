@@ -73,4 +73,9 @@ public class AnalyticController {
         return ResponseEntity.ok(analyticService.countUsers());
     }
 
+    @GetMapping("/total_managers")
+    @PreAuthorize("#ownerId == authentication.name or hasRole('ADMIN')")
+    public ResponseEntity<Long> countManagers() {
+        return ResponseEntity.ok(analyticService.countManagers());
+    }
 }

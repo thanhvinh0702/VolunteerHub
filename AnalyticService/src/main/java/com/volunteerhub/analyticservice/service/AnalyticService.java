@@ -97,5 +97,12 @@ public class AnalyticService {
         );
     }
 
-    public Long count
+    public Long countManagers() {
+        return getCached("", ":total_managers", () ->
+                userClient.get()
+                        .uri("/total_managers")
+                        .retrieve()
+                        .body(Long.class)
+        );
+    }
 }
