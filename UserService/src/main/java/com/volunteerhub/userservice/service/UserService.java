@@ -4,6 +4,7 @@ import com.volunteerhub.common.dto.message.user.UserUpdatedMessage;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.enums.UserStatus;
 import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.dto.UserResponse;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.Status;
@@ -20,10 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +32,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserPublisher userPublisher;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
-    private final String keyUser = "analytic:total_users";
     public User findById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
@@ -180,4 +178,42 @@ public class UserService {
     public Long countUsers() {
         return userRepository.countUsers(Role.USER);
     }
+
+    public UserResponse convertToExportData(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .status(user.getStatus().name())
+                .provider(user.getAuthProvider())
+                .totalEvents(user.getTotalEvents())
+
+                .joinedDate(user.getCreatedAt().toLocalDate().toString())
+                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
+
+                .joinedDate(user.getCreatedAt().toLocalDate().toString())
+                .build();
+    }
+
+    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getAllUsersForExport() {
+        List<User> users = userRepository.findAllForExport();
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
 }

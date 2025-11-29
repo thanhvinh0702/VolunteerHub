@@ -3,6 +3,7 @@ package com.volunteerhub.eventservice.controller;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.service.EventService;
 import com.volunteerhub.eventservice.validation.OnCreate;
 import com.volunteerhub.eventservice.validation.OnUpdate;
@@ -72,5 +73,10 @@ public class EventController {
     @GetMapping("/count_events")
     public ResponseEntity<Long> countEvents() {
         return ResponseEntity.ok(eventService.countEvents());
+    }
+
+    @GetMapping("/export-list")
+    public ResponseEntity<List<EventResponseCSV>> getExportList() {
+        return ResponseEntity.ok(eventService.getDataForExport());
     }
 }

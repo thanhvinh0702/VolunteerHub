@@ -25,6 +25,12 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     @Query("SELECT ue.userId FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN ('APPROVED', 'COMPLETED')")
     List<String> findAllUserIdsByEventId(@Param("eventId") Long eventId);
 
+    @Query("SELECT ue FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN :statuses")
+    List<UserEvent> findAllByEventIdAndStatus(
+            @Param("eventId") Long eventId,
+            @Param("statuses") List<UserEventStatus> statuses
+    );
+
     @Query("""
     SELECT COUNT(ue.id)
     FROM UserEvent ue

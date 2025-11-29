@@ -22,4 +22,10 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM User u WHERE u.name = :name AND u.role = com.volunteerhub.userservice.model.Role.ADMIN")
     Optional<User> findByNameAdmin(@Param("name") String name);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.badges ub LEFT JOIN FETCH ub.badge WHERE u.id IN :ids")
+    List<User> findAllByIdsWithBadges(@Param("ids") List<String> ids);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.badges ub LEFT JOIN FETCH ub.badge")
+    List<User> findAllForExport();
 }

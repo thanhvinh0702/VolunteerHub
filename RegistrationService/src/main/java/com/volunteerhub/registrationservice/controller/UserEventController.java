@@ -1,6 +1,7 @@
 package com.volunteerhub.registrationservice.controller;
 
 import com.volunteerhub.common.enums.UserEventStatus;
+import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
@@ -50,7 +51,7 @@ public class UserEventController {
     }
 
     @PostMapping("/events/{eventId}")
-    public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
+        public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userEventService.registerUserEvent(authentication.getName(), eventId), HttpStatus.CREATED);
     }
@@ -96,5 +97,16 @@ public class UserEventController {
         }
 
         return ResponseEntity.ok(userEventService.getApprovalRate(ownerId));
+    }
+
+    @GetMapping("/export-all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserEventExport>> exportAllRegistrations() {
+        return ResponseEntity.ok(userEventService.getAllForExport());
+    }
+
+    @GetMapping("/event/{eventId}/export")
+    public ResponseEntity<List<UserEventExport>> exportByEvent(@PathVariable Long eventId) {
+        return ResponseEntity.ok(userEventService.getByEventForExport(eventId));
     }
 }

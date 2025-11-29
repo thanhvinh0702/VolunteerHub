@@ -3,6 +3,7 @@ package com.volunteerhub.eventservice.service;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
 import com.volunteerhub.eventservice.model.Category;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -191,5 +193,38 @@ public class EventService {
     @PreAuthorize("hasRole('ADMIN')")
     public Long countEvents() {
         return eventRepository.countEvents();
+    }
+
+    // Trong EventService hoặc Mapper
+    public EventResponseCSV convertToExportData(Event event) {
+        return EventResponseCSV.builder()
+                .id(event.getId())
+                .name(event.getName())
+                .ownerId(event.getOwnerId())
+                .status(event.getStatus().name())
+
+                .categoryName(event.getCategory() != null
+                        ? event.getCategory().getName()
+                        : "Uncategorized")
+
+                .fullAddress(event.getAddress() != null
+                        ? event.getAddress().getStreet() + ", " + event.getAddress().getCity()
+                        : "Online/Unknown")
+
+                .startTime(event.getStartTime().toString())
+                .endTime(event.getEndTime().toString())
+
+                .capacity(event.getCapacity())
+                .badgeCount(event.getBadges() == null ? 0 : event.getBadges().size())
+
+                .build();
+    }
+
+    public List<EventResponseCSV> getDataForExport() {
+        List<Event> events = eventRepository.findAllForExport();
+
+        return events.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
     }
 }

@@ -3,6 +3,7 @@ package com.volunteerhub.registrationservice.service;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
+import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -174,4 +176,22 @@ public class UserEventService {
                 userEventRepository.countApplicationsByOwnerId(ownerId);
     }
 
+    public List<UserEventExport> getAllForExport() {
+        return userEventRepository.findAll().stream()
+                .map(userEventMapper::toExportDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserEventExport> getByEventForExport(Long eventId) {
+        List<UserEventStatus> validStatuses = List.of(
+                UserEventStatus.APPROVED,
+                UserEventStatus.COMPLETED
+        );
+
+        List<UserEvent> events = userEventRepository.findAllByEventIdAndStatus(eventId, validStatuses);
+
+        return events.stream()
+                .map(userEventMapper::toExportDto)
+                .collect(Collectors.toList());
+    }
 }

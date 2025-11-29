@@ -1,6 +1,7 @@
 package com.volunteerhub.userservice.controller;
 
 import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.dto.UserResponse;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserBadge;
@@ -96,6 +97,12 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> countManagers() {
         return ResponseEntity.ok(userService.countManagers());
+    }
+
+    @GetMapping("/export-all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponse>> exportAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsersForExport());
     }
 
 }
