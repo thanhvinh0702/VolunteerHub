@@ -18,12 +18,19 @@ const getInitialUser = () => {
         const userData = localStorage.getItem("user");
         const token = localStorage.getItem("token");
 
+        console.log("==== getInitialUser ====");
+        console.log("localStorage user:", userData);
+        console.log("localStorage token:", token ? "exists" : "null");
+
         // Chỉ load user nếu có cả user data VÀ token
         if (userData && token) {
-            return JSON.parse(userData);
+            const parsed = JSON.parse(userData);
+            console.log("Parsed user:", parsed);
+            return parsed;
         }
 
         // Nếu không có token hoặc user → chưa login → return null
+        console.log("No valid auth data, returning null");
         return null;
     } catch (err) {
         console.error("Lỗi khi đọc user từ localStorage:", err);

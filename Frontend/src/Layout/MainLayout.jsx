@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import NavBar from "../components/Sidebar/NavBar";
 import { Outlet } from "react-router-dom";
 import BottomNav from "../components/Sidebar/BottomNav";
 import { useNavbar } from "../hook/useNavbar";
+import { useAuth } from "../hook/useAuth";
+import { LOGIN_LINK } from "../constant/constNavigate";
+
 export default function MainLayout() {
   const { showNavbar } = useNavbar();
+  const { user } = useAuth();
+
+  console.log("==== MainLayout Check ====");
+  console.log("MainLayout user:", user);
+
+  useEffect(() => {
+    if (!user) {
+      console.log("MainLayout: No user found, redirecting to LOGIN_LINK");
+      window.location.href = LOGIN_LINK;
+    }
+  }, [user]);
+
+  if (!user) {
+    // Chờ redirect, không render gì cả
+    console.log("MainLayout: No user, returning null and waiting for redirect");
+    return null;
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       {/* Navbar fixed (desktop / tablet) */}
