@@ -1,5 +1,5 @@
 import { BellDot } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../hook/useAuth";
 import { ROLES } from "../../constant/role";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import DropDownItem from "../Dropdown/DropDownItem";
 import { LOGIN_LINK } from "../../constant/constNavigate";
 export default function NavBar() {
   const navigate = useNavigate();
+  const [navChoice, setNavChoice] = useState("Dashboard");
   const { user, logout } = useAuth();
 
   console.log("==== NavBar Check ====");
@@ -23,49 +24,70 @@ export default function NavBar() {
   const normalizeRole = (role) => {
     if (role === ROLES.ADMIN) return "Admin";
     if (role === ROLES.MANAGER) return "Manager";
-    if (role === ROLES.USER) return "User";
+    if (role === ROLES.USER) return "Volunteer";
   };
 
   const displayName = user?.name ?? "Guest";
   const roleLabel = user?.role ? normalizeRole(user.role) : "Guest";
   return (
-    <div className="flex flex-row items-center-safe justify-between w-full">
-      <div className="flex items-center gap-0 w-8 relative flex-row">
-        <img src={Logo} alt="logo" className="max-h-max" />
-        <span className="font-semibold font-lobster text-2xl max-sm:text-xl">
+    <div className="flex flex-row justify-between w-full">
+      <div className="flex items-center -space-x-1">
+        <span className="w-12">
+          <img src={Logo} alt="logo" className="max-h-max" />
+        </span>
+        <span className="max-sm:hidden font-semibold font-lobster text-2xl max-sm:text-xl">
           VolunteerHub
         </span>
       </div>
+      <div className="self-center">
+        <ul className="hidden md:flex items-center gap-8 max-w-1/2 text-lg  text-gray-700">
+          <li
+            onClick={() => {
+              navigate("/dashboard");
+              setNavChoice("Dashboard");
+            }}
+            className={`cursor-pointer hover:underline hover:decoration-red-500 decoration-2 underline-offset-4 transform duration-150 ${
+              navChoice === "Dashboard"
+                ? "underline decoration-red-400 underline-offset-2"
+                : ""
+            }`}
+          >
+            DashBoard
+          </li>
+          <li
+            onClick={() => {
+              navigate("/opportunities");
+              setNavChoice("Opportunities");
+            }}
+            className={`cursor-pointer hover:underline hover:decoration-red-500 decoration-2 underline-offset-4 ${
+              navChoice === "Opportunities"
+                ? "underline decoration-red-400 underline-offset-2"
+                : ""
+            }`}
+          >
+            Opportunities
+          </li>
 
-      <ul className="hidden md:flex items-center gap-8 text-lg  text-gray-700">
-        <li
-          onClick={() => navigate("/dashboard")}
-          className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
-        >
-          DashBoard
-        </li>
-        <li
-          onClick={() => navigate("/opportunities")}
-          className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
-        >
-          Opportunities
-        </li>
-        <li
-          onClick={() => navigate("/messages")}
-          className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
-        >
-          Messages
-        </li>
-        <li
-          onClick={() => navigate("/leaderboard")}
-          className="cursor-pointer hover:underline hover:decoration-blue-500 decoration-1 underline-offset-4"
-        >
-          Leaderboard
-        </li>
-      </ul>
-
+          <li
+            onClick={() => {
+              navigate("/leaderboard");
+              setNavChoice("Leaderboard");
+            }}
+            className={`cursor-pointer hover:underline hover:decoration-red-500 decoration-2 underline-offset-4 ${
+              navChoice === "Leaderboard"
+                ? "underline decoration-red-400 underline-offset-2"
+                : ""
+            }`}
+          >
+            Leaderboard
+          </li>
+        </ul>
+      </div>
       <div className="flex items-center gap-8">
-        <BellDot />
+        <BellDot
+          className="cursor-pointer hover:text-red-400"
+          onClick={() => navigate("/dashboard/notifications")}
+        />
         <DropDown
           trigger={
             <div className="flex flex-row items-center gap-3">

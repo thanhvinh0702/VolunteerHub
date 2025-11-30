@@ -13,7 +13,7 @@ const dump = {
 
 function UpcomingEvents() {
   return (
-    <div>
+    <div className="h-full">
       <ModalActivity title="Upcoming Events" subtile="Upcoming Events">
         <UpComingCard {...dump} />
         <UpComingCard {...dump} />

@@ -51,10 +51,10 @@ const dumpActivity = [
 
 function RecentActivity() {
   return (
-    <div>
+    <div className="h-full">
       <ModalActivity title="Recent Activity" subtile="Recent Activity">
         {dumpActivity.slice(0, 3).map((item) => (
-          <RecentActivityCard {...item} />
+          <RecentActivityCard key={item.id} {...item} />
         ))}
       </ModalActivity>
     </div>

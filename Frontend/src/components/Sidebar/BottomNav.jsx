@@ -24,12 +24,7 @@ export default function BottomNav() {
       icon: LayoutDashboard,
       to: "/home",
     },
-    {
-      key: "messages",
-      label: "Messages",
-      icon: MessageSquare,
-      to: "/messages",
-    },
+
     {
       key: "leaderboard",
       label: "Leaderboard",

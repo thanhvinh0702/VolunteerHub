@@ -13,12 +13,8 @@ import EventCardError from "./EventCardError";
 function DashBoardOverview() {
   // 1. Lấy Role của user hiện tại
   const { user } = useAuth();
-  // Luôn đảm bảo role viết hoa và có giá trị mặc định để tránh lỗi crash
   const role = user?.role?.toUpperCase() || "USER";
 
-  // 2. Gọi Hook lấy dữ liệu
-  // Hook này trả về mảng các card đã được merge đầy đủ thông tin:
-  // { label, icon, value, isLoading, isError, refetch, ... }
   const cardDataList = useDashboardStats(role);
 
   return (
