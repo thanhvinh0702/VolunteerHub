@@ -307,7 +307,7 @@ function LandingPage() {
           {/* Mobile Menu Toggle */}
           <div className="flex items-center gap-4 lg:hidden">
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => naviageLogin()}
               className="px-4 py-1.5 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-white text-sm rounded-full font-semibold"
             >
               Login
@@ -793,7 +793,7 @@ function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => navigate("/login")}
+                onClick={() => naviageLogin()}
                 className="group px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-50 hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span>Join Now</span>

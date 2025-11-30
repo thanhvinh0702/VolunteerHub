@@ -268,13 +268,7 @@ export default function SignUpForm() {
           {/* Login Link */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-indigo-600 hover:text-indigo-500 transition"
-              >
-                Sign in here
-              </Link>
+              Already have an account? Sign in here
             </p>
           </div>
         </FormLayout>

@@ -4,7 +4,7 @@ import RequireRole from "../components/Protected/RequireRole";
 import AdminPage from "../pages/DemoPages/AdminPage";
 import UserPage from "../pages/DemoPages/UserPage";
 import OrganizationPage from "../pages/DemoPages/OrganizationPage";
-import LoginPage from "../pages/DemoPages/LoginPage";
+
 import Unauthorized from "../pages/DemoPages/Unauthorized";
 import { ROLES } from "../constant/role";
 import MainLayout from "../Layout/MainLayout";
@@ -42,7 +42,7 @@ function AppRouter() {
         path="/login/oauth2/code/volunteerhub"
         element={<OAuth2Callback />}
       />
-      <Route path="/login/*" element={<LoginPage />} />
+      {/* <Route path="/login/*" element={<LoginPage />} /> */}
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/" element={<LandingPage />} />
