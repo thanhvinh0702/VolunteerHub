@@ -1,33 +1,56 @@
 import axios from "axios";
-
-// demo fix later
-
-const useApi = axios.create({
-    baseURL: "http://localhost:8081/api/v1/users",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    timeout: 5000,
-})
+import axiosClient from "./axiosClient";
 
 const createUserProfile = async (data) => {
     try {
-        const res = await useApi.post("/users", {
-            authProvider: "local",
+        // Use axiosClient instead of useApi to get Bearer token from interceptor
+        console.log("Creating user profile with data hh:", data);
+        const res = await axiosClient.post("api/v1/users/users", {
+            authProvider: "local", // Required field
             name: data.name,
             email: data.email,
-            password: data.password,
-            confirmPassword: data.confirmPassword,
-            role: data.role || "USER",
-            bio: data.bio || "https://api.dicebear.com/7.x/avataaars/svg?seed=b",
-            avatarUrl: data.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=b",
-            preferences: data.preferences ? JSON.parse(data.preferences) : {},
+
+            // Các trường optional có thể thêm sau
+            bio: data.bio || "",
+            avatarUrl: data.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (data.username || data.email),
         });
         return res.data;
     } catch (error) {
         console.error("Error creating user profile:", error);
-        throw new Error('Cannot create user profile. Please try again later.');
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Cannot create user profile. Please try again later.';
+        throw new Error(errorMessage);
     }
 }
 
-export { createUserProfile };
+const getUserInfo = async () => {
+    try {
+        const user = await axiosClient.get("api/v1/users/users/me");
+        return user;
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        throw error;
+    }
+};
+
+const updateUserInfo = async (userData) => {
+    try {
+        const user = await axiosClient.put("api/v1/users/users/me", userData);
+        console.log("DONE updating user info:", user);
+        return user;
+    } catch (error) {
+        console.error("Error updating user info:", error);
+        throw error;
+    }
+};
+
+const getProfileCompleteness = async () => {
+    try {
+        const completeness = await axiosClient.get("/v1/users/users/me/profile-completeness");
+        return completeness;
+    } catch (error) {
+        console.error("Error fetching profile completeness:", error);
+        throw error;
+    }
+};
+
+export { createUserProfile, getUserInfo, updateUserInfo, getProfileCompleteness };

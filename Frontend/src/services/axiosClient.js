@@ -13,7 +13,7 @@ axiosClient.interceptors.request.use(
     (config) => {
         // Lấy token từ localStorage (giống cách bạn làm trong getInitialUser)
         const token = localStorage.getItem("token");
-
+        console.log(token);
         if (token) {
             // Gắn token vào header Authorization theo chuẩn Bearer
             config.headers.Authorization = `Bearer ${token}`;

@@ -4,6 +4,7 @@ import { useAuthStore } from "../../store/authStore";
 import { LOGIN_LINK } from "../../constant/constNavigate";
 import { ROLES } from "../../constant/role";
 import storage from "../../utils/storage";
+import { createUserProfile, getUserInfo } from "../../services/userService";
 
 export default function OAuth2Callback() {
   const [searchParams] = useSearchParams();
@@ -94,7 +95,46 @@ export default function OAuth2Callback() {
         const allowedRoles = [ROLES.ADMIN, ROLES.USER, ROLES.MANAGER];
         if (!role || !allowedRoles.includes(role)) {
           console.error("Invalid or unauthorized role:", role);
-          throw new Error("Unauthorized role. Only ADMIN, USER, and MANAGER roles are allowed.");
+          throw new Error(
+            "Unauthorized role. Only ADMIN, USER, and MANAGER roles are allowed."
+          );
+        }
+
+        // Try to get or create user profile in UserService
+        try {
+          console.log("Checking if user profile exists...");
+          const existingProfile = await getUserInfo();
+          console.log("User profile already exists:", existingProfile);
+        } catch (error) {
+          // If user profile doesn't exist (404 or 500), try to create it
+          if (
+            error.response?.status === 404 ||
+            error.response?.status === 500 ||
+            error.message?.includes("not found")
+          ) {
+            console.log("User profile not found, creating new profile...");
+            try {
+              const newProfile = await createUserProfile({
+                username: userInfo.username || userInfo.preferred_username,
+                name: userInfo.name,
+                email: userInfo.email,
+                roles: role,
+                authProvider: userInfo.iss || "oauth2",
+              });
+              console.log("User profile created successfully:", newProfile);
+            } catch (createError) {
+              console.error("Failed to create user profile:", createError);
+              console.warn(
+                "Continuing login without user profile - you may need to complete your profile later"
+              );
+              // Continue anyway - we can still use info from token
+              // User can complete profile later through settings
+            }
+          } else {
+            console.error("Error checking user profile:", error);
+            console.warn("Continuing login without profile check");
+            // Continue anyway - non-blocking error
+          }
         }
 
         // Update auth store

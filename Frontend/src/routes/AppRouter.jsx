@@ -33,6 +33,7 @@ import Notifications from "../pages/Notification/Notifications";
 import LandingPage from "../pages/Landing";
 import SignUpForm from "../pages/Home/SignUp";
 import OAuth2Callback from "../pages/Auth/OAuth2Callback";
+import Settingpage from "../pages/Setting/Settingpage";
 
 function AppRouter() {
   return (
@@ -46,6 +47,7 @@ function AppRouter() {
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/" element={<LandingPage />} />
+      <Route path="/setting" element={<Settingpage />} />
       {/* Protected routes */}
       <Route element={<MainLayout />}>
         {/* Shared protected area */}

@@ -27,9 +27,14 @@ const registerAuthUser = async (data) => {
 };
 
 const logout = async () => {
+
     try {
-        // Gọi logout endpoint với cookie để invalidate session
-        // Có thể là Spring Security default /logout hoặc custom endpoint
+        // Lấy token để gửi kèm trong logout request
+        const token = localStorage.getItem("token");
+        console.log("🔴 [authService] Token found:", token ? "YES" : "NO");
+
+        // Gọi logout endpoint với cookie và token để invalidate session
+
         const res = await axios.post(
             "http://localhost:7070/logout",
             {},
@@ -37,15 +42,20 @@ const logout = async () => {
                 withCredentials: true, // Gửi cookie/session với request
                 headers: {
                     "Content-Type": "application/json",
+                    // Gửi Bearer token nếu backend yêu cầu
+                    ...(token && { Authorization: `Bearer ${token}` }),
                 },
             }
         );
+
         return res.data;
     } catch (error) {
         // Nếu endpoint không tồn tại (404), không sao - vẫn clear local
         // Log error nhưng không throw để vẫn tiếp tục clear localStorage
         if (error.response?.status !== 404) {
             console.error("Error logging out:", error);
+        } else {
+            console.log("Logout endpoint not found (404), continuing anyway");
         }
         // Return success để frontend vẫn clear local storage
         return { message: "Local logout completed" };

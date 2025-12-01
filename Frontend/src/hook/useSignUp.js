@@ -1,15 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { registerAuthUser } from "../services/authService";
-// import { createUserProfile } from '../services/userService' // TODO: Uncomment when UserService is ready
 
 const useSignUp = () => {
     return useMutation({
         mutationFn: async (data) => {
-            // 1. Gọi AuthService
+            console.log("Signing up user with data:", data);
+            // 1. Gọi AuthService để tạo tài khoản xác thực
+            // UserService sẽ được gọi sau khi OAuth2 login thành công (có token)
             const authUser = await registerAuthUser(data);
-
-            // 2. Gọi UserService
-            //const userProfile = await createUserProfile(data);
 
             return { authUser };
         },
@@ -18,7 +16,7 @@ const useSignUp = () => {
 
             // 3. Redirect sang OAuth2 login
             window.location.href =
-                `${import.meta.env.VITE_API_URL}/oauth2/authorize` +
+                `${import.meta.env.VITE_API_LOGIN}/oauth2/authorize` +
                 `?response_type=${import.meta.env.VITE_OAUTH_RESPONSE_TYPE}` +
                 `&client_id=${import.meta.env.VITE_OAUTH_CLIENT_ID}` +
                 `&scope=${import.meta.env.VITE_OAUTH_SCOPE}` +

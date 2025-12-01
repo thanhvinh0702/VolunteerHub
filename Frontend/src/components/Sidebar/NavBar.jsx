@@ -111,9 +111,23 @@ export default function NavBar() {
           <DropDownItem className="cursor-pointer">
             <span
               onClick={async () => {
-                await logout();
-                // Force reload to clear all state and redirect to login
-                window.location.href = LOGIN_LINK;
+                console.log("🔵 [NavBar] Logout button clicked!");
+                try {
+                  console.log("🔵 [NavBar] Calling logout()...");
+                  await logout();
+                  console.log(
+                    "🔵 [NavBar] logout() completed, waiting 1s before redirect..."
+                  );
+
+                  // Wait 1 second to see console logs
+                  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                  console.log("🔵 [NavBar] Now redirecting to:", LOGIN_LINK);
+                  // Force reload to clear all state and redirect to login
+                  window.location.href = LOGIN_LINK;
+                } catch (error) {
+                  console.error("🔵 [NavBar] Logout error:", error);
+                }
               }}
             >
               Logout

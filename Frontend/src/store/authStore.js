@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ROLES } from "../constant/role";
-import { logout as logoutService } from "../services/authService";
+import { logout, logout as logoutService } from "../services/authService";
 
 // helper lưu trữ user vào localStorage
 const persistUser = (user) => {
@@ -49,22 +49,28 @@ export const useAuthStore = create((set, get) => ({
     },
 
     logout: async () => {
+        console.log("🟢 [authStore] logout() STARTED");
         try {
             // Gọi backend logout endpoint để invalidate session (gửi cookie)
-            await logoutService();
+            console.log("🟢 [authStore] Calling logoutService()...");
+            await logout();
+            console.log("🟢 [authStore] Done ????? - logoutService completed");
         } catch (error) {
-            console.error("Backend logout failed, clearing local data anyway:", error);
+            console.error("🟢 [authStore] Backend logout failed, clearing local data anyway:", error);
             // Continue với local logout dù backend fail
         }
 
         // Xóa tất cả auth data từ localStorage (always execute)
+        console.log("🟢 [authStore] Clearing localStorage...");
         persistUser(null);
         localStorage.removeItem("token");
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
 
         // Clear state
+        console.log("🟢 [authStore] Clearing Zustand state...");
         set({ user: null, error: null, loading: false });
+        console.log("🟢 [authStore] Logout COMPLETED!");
     },
 
     login: (role) => {
