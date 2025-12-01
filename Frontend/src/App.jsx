@@ -10,23 +10,27 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // Import apidump để kích hoạt mock API fetch interceptor
 import { NavbarProvider } from "./context/NavbarContext";
 import "./pages/EventPage/apidump";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <NavbarProvider>
-          <AppRouter />
-        </NavbarProvider>
-      </Router>
-    </QueryClientProvider>
+    <>
+      <Toaster position="top-right" />
+      <QueryClientProvider client={queryClient}>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <NavbarProvider>
+            <AppRouter />
+          </NavbarProvider>
+        </Router>
+      </QueryClientProvider>
+    </>
   );
 }
 

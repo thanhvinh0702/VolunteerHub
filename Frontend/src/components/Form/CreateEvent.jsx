@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import FormLayout from "../../Layout/FormLayout";
 import DropdownSelect from "../Dropdown/DropdownSelect";
-import LocationAutocomplete from "../Location/LocationAutoComplete";
 import { getCoordinates } from "../../utils/getCoordinates";
 import MapPreview from "../Location/MapPreview";
+import { useCreateEvent } from "../../hook/useEvent";
 
 const categoryOptions = [
   { value: "health", label: "Health" },
@@ -13,82 +16,191 @@ const categoryOptions = [
   { value: "other", label: "Other" },
 ];
 
+const eventSchema = yup.object({
+  name: yup.string().trim().required("Event title is required."),
+  description: yup.string().trim().required("Description is required."),
+  imageUrl: yup
+    .string()
+    .url("Image URL must be valid.")
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .notRequired(),
+  categoryName: yup.string().required("Please select a category."),
+  startTime: yup.string().required("Start time is required."),
+  endTime: yup
+    .string()
+    .required("End time is required.")
+    .test(
+      "is-after-start",
+      "End time must be after start time.",
+      function (value) {
+        const { startTime } = this.parent;
+        if (!startTime || !value) return true;
+        return new Date(value) > new Date(startTime);
+      }
+    ),
+  capacity: yup
+    .number()
+    .typeError("Capacity must be a number.")
+    .integer("Capacity must be an integer.")
+    .min(1, "Capacity must be at least 1.")
+    .required("Capacity is required."),
+  registrationDeadline: yup
+    .string()
+    .required("Registration deadline is required."),
+  minAge: yup
+    .number()
+    .typeError("Minimum age must be a number.")
+    .min(0, "Minimum age cannot be negative.")
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .notRequired(),
+  street: yup.string().trim().required("Street is required."),
+  city: yup.string().trim().required("City is required."),
+  province: yup.string().trim().required("Province is required."),
+});
+
 function CreateEvent({ onSuccess, onCancel }) {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    image: "",
-    category: "",
-    location: "",
-    date: "",
-    starttime: "",
-    duration: "",
-    capacity: "",
-    registrationDeadline: "",
-    difficulty: "",
-    minAge: "",
-    lat: null,
-    lon: null,
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(eventSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      imageUrl: "",
+      categoryName: "",
+      startTime: "",
+      endTime: "",
+      capacity: "",
+      registrationDeadline: "",
+      minAge: "",
+      street: "",
+      city: "",
+      province: "",
+    },
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSuccess();
-    console.log(formData);
+  const [coordinates, setCoordinates] = useState({ lat: null, lon: null });
+
+  const createEventMutation = useCreateEvent({
+    onSuccess: (data, variables, context) => {
+      reset();
+      setCoordinates({ lat: null, lon: null });
+      onSuccess?.(data, variables, context);
+    },
+  });
+
+  const onSubmit = (values) => {
+    const payload = {
+      name: values.name,
+      description: values.description,
+      imageUrl: values.imageUrl || undefined,
+      categoryName: values.categoryName,
+      startTime: values.startTime,
+      endTime: values.endTime,
+      capacity: values.capacity,
+      address: {
+        street: values.street,
+        city: values.city,
+        province: values.province,
+      },
+    };
+
+    createEventMutation.mutate(payload);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const street = watch("street");
+  const city = watch("city");
+  const province = watch("province");
 
-  const handleLocationBlur = async () => {
-    if (!formData.location) {
-      setFormData((prev) => ({ ...prev, lat: null, lon: null }));
+  const addressString = useMemo(
+    () => [street, city, province].filter(Boolean).join(", ") || "",
+    [street, city, province]
+  );
+
+  useEffect(() => {
+    if (!addressString) {
+      setCoordinates((prev) => {
+        if (prev.lat === null && prev.lon === null) {
+          return prev;
+        }
+        return { lat: null, lon: null };
+      });
       return;
     }
-    try {
-      const coords = await getCoordinates(formData.location);
-      if (coords) {
-        setFormData((prev) => ({ ...prev, lat: coords.lat, lon: coords.lon }));
-      } else {
-        setFormData((prev) => ({ ...prev, lat: null, lon: null }));
+
+    const handler = setTimeout(async () => {
+      try {
+        const coords = await getCoordinates(addressString);
+        setCoordinates((prev) => {
+          const nextLat = coords ? Number(coords.lat) : null;
+          const nextLon = coords ? Number(coords.lon) : null;
+          if (prev.lat === nextLat && prev.lon === nextLon) {
+            return prev;
+          }
+          return { lat: nextLat, lon: nextLon };
+        });
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
+        setCoordinates((prev) => {
+          if (prev.lat === null && prev.lon === null) {
+            return prev;
+          }
+          return { lat: null, lon: null };
+        });
       }
-    } catch (error) {
-      console.error("Error fetching coordinates:", error);
-      setFormData((prev) => ({ ...prev, lat: null, lon: null }));
-    }
-  };
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [addressString]);
 
   return (
     <FormLayout
       title="Create New Event"
       description="Fill in the event information. All fields marked with * are required."
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <label htmlFor="title">Event Title *</label>
+          <label htmlFor="name">Event Title *</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
+            id="name"
+            {...register("name")}
             placeholder="Beach Cleanup Drive"
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.name && (
+            <p className="text-sm text-red-500">{errors.name.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="date">Date *</label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+          <label htmlFor="category">Category *</label>
+          <Controller
+            name="categoryName"
+            control={control}
+            render={({ field }) => (
+              <DropdownSelect
+                value={field.value}
+                onChange={field.onChange}
+                options={categoryOptions}
+                placeholder="Select category"
+                className="w-full"
+              />
+            )}
           />
+          {errors.categoryName && (
+            <p className="text-sm text-red-500">
+              {errors.categoryName.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -97,69 +209,42 @@ function CreateEvent({ onSuccess, onCancel }) {
         <textarea
           id="description"
           rows={4}
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
+          {...register("description")}
           placeholder="Describe your volunteer opportunity..."
           className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <label htmlFor="category">Category *</label>
-          <DropdownSelect
-            value={formData.category}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, category: value }))
-            }
-            options={categoryOptions}
-            placeholder="Select category"
-            className="w-full"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="difficulty">Difficulty *</label>
-          <DropdownSelect
-            value={formData.difficulty}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, difficulty: value }))
-            }
-            options={[
-              { value: "easy", label: "Easy" },
-              { value: "medium", label: "Medium" },
-              { value: "hard", label: "Hard" },
-            ]}
-            placeholder="Select difficulty"
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-5">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="starttime">Start Time *</label>
+          <label htmlFor="startTime">Start Time *</label>
           <input
-            type="time"
-            name="starttime"
-            value={formData.starttime}
-            onChange={handleChange}
+            type="datetime-local"
+            id="startTime"
+            {...register("startTime")}
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.startTime && (
+            <p className="text-sm text-red-500">{errors.startTime.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="duration">Duration (hours) *</label>
+          <label htmlFor="endTime">End Time *</label>
           <input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            min="1"
+            type="datetime-local"
+            id="endTime"
+            {...register("endTime")}
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.endTime && (
+            <p className="text-sm text-red-500">{errors.endTime.message}</p>
+          )}
         </div>
       </div>
 
@@ -168,39 +253,90 @@ function CreateEvent({ onSuccess, onCancel }) {
           <label htmlFor="capacity">Max Volunteers *</label>
           <input
             type="number"
-            name="capacity"
-            value={formData.capacity}
-            onChange={handleChange}
+            id="capacity"
+            {...register("capacity", { valueAsNumber: true })}
             min="1"
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.capacity && (
+            <p className="text-sm text-red-500">{errors.capacity.message}</p>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="registrationDeadline">Registration Deadline *</label>
           <input
             type="date"
-            name="registrationDeadline"
-            value={formData.registrationDeadline}
-            onChange={handleChange}
+            id="registrationDeadline"
+            {...register("registrationDeadline")}
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.registrationDeadline && (
+            <p className="text-sm text-red-500">
+              {errors.registrationDeadline.message}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="location">Location *</label>
-        <LocationAutocomplete
-          formData={formData}
-          setFormData={setFormData}
-          onBlur={handleLocationBlur}
-        />
+        <label>Location *</label>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="street" className="text-sm text-gray-600">
+              Street
+            </label>
+            <input
+              type="text"
+              id="street"
+              {...register("street")}
+              placeholder="123 Beach St"
+              className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            {errors.street && (
+              <p className="text-sm text-red-500">{errors.street.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="city" className="text-sm text-gray-600">
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              {...register("city")}
+              placeholder="Da Nang"
+              className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            {errors.city && (
+              <p className="text-sm text-red-500">{errors.city.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="province" className="text-sm text-gray-600">
+              Province
+            </label>
+            <input
+              type="text"
+              id="province"
+              {...register("province")}
+              placeholder="Da Nang"
+              className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            {errors.province && (
+              <p className="text-sm text-red-500">{errors.province.message}</p>
+            )}
+          </div>
+        </div>
         <div className="mt-4">
           <MapPreview
-            lat={formData.lat}
-            lon={formData.lon}
-            address={formData.location}
+            lat={coordinates.lat}
+            lon={coordinates.lon}
+            address={addressString}
           />
         </div>
       </div>
@@ -208,16 +344,21 @@ function CreateEvent({ onSuccess, onCancel }) {
       <div className="flex gap-3 pt-4 border-t border-gray-200">
         <button
           type="button"
-          onClick={onCancel}
+          onClick={() => {
+            reset();
+            setCoordinates({ lat: null, lon: null });
+            onCancel?.();
+          }}
           className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 transition"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-2xl bg-red-400 px-5 py-3 text-base font-semibold text-white shadow-lg hover:bg-red-600 transition"
+          disabled={createEventMutation.isPending}
+          className="flex-1 rounded-2xl bg-red-400 px-5 py-3 text-base font-semibold text-white shadow-lg hover:bg-red-600 transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Create Event
+          {createEventMutation.isPending ? "Creating..." : "Create Event"}
         </button>
       </div>
     </FormLayout>
