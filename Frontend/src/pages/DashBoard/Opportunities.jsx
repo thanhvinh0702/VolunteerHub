@@ -82,7 +82,17 @@ export default function Opportunities() {
                   count={data?.totalPages ?? 1}
                   page={pageState[activeTab]}
                   onChange={handlePageChange}
-                  color="primary"
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      "&.Mui-selected": {
+                        backgroundColor: "#000",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#888",
+                        },
+                      },
+                    },
+                  }}
                 />
               </div>
             </>

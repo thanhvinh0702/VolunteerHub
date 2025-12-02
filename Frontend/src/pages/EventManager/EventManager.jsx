@@ -1,26 +1,60 @@
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
+import Pagination from "@mui/material/Pagination";
 import EventManagerCard from "../../components/Project/eventManagerCard";
 import { mockEventManagerData, EVENT_STATUS } from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
 
+const PAGE_SIZE = 6;
+
 function EventManager() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [page, setPage] = useState(1);
   const [openCreateForm, setOpenCreateForm] = useState(false);
-  const {
-    data: events,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["event-manager"],
-    queryFn: mockEventManagerData,
-    staleTime: 1000 * 60,
+  const isFirstLoad = useRef(true);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 when search changes
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus]);
+
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["event-manager", page, debouncedSearch, filterStatus],
+    queryFn: () =>
+      mockEventManagerData({
+        page,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearch,
+        status: filterStatus,
+      }),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
+
+  // Track first successful load
+  useEffect(() => {
+    if (data && isFirstLoad.current) {
+      isFirstLoad.current = false;
+    }
+  }, [data]);
+
+  // Only show full loading on very first load
+  const showFullLoading = isLoading && isFirstLoad.current;
 
   useEffect(() => {
     if (openCreateForm) {
@@ -39,14 +73,10 @@ function EventManager() {
   const modalRef = useClickOutside(() => {
     setOpenCreateForm(false);
   });
-  const filteredEvents = events?.filter((event) => {
-    const matchesSearch =
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === "all" || event.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const handleCancelEvent = async (id) => {
     console.log(`Cancelling event ${id}...`);
@@ -83,7 +113,7 @@ function EventManager() {
     // TODO: Show confirmation modal and delete
   };
 
-  if (isLoading) {
+  if (showFullLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <div className="flex items-center justify-center h-64">
@@ -152,7 +182,7 @@ function EventManager() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto relative">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
@@ -176,9 +206,15 @@ function EventManager() {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {filteredEvents && filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
+          <tbody
+            className={
+              isFetching
+                ? "opacity-50 transition-opacity"
+                : "transition-opacity"
+            }
+          >
+            {data?.items && data.items.length > 0 ? (
+              data.items.map((event) => (
                 <EventManagerCard
                   key={event.id}
                   data={event}
@@ -207,20 +243,28 @@ function EventManager() {
         </table>
       </div>
 
-      {/* Stats Footer */}
-      {filteredEvents && filteredEvents.length > 0 && (
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+      {/* Pagination & Stats Footer */}
+      {data?.items && data.items.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
           <p className="text-sm text-gray-500">
-            Showing {filteredEvents.length} of {events.length} events
+            Showing {data.items.length} of {data.totalItems} events
           </p>
-          <div className="flex gap-4 text-sm">
-            <span className="text-gray-600">
-              Total Volunteers:{" "}
-              <span className="font-semibold">
-                {events.reduce((sum, e) => sum + e.registered, 0)}
-              </span>
-            </span>
-          </div>
+          <Pagination
+            count={data.totalPages}
+            page={page}
+            onChange={handlePageChange}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "&.Mui-selected": {
+                  backgroundColor: "#f87171",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ef4444",
+                  },
+                },
+              },
+            }}
+          />
         </div>
       )}
       {openCreateForm && (
