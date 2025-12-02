@@ -1,24 +1,63 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import { mockData } from "./dumpData";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import React, { useState, useEffect, useRef } from "react";
+import { mockUserData } from "./dumpData";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import UserCard from "./UserCard";
+import Pagination from "@mui/material/Pagination";
+
+const PAGE_SIZE = 6;
 
 function UserManager() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: "user-manager",
-    queryFn: mockData,
-    staleTime: 1000 * 60,
+  const [page, setPage] = useState(1);
+  const isFirstLoad = useRef(true);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus]);
+
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["user-manager", page, debouncedSearch, filterStatus],
+    queryFn: () =>
+      mockUserData({
+        page,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearch,
+        status: filterStatus,
+      }),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
-  const users = data?.users || [];
+
+  // Track first successful load
+  useEffect(() => {
+    if (data && isFirstLoad.current) {
+      isFirstLoad.current = false;
+    }
+  }, [data]);
+
+  const showFullLoading = isLoading && isFirstLoad.current;
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const handleBanUser = async (id) => {
     console.log(`Banning user ${id}...`);
-
-    // Simulate API call
     await new Promise((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() > 0.1) {
@@ -28,22 +67,18 @@ function UserManager() {
         }
       }, 1000);
     });
-
-    // TODO: Replace with real API call
-    // await banUser(id);
-
     console.log(`✅ User banned successfully`);
   };
+
   const handleView = (id) => {
     console.log(`View user ${id}`);
-    // TODO: Navigate to user detail page
   };
 
   const handleDelete = (id) => {
     console.log(`Delete user ${id}`);
-    // TODO: Show confirmation modal and delete
   };
-  if (isLoading) {
+
+  if (showFullLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <div className="flex items-center justify-center h-64">
@@ -52,15 +87,7 @@ function UserManager() {
       </div>
     );
   }
-  const filteredUsers = users?.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === "all" || user.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+
   if (isError) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -132,15 +159,21 @@ function UserManager() {
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                 Activity
-              </th>{" "}
+              </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody>
-            {filteredUsers && filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
+          <tbody
+            className={
+              isFetching
+                ? "opacity-50 transition-opacity"
+                : "transition-opacity"
+            }
+          >
+            {data?.items && data.items.length > 0 ? (
+              data.items.map((user) => (
                 <UserCard
                   key={user.id}
                   data={user}
@@ -161,6 +194,31 @@ function UserManager() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {data?.items && data.items.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
+          <p className="text-sm text-gray-500">
+            Showing {data.items.length} of {data.totalItems} users
+          </p>
+          <Pagination
+            count={data.totalPages}
+            page={page}
+            onChange={handlePageChange}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "&.Mui-selected": {
+                  backgroundColor: "#f87171",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ef4444",
+                  },
+                },
+              },
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

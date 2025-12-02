@@ -1,29 +1,63 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import React, { useEffect, useState, useRef } from "react";
 import { mockEventManagerData } from "../../pages/EventManager/eventManagerData";
-import DropDown from "../Dropdown/DropDown";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import EventManagerCardAd from "./EventManagerCardAd";
+import Pagination from "@mui/material/Pagination";
+
+const PAGE_SIZE = 6;
 
 function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [openShowMore, setOpenShowMore] = useState(false);
-  const {
-    data: events,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: "event-manager",
-    queryFn: mockEventManagerData,
-    staleTime: 1000 * 60,
+  const [page, setPage] = useState(1);
+  const isFirstLoad = useRef(true);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus]);
+
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["event-admin-manager", page, debouncedSearch, filterStatus],
+    queryFn: () =>
+      mockEventManagerData({
+        page,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearch,
+        status: filterStatus,
+      }),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
+
+  // Track first successful load
+  useEffect(() => {
+    if (data && isFirstLoad.current) {
+      isFirstLoad.current = false;
+    }
+  }, [data]);
+
+  const showFullLoading = isLoading && isFirstLoad.current;
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   const handleBanEvent = async (id) => {
     console.log(`Cancelling event ${id}...`);
-
-    // Simulate API call
     await new Promise((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() > 0.1) {
@@ -33,22 +67,18 @@ function EventAdminManager() {
         }
       }, 1000);
     });
-
-    // TODO: Replace with real API call
-    // await cancelEvent(id);
-
     console.log(`✅ Event cancelled successfully`);
   };
+
   const handleView = (id) => {
     console.log(`View event ${id}`);
-    // TODO: Navigate to event detail page
   };
 
   const handleDelete = (id) => {
     console.log(`Delete event ${id}`);
-    // TODO: Show confirmation modal and delete
   };
-  if (isLoading) {
+
+  if (showFullLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <div className="flex items-center justify-center h-64">
@@ -57,14 +87,7 @@ function EventAdminManager() {
       </div>
     );
   }
-  const filteredEvents = events?.filter((event) => {
-    const matchesSearch =
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === "all" || event.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+
   if (isError) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -76,6 +99,7 @@ function EventAdminManager() {
       </div>
     );
   }
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm gap-6 flex flex-col">
       {/* Header */}
@@ -104,7 +128,7 @@ function EventAdminManager() {
             { value: "all", label: "All Status" },
             { value: "pending", label: "Pending" },
             { value: "approved", label: "Approved" },
-            { value: "reject", label: "Reject" },
+            { value: "cancelled", label: "Cancelled" },
           ]}
         />
         <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium max-sm:py-1 max-sm:px-1">
@@ -136,9 +160,15 @@ function EventAdminManager() {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {filteredEvents && filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
+          <tbody
+            className={
+              isFetching
+                ? "opacity-50 transition-opacity"
+                : "transition-opacity"
+            }
+          >
+            {data?.items && data.items.length > 0 ? (
+              data.items.map((event) => (
                 <EventManagerCardAd
                   key={event.id}
                   data={event}
@@ -151,9 +181,6 @@ function EventAdminManager() {
                 <td colSpan="6" className="px-6 py-12 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <p className="text-gray-500">No events found</p>
-                    <button className="text-blue-600 hover:underline">
-                      Create your first event
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -161,6 +188,31 @@ function EventAdminManager() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {data?.items && data.items.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
+          <p className="text-sm text-gray-500">
+            Showing {data.items.length} of {data.totalItems} events
+          </p>
+          <Pagination
+            count={data.totalPages}
+            page={page}
+            onChange={handlePageChange}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "&.Mui-selected": {
+                  backgroundColor: "#f87171",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ef4444",
+                  },
+                },
+              },
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
