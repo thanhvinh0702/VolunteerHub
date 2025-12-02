@@ -59,10 +59,10 @@ function UpcomingCard({
           >
             {status}
           </div>
-          <button className="bg-black text-white px-3 py-1 rounded-md min-w-[80px] flex flex-row gap-1 items-center hover:scale-105 active:scale-95 duration-200 transition-all">
+          <button className="bg-black text-white px-3 py-1 rounded-md flex w-[80px] flex-row gap-1 items-center hover:scale-105 active:scale-95 duration-200 transition-all">
             <span>Checkin</span> <LogIn className="w-4" />
           </button>
-          <button className="bg-red-500 text-white px-3 py-1 rounded-md min-w-[80px] flex flex-row gap-1 items-center hover:scale-105 active:scale-95 duration-200 transition-all">
+          <button className="bg-red-500 text-white px-3 py-1 rounded-md w-[80px] flex flex-row gap-1 items-center hover:scale-105 active:scale-95 duration-200 transition-all">
             <span>Delete</span> <Trash className="w-4" />
           </button>
         </div>
