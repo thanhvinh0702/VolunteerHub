@@ -21,19 +21,20 @@ const profileSchema = yup.object({
         .string()
         .trim()
         .required("Date of birth is required."),
-    province: yup
-        .string()
-        .trim()
-        .required("Please select a province."),
-    district: yup
-        .string()
-        .trim()
-        .required("Please select a district."),
-    street: yup
-        .string()
-        .trim()
-        .required("Street address is required."),
-    address: yup.string().trim().required("Address is required."),
+    address: yup.object({
+        province: yup
+            .string()
+            .trim()
+            .required("Please select a province."),
+        district: yup
+            .string()
+            .trim()
+            .required("Please select a district."),
+        street: yup
+            .string()
+            .trim()
+            .required("Street address is required."),
+    }).required("Address is required."),
     skills: yup
         .array()
         .of(yup.string().trim().min(1, "Skill cannot be empty."))

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect, useCallback } from "react";
 import Card from "../../components/Card.jsx/Card";
 import {
   Edit2,
@@ -20,6 +19,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile, useUpdateUserProfile } from "../../hook/useUser";
+import {
+  useProvinces,
+  useDistricts,
+  findProvinceByName,
+  findDistrictByNameOrCode,
+} from "../../hook/useVietnamLocations";
 import profileSchema from "../../validation/profileSchema";
 import { ValidationError } from "yup";
 
@@ -29,61 +34,43 @@ const composeAddress = ({ street, districtName, provinceName }) =>
     .filter(Boolean)
     .join(", ");
 
-const normalizeText = (value) =>
-  value
-    ? value
-        .toString()
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "")
-    : "";
+const formatAddressDisplay = (address) => {
+  if (!address) return "";
+  if (typeof address === "string") return address;
+  return composeAddress({
+    street: address.street,
+    districtName: address.district,
+    provinceName: address.province,
+  });
+};
 
 const mapProfileToFormData = (profile) => {
   const safeProfile = (profile && (profile.data ?? profile)) || {};
   const preferences = safeProfile.preferences || {};
 
-  const rawAddress = preferences.address || safeProfile.address || "";
-  const addressParts = rawAddress
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
+  // Handle address as object or string
+  const rawAddress = preferences.address || safeProfile.address;
+  let provinceName = "";
+  let districtName = "";
+  let street = "";
 
-  const provinceNameFromAddress = addressParts.at(-1) || "";
-  const districtNameFromAddress =
-    addressParts.length > 1 ? addressParts.at(-2) || "" : "";
-  const streetSegments =
-    addressParts.length > 2
-      ? addressParts.slice(0, -2)
-      : addressParts.length === 2
-      ? [addressParts[0]]
-      : addressParts.length === 1
-      ? [addressParts[0]]
-      : [];
-  const street = streetSegments.filter(Boolean).join(", ");
-  const composedAddress = composeAddress({
-    street,
-    districtName: districtNameFromAddress,
-    provinceName: provinceNameFromAddress,
-  });
-
-  const provinceCode = preferences.provinceCode
-    ? String(preferences.provinceCode)
-    : safeProfile.provinceCode
-    ? String(safeProfile.provinceCode)
-    : "";
-  const districtCode = preferences.districtCode
-    ? String(preferences.districtCode)
-    : safeProfile.districtCode
-    ? String(safeProfile.districtCode)
-    : "";
+  if (rawAddress && typeof rawAddress === "object") {
+    // Address is already an object
+    provinceName = rawAddress.province || "";
+    districtName = rawAddress.district || "";
+    street = rawAddress.street || "";
+  }
 
   return {
     name: safeProfile.name || "",
     fullName: safeProfile.fullName || preferences.fullName || "",
     email: safeProfile.email || "",
     phoneNumber: safeProfile.phoneNumber || preferences.phoneNumber || "",
-    address: rawAddress || composedAddress,
+    address: {
+      province: provinceName,
+      district: districtName,
+      street: preferences.street || street,
+    },
     skills: Array.isArray(preferences.skills)
       ? preferences.skills
       : Array.isArray(safeProfile.skills)
@@ -97,11 +84,8 @@ const mapProfileToFormData = (profile) => {
     status: safeProfile.status,
     createdAt: safeProfile.createdAt,
     updatedAt: safeProfile.updatedAt,
-    provinceCode,
-    province: preferences.provinceName || provinceNameFromAddress,
-    districtCode,
-    district: preferences.districtName || districtNameFromAddress,
-    street: preferences.street || street,
+    provinceName,
+    districtName,
   };
 };
 
@@ -114,29 +98,92 @@ export default function Settingpage() {
   const { data: profile, isLoading } = useProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
 
-  const provincesQuery = useQuery({
-    queryKey: ["vn-provinces"],
-    queryFn: async () => {
-      const response = await fetch("https://provinces.open-api.vn/api/p/");
-      if (!response.ok) {
-        throw new Error("Failed to fetch provinces");
-      }
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
-    },
-    staleTime: 60 * 60 * 1000,
-    gcTime: 2 * 60 * 60 * 1000,
-    retry: 1,
-    onError: (error) => {
-      console.error("Failed to load provinces", error);
-    },
-  });
+  // Callback khi provinces được fetch xong
+  const handleProvincesLoaded = useCallback((provincesData) => {
+    if (!provincesData?.length) return;
 
-  const provinces = Array.isArray(provincesQuery.data)
-    ? provincesQuery.data
-    : [];
-  const isProvincesLoading =
-    provincesQuery.isLoading || provincesQuery.isFetching;
+    setFormData((prev) => {
+      if (!prev || prev.provinceCode) return prev;
+      if (!prev.provinceName) return prev;
+
+      const matchedProvince = findProvinceByName(
+        provincesData,
+        prev.provinceName
+      );
+      if (!matchedProvince) return prev;
+
+      return {
+        ...prev,
+        provinceCode: String(matchedProvince.code),
+        provinceName: matchedProvince.name,
+        address: {
+          ...prev.address,
+          province: matchedProvince.name,
+        },
+      };
+    });
+  }, []);
+
+  // Callback khi districts được fetch xong
+  const handleDistrictsLoaded = useCallback(
+    (districtsData, currentProvinceCode) => {
+      if (!districtsData?.length) return;
+
+      setFormData((prev) => {
+        if (!prev) return prev;
+        if (String(prev.provinceCode || "") !== currentProvinceCode)
+          return prev;
+
+        const codeCandidate = prev.districtCode
+          ? String(prev.districtCode)
+          : "";
+        let matchedDistrict = codeCandidate
+          ? findDistrictByNameOrCode(districtsData, codeCandidate)
+          : null;
+
+        const nameCandidate = prev.districtName || "";
+        if (!matchedDistrict && nameCandidate) {
+          matchedDistrict = findDistrictByNameOrCode(
+            districtsData,
+            nameCandidate
+          );
+        }
+
+        const nextDistrictCode = matchedDistrict
+          ? String(matchedDistrict.code)
+          : "";
+        const nextDistrictName = matchedDistrict ? matchedDistrict.name : "";
+
+        if (
+          nextDistrictCode === prev.districtCode &&
+          nextDistrictName === prev.districtName
+        ) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          districtCode: nextDistrictCode,
+          districtName: nextDistrictName,
+          address: {
+            ...prev.address,
+            district: nextDistrictName,
+          },
+        };
+      });
+    },
+    []
+  );
+
+  // Sử dụng hooks với onFetched callback và helper functions
+  const {
+    provinces,
+    isLoading: isProvincesLoading,
+    isFetching: isProvincesFetching,
+    getProvinceByCode,
+  } = useProvinces({
+    onFetched: handleProvincesLoaded,
+  });
 
   const clearFieldError = (...fields) => {
     if (!fields.length) return;
@@ -161,43 +208,20 @@ export default function Settingpage() {
   const provinceCode = formData?.provinceCode
     ? String(formData.provinceCode)
     : "";
-  const provinceName = formData?.provinceName || "";
   const districtCode = formData?.districtCode
     ? String(formData.districtCode)
     : "";
-  const districtName = formData?.districtName || "";
 
-  const districtsQuery = useQuery({
-    queryKey: ["vn-districts", provinceCode],
-    queryFn: async () => {
-      if (!provinceCode) {
-        return [];
-      }
-      const response = await fetch(
-        `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch districts");
-      }
-      const data = await response.json();
-      return Array.isArray(data?.districts) ? data.districts : [];
-    },
-    enabled: Boolean(provinceCode),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
-    retry: 1,
-    onError: (error) => {
-      console.error("Failed to load districts", error);
-    },
+  const {
+    districts,
+    isLoading: isDistrictsLoading,
+    isFetching: isDistrictsFetching,
+    getDistrictByCode,
+  } = useDistricts(provinceCode, {
+    onFetched: handleDistrictsLoaded,
   });
 
-  const districts =
-    provinceCode && Array.isArray(districtsQuery.data)
-      ? districtsQuery.data
-      : [];
-  const isDistrictsLoading =
-    districtsQuery.isLoading || districtsQuery.isFetching;
-
+  // Reset formData khi profile thay đổi
   useEffect(() => {
     if (profile) {
       const mappedData = mapProfileToFormData(profile);
@@ -206,123 +230,6 @@ export default function Settingpage() {
       setErrors({});
     }
   }, [profile]);
-
-  useEffect(() => {
-    if (!formData) return;
-    if (provinceCode) return;
-    if (!provinceName) return;
-    if (!provinces.length) return;
-
-    const target = normalizeText(provinceName);
-    if (!target) return;
-
-    const matchedProvince = provinces.find((item) => {
-      const name = normalizeText(item.name);
-      const withType = normalizeText(item.name_with_type || "");
-      const slug = normalizeText(item.slug || "");
-      return name === target || withType === target || slug === target;
-    });
-
-    if (!matchedProvince) return;
-
-    setFormData((prev) => {
-      if (!prev || prev.provinceCode) return prev;
-      if (normalizeText(prev.provinceName) !== target) return prev;
-
-      const nextProvinceCode = String(matchedProvince.code);
-      const nextProvinceName = matchedProvince.name;
-      const nextAddress = composeAddress({
-        street: prev.street,
-        districtName: prev.districtName,
-        provinceName: nextProvinceName,
-      });
-
-      if (
-        prev.provinceCode === nextProvinceCode &&
-        prev.provinceName === nextProvinceName &&
-        prev.address === nextAddress
-      ) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        provinceCode: nextProvinceCode,
-        provinceName: nextProvinceName,
-        address: nextAddress,
-      };
-    });
-  }, [formData, provinceCode, provinceName, provinces]);
-
-  useEffect(() => {
-    if (!formData) return;
-    if (!provinceCode) return;
-    if (!districts.length) return;
-
-    setFormData((prev) => {
-      if (!prev) return prev;
-      if (String(prev.provinceCode || "") !== provinceCode) {
-        return prev;
-      }
-
-      const codeCandidate = prev.districtCode ? String(prev.districtCode) : "";
-
-      let matchedDistrict = codeCandidate
-        ? districts.find((item) => String(item.code) === codeCandidate)
-        : null;
-
-      const nameCandidate = prev.districtName || "";
-
-      if (!matchedDistrict && nameCandidate) {
-        const normalizedTarget = normalizeText(nameCandidate);
-        matchedDistrict = districts.find((item) => {
-          const name = normalizeText(item.name);
-          const withType = normalizeText(item.name_with_type || "");
-          const slug = normalizeText(item.slug || "");
-          return (
-            name === normalizedTarget ||
-            withType === normalizedTarget ||
-            slug === normalizedTarget
-          );
-        });
-      }
-
-      let nextDistrictCode = matchedDistrict
-        ? String(matchedDistrict.code)
-        : codeCandidate && !matchedDistrict
-        ? ""
-        : prev.districtCode;
-      let nextDistrictName = matchedDistrict
-        ? matchedDistrict.name
-        : nameCandidate || "";
-
-      if (!matchedDistrict && !nameCandidate) {
-        nextDistrictCode = "";
-        nextDistrictName = "";
-      }
-
-      const nextAddress = composeAddress({
-        street: prev.street,
-        districtName: nextDistrictName,
-        provinceName: prev.provinceName,
-      });
-
-      if (
-        nextDistrictCode === prev.districtCode &&
-        nextDistrictName === prev.districtName &&
-        nextAddress === prev.address
-      ) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        districtCode: nextDistrictCode,
-        districtName: nextDistrictName,
-        address: nextAddress,
-      };
-    });
-  }, [districts, formData, provinceCode]);
 
   if (isLoading || !formData) {
     return (
@@ -338,22 +245,18 @@ export default function Settingpage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "street") {
-      clearFieldError("street", "address");
+      clearFieldError("address.street", "address");
       setFormData((prev) => {
         if (!prev) return prev;
-        const nextStreet = value;
-        const nextAddress = composeAddress({
-          street: nextStreet,
-          districtName: prev.districtName,
-          provinceName: prev.provinceName,
-        });
-        if (prev.street === nextStreet && prev.address === nextAddress) {
+        if (prev.address?.street === value) {
           return prev;
         }
         return {
           ...prev,
-          street: nextStreet,
-          address: nextAddress,
+          address: {
+            ...prev.address,
+            street: value,
+          },
         };
       });
       return;
@@ -372,27 +275,19 @@ export default function Settingpage() {
 
   const handleProvinceChange = (event) => {
     const selectedCode = event.target.value;
+    clearFieldError("address.province", "address.district", "address");
 
-    clearFieldError("provinceCode", "districtCode", "address");
+    // Dùng function từ hook để lấy thông tin province
+    const matchedProvince = getProvinceByCode(selectedCode);
+    const nextProvinceName = matchedProvince?.name || "";
 
     setFormData((prev) => {
       if (!prev) return prev;
-      const matchedProvince = provinces.find(
-        (item) => String(item.code) === selectedCode
-      );
-      const nextProvinceName = matchedProvince?.name || "";
-      const nextAddress = composeAddress({
-        street: prev.street,
-        districtName: "",
-        provinceName: nextProvinceName,
-      });
-
       if (
         prev.provinceCode === selectedCode &&
         prev.provinceName === nextProvinceName &&
         prev.districtCode === "" &&
-        prev.districtName === "" &&
-        prev.address === nextAddress
+        prev.districtName === ""
       ) {
         return prev;
       }
@@ -403,31 +298,28 @@ export default function Settingpage() {
         provinceName: nextProvinceName,
         districtCode: "",
         districtName: "",
-        address: nextAddress,
+        address: {
+          ...prev.address,
+          province: nextProvinceName,
+          district: "",
+        },
       };
     });
   };
 
   const handleDistrictChange = (event) => {
     const selectedCode = event.target.value;
+    clearFieldError("address.district", "address");
 
-    clearFieldError("districtCode", "address");
+    // Dùng helper function từ hook để lấy thông tin district
+    const matchedDistrict = getDistrictByCode(selectedCode);
+    const nextDistrictName = matchedDistrict?.name || "";
+
     setFormData((prev) => {
       if (!prev) return prev;
-      const matchedDistrict = districts.find(
-        (item) => String(item.code) === selectedCode
-      );
-      const nextDistrictName = matchedDistrict?.name || "";
-      const nextAddress = composeAddress({
-        street: prev.street,
-        districtName: nextDistrictName,
-        provinceName: prev.provinceName,
-      });
-
       if (
         prev.districtCode === selectedCode &&
-        prev.districtName === nextDistrictName &&
-        prev.address === nextAddress
+        prev.districtName === nextDistrictName
       ) {
         return prev;
       }
@@ -436,7 +328,10 @@ export default function Settingpage() {
         ...prev,
         districtCode: selectedCode,
         districtName: nextDistrictName,
-        address: nextAddress,
+        address: {
+          ...prev.address,
+          district: nextDistrictName,
+        },
       };
     });
   };
@@ -507,17 +402,20 @@ export default function Settingpage() {
 
       const safeProfile = (profile && (profile.data ?? profile)) || {};
       const existingPreferences = safeProfile.preferences || {};
+      const addressPayload = {
+        province: formData?.provinceName || validated.address?.province || "",
+        district: formData?.districtName || validated.address?.district || "",
+        street: validated.address?.street || "",
+      };
+
       const preferencesPayload = {
         ...existingPreferences,
         fullName: validated.fullName,
         phoneNumber: validated.phoneNumber,
         dateOfBirth: validated.dateOfBirth,
-        address: validated.address,
-        street: validated.street,
-        provinceCode: validated.provinceCode,
-        provinceName: formData?.provinceName || "",
-        districtCode: validated.districtCode,
-        districtName: formData?.districtName || "",
+        address: addressPayload,
+        provinceCode: formData?.provinceCode || "",
+        districtCode: formData?.districtCode || "",
         skills: validated.skills || [],
       };
 
@@ -526,14 +424,14 @@ export default function Settingpage() {
         fullName: validated.fullName,
         email: validated.email,
         phoneNumber: validated.phoneNumber,
-        address: validated.address,
+        address: addressPayload,
         dateOfBirth: validated.dateOfBirth,
         bio: validated.bio,
         avatarUrl: validated.avatarUrl,
         skills: validated.skills?.length ? validated.skills : null,
         preferences: preferencesPayload,
       };
-
+      console.log("Updating profile with payload:", payload);
       updateProfile(payload);
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -594,7 +492,11 @@ export default function Settingpage() {
     {
       id: "address",
       label: "Add your address",
-      complete: Boolean(formData.address),
+      complete: Boolean(
+        formData.address?.province ||
+          formData.address?.district ||
+          formData.address?.street
+      ),
     },
   ];
 
@@ -744,7 +646,8 @@ export default function Settingpage() {
                       Location
                     </p>
                     <p className="font-medium text-slate-700">
-                      {formData.address || "No location set"}
+                      {formatAddressDisplay(formData.address) ||
+                        "No location set"}
                     </p>
                   </div>
                 </div>
@@ -912,13 +815,17 @@ export default function Settingpage() {
                         name="provinceCode"
                         value={provinceCode || ""}
                         onChange={handleProvinceChange}
-                        disabled={!isEditing || isProvincesLoading}
+                        disabled={
+                          !isEditing ||
+                          isProvincesLoading ||
+                          isProvincesFetching
+                        }
                         className={`${getInputClasses(
-                          "provinceCode"
+                          "address.province"
                         )} appearance-none`}
                       >
                         <option value="">
-                          {isProvincesLoading
+                          {isProvincesLoading || isProvincesFetching
                             ? "Loading provinces..."
                             : "Select province / city"}
                         </option>
@@ -928,9 +835,9 @@ export default function Settingpage() {
                           </option>
                         ))}
                       </select>
-                      {isEditing && errors.provinceCode && (
+                      {isEditing && errors["address.province"] && (
                         <p className="text-xs text-red-500">
-                          {errors.provinceCode}
+                          {errors["address.province"]}
                         </p>
                       )}
                     </div>
@@ -947,14 +854,17 @@ export default function Settingpage() {
                         value={districtCode || ""}
                         onChange={handleDistrictChange}
                         disabled={
-                          !isEditing || !provinceCode || isDistrictsLoading
+                          !isEditing ||
+                          !provinceCode ||
+                          isDistrictsLoading ||
+                          isDistrictsFetching
                         }
                         className={`${getInputClasses(
-                          "districtCode"
+                          "address.district"
                         )} appearance-none`}
                       >
                         <option value="">
-                          {isDistrictsLoading
+                          {isDistrictsLoading || isDistrictsFetching
                             ? "Loading districts..."
                             : "Select district"}
                         </option>
@@ -964,9 +874,9 @@ export default function Settingpage() {
                           </option>
                         ))}
                       </select>
-                      {isEditing && errors.districtCode && (
+                      {isEditing && errors["address.district"] && (
                         <p className="text-xs text-red-500">
-                          {errors.districtCode}
+                          {errors["address.district"]}
                         </p>
                       )}
                     </div>
@@ -982,15 +892,27 @@ export default function Settingpage() {
                       id="street"
                       type="text"
                       name="street"
-                      value={formData.street || ""}
+                      value={formData.address?.street || ""}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="House number, street, ward"
-                      className={getInputClasses("street")}
+                      className={getInputClasses("address.street")}
                     />
                   </div>
-                  {isEditing && errors.street && (
-                    <p className="text-xs text-red-500">{errors.street}</p>
+                  {isEditing && errors["address.street"] && (
+                    <p className="text-xs text-red-500">
+                      {errors["address.street"]}
+                    </p>
+                  )}
+                  {isEditing && errors["address.province"] && (
+                    <p className="text-xs text-red-500">
+                      {errors["address.province"]}
+                    </p>
+                  )}
+                  {isEditing && errors["address.district"] && (
+                    <p className="text-xs text-red-500">
+                      {errors["address.district"]}
+                    </p>
                   )}
                   {isEditing && errors.address && (
                     <p className="text-xs text-red-500">{errors.address}</p>
@@ -1122,7 +1044,10 @@ export default function Settingpage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Home className="h-4 w-4 text-blue-500" />
-                    <span>{formData.address || "No address provided"}</span>
+                    <span>
+                      {formatAddressDisplay(formData.address) ||
+                        "No address provided"}
+                    </span>
                   </div>
                 </div>
                 <div className="mt-6 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-500">
