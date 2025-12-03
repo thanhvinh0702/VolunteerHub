@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Card from "../../components/Card.jsx/Card";
 import {
   Edit2,
@@ -10,7 +11,6 @@ import {
   Phone,
   Home,
   Award,
-  FileText,
   ArrowLeft,
   CheckCircle2,
   Circle,
@@ -23,22 +23,87 @@ import { useProfile, useUpdateUserProfile } from "../../hook/useUser";
 import profileSchema from "../../validation/profileSchema";
 import { ValidationError } from "yup";
 
-const mapProfileToFormData = (profile) => ({
-  name: profile?.name || "",
-  fullName: profile?.fullName || "",
-  email: profile?.email || "",
-  phoneNumber: profile?.phoneNumber || "",
-  address: profile?.address || "",
-  skills: profile?.skills || [],
-  dateOfBirth: profile?.dateOfBirth || "",
-  role: profile?.role,
-  bio: profile?.bio || "",
-  avatarUrl: profile?.avatarUrl,
-  totalEvents: profile?.totalEvents,
-  status: profile?.status,
-  createdAt: profile?.createdAt,
-  updatedAt: profile?.updatedAt,
-});
+const composeAddress = ({ street, districtName, provinceName }) =>
+  [street, districtName, provinceName]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(", ");
+
+const normalizeText = (value) =>
+  value
+    ? value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+    : "";
+
+const mapProfileToFormData = (profile) => {
+  const safeProfile = (profile && (profile.data ?? profile)) || {};
+  const preferences = safeProfile.preferences || {};
+
+  const rawAddress = preferences.address || safeProfile.address || "";
+  const addressParts = rawAddress
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  const provinceNameFromAddress = addressParts.at(-1) || "";
+  const districtNameFromAddress =
+    addressParts.length > 1 ? addressParts.at(-2) || "" : "";
+  const streetSegments =
+    addressParts.length > 2
+      ? addressParts.slice(0, -2)
+      : addressParts.length === 2
+      ? [addressParts[0]]
+      : addressParts.length === 1
+      ? [addressParts[0]]
+      : [];
+  const street = streetSegments.filter(Boolean).join(", ");
+  const composedAddress = composeAddress({
+    street,
+    districtName: districtNameFromAddress,
+    provinceName: provinceNameFromAddress,
+  });
+
+  const provinceCode = preferences.provinceCode
+    ? String(preferences.provinceCode)
+    : safeProfile.provinceCode
+    ? String(safeProfile.provinceCode)
+    : "";
+  const districtCode = preferences.districtCode
+    ? String(preferences.districtCode)
+    : safeProfile.districtCode
+    ? String(safeProfile.districtCode)
+    : "";
+
+  return {
+    name: safeProfile.name || "",
+    fullName: safeProfile.fullName || preferences.fullName || "",
+    email: safeProfile.email || "",
+    phoneNumber: safeProfile.phoneNumber || preferences.phoneNumber || "",
+    address: rawAddress || composedAddress,
+    skills: Array.isArray(preferences.skills)
+      ? preferences.skills
+      : Array.isArray(safeProfile.skills)
+      ? safeProfile.skills
+      : [],
+    dateOfBirth: safeProfile.dateOfBirth || preferences.dateOfBirth || "",
+    role: safeProfile.role,
+    bio: safeProfile.bio || "",
+    avatarUrl: safeProfile.avatarUrl,
+    totalEvents: safeProfile.totalEvents,
+    status: safeProfile.status,
+    createdAt: safeProfile.createdAt,
+    updatedAt: safeProfile.updatedAt,
+    provinceCode,
+    province: preferences.provinceName || provinceNameFromAddress,
+    districtCode,
+    district: preferences.districtName || districtNameFromAddress,
+    street: preferences.street || street,
+  };
+};
 
 export default function Settingpage() {
   const navigate = useNavigate();
@@ -49,6 +114,90 @@ export default function Settingpage() {
   const { data: profile, isLoading } = useProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
 
+  const provincesQuery = useQuery({
+    queryKey: ["vn-provinces"],
+    queryFn: async () => {
+      const response = await fetch("https://provinces.open-api.vn/api/p/");
+      if (!response.ok) {
+        throw new Error("Failed to fetch provinces");
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
+    retry: 1,
+    onError: (error) => {
+      console.error("Failed to load provinces", error);
+    },
+  });
+
+  const provinces = Array.isArray(provincesQuery.data)
+    ? provincesQuery.data
+    : [];
+  const isProvincesLoading =
+    provincesQuery.isLoading || provincesQuery.isFetching;
+
+  const clearFieldError = (...fields) => {
+    if (!fields.length) return;
+    setErrors((prev) => {
+      let next = prev;
+      let changed = false;
+
+      fields.forEach((field) => {
+        if (field && next?.[field] !== undefined) {
+          if (!changed) {
+            next = { ...next };
+            changed = true;
+          }
+          delete next[field];
+        }
+      });
+
+      return changed ? next : prev;
+    });
+  };
+
+  const provinceCode = formData?.provinceCode
+    ? String(formData.provinceCode)
+    : "";
+  const provinceName = formData?.provinceName || "";
+  const districtCode = formData?.districtCode
+    ? String(formData.districtCode)
+    : "";
+  const districtName = formData?.districtName || "";
+
+  const districtsQuery = useQuery({
+    queryKey: ["vn-districts", provinceCode],
+    queryFn: async () => {
+      if (!provinceCode) {
+        return [];
+      }
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch districts");
+      }
+      const data = await response.json();
+      return Array.isArray(data?.districts) ? data.districts : [];
+    },
+    enabled: Boolean(provinceCode),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 1,
+    onError: (error) => {
+      console.error("Failed to load districts", error);
+    },
+  });
+
+  const districts =
+    provinceCode && Array.isArray(districtsQuery.data)
+      ? districtsQuery.data
+      : [];
+  const isDistrictsLoading =
+    districtsQuery.isLoading || districtsQuery.isFetching;
+
   useEffect(() => {
     if (profile) {
       const mappedData = mapProfileToFormData(profile);
@@ -57,6 +206,123 @@ export default function Settingpage() {
       setErrors({});
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (!formData) return;
+    if (provinceCode) return;
+    if (!provinceName) return;
+    if (!provinces.length) return;
+
+    const target = normalizeText(provinceName);
+    if (!target) return;
+
+    const matchedProvince = provinces.find((item) => {
+      const name = normalizeText(item.name);
+      const withType = normalizeText(item.name_with_type || "");
+      const slug = normalizeText(item.slug || "");
+      return name === target || withType === target || slug === target;
+    });
+
+    if (!matchedProvince) return;
+
+    setFormData((prev) => {
+      if (!prev || prev.provinceCode) return prev;
+      if (normalizeText(prev.provinceName) !== target) return prev;
+
+      const nextProvinceCode = String(matchedProvince.code);
+      const nextProvinceName = matchedProvince.name;
+      const nextAddress = composeAddress({
+        street: prev.street,
+        districtName: prev.districtName,
+        provinceName: nextProvinceName,
+      });
+
+      if (
+        prev.provinceCode === nextProvinceCode &&
+        prev.provinceName === nextProvinceName &&
+        prev.address === nextAddress
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        provinceCode: nextProvinceCode,
+        provinceName: nextProvinceName,
+        address: nextAddress,
+      };
+    });
+  }, [formData, provinceCode, provinceName, provinces]);
+
+  useEffect(() => {
+    if (!formData) return;
+    if (!provinceCode) return;
+    if (!districts.length) return;
+
+    setFormData((prev) => {
+      if (!prev) return prev;
+      if (String(prev.provinceCode || "") !== provinceCode) {
+        return prev;
+      }
+
+      const codeCandidate = prev.districtCode ? String(prev.districtCode) : "";
+
+      let matchedDistrict = codeCandidate
+        ? districts.find((item) => String(item.code) === codeCandidate)
+        : null;
+
+      const nameCandidate = prev.districtName || "";
+
+      if (!matchedDistrict && nameCandidate) {
+        const normalizedTarget = normalizeText(nameCandidate);
+        matchedDistrict = districts.find((item) => {
+          const name = normalizeText(item.name);
+          const withType = normalizeText(item.name_with_type || "");
+          const slug = normalizeText(item.slug || "");
+          return (
+            name === normalizedTarget ||
+            withType === normalizedTarget ||
+            slug === normalizedTarget
+          );
+        });
+      }
+
+      let nextDistrictCode = matchedDistrict
+        ? String(matchedDistrict.code)
+        : codeCandidate && !matchedDistrict
+        ? ""
+        : prev.districtCode;
+      let nextDistrictName = matchedDistrict
+        ? matchedDistrict.name
+        : nameCandidate || "";
+
+      if (!matchedDistrict && !nameCandidate) {
+        nextDistrictCode = "";
+        nextDistrictName = "";
+      }
+
+      const nextAddress = composeAddress({
+        street: prev.street,
+        districtName: nextDistrictName,
+        provinceName: prev.provinceName,
+      });
+
+      if (
+        nextDistrictCode === prev.districtCode &&
+        nextDistrictName === prev.districtName &&
+        nextAddress === prev.address
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        districtCode: nextDistrictCode,
+        districtName: nextDistrictName,
+        address: nextAddress,
+      };
+    });
+  }, [districts, formData, provinceCode]);
 
   if (isLoading || !formData) {
     return (
@@ -71,10 +337,108 @@ export default function Settingpage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "street") {
+      clearFieldError("street", "address");
+      setFormData((prev) => {
+        if (!prev) return prev;
+        const nextStreet = value;
+        const nextAddress = composeAddress({
+          street: nextStreet,
+          districtName: prev.districtName,
+          provinceName: prev.provinceName,
+        });
+        if (prev.street === nextStreet && prev.address === nextAddress) {
+          return prev;
+        }
+        return {
+          ...prev,
+          street: nextStreet,
+          address: nextAddress,
+        };
+      });
+      return;
+    }
+
+    clearFieldError(name);
+    setFormData((prev) => {
+      if (!prev) return prev;
+      if (prev[name] === value) return prev;
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
+
+  const handleProvinceChange = (event) => {
+    const selectedCode = event.target.value;
+
+    clearFieldError("provinceCode", "districtCode", "address");
+
+    setFormData((prev) => {
+      if (!prev) return prev;
+      const matchedProvince = provinces.find(
+        (item) => String(item.code) === selectedCode
+      );
+      const nextProvinceName = matchedProvince?.name || "";
+      const nextAddress = composeAddress({
+        street: prev.street,
+        districtName: "",
+        provinceName: nextProvinceName,
+      });
+
+      if (
+        prev.provinceCode === selectedCode &&
+        prev.provinceName === nextProvinceName &&
+        prev.districtCode === "" &&
+        prev.districtName === "" &&
+        prev.address === nextAddress
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        provinceCode: selectedCode,
+        provinceName: nextProvinceName,
+        districtCode: "",
+        districtName: "",
+        address: nextAddress,
+      };
+    });
+  };
+
+  const handleDistrictChange = (event) => {
+    const selectedCode = event.target.value;
+
+    clearFieldError("districtCode", "address");
+    setFormData((prev) => {
+      if (!prev) return prev;
+      const matchedDistrict = districts.find(
+        (item) => String(item.code) === selectedCode
+      );
+      const nextDistrictName = matchedDistrict?.name || "";
+      const nextAddress = composeAddress({
+        street: prev.street,
+        districtName: nextDistrictName,
+        provinceName: prev.provinceName,
+      });
+
+      if (
+        prev.districtCode === selectedCode &&
+        prev.districtName === nextDistrictName &&
+        prev.address === nextAddress
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        districtCode: selectedCode,
+        districtName: nextDistrictName,
+        address: nextAddress,
+      };
+    });
   };
 
   const handleAddSkill = () => {
@@ -141,6 +505,22 @@ export default function Settingpage() {
       setErrors({});
       setIsEditing(false);
 
+      const safeProfile = (profile && (profile.data ?? profile)) || {};
+      const existingPreferences = safeProfile.preferences || {};
+      const preferencesPayload = {
+        ...existingPreferences,
+        fullName: validated.fullName,
+        phoneNumber: validated.phoneNumber,
+        dateOfBirth: validated.dateOfBirth,
+        address: validated.address,
+        street: validated.street,
+        provinceCode: validated.provinceCode,
+        provinceName: formData?.provinceName || "",
+        districtCode: validated.districtCode,
+        districtName: formData?.districtName || "",
+        skills: validated.skills || [],
+      };
+
       const payload = {
         name: validated.name,
         fullName: validated.fullName,
@@ -151,6 +531,7 @@ export default function Settingpage() {
         bio: validated.bio,
         avatarUrl: validated.avatarUrl,
         skills: validated.skills?.length ? validated.skills : null,
+        preferences: preferencesPayload,
       };
 
       updateProfile(payload);
@@ -513,20 +894,104 @@ export default function Settingpage() {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <div className="flex flex-col gap-3 md:col-span-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     <Home className="h-4 w-4" />
-                    Address<span className="ml-1 text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    placeholder="Street, city, country"
-                    className={getInputClasses("address")}
-                  />
+                    Location<span className="ml-1 text-red-500">*</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor="province"
+                        className="text-xs font-semibold uppercase tracking-wide text-slate-400"
+                      >
+                        Province / City
+                      </label>
+                      <select
+                        id="province"
+                        name="provinceCode"
+                        value={provinceCode || ""}
+                        onChange={handleProvinceChange}
+                        disabled={!isEditing || isProvincesLoading}
+                        className={`${getInputClasses(
+                          "provinceCode"
+                        )} appearance-none`}
+                      >
+                        <option value="">
+                          {isProvincesLoading
+                            ? "Loading provinces..."
+                            : "Select province / city"}
+                        </option>
+                        {provinces.map((province) => (
+                          <option key={province.code} value={province.code}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </select>
+                      {isEditing && errors.provinceCode && (
+                        <p className="text-xs text-red-500">
+                          {errors.provinceCode}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor="district"
+                        className="text-xs font-semibold uppercase tracking-wide text-slate-400"
+                      >
+                        District
+                      </label>
+                      <select
+                        id="district"
+                        name="districtCode"
+                        value={districtCode || ""}
+                        onChange={handleDistrictChange}
+                        disabled={
+                          !isEditing || !provinceCode || isDistrictsLoading
+                        }
+                        className={`${getInputClasses(
+                          "districtCode"
+                        )} appearance-none`}
+                      >
+                        <option value="">
+                          {isDistrictsLoading
+                            ? "Loading districts..."
+                            : "Select district"}
+                        </option>
+                        {districts.map((district) => (
+                          <option key={district.code} value={district.code}>
+                            {district.name}
+                          </option>
+                        ))}
+                      </select>
+                      {isEditing && errors.districtCode && (
+                        <p className="text-xs text-red-500">
+                          {errors.districtCode}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor="street"
+                      className="text-xs font-semibold uppercase tracking-wide text-slate-400"
+                    >
+                      Street / Address Line
+                    </label>
+                    <input
+                      id="street"
+                      type="text"
+                      name="street"
+                      value={formData.street || ""}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="House number, street, ward"
+                      className={getInputClasses("street")}
+                    />
+                  </div>
+                  {isEditing && errors.street && (
+                    <p className="text-xs text-red-500">{errors.street}</p>
+                  )}
                   {isEditing && errors.address && (
                     <p className="text-xs text-red-500">{errors.address}</p>
                   )}
