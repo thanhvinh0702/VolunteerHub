@@ -7,6 +7,7 @@ import {
     deleteEvent,
 } from "../services/eventService";
 import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 
 const EVENTS_QUERY_KEY = ["events"];
 
@@ -19,6 +20,30 @@ export const useEvents = (params) => {
         placeholderData: (previousData) => previousData,
     });
 };
+
+export const useEventPagination = (params) => {
+    const queryClient = useQueryClient();
+    const { pageNum = 0, pageSize = 10, status } = params || {};
+    const query = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status],
+        queryFn: () => getEvents({ pageNum, pageSize, status }),
+        keepPreviousData: true,
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Prefetch the next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status],
+                queryFn: () => getEvents({ pageNum: nextPage, pageSize, status }),
+            });
+        }
+    }, [query.data, pageNum, pageSize, status, queryClient]);
+
+    return query;
+}
 
 export const useEventDetail = (eventId, options = {}) => {
     return useQuery({
