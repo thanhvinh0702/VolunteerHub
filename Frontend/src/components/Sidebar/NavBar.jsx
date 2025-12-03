@@ -107,34 +107,28 @@ export default function NavBar() {
         >
           <DropDownItem
             className="cursor-pointer"
-            onClick={() => navigate("/settings")}
+            handleClick={() => navigate("/settings")}
           >
             <span>Setting</span>
           </DropDownItem>
-          <DropDownItem className="cursor-pointer">
-            <span
-              onClick={async () => {
-                console.log("[NavBar] Logout button clicked!");
-                try {
-                  console.log("[NavBar] Calling logout()...");
-                  await logout();
-                  console.log(
-                    "[NavBar] logout() completed, waiting 1s before redirect..."
-                  );
+          <DropDownItem
+            className="cursor-pointer"
+            handleClick={async () => {
+              try {
+                console.log("[NavBar] Calling logout()...");
+                await logout();
 
-                  // Wait 1 second to see console logs
-                  await new Promise((resolve) => setTimeout(resolve, 1000));
+                await new Promise((resolve) => setTimeout(resolve, 1000));
 
-                  console.log("[NavBar] Now redirecting to:", LOGIN_LINK);
-                  // Force reload to clear all state and redirect to login
-                  window.location.href = LOGIN_LINK;
-                } catch (error) {
-                  console.error("[NavBar] Logout error:", error);
-                }
-              }}
-            >
-              Logout
-            </span>
+                console.log("[NavBar] Now redirecting to:", LOGIN_LINK);
+                // Force reload to clear all state and redirect to login
+                window.location.href = LOGIN_LINK;
+              } catch (error) {
+                console.error("[NavBar] Logout error:", error);
+              }
+            }}
+          >
+            <span>Logout</span>
           </DropDownItem>
         </DropDown>
       </div>
