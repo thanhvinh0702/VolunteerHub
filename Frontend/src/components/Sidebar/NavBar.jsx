@@ -107,7 +107,7 @@ export default function NavBar() {
         >
           <DropDownItem
             className="cursor-pointer"
-            handleClick={() => navigate("/settings")}
+            handleClick={() => navigate("/setting")}
           >
             <span>Setting</span>
           </DropDownItem>
