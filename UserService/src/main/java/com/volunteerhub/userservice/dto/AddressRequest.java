@@ -1,6 +1,6 @@
-package com.volunteerhub.eventservice.dto.request;
+package com.volunteerhub.userservice.dto;
 
-import com.volunteerhub.eventservice.validation.OnCreate;
+import com.volunteerhub.userservice.validation.OnCreate;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -15,3 +15,4 @@ public class AddressRequest {
     @NotBlank(message = "Street cannot be blank", groups = OnCreate.class)
     private String street;
 }
+

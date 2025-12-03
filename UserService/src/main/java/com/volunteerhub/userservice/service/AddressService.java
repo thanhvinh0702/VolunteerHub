@@ -1,8 +1,8 @@
-package com.volunteerhub.eventservice.service;
+package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.eventservice.dto.request.AddressRequest;
-import com.volunteerhub.eventservice.model.Address;
-import com.volunteerhub.eventservice.repository.AddressRepository;
+import com.volunteerhub.userservice.dto.AddressRequest;
+import com.volunteerhub.userservice.model.Address;
+import com.volunteerhub.userservice.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +29,4 @@ public class AddressService {
             return addressRepository.save(newAddress);
         });
     }
-
 }
