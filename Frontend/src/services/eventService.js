@@ -35,3 +35,19 @@ export const deleteEvent = async (eventId) => {
     const response = await axiosClient.delete(`${EVENT_BASE_URL}/${eventId}`);
     return response;
 };
+
+export const approveEvent = async (eventId) => {
+    if (!eventId) {
+        throw new Error("eventId is required to approve an event");
+    }
+    const response = await axiosClient.post(`${EVENT_BASE_URL}/${eventId}/approve`);
+    return response;
+};
+
+export const rejectEvent = async (eventId) => {
+    if (!eventId) {
+        throw new Error("eventId is required to reject an event");
+    }
+    const response = await axiosClient.post(`${EVENT_BASE_URL}/${eventId}/ban`);
+    return response;
+}
