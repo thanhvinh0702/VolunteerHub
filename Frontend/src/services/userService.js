@@ -4,16 +4,17 @@ import axiosClient from "./axiosClient";
 const createUserProfile = async (data) => {
     try {
         // Use axiosClient instead of useApi to get Bearer token from interceptor
-        console.log("Creating user profile with data hh:", data);
-        const res = await axiosClient.post("api/v1/users/users", {
-            authProvider: "local", // Required field
-            name: data.name,
-            email: data.email,
+        const payload = { authProvider: "local", // Required field
+                                     fullName: data.name,
+                                     username: data.email,
+                                     email: data.email,
 
-            // Các trường optional có thể thêm sau
-            bio: data.bio || "",
-            avatarUrl: data.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (data.username || data.email),
-        });
+                                     // Các trường optional có thể thêm sau
+                                     bio: data.bio || "",
+                                     avatarUrl: data.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (data.username || data.email),}
+        console.log("Creating user profile with data hh:", payload);
+        const res = await axiosClient.post("api/v1/users/users", payload);
+
         return res.data;
     } catch (error) {
         console.error("Error creating user profile:", error);
