@@ -27,6 +27,7 @@ import {
 } from "../../hook/useVietnamLocations";
 import profileSchema from "../../validation/profileSchema";
 import { ValidationError } from "yup";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const composeAddress = ({ street, districtName, provinceName }) =>
   [street, districtName, provinceName]
@@ -583,7 +584,7 @@ export default function Settingpage() {
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                 <div className="relative mx-auto h-28 w-28 overflow-hidden rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-500/30 sm:mx-0">
                   {formData.avatarUrl ? (
-                    <img
+                    <LazyLoadImage
                       src={formData.avatarUrl}
                       alt={formData.name}
                       className="h-full w-full object-cover"
