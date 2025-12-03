@@ -24,6 +24,7 @@ export default function OAuth2Callback() {
       setHasProcessed(true);
       const code = searchParams.get("code");
       const errorParam = searchParams.get("error");
+      const currentPath = window.location.pathname;
 
       // Check for OAuth2 error
       if (errorParam) {
@@ -43,20 +44,38 @@ export default function OAuth2Callback() {
 
       try {
         console.log("Exchanging authorization code for token...");
+        console.log("Current callback path:", currentPath);
 
-        // Exchange code for token
-        const tokenResponse = await fetch(
-          "http://localhost:7070/oauth2/token",
-          {
+        // Determine if this is Google OAuth or custom OAuth
+        const isGoogleOAuth = currentPath.includes("/login/oauth2/code/google");
+
+        let tokenResponse;
+
+        if (isGoogleOAuth) {
+          // Exchange Google authorization code for token directly with Google
+          console.log("Processing Google OAuth callback");
+          tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              grant_type: "authorization_code",
+              code: code,
+              client_id: import.meta.env.VITE_GG_CLIENT_ID,
+              client_secret: import.meta.env.VITE_GG_CLIENT_SECRET,
+              redirect_uri: "http://localhost:3000/login/oauth2/code/google",
+            }),
+          });
+        } else {
+          // Exchange code for token (Custom OAuth - VolunteerHub)
+          console.log("Processing VolunteerHub OAuth callback");
+          tokenResponse = await fetch("http://localhost:7070/oauth2/token", {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
               // Basic Auth: base64(client_id:client_secret)
-              Authorization:
-                "Basic " +
-                btoa(
-                  "7fcdbb6c-fc1d-4921-a52d-0466557b6132:f584278e-be8a-4f55-9c64-8e7be8f9e846"
-                ),
+              Authorization: "Basic " + btoa(import.meta.env.VITE_CUSTOM_AUTH),
             },
             body: new URLSearchParams({
               grant_type: "authorization_code",
@@ -64,8 +83,8 @@ export default function OAuth2Callback() {
               redirect_uri:
                 "http://localhost:3000/login/oauth2/code/volunteerhub",
             }),
-          }
-        );
+          });
+        }
 
         if (!tokenResponse.ok) {
           const errorData = await tokenResponse.json();
@@ -76,20 +95,57 @@ export default function OAuth2Callback() {
         }
 
         const tokenData = await tokenResponse.json();
-        console.log("Token received successfully");
+        console.log("Token received successfully", tokenData);
+
+        let userInfo;
+        let finalToken;
+
+        if (isGoogleOAuth) {
+          // Google OAuth flow: Parse id_token to get user info
+          if (!tokenData.id_token) {
+            throw new Error("No id_token received from Google");
+          }
+
+          console.log("Parsing Google id_token...");
+          userInfo = parseJwt(tokenData.id_token);
+          console.log("Google user info from id_token:", userInfo);
+
+          // Use id_token as the main token for authentication
+          finalToken = tokenData.id_token;
+
+          // Store access_token separately if available for calling Google APIs
+          if (tokenData.access_token) {
+            localStorage.setItem("google_access_token", tokenData.access_token);
+            console.log("Google access_token stored in localStorage");
+          }
+        } else {
+          // VolunteerHub OAuth - token is already JWT
+          finalToken = tokenData.access_token;
+          userInfo = parseJwt(finalToken);
+          console.log("User info from JWT:", userInfo);
+        }
 
         // Save tokens using storage utility
-        storage.setToken(tokenData.access_token);
+        storage.setToken(finalToken);
         if (tokenData.refresh_token) {
           localStorage.setItem("refresh_token", tokenData.refresh_token);
         }
 
-        // Decode JWT to get user info
-        const userInfo = parseJwt(tokenData.access_token);
-        console.log("User info from token:", userInfo);
-
-        // Extract role from authorities array
-        const role = userInfo.roles?.[0]?.role;
+        // Extract role from token or set default for Google users
+        let role;
+        if (isGoogleOAuth) {
+          // For Google OAuth, try to get role from backend token, otherwise default to USER
+          if (finalToken !== tokenData.id_token) {
+            const tokenInfo = parseJwt(finalToken);
+            role =
+              tokenInfo.roles?.[0]?.role || tokenInfo.roles?.[0] || ROLES.USER;
+          } else {
+            role = ROLES.USER;
+          }
+        } else {
+          // VolunteerHub OAuth - roles from custom claims
+          role = userInfo.roles?.[0]?.role || userInfo.roles?.[0];
+        }
 
         // Validate role - only allow ADMIN, USER, MANAGER
         const allowedRoles = [ROLES.ADMIN, ROLES.USER, ROLES.MANAGER];
@@ -114,13 +170,31 @@ export default function OAuth2Callback() {
           ) {
             console.log("User profile not found, creating new profile...");
             try {
-              const newProfile = await createUserProfile({
-                username: userInfo.username || userInfo.preferred_username,
-                name: userInfo.name,
+              // Prepare user data for profile creation
+              const profileData = {
+                username:
+                  userInfo.username ||
+                  userInfo.preferred_username ||
+                  userInfo.email?.split("@")[0] ||
+                  userInfo.name?.replace(/\s+/g, "").toLowerCase(),
+                name:
+                  userInfo.name ||
+                  (userInfo.given_name && userInfo.family_name
+                    ? `${userInfo.given_name} ${userInfo.family_name}`
+                    : "User"),
                 email: userInfo.email,
                 roles: role,
-                authProvider: userInfo.iss || "oauth2",
-              });
+                authProvider: isGoogleOAuth
+                  ? "google"
+                  : userInfo.iss || "oauth2",
+              };
+
+              // Add optional fields if available (from Google)
+              if (userInfo.picture) {
+                profileData.avatarUrl = userInfo.picture;
+              }
+
+              const newProfile = await createUserProfile(profileData);
               console.log("User profile created successfully:", newProfile);
             } catch (createError) {
               console.error("Failed to create user profile:", createError);

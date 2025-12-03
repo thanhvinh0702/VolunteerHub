@@ -872,7 +872,7 @@ function LandingPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <i className="ri-map-pin-line text-purple-400"></i>
-                    <span>123 Volunteer Street, City</span>
+                    <span>Vinhomes Smart City, Tay Mo, Hanoi</span>
                   </li>
                 </ul>
               </div>

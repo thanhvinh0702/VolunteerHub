@@ -43,6 +43,7 @@ function AppRouter() {
         path="/login/oauth2/code/volunteerhub"
         element={<OAuth2Callback />}
       />
+      <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
       {/* <Route path="/login/*" element={<LoginPage />} /> */}
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />

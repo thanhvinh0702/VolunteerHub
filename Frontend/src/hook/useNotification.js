@@ -41,3 +41,40 @@ export const useMarkAllRead = () => {
         },
     });
 };
+
+// const handleMarkAsRead = (notificationId) => {
+//     markAsReadMutation.mutate(notificationId, {
+//       onSuccess: () => {
+//         console.log("Đã đánh dấu đọc");
+//       },
+//       onError: (error) => {
+//         alert("Không thể đánh dấu đã đọc");
+//       },
+//     });
+//   };
+
+//   // Handler đánh dấu tất cả đã đọc
+//   const handleMarkAllAsRead = () => {
+//     markAllAsReadMutation.mutate(undefined, {
+//       onSuccess: () => {
+//         console.log("Đã đánh dấu tất cả đã đọc");
+//       },
+//       onError: (error) => {
+//         alert("Không thể đánh dấu tất cả đã đọc");
+//       },
+//     });
+//   };
+
+//   // Handler xóa notification
+//   const handleDelete = (notificationId) => {
+//     if (window.confirm("Bạn có chắc muốn xóa thông báo này?")) {
+//       deleteNotificationMutation.mutate(notificationId, {
+//         onSuccess: () => {
+//           console.log("Đã xóa thông báo");
+//         },
+//         onError: (error) => {
+//           alert("Không thể xóa thông báo");
+//         },
+//       });
+//     }
+//   };
