@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    Optional<Address> findByProvinceAndDistrictAndStreet(String city, String province, String street);
+    Optional<Address> findByProvinceAndDistrictAndStreet(String province, String district, String street);
 }

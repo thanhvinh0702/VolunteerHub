@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"city", "province", "street"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"province", "district", "street"})
 )
 public class Address {
 
