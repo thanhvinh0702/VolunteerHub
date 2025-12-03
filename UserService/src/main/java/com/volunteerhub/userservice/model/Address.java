@@ -1,4 +1,4 @@
-package com.volunteerhub.eventservice.model;
+package com.volunteerhub.userservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -33,5 +33,5 @@ public class Address {
     @Builder.Default
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Event> events = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 }

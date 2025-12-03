@@ -1,13 +1,11 @@
 package com.vippro.AuthorizationServer.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class ErrorDetails {
     private String message;
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

@@ -9,7 +9,7 @@ public class AddressMapper {
 
     public AddressResponse toDto(Address address) {
         return AddressResponse.builder()
-                .city(address.getCity())
+                .province(address.getProvince())
                 .province(address.getProvince())
                 .street(address.getStreet())
                 .build();

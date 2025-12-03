@@ -1,6 +1,7 @@
 package com.volunteerhub.userservice.service;
 
 import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class UserService {
 
+    private final AddressService addressService;
     private final UserRepository userRepository;
 
     public User findById(String id) {
@@ -47,15 +49,29 @@ public class UserService {
     }
 
     public User create(String userId, Role userRole, UserRequest userRequest) {
+        Address address = null;
+        Long addressId = null;
+
+        if (userRequest.getAddress() != null) {
+            address = addressService.findOrCreateAddress(userRequest.getAddress());
+            addressId = address.getId();
+        }
+
         User user = User.builder()
                 .id(userId)
                 .email(userRequest.getEmail())
-                .name(userRequest.getName())
+                .fullName(userRequest.getFullName())
                 .authProvider(userRequest.getAuthProvider())
                 .role(userRole)
                 .bio(userRequest.getBio())
                 .avatarUrl(userRequest.getAvatarUrl())
-                .preferences(userRequest.getPreferences())
+                .skills(userRequest.getSkills())
+                .dateOfBirth(userRequest.getDateOfBirth())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .address(address)
+                .addressId(addressId)
+                .username(userRequest.getUsername())
+                .isDarkMode(userRequest.isDarkMode() ? true : false)
                 .build();
         return userRepository.save(user);
     }
@@ -69,8 +85,26 @@ public class UserService {
         if (userRequest.getAvatarUrl() != null) {
             existedUser.setAvatarUrl(userRequest.getAvatarUrl());
         }
-        if (userRequest.getPreferences() != null) {
-            existedUser.setPreferences(userRequest.getPreferences());
+        if (userRequest.getSkills() != null) {
+            existedUser.setSkills(userRequest.getSkills());
+        }
+        if (userRequest.getDateOfBirth() != null) {
+            existedUser.setDateOfBirth(userRequest.getDateOfBirth());
+        }
+        if (userRequest.getPhoneNumber() != null) {
+            existedUser.setPhoneNumber(userRequest.getPhoneNumber());
+        }
+        if (userRequest.getAddress() != null && userRequest.getAddress().getDistrict() != null &&
+                userRequest.getAddress().getProvince() != null && userRequest.getAddress().getStreet() != null) {
+            Address address = addressService.findOrCreateAddress(userRequest.getAddress());
+            existedUser.setAddress(address);
+            existedUser.setAddressId(address.getId());
+        }
+
+        if (userRequest.isDarkMode()) {
+            existedUser.setDarkMode(true);
+        } else {
+            existedUser.setDarkMode(false);
         }
         return userRepository.save(existedUser);
     }

@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/users")
@@ -66,6 +67,14 @@ public class UserController {
                 .findFirst()
                 .orElseThrow(() -> new AccessDeniedException("No role found for user"));
         return new ResponseEntity<>(userService.create(authentication.getName(), role, userRequest), HttpStatus.CREATED);
+//        String newUserId = UUID.randomUUID().toString();
+//
+//        Role defaultRole = Role.USER;
+//
+//        return new ResponseEntity<>(
+//                userService.create(newUserId, defaultRole, userRequest),
+//                HttpStatus.CREATED
+//        );
     }
 
     @PutMapping("/{userId}")

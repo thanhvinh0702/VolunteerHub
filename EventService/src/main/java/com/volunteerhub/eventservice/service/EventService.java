@@ -118,7 +118,7 @@ public class EventService {
             updatedFields.put("category", eventRequest.getCategoryName());
         }
 
-        if (eventRequest.getAddress() != null && eventRequest.getAddress().getCity() != null &&
+        if (eventRequest.getAddress() != null && eventRequest.getAddress().getDistrict() != null &&
                 eventRequest.getAddress().getProvince() != null && eventRequest.getAddress().getStreet() != null) {
             Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
             event.setAddress(address);
