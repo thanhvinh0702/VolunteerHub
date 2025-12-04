@@ -28,6 +28,7 @@ public class EventMapper {
                 .address(addressMapper.toDto(event.getAddress()))
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
+                .registrationDeadline(event.getRegistrationDeadline())
                 .capacity(event.getCapacity())
                 .status(event.getStatus())
                 .ownerId(event.getOwnerId())

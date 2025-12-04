@@ -75,6 +75,7 @@ public class EventService {
                 .status(EventStatus.PENDING)
                 .startTime(eventRequest.getStartTime())
                 .endTime(eventRequest.getEndTime())
+                .registrationDeadline(eventRequest.getRegistrationDeadline())
                 .address(address)
                 .capacity(eventRequest.getCapacity())
                 .ownerId(userId)

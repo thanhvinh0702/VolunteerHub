@@ -28,6 +28,8 @@ public class EventResponse {
 
     private LocalDateTime endTime;
 
+    private LocalDateTime registrationDeadline;
+
     private int capacity;
 
     private String ownerId;
