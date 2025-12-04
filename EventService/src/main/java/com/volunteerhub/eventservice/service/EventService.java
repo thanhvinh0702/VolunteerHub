@@ -1,5 +1,7 @@
 package com.volunteerhub.eventservice.service;
 
+import com.volunteerhub.common.utils.PageNumAndSizeResponse;
+import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
@@ -12,6 +14,7 @@ import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -41,22 +44,35 @@ public class EventService {
                 .orElseThrow(() -> new NoSuchElementException("No such event with id " + id)));
     }
 
-    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status) {
-        int page = (pageNum == null) ? 0 : pageNum;
-        int size = (pageSize == null) ? 10 : pageSize;
-        if (page < 0) {
-            throw new IllegalArgumentException("Page number must be greater than or equal to 0");
-        }
-        if (size <= 0) {
-            throw new IllegalArgumentException("Page size must be greater than 0");
-        }
+    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        int page = pageNumAndSizeResponse.getPageNum();
+        int size = pageNumAndSizeResponse.getPageSize();
         if (status != null) {
             return eventRepository.findByStatus(status, PageRequest.of(page, size)).getContent()
                     .stream()
                     .map(eventMapper::toDto)
                     .toList();
         }
-        return eventRepository.findAll(PageRequest.of(page, size)).getContent()
+
+        Sort sort = order.equals("asc")
+                ? Sort.by(sortedBy).ascending()
+                : Sort.by(sortedBy).descending();
+
+        return eventRepository.findAll(PageRequest.of(page, size, sort)).getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
+    }
+
+    public List<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy, String order) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        Sort sort = order.equals("asc")
+                ? Sort.by(sortedBy).ascending()
+                : Sort.by(sortedBy).descending();
+        return eventRepository
+                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort))
+                .getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();
