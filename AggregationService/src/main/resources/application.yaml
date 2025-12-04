@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: AggregationService
+  config:
+    import: optional:file:.env[.properties]
+
+server:
+  port: ${PORT}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}

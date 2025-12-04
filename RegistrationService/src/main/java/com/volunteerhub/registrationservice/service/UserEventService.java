@@ -1,9 +1,9 @@
 package com.volunteerhub.registrationservice.service;
 
+import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
-import com.volunteerhub.registrationservice.dto.EventRegistrationCount;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;

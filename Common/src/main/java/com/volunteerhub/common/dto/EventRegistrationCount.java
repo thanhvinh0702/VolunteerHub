@@ -1,4 +1,4 @@
-package com.volunteerhub.registrationservice.dto;
+package com.volunteerhub.common.dto;
 
 import lombok.Builder;
 import lombok.Data;

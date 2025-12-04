@@ -1,10 +1,10 @@
 package com.volunteerhub.eventservice.service;
 
+import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
 import com.volunteerhub.eventservice.model.Category;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -167,11 +168,14 @@ public class EventService {
     }
 
 
-    // TODO: publish event an event has been deleted
-    @PreAuthorize("hasRole('MANAGER')")
+    // TODO: publish event an event has been deleted (notification and registration)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
-        if (!event.getOwnerId().equals(userId)) {
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin && !event.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
         eventRepository.delete(event);
