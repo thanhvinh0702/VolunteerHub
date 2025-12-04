@@ -33,7 +33,6 @@ public class EventService {
     private final AddressService addressService;
     private final EventMapper eventMapper;
     private final EventPublisher eventPublisher;
-    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
 
     public Event findEntityById(Long id) {
         return eventRepository.findById(id)
@@ -208,7 +207,7 @@ public class EventService {
                         : "Uncategorized")
 
                 .fullAddress(event.getAddress() != null
-                        ? event.getAddress().getStreet() + ", " + event.getAddress().getCity()
+                        ? event.getAddress().getStreet() + ", " + event.getAddress().getDistrict()+ ", "+event.getAddress().getProvince()
                         : "Online/Unknown")
 
                 .startTime(event.getStartTime().toString())

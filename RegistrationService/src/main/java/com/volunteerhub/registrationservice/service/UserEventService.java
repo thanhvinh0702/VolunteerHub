@@ -32,7 +32,6 @@ public class UserEventService {
     private final EventSnapshotService eventSnapshotService;
     private final UserEventMapper userEventMapper;
     private final RegistrationPublisher registrationPublisher;
-    private final String templateAnalytic = "analytic:";
     public UserEvent findEntityByUserIdAndEventId(String userId, Long eventId) {
         return userEventRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
                 new NoSuchElementException("User-event registration with user id " + userId + " and event id " + eventId + " does not exits"));
