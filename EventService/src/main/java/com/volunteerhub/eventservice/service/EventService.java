@@ -226,4 +226,12 @@ public class EventService {
                 .map(this::convertToExportData)
                 .collect(Collectors.toList());
     }
+
+    public Long countEventsByOwnerId(String ownerId) {
+        return eventRepository.countEventsByOwnerId(ownerId);
+    }
+
+    public Long countActiveEventsByOwnerId(String ownerId) {
+        return eventRepository.countByOwnerIdAndStatus(ownerId, EventStatus.APPROVED);
+    }
 }

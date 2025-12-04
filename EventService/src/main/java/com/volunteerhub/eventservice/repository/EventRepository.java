@@ -2,6 +2,7 @@ package com.volunteerhub.eventservice.repository;
 
 import com.volunteerhub.common.enums.EventStatus;
 import com.volunteerhub.eventservice.model.Event;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.category LEFT JOIN FETCH e.address")
     List<Event> findAllForExport();
+
+    @Query("SELECT COUNT(e) FROM Event e WHERE e.ownerId = :ownerId")
+    Long countEventsByOwnerId(@Param("ownerId") String ownerId);
+
+    @Query("SELECT COUNT(e) FROM Event e WHERE e.ownerId = :ownerId AND e.status = :status")
+    Long countByOwnerIdAndStatus(@Param("ownerId") String ownerId, @Param("status") EventStatus status);
 }

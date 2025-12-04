@@ -1,7 +1,9 @@
 package com.volunteerhub.analyticservice.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -10,6 +12,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnalyticService {
 
     private final RedisTemplate<String, Long> stringLongRedisTemplate;
@@ -31,56 +34,45 @@ public class AnalyticService {
             stringLongRedisTemplate.opsForValue().set(key, realVal, Duration.ofHours(1));
             return realVal;
         } catch (Exception e) {
+            log.error("Error fetching analytic data for key: {}. Error: {}", key, e.getMessage());
             return 0L;
         }
     }
 
-    public Long getApprovedRate(String ownerId) {
-        return getCached(ownerId, ":approval_rate", () ->
+    public Long getApprovedRate() {
+        return getCached(SecurityContextHolder.getContext().getAuthentication().getName()
+                , ":approval_rate", () ->
                 registrationClient.get()
-                        .uri("/event/{ownerId}/approved_rate", ownerId)
+                        .uri("/approved_rate")
                         .retrieve()
                         .body(Long.class)
         );
     }
 
-    public Long getApplicationRate(String ownerId) {
-        return getCached(ownerId, ":approval_rate", () ->
+    public Long getApplicationRate() {
+        return getCached(SecurityContextHolder.getContext().getAuthentication().getName(),
+                ":application_rate", () ->
                 registrationClient.get()
-                        .uri("/event/{ownerId}/approved_rate", ownerId)
+                        .uri("/application_rate")
                         .retrieve()
                         .body(Long.class)
         );
     }
 
-    public Long countEventsPerManagers(String ownerId) {
-        return getCached(ownerId, ":total_events_each", () ->
-                registrationClient.get()
-                        .uri("/{ownerId}/total_events_each", ownerId)
-                .retrieve()
-                .body(Long.class));
-    }
-
-    public Long countActiveEventsPerManagers(String ownerId) {
-        return getCached(ownerId, ":current_active_events_each", () ->
-                registrationClient.get()
-                        .uri("/{ownerId}/current_active_events", ownerId)
-                        .retrieve()
-                        .body(Long.class)
-        );
-    }
-
-    public Long countEvents() {
-        return getCached("", ":total_events", () ->
-                eventClient.get()
-                        .uri("/total_events")
+    public Long countMyEvents() {
+        return getCached(
+                SecurityContextHolder.getContext().getAuthentication().getName(),
+                ":total_events_mine",
+                () -> eventClient.get()
+                        .uri("/my/total-events")
                         .retrieve()
                         .body(Long.class)
         );
     }
 
     public Long countActiveEvents() {
-        return getCached("", ":total_active_events", () ->
+        return getCached(SecurityContextHolder.getContext().getAuthentication().getName()
+                , ":total_active_events", () ->
                 eventClient.get()
                         .uri("/total_active_events")
                         .retrieve()
@@ -107,13 +99,13 @@ public class AnalyticService {
     }
 
     public Long countEventsPerUser() {
-        return getCached("", ":total_events_user", () ->
-                userClient.get()
+        return getCached(SecurityContextHolder.getContext().getAuthentication().getName()
+                , ":total_events_user", () ->
+                registrationClient.get()
                         .uri("/my-stats/participated-events")
                         .retrieve()
                         .body(Long.class)
         );
     }
-
 
 }

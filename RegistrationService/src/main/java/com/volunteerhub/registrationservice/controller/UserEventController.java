@@ -75,22 +75,21 @@ public class UserEventController {
         );
     }
 
-    @GetMapping("/event/{ownerId}/application_rate")
+    @GetMapping("/application_rate")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<Long> getApplicationRate(@PathVariable String ownerId) {
+    public ResponseEntity<Long> getApplicationRate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
-        if (!currentUserId.equals(ownerId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
-        return ResponseEntity.ok(userEventService.getApplicationRate(ownerId));
+        return ResponseEntity.ok(userEventService.getApplicationRate(currentUserId));
     }
 
-    @GetMapping("/event/{ownerId}/approved_rate")
-    @PreAuthorize("hasRole('MANAGER') and #ownerId == authentication.name")
-    public ResponseEntity<Long> getApprovedRate(@PathVariable String ownerId) {
-        return ResponseEntity.ok(userEventService.getApprovalRate(ownerId));
+    @GetMapping("/approved_rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApprovedRate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+        return ResponseEntity.ok(userEventService.getApprovalRate(currentUserId));
     }
 
     @GetMapping("/export-all")

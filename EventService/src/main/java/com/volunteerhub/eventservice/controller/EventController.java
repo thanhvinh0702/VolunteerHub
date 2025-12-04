@@ -11,6 +11,7 @@ import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -78,5 +79,19 @@ public class EventController {
     @GetMapping("/export-list")
     public ResponseEntity<List<EventResponseCSV>> getExportList() {
         return ResponseEntity.ok(eventService.getDataForExport());
+    }
+
+    @GetMapping("/total_events")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> countEventsByOwnerId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.countEventsByOwnerId(authentication.getName()));
+    }
+
+    @GetMapping("/total_active_events")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> countActiveEventsByOwnerId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.countActiveEventsByOwnerId(authentication.getName()));
     }
 }

@@ -166,13 +166,19 @@ public class UserEventService {
     }
 
     public Long getApplicationRate(String ownerId) {
-        return userEventRepository.countApplicationsByOwnerId(ownerId) /
-                eventSnapshotRepository.findCapacityPerManager(ownerId);
+        long totalApps = userEventRepository.countApplicationsByOwnerId(ownerId);
+        long totalCapacity = eventSnapshotRepository.findCapacityPerManager(ownerId);
+
+        if (totalCapacity == 0) return 0L;
+        return (long) ((double) totalApps / totalCapacity * 100);
     }
 
     public Long getApprovalRate(String ownerId) {
-        return userEventRepository.countApprovedByOwnerId(ownerId) /
-                userEventRepository.countApplicationsByOwnerId(ownerId);
+        long approvedCount = userEventRepository.countApprovedByOwnerId(ownerId);
+        long totalApps = userEventRepository.countApplicationsByOwnerId(ownerId);
+
+        if (totalApps == 0) return 0L;
+        return (long) ((double) approvedCount / totalApps * 100);
     }
 
     public List<UserEventExport> getAllForExport() {

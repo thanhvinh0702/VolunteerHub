@@ -23,17 +23,18 @@ public class ServiceClientConfig {
     @Value("${services.registration.url:http://localhost:8082}")
     private String registrationServiceUrl;
 
-    @Bean
+
+    @Bean("userClient")
     public RestClient userClient(RestClient.Builder builder) {
         return createClient(builder, userServiceUrl);
     }
 
-    @Bean
+    @Bean("eventClient")
     public RestClient eventClient(RestClient.Builder builder) {
         return createClient(builder, eventServiceUrl);
     }
 
-    @Bean
+    @Bean("registrationClient")
     public RestClient registrationClient(RestClient.Builder builder) {
         return createClient(builder, registrationServiceUrl);
     }
@@ -51,13 +52,14 @@ public class ServiceClientConfig {
 
             if (authentication != null && authentication.isAuthenticated()) {
                 String userId = authentication.getName();
-
-                String roles = authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(","));
+                if (authentication.getAuthorities() != null) {
+                    String roles = authentication.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(","));
+                    request.getHeaders().add("X-USER-ROLE", roles);
+                }
 
                 request.getHeaders().add("X-USER-ID", userId);
-                request.getHeaders().add("X-USER-ROLE", roles);
             }
 
             return execution.execute(request, body);
