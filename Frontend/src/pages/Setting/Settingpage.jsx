@@ -232,6 +232,30 @@ export default function Settingpage() {
     }
   }, [profile]);
 
+  useEffect(() => {
+    if (formData?.provinceName && !formData?.provinceCode && provinces?.length > 0) {
+      const matched = provinces.find(p => p.name === formData.provinceName);
+      if (matched) {
+        setFormData(prev => ({
+          ...prev,
+          provinceCode: String(matched.code)
+        }));
+      }
+    }
+  }, [formData?.provinceName, formData?.provinceCode, provinces]);
+
+  useEffect(() => {
+    if (formData?.districtName && !formData?.districtCode && districts?.length > 0) {
+      const matched = districts.find(d => d.name === formData.districtName);
+      if (matched) {
+        setFormData(prev => ({
+          ...prev,
+          districtCode: String(matched.code)
+        }));
+      }
+    }
+  }, [formData?.districtName, formData?.districtCode, districts]);
+
   if (isLoading || !formData) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-slate-100">
@@ -419,7 +443,6 @@ export default function Settingpage() {
         districtCode: formData?.districtCode || "",
         skills: validated.skills || [],
       };
-
       const payload = {
         name: validated.name,
         fullName: validated.fullName,
