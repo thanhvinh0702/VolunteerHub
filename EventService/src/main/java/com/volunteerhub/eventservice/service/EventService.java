@@ -1,10 +1,10 @@
 package com.volunteerhub.eventservice.service;
 
+import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
 import com.volunteerhub.eventservice.model.Category;

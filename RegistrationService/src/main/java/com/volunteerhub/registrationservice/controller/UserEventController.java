@@ -1,7 +1,7 @@
 package com.volunteerhub.registrationservice.controller;
 
+import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.enums.UserEventStatus;
-import com.volunteerhub.registrationservice.dto.EventRegistrationCount;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
@@ -49,8 +49,8 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.getCurrentRegistrationCount(eventId));
     }
 
-    @GetMapping("/events/current-registration")
-    public ResponseEntity<List<EventRegistrationCount>> getEventCounts(@RequestParam List<Long> eventIds) {
+    @GetMapping("/events/current-participant")
+    public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam List<Long> eventIds) {
         return ResponseEntity.ok(userEventService.getEventsParticipantCount(eventIds));
     }
 
