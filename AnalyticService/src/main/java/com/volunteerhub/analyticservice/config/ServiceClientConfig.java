@@ -1,6 +1,8 @@
 package com.volunteerhub.analyticservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,12 +11,36 @@ import org.springframework.web.client.RestClient;
 
 import java.util.stream.Collectors;
 
-public class EventClientConfig {
+@Configuration
+public class ServiceClientConfig {
+
+    @Value("${services.user.url:http://localhost:8081}")
+    private String userServiceUrl;
+
+    @Value("${services.event.url:http://localhost:8084}")
+    private String eventServiceUrl;
+
+    @Value("${services.registration.url:http://localhost:8082}")
+    private String registrationServiceUrl;
+
+    @Bean
+    public RestClient userClient(RestClient.Builder builder) {
+        return createClient(builder, userServiceUrl);
+    }
 
     @Bean
     public RestClient eventClient(RestClient.Builder builder) {
+        return createClient(builder, eventServiceUrl);
+    }
+
+    @Bean
+    public RestClient registrationClient(RestClient.Builder builder) {
+        return createClient(builder, registrationServiceUrl);
+    }
+
+    private RestClient createClient(RestClient.Builder builder, String baseUrl) {
         return builder
-                .baseUrl("http://localhost:8084")
+                .baseUrl(baseUrl)
                 .requestInterceptor(authPropagationInterceptor())
                 .build();
     }
@@ -24,7 +50,7 @@ public class EventClientConfig {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication != null && authentication.isAuthenticated()) {
-                String userId = (String) authentication.getPrincipal();
+                String userId = authentication.getName();
 
                 String roles = authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)

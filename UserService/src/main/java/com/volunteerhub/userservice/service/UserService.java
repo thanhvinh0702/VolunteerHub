@@ -1,40 +1,46 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.common.dto.message.user.UserUpdatedMessage;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.enums.UserStatus;
-import com.volunteerhub.userservice.dto.UserRequest;
-import com.volunteerhub.userservice.dto.UserResponse;
+import com.volunteerhub.userservice.dto.request.UserRequest;
+import com.volunteerhub.userservice.dto.response.UserResponse;
+import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.Status;
 import com.volunteerhub.userservice.model.User;
-import com.volunteerhub.userservice.publisher.UserPublisher;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
 
     private final AddressService addressService;
     private final UserRepository userRepository;
-    private final UserPublisher userPublisher;
-    private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
+    private final UserMapper userMapper;
     public User findById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
+    }
+
+    public UserResponse getUserResponseById(String id) {
+        User user = findById(id);
+        return userMapper.toResponse(user);
     }
 
     public User findByEmail(String email) {
@@ -42,27 +48,30 @@ public class UserService {
                 new NoSuchElementException("No such user with email " + email));
     }
 
-    public List<User> findAll(Integer page, Integer pageSize) {
-        if (page == null && pageSize == null) {
-            return userRepository.findAll();
+    public List<UserResponse> findAll(Integer page, Integer pageSize) {
+        if (page == null || pageSize == null) {
+            return userRepository.findAll().stream()
+                    .map(userMapper::toResponse)
+                    .collect(Collectors.toList());
         }
-        if (page == null) {
-            return userRepository.findAll(PageRequest.of(0, pageSize)).getContent();
-        }
-        if (pageSize == null) {
-            return List.of();
-        }
-        return userRepository.findAll(PageRequest.of(page, pageSize)).getContent();
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        return userPage.getContent().stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     public List<String> findAllIds(Role role) {
         return userRepository.findAllIdsByRole(role);
     }
 
-    public User create(String userId, Role userRole, UserRequest userRequest) {
+    @Transactional
+    public UserResponse create(String userId, Role userRole, UserRequest userRequest) {
+        // 1. Xử lý Address trước
         Address address = null;
         Long addressId = null;
-
         if (userRequest.getAddress() != null) {
             address = addressService.findOrCreateAddress(userRequest.getAddress());
             addressId = address.getId();
@@ -72,8 +81,10 @@ public class UserService {
                 .id(userId)
                 .email(userRequest.getEmail())
                 .fullName(userRequest.getFullName())
+                .username(userRequest.getUsername())
                 .authProvider(userRequest.getAuthProvider())
                 .role(userRole)
+                .status(Status.ACTIVE)
                 .bio(userRequest.getBio())
                 .avatarUrl(userRequest.getAvatarUrl())
                 .skills(userRequest.getSkills())
@@ -81,43 +92,42 @@ public class UserService {
                 .phoneNumber(userRequest.getPhoneNumber())
                 .address(address)
                 .addressId(addressId)
-                .username(userRequest.getUsername())
-                .isDarkMode(userRequest.isDarkMode() ? true : false)
+                .isDarkMode(userRequest.isDarkMode())
                 .build();
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toResponse(savedUser);
     }
 
+    @Transactional
     @PreAuthorize("authentication.name == #userId")
-    public User update(String userId, UserRequest userRequest) throws AccessDeniedException {
-        User existedUser = this.findById(userId);
-        if (userRequest.getBio() != null) {
-            existedUser.setBio(userRequest.getBio());
-        }
-        if (userRequest.getAvatarUrl() != null) {
-            existedUser.setAvatarUrl(userRequest.getAvatarUrl());
-        }
-        if (userRequest.getSkills() != null) {
-            existedUser.setSkills(userRequest.getSkills());
-        }
-        if (userRequest.getDateOfBirth() != null) {
-            existedUser.setDateOfBirth(userRequest.getDateOfBirth());
-        }
-        if (userRequest.getPhoneNumber() != null) {
-            existedUser.setPhoneNumber(userRequest.getPhoneNumber());
-        }
-        if (userRequest.getAddress() != null && userRequest.getAddress().getDistrict() != null &&
-                userRequest.getAddress().getProvince() != null && userRequest.getAddress().getStreet() != null) {
+    public UserResponse update(String userId, UserRequest userRequest) {
+        User existingUser = this.findById(userId);
+
+        // 1. Update các trường cơ bản (Sử dụng Mapper update partial là tốt nhất)
+        // Nếu dùng MapStruct: userMapper.updateUserFromDto(request, existingUser);
+        // Dưới đây là cách thủ công nếu chưa có Mapper update:
+        updateUserFields(existingUser, userRequest);
+
+        // 2. Xử lý Address đặc biệt
+        if (userRequest.getAddress() != null) {
             Address address = addressService.findOrCreateAddress(userRequest.getAddress());
-            existedUser.setAddress(address);
-            existedUser.setAddressId(address.getId());
+            existingUser.setAddress(address);
+            existingUser.setAddressId(address.getId());
         }
 
-        if (userRequest.isDarkMode()) {
-            existedUser.setDarkMode(true);
-        } else {
-            existedUser.setDarkMode(false);
-        }
-        return userRepository.save(existedUser);
+        User savedUser = userRepository.save(existingUser);
+        return userMapper.toResponse(savedUser);
+    }
+
+    private void updateUserFields(User user, UserRequest userRequest) {
+        if (userRequest.getFullName() != null) user.setFullName(userRequest.getFullName());
+        if (userRequest.getBio() != null) user.setBio(userRequest.getBio());
+        if (userRequest.getAvatarUrl() != null) user.setAvatarUrl(userRequest.getAvatarUrl());
+        if (userRequest.getSkills() != null) user.setSkills(userRequest.getSkills());
+        if (userRequest.getDateOfBirth() != null) user.setDateOfBirth(userRequest.getDateOfBirth());
+        if (userRequest.getPhoneNumber() != null) user.setPhoneNumber(userRequest.getPhoneNumber());
+        user.setDarkMode(userRequest.isDarkMode());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -137,9 +147,6 @@ public class UserService {
         user.setStatus(Status.BANNED);
         UserStatus userStatus = switchingType(user.getStatus());
         UserRole userRole = switchingRole(user.getRole());
-        userPublisher.publishEvent(new UserUpdatedMessage(
-                UUID.fromString(user.getId()), user.getEmail(), userRole, LocalDateTime.now(), userStatus, adminID
-        ));
         return userRepository.save(user);
     }
 
@@ -179,41 +186,39 @@ public class UserService {
         return userRepository.countUsers(Role.USER);
     }
 
-    public UserResponse convertToExportData(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .status(user.getStatus().name())
-                .provider(user.getAuthProvider())
-                .totalEvents(user.getTotalEvents())
+//    public UserResponse convertToExportData(User user) {
+//        return UserResponse.builder()
+//                .id(user.getId())
+//                .fullName(user.getFullName())
+//                .email(user.getEmail())
+//                .role(user.getRole())
+//                .status(user.getStatus())
+//                .authProvider(user.getAuthProvider())
+//                .totalEvents(user.getTotalEvents())
+//
+//                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
+//
+//                .build();
+//    }
 
-                .joinedDate(user.getCreatedAt().toLocalDate().toString())
-                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
+//    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
+//        if (userIds == null || userIds.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
+//
+//        return users.stream()
+//                .map(this::convertToExportData)
+//                .collect(Collectors.toList());
+//    }
 
-                .joinedDate(user.getCreatedAt().toLocalDate().toString())
-                .build();
-    }
-
-    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
-        if (userIds == null || userIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
-
-        return users.stream()
-                .map(this::convertToExportData)
-                .collect(Collectors.toList());
-    }
-
-    public List<UserResponse> getAllUsersForExport() {
-        List<User> users = userRepository.findAllForExport();
-
-        return users.stream()
-                .map(this::convertToExportData)
-                .collect(Collectors.toList());
-    }
+//    public List<UserResponse> getAllUsersForExport() {
+//        List<User> users = userRepository.findAllForExport();
+//
+//        return users.stream()
+//                .map(this::convertToExportData)
+//                .collect(Collectors.toList());
+//    }
 
 }

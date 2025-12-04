@@ -1,4 +1,4 @@
-package com.volunteerhub.userservice.dto;
+package com.volunteerhub.userservice.dto.request;
 
 import com.volunteerhub.userservice.validation.OnCreate;
 import jakarta.validation.constraints.NotBlank;

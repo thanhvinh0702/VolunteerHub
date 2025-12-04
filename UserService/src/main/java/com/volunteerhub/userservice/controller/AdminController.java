@@ -1,5 +1,6 @@
 package com.volunteerhub.userservice.controller;
 
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.service.UserLoginHistoryService;
@@ -19,8 +20,8 @@ public class AdminController {
     private final UserLoginHistoryService userLoginHistoryService;
 
     @GetMapping("/all-users")
-    public ResponseEntity<List<User>> findAll(@RequestParam(required = false) Integer page,
-                                             @RequestParam(required = false) Integer pageSize) {
+    public ResponseEntity<List<UserResponse>> findAll(@RequestParam(required = false) Integer page,
+                                                      @RequestParam(required = false) Integer pageSize) {
         return ResponseEntity.ok(userService.findAll(page, pageSize));
     }
 

@@ -1,6 +1,6 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.userservice.dto.UserBadgeRequest;
+import com.volunteerhub.userservice.dto.request.UserBadgeRequest;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserBadge;
 import com.volunteerhub.userservice.repository.UserBadgeRepository;

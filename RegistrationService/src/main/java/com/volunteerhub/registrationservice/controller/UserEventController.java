@@ -88,14 +88,8 @@ public class UserEventController {
     }
 
     @GetMapping("/event/{ownerId}/approved_rate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER') and #ownerId == authentication.name")
     public ResponseEntity<Long> getApprovedRate(@PathVariable String ownerId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName();
-        if (!currentUserId.equals(ownerId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
         return ResponseEntity.ok(userEventService.getApprovalRate(ownerId));
     }
 
@@ -108,5 +102,11 @@ public class UserEventController {
     @GetMapping("/event/{eventId}/export")
     public ResponseEntity<List<UserEventExport>> exportByEvent(@PathVariable Long eventId) {
         return ResponseEntity.ok(userEventService.getByEventForExport(eventId));
+    }
+
+    @GetMapping("/my-stats/participated-events")
+    public ResponseEntity<Long> getMyTotalParticipatedEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.countParticipatedEvents(authentication.getName()));
     }
 }

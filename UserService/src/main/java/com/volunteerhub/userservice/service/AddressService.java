@@ -1,6 +1,6 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.userservice.dto.AddressRequest;
+import com.volunteerhub.userservice.dto.request.AddressRequest;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.repository.AddressRepository;
 import lombok.AllArgsConstructor;

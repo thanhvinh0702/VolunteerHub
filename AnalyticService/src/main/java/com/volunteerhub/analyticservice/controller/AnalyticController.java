@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,30 +18,37 @@ public class AnalyticController {
 
     private final AnalyticService analyticService;
 
-    @GetMapping("/{ownerId}/total_events_each")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
-    public ResponseEntity<Long> countEventsPerManager(@PathVariable String ownerId) {
-        return ResponseEntity.ok(analyticService.countEventsPerManagers(ownerId));
+    @GetMapping("/total_events_each")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> countEventsPerManager() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = auth.getName();
+        return ResponseEntity.ok(analyticService.countEventsPerManagers(currentUserId));
     }
 
-    @GetMapping("/{ownerId}/current_active_events_each")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
-    public ResponseEntity<Long> countActiveEventsPerManager(@PathVariable String ownerId) {
-        return ResponseEntity.ok(analyticService.countActiveEventsPerManagers(ownerId));
+    @GetMapping("/current_active_events_each")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> countActiveEventsPerManager() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = auth.getName();
+        return ResponseEntity.ok(analyticService.countActiveEventsPerManagers(currentUserId));
     }
 
-    @GetMapping("/{ownerId}/application-rate")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
-    public ResponseEntity<Long> getApplicationRate(@PathVariable String ownerId) {
-        return ResponseEntity.ok(analyticService.getApplicationRate(ownerId));
+    @GetMapping("/my_application-rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApplicationRate() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = auth.getName();
+        return ResponseEntity.ok(analyticService.getApplicationRate(currentUserId));
     }
 
-    @GetMapping("/{ownerId}/approval-rate")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
-    public ResponseEntity<Long> getApprovalRate(@PathVariable String ownerId) {
-        return ResponseEntity.ok(analyticService.getApprovedRate(ownerId));
+    @GetMapping("/my-approval-rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getMyApprovalRate() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = auth.getName();
+        return ResponseEntity.ok(analyticService.getApprovedRate(currentUserId));
     }
-
     @GetMapping("/{ownerId}/dashboard")
     @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
     public ResponseEntity<Map<String, Long>> getOwnerDashboard(@PathVariable String ownerId) {
@@ -56,25 +65,25 @@ public class AnalyticController {
     }
 
     @GetMapping("/count_events")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Long> countEvents() {
         return ResponseEntity.ok(analyticService.countEvents());
     }
 
     @GetMapping("/count_active_events")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Long> countActiveEvents() {
         return ResponseEntity.ok(analyticService.countActiveEvents());
     }
 
     @GetMapping("/total_users")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> countUsers() {
         return ResponseEntity.ok(analyticService.countUsers());
     }
 
     @GetMapping("/total_managers")
-    @PreAuthorize("#ownerId == authentication.name or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> countManagers() {
         return ResponseEntity.ok(analyticService.countManagers());
     }

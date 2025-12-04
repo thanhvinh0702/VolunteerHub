@@ -105,4 +105,15 @@ public class AnalyticService {
                         .body(Long.class)
         );
     }
+
+    public Long countEventsPerUser() {
+        return getCached("", ":total_events_user", () ->
+                userClient.get()
+                        .uri("/my-stats/participated-events")
+                        .retrieve()
+                        .body(Long.class)
+        );
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.volunteerhub.userservice.dto;
+package com.volunteerhub.userservice.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

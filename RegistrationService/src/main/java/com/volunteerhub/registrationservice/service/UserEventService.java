@@ -194,4 +194,14 @@ public class UserEventService {
                 .map(userEventMapper::toExportDto)
                 .collect(Collectors.toList());
     }
+
+    public Long countParticipatedEvents(String userId) {
+        List<UserEventStatus> activeStatuses = List.of(
+                UserEventStatus.APPROVED,
+                UserEventStatus.COMPLETED
+        );
+
+        return userEventRepository.countUserEventsByStatuses(userId, activeStatuses);
+    }
+
 }
