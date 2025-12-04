@@ -3,6 +3,7 @@ package com.volunteerhub.registrationservice.service;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
+import com.volunteerhub.registrationservice.dto.EventRegistrationCount;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;
@@ -40,6 +41,16 @@ public class UserEventService {
 
     public Long getCurrentRegistrationCount(Long eventId) {
         return userEventRepository.countByEventId(eventId);
+    }
+
+    public List<EventRegistrationCount> getEventsParticipantCount(List<Long> eventIds) {
+        List<Object[]> rows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.APPROVED);
+        return rows.stream()
+                .map(row -> EventRegistrationCount.builder()
+                        .eventId((Long) row[0])
+                        .count((Long) row[1])
+                        .build())
+                .toList();
     }
 
     public List<UserEventResponse> findByUserId(String userId, UserEventStatus status, Integer pageNum, Integer pageSize) {
@@ -98,6 +109,7 @@ public class UserEventService {
         UserEvent userEvent = UserEvent.builder()
                 .userId(userId)
                 .eventId(eventId)
+                .eventSnapshot(eventSnapshot)
                 .build();
         UserEvent savedUserEvent = userEventRepository.save(userEvent);
         registrationPublisher.publishEvent(userEventMapper.toCreatedMessage(userEvent, eventSnapshot.getOwnerId()));
