@@ -20,7 +20,7 @@ public class ExportService {
 
     public ByteArrayInputStream exportUsersToCSV(List<UserExportDto> users) {
         String[] HEADERS = {
-                "ID", "Name", "Email", "Role", "Status",
+                "ID", "Name", "Email", "DOB", "Role", "Status",
                 "Provider", "Total Events", "Badge Count", "Badges List", "Joined Date"
         };
 
@@ -30,6 +30,7 @@ public class ExportService {
                         user.id(),
                         user.name(),
                         user.email(),
+                        user.dateOfBirth(),
                         user.role(),
                         user.status(),
                         user.provider(),

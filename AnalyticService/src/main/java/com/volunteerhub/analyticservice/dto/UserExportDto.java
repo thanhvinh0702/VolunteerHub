@@ -10,7 +10,7 @@ public record UserExportDto(
         String role,
         String status,
         String provider,
-
+        String dateOfBirth,
         Integer totalEvents,
         Integer badgeCount,
         String joinedDate

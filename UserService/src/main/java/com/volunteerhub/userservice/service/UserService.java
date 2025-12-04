@@ -186,39 +186,40 @@ public class UserService {
         return userRepository.countUsers(Role.USER);
     }
 
-//    public UserResponse convertToExportData(User user) {
-//        return UserResponse.builder()
-//                .id(user.getId())
-//                .fullName(user.getFullName())
-//                .email(user.getEmail())
-//                .role(user.getRole())
-//                .status(user.getStatus())
-//                .authProvider(user.getAuthProvider())
-//                .totalEvents(user.getTotalEvents())
-//
-//                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
-//
-//                .build();
-//    }
+    public UserResponse convertToExportData(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .authProvider(user.getAuthProvider())
+                .totalEvents(user.getTotalEvents())
+                .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
 
-//    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
-//        if (userIds == null || userIds.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
-//
-//        return users.stream()
-//                .map(this::convertToExportData)
-//                .collect(Collectors.toList());
-//    }
+                .build();
+    }
 
-//    public List<UserResponse> getAllUsersForExport() {
-//        List<User> users = userRepository.findAllForExport();
-//
-//        return users.stream()
-//                .map(this::convertToExportData)
-//                .collect(Collectors.toList());
-//    }
+    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getAllUsersForExport() {
+        List<User> users = userRepository.findAllForExport();
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
 
 }
