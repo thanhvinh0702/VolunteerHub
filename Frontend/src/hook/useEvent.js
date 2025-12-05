@@ -9,7 +9,7 @@ import {
     rejectEvent,
 } from "../services/eventService";
 import { toast } from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const EVENTS_QUERY_KEY = ["events"];
 
@@ -49,6 +49,90 @@ export const useEventPagination = (params) => {
             });
         }
     }, [query.data, pageNum, pageSize, status, queryClient]);
+
+    return query;
+}
+
+// New hook for search with debounce, pagination, and sorting
+export const useSearchEvents = ({
+    search = "",
+    pageNum = 0,
+    pageSize = 9,
+    status,
+    sortBy = "Date", // Date, Name
+    filterBy,
+    filterValue,
+    debounceDelay = 500
+}) => {
+    const queryClient = useQueryClient();
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+    // Debounce search term
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, debounceDelay);
+
+        return () => clearTimeout(timer);
+    }, [search, debounceDelay]);
+
+    const query = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'search', debouncedSearch, pageNum, pageSize, status, sortBy, filterBy, filterValue],
+        queryFn: async () => {
+            const params = {
+                pageNum,
+                pageSize,
+                status,
+                sortBy,
+            };
+
+            // Add search if provided
+            if (debouncedSearch) {
+                params.search = debouncedSearch;
+            }
+
+            // Add filter if provided
+            if (filterBy && filterValue) {
+                params.filterBy = filterBy;
+                params.filterValue = Array.isArray(filterValue) ? filterValue.join(',') : filterValue;
+            }
+
+            const result = await getEvents(params);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 60 * 2, // 2 minutes for search results
+    });
+
+    // Prefetch next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...EVENTS_QUERY_KEY, 'search', debouncedSearch, nextPage, pageSize, status, sortBy, filterBy, filterValue],
+                queryFn: async () => {
+                    const params = {
+                        pageNum: nextPage,
+                        pageSize,
+                        status,
+                        sortBy,
+                    };
+
+                    if (debouncedSearch) {
+                        params.search = debouncedSearch;
+                    }
+
+                    if (filterBy && filterValue) {
+                        params.filterBy = filterBy;
+                        params.filterValue = Array.isArray(filterValue) ? filterValue.join(',') : filterValue;
+                    }
+
+                    const result = await getEvents(params);
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, pageNum, pageSize, status, sortBy, filterBy, filterValue, debouncedSearch, queryClient]);
 
     return query;
 }

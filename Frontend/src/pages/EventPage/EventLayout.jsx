@@ -1,45 +1,33 @@
-{
-  /*<p className="text-gray-600 mb-2">
-        <strong>Location:</strong>{" "}
-        {eventData.location ||
-          `${eventData.address?.street}, ${eventData.address?.province}, ${eventData.address?.city}`}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <strong>Time:</strong>{" "}
-        {new Date(eventData.date || eventData.startTime).toLocaleString(
-          "vi-VN"
-        )}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <strong>Danh mục:</strong>{" "}
-        {eventData.category || eventData.category?.name}
-      </p>
-      {eventData.description && <p className="mt-4">{eventData.description}</p>}*/
-}
-
 import { useEffect, useState } from "react";
-import { Outlet, Link, useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { api } from "./apidump";
 import EventHero from "../../components/EventPages/EventHero";
-import EventInfoRow from "../../components/EventPages/EventInfoRow";
 import EventOverview from "../../components/EventPages/EventOverview";
 import Tabs from "../../components/Tabs.jsx/Tabs";
 import RegistrationCard from "../../components/EventPages/RegistrationCard";
 import OrganizationCard from "../../components/EventPages/OrganizationCard";
 import FeedPage from "../Post/FeedPage";
-import VolunteerHero from "../../components/EventPages/VolunteerHero";
-import Overview from "../DashBoard/Overview";
-import VoluteerList from "../../components/EventPages/VoluteerList";
+import VolunteerList from "../../components/EventPages/VoluteerList";
 import getUser from "./user";
+
 export default function EventLayout() {
-  const { id } = useParams();
+  const { id, tab } = useParams();
+  const location = useLocation();
+  const passedEventData = location.state?.eventData;
+
+  // Get active tab from URL params, default to overview
+  const activeTab = tab || "overview";
+
   console.log(id);
-  const [eventData, setEventData] = useState(null);
+  console.log("Passed event data:", passedEventData);
+
+  const [eventData, setEventData] = useState(passedEventData || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userList, setUserList] = useState([]);
   const [page, setPage] = useState(0);
   const [end, setEnd] = useState(false);
+
   useEffect(() => {
     const fetchUserList = async () => {
       const data = await getUser(page, 5);
@@ -53,13 +41,19 @@ export default function EventLayout() {
 
   useEffect(() => {
     const fetchEvent = async () => {
+      if (passedEventData) {
+        console.log("Using passed event data, skipping API call");
+        return;
+      }
+
       if (!id) return;
+
       try {
         setLoading(true);
         const data = await api.get(`/events/${id}`);
         setEventData(data);
         setError(null);
-        console.log(data);
+        console.log("Fetched from API:", data);
       } catch (err) {
         console.error("Error fetching event:", err);
         setError("Không thể tải thông tin sự kiện");
@@ -69,7 +63,8 @@ export default function EventLayout() {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, passedEventData]);
+
   if (loading) {
     return <div className="p-5">Loading...</div>;
   }
@@ -85,12 +80,33 @@ export default function EventLayout() {
   const headerItems = [
     { key: "overview", label: "Overview", to: `/opportunities/overview/${id}` },
     {
-      key: "discusion",
-      label: "Discusion",
+      key: "discussion",
+      label: "Discussion",
       to: `/opportunities/discussion/${id}`,
     },
-    { key: "member", label: "Member", to: "/opportunities/members" },
+    { key: "members", label: "Members", to: `/opportunities/members/${id}` },
   ];
+
+  // Render content based on active tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return <EventOverview description={eventData.description} />;
+      case "discussion":
+        return <FeedPage />;
+      case "members":
+        return (
+          <VolunteerList
+            userList={userList}
+            loading={loading}
+            end={end}
+            setPage={setPage}
+          />
+        );
+      default:
+        return <EventOverview description={eventData.description} />;
+    }
+  };
 
   return (
     <div className="grid grid-cols-12 gap-6 max-sm:gap-0 bg-white rounded-lg shadow-sm overflow-hidden">
@@ -99,22 +115,22 @@ export default function EventLayout() {
           <EventHero
             id={id}
             imgURL={eventData?.imageUrl}
-            organizerName={eventData.title}
-            eventName={eventData.title}
+            organizerName={eventData.name}
+            eventName={eventData.name}
           />
 
           {/* tab links */}
           <div className="w-full border-b border-gray-300 mb-4">
             <Tabs
               items={headerItems}
-              defaultKey={"overview"}
+              defaultKey={activeTab}
               asLink
               variant="header"
             />
           </div>
 
-          {/*<EventOverview description={eventData.description} />*/}
-          <FeedPage />
+          {/* Dynamic content based on active tab */}
+          {renderTabContent()}
         </div>
       </main>
 

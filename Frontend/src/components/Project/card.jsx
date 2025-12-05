@@ -1,36 +1,84 @@
 import React from "react";
 import { formatDateTime } from "../../utils/date";
 import { useNavigate } from "react-router-dom";
+
 function ProjectCard({
   id,
-  title,
-  date,
-  location,
-  capacity,
-  registered,
-  availableSlots,
-  category,
+  name,
+  description,
   imageUrl,
-  ctaText,
+  category,
+  address,
+  startTime,
+  endTime,
+  capacity,
+  registrationCount,
   status,
+  ...restProps // Get all other props
 }) {
   const navigate = useNavigate();
+
+  // Map API data to component variables
+  const title = name;
+  const date = startTime;
+  const location = address
+    ? `${address.street}, ${address.district}, ${address.province}`
+    : "N/A";
+  const registered = registrationCount || 0;
+  const availableSlots = capacity - registered;
+  const categoryName = category?.name || "N/A";
+
+  // Use default image if not provided
+  const displayImage =
+    imageUrl ||
+    "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800";
+
+  // Check if event is approved
+  const isApproved = status === "APPROVED";
+
   const getPercentage = (registered, capacity) => {
     return (registered / capacity) * 100;
+  };
+
+  // Handle navigation with event data
+  const handleViewDetails = () => {
+    navigate(`/opportunities/overview/${id}`, {
+      state: {
+        eventData: {
+          id,
+          name,
+          description,
+          imageUrl,
+          category,
+          address,
+          startTime,
+          endTime,
+          capacity,
+          registrationCount,
+          status,
+          ...restProps,
+        },
+      },
+    });
   };
 
   return (
     <div className="bg-white text-black flex flex-col font-roboto rounded-2xl font-bold hover:shadow-slate-300 duration-300 ease-in-out border border-gray-600/20 overflow-hidden">
       <div className="block w-full aspect-[16/9] overflow-hidden rounded-t-2xl relative pt-0">
         <img
-          src={imageUrl}
+          src={displayImage}
           className={`${
-            registered === capacity ? "grayscale" : ""
+            !isApproved || registered === capacity ? "grayscale" : ""
           } object-cover w-full h-full hover:scale-105 transition-all duration-300 ease-in-out`}
         />
-        {category && (
-          <p className="absolute top-3 right-3 text-white rounded-xl px-3 py-1 text-xs bg-blue-500/80">
-            {category}
+        {categoryName && (
+          <p className="absolute top-3 right-3 text-white rounded-xl px-3 py-1 text-xs bg-blue-500/80 capitalize">
+            {categoryName}
+          </p>
+        )}
+        {!isApproved && (
+          <p className="absolute top-3 left-3 text-white rounded-xl px-3 py-1 text-xs bg-gray-500/80">
+            {status}
           </p>
         )}
       </div>
@@ -66,7 +114,9 @@ function ProjectCard({
         <div className="w-full bg-red-100 rounded-full h-3 mb-8">
           <div
             className={`${
-              registered === capacity ? "bg-gray-500/80" : "bg-red-500/80"
+              !isApproved || registered === capacity
+                ? "bg-gray-500/80"
+                : "bg-red-500/80"
             } h-3 rounded-full transition-all duration-300`}
             style={{
               width: `${getPercentage(registered, capacity)}%`,
@@ -77,13 +127,18 @@ function ProjectCard({
         <div className="w-full">
           <button
             className={`w-full ${
-              registered === capacity
+              !isApproved || registered === capacity
                 ? "cursor-not-allowed bg-gray-500/80"
                 : "cursor-pointer bg-red-500/80"
             } text-white rounded-xl py-2 font-bold text-sm  transition-all duration-500 ease-in-out hover:scale-105 font-jost  border-none active:scale-95`}
-            onClick={() => navigate(`/opportunities/${id}`)}
+            onClick={handleViewDetails}
+            disabled={!isApproved}
           >
-            {registered === capacity ? "Full Slot" : "View Details"}
+            {!isApproved
+              ? status
+              : registered === capacity
+              ? "Full Slot"
+              : "View Details"}
           </button>
         </div>
       </div>

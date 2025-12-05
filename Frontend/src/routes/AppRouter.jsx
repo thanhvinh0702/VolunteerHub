@@ -71,7 +71,7 @@ function AppRouter() {
 
           {/* opportunities */}
           <Route path="/opportunities" element={<OpportunitiesEvent />} />
-          <Route path="/opportunities/:id" element={<EventLayout />} />
+          <Route path="/opportunities/:tab/:id" element={<EventLayout />} />
         </Route>
 
         {/* Admin-only route */}
