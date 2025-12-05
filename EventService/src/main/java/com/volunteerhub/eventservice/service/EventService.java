@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -215,5 +212,21 @@ public class EventService {
         event.setApprovedBy(userId);
         eventPublisher.publishEvent(eventMapper.toRejectedMessage(event, request.getReason()));
         return eventMapper.toDto(eventRepository.save(event));
+    }
+
+    public List<EventResponse> searchByKeyword(String keyword, Integer pageNum, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        int page = pageNumAndSizeResponse.getPageNum();
+        int size = pageNumAndSizeResponse.getPageSize();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
     }
 }
