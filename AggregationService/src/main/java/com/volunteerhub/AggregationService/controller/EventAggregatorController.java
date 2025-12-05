@@ -44,4 +44,13 @@ public class EventAggregatorController {
                                                                             @RequestParam(defaultValue = "7") int days) {
         return ResponseEntity.ok(eventAggregatorService.getTrendingEvents(pageNum, pageSize, days));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<EventWithRegistrationCountResponse>> searchEvents(
+            @RequestParam String keyword,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) {
+
+        return ResponseEntity.ok(eventAggregatorService.searchAggregatedEvents(keyword, pageNum, pageSize));
+    }
 }

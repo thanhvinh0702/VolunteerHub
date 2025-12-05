@@ -88,4 +88,13 @@ public class EventController {
         return ResponseEntity.ok(eventService.deleteEvent(auth.getName(), eventId));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<EventResponse>> searchEvents(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) {
+
+            return ResponseEntity.ok(eventService.searchByKeyword(keyword, pageNum, pageSize));
+    }
+
 }

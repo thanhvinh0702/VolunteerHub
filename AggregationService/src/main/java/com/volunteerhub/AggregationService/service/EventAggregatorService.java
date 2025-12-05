@@ -24,9 +24,8 @@ public class EventAggregatorService {
 
     private final EventClient eventClient;
     private final RegistrationClient registrationClient;
-    private final UserClient userClient;
 
-    public List<AggregatedEventResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+    public List<EventWithRegistrationCountResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
         List<EventResponse> events = eventClient.getAllEvents(pageNum, pageSize, status, sortedBy, order);
         List<Long> eventIds = events.stream().map(EventResponse::getId).toList();
         List<String> userIds = events.stream().map(EventResponse::getOwnerId).toList();
@@ -137,5 +136,43 @@ public class EventAggregatorService {
                             .build();
                 })
                 .toList();
+    }
+
+    public List<EventWithRegistrationCountResponse> searchAggregatedEvents(String keyword, Integer pageNum, Integer pageSize) {
+        List<EventResponse> events = eventClient.searchEvents(keyword, pageNum, pageSize);
+        return enrichEventsWithCounts(events);
+    }
+
+    private List<EventWithRegistrationCountResponse> enrichEventsWithCounts(List<EventResponse> events) {
+        if (events == null || events.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> eventIds = events.stream().map(EventResponse::getId).toList();
+
+        List<EventRegistrationCount> eventRegistrationCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
+
+        Map<Long, EventRegistrationCount> countMap = eventRegistrationCounts.stream()
+                .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
+
+        return events.stream()
+                .map(e -> {
+                    EventRegistrationCount counts = countMap.getOrDefault(e.getId(), createEmptyCount(e.getId()));
+
+                    return EventWithRegistrationCountResponse.builder()
+                            .eventResponse(e)
+                            .registrationCount(counts.getRegistrationCount())
+                            .participantCount(counts.getParticipantCount())
+                            .build();
+                })
+                .toList();
+    }
+
+    private EventRegistrationCount createEmptyCount(Long eventId) {
+        return EventRegistrationCount.builder()
+                .eventId(eventId)
+                .registrationCount(0L)
+                .participantCount(0L)
+                .build();
     }
 }
