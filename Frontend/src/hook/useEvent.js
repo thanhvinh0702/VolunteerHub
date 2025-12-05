@@ -196,7 +196,9 @@ export const useCreateEvent = (options = {}) => {
         mutationFn: createEvent,
         onSuccess: (data, variables, context) => {
             toast.success("Event created successfully.");
+            // Invalidate both events and owned events queries
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
             options.onSuccess?.(data, variables, context);
         },
         onError: (error, variables, context) => {
