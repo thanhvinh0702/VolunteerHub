@@ -1,7 +1,5 @@
-package com.volunteerhub.eventservice.dto.response;
+package com.volunteerhub.common.dto;
 
-import com.volunteerhub.common.dto.AddressResponse;
-import com.volunteerhub.common.dto.CategoryResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +25,8 @@ public class EventResponse {
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
+
+    private LocalDateTime registrationDeadline;
 
     private int capacity;
 

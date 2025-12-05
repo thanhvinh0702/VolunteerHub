@@ -1,9 +1,9 @@
 package com.volunteerhub.eventservice.mapper;
 
+import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
 import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
 import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
-import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +28,7 @@ public class EventMapper {
                 .address(addressMapper.toDto(event.getAddress()))
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
+                .registrationDeadline(event.getRegistrationDeadline())
                 .capacity(event.getCapacity())
                 .status(event.getStatus())
                 .ownerId(event.getOwnerId())

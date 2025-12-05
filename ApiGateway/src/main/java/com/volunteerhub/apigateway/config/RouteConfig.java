@@ -88,4 +88,19 @@ public class RouteConfig {
                 )
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> aggregationServiceRoute() {
+        return route("aggregationservice")
+                .nest(RequestPredicates.path("/api/v1/aggregated/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("AGGREGATIONSERVICE"))
+                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.volunteerhub.registrationservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.volunteerhub.common.enums.UserEventStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -33,7 +36,13 @@ public class UserEvent {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "event_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private EventSnapshot eventSnapshot;
+
+    @Column(name = "event_id", insertable = false, updatable = false)
     private Long eventId;
 
     @Builder.Default

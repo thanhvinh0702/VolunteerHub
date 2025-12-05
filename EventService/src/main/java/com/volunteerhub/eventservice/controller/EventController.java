@@ -1,8 +1,8 @@
 package com.volunteerhub.eventservice.controller;
 
+import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.eventservice.dto.response.EventResponse;
 import com.volunteerhub.eventservice.service.EventService;
 import com.volunteerhub.eventservice.validation.OnCreate;
 import com.volunteerhub.eventservice.validation.OnUpdate;
@@ -27,8 +27,19 @@ public class EventController {
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
-                                                            @RequestParam(required = false) EventStatus status)  {
-        return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status));
+                                                            @RequestParam(required = false) EventStatus status,
+                                                            @RequestParam(defaultValue = "id") String sortedBy,
+                                                            @RequestParam(defaultValue = "desc") String order)  {
+        return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status, sortedBy, order));
+    }
+
+    @GetMapping("/owned")
+    public ResponseEntity<List<EventResponse>> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
+                                                                 @RequestParam(required = false) Integer pageSize,
+                                                                 @RequestParam(defaultValue = "id") String sortedBy,
+                                                                 @RequestParam(defaultValue = "desc") String order)  {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.findAllOwnedEvent(auth.getName(), pageNum, pageSize, sortedBy, order));
     }
 
     @GetMapping("/{eventId}")
