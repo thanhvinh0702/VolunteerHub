@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class EventRegistrationCount {
     private Long eventId;
-    private Long count;
+    private Long registrationCount;
+    private Long participantCount;
 }

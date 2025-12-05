@@ -7,10 +7,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class EventWithRegistrationCountResponse {
+public class TrendingEventResponse {
 
     @JsonUnwrapped
     private EventResponse eventResponse;
     private Long registrationCount;
     private Long participantCount;
+    private Long registrationGrowth;
+    private Long participantGrowth;
 }

@@ -1,6 +1,7 @@
 package com.volunteerhub.AggregationService.controller;
 
 import com.volunteerhub.AggregationService.dto.EventWithRegistrationCountResponse;
+import com.volunteerhub.AggregationService.dto.TrendingEventResponse;
 import com.volunteerhub.AggregationService.service.EventAggregatorService;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,17 @@ public class EventAggregatorController {
 
     @GetMapping("/owned")
     public ResponseEntity<List<EventWithRegistrationCountResponse>> getAllAggregatedOwnedEvents(@RequestParam(required = false) Integer pageNum,
-                                                                                           @RequestParam(required = false) Integer pageSize,
-                                                                                           @RequestParam(required = false) EventStatus status,
-                                                                                           @RequestParam(defaultValue = "id") String sortedBy,
-                                                                                           @RequestParam(defaultValue = "desc") String order) {
+                                                                                                @RequestParam(required = false) Integer pageSize,
+                                                                                                @RequestParam(required = false) EventStatus status,
+                                                                                                @RequestParam(defaultValue = "id") String sortedBy,
+                                                                                                @RequestParam(defaultValue = "desc") String order) {
         return ResponseEntity.ok(eventAggregatorService.getAggregatedOwnedEvents(pageNum, pageSize, status, sortedBy, order));
+    }
+
+    @GetMapping("/trending")
+    public ResponseEntity<List<TrendingEventResponse>> getAllTrendingEvents(@RequestParam(required = false) Integer pageNum,
+                                                                            @RequestParam(required = false) Integer pageSize,
+                                                                            @RequestParam(defaultValue = "7") int days) {
+        return ResponseEntity.ok(eventAggregatorService.getTrendingEvents(pageNum, pageSize, days));
     }
 }

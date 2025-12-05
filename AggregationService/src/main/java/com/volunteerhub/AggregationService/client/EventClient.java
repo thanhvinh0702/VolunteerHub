@@ -14,15 +14,18 @@ public interface EventClient {
 
     @GetMapping("/api/v1/events")
     List<EventResponse> getAllEvents(@RequestParam(required = false) Integer pageNum,
-                                            @RequestParam(required = false) Integer pageSize,
-                                            @RequestParam(required = false) EventStatus status,
-                                            @RequestParam(defaultValue = "id") String sortedBy,
-                                            @RequestParam(defaultValue = "desc") String order);
-
-    @GetMapping("/api/v1/events/owned")
-    List<EventResponse> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                      @RequestParam(required = false) Integer pageSize,
                                      @RequestParam(required = false) EventStatus status,
                                      @RequestParam(defaultValue = "id") String sortedBy,
                                      @RequestParam(defaultValue = "desc") String order);
+
+    @GetMapping("/api/v1/events/owned")
+    List<EventResponse> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
+                                          @RequestParam(required = false) Integer pageSize,
+                                          @RequestParam(required = false) EventStatus status,
+                                          @RequestParam(defaultValue = "id") String sortedBy,
+                                          @RequestParam(defaultValue = "desc") String order);
+
+    @GetMapping("/api/v1/events/by-ids")
+    List<EventResponse> getAllEventsByIds(@RequestParam List<Long> eventIds);
 }
