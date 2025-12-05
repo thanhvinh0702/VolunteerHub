@@ -10,9 +10,7 @@ import lombok.Data;
 public class TrendingEventResponse {
 
     @JsonUnwrapped
-    private EventResponse eventResponse;
-    private Long registrationCount;
-    private Long participantCount;
+    private AggregatedEventResponse eventResponse;
     private Long registrationGrowth;
     private Long participantGrowth;
 }

@@ -1,8 +1,8 @@
 package com.volunteerhub.userservice.controller;
 
+import com.volunteerhub.common.dto.UserResponse;
+import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.userservice.dto.UserRequest;
-import com.volunteerhub.userservice.model.Role;
-import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserBadge;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.service.UserBadgeService;
@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/users")
@@ -32,14 +31,19 @@ public class UserController {
     private final UserLoginHistoryService userLoginHistoryService;
 
     @GetMapping("/me")
-    public ResponseEntity<User> getUserInfo() {
+    public ResponseEntity<UserResponse> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userService.findById(authentication.getName()));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> findById(@PathVariable String userId) {
+    public ResponseEntity<UserResponse> findById(@PathVariable String userId) {
         return ResponseEntity.ok(userService.findById(userId));
+    }
+
+    @GetMapping("/by-ids")
+    public ResponseEntity<List<UserResponse>> findByIds(@RequestParam List<String> userIds) {
+        return ResponseEntity.ok(userService.findAllByIds(userIds));
     }
 
     @GetMapping("/badges")
@@ -60,25 +64,17 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@Validated(OnCreate.class) @RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> create(@Validated(OnCreate.class) @RequestBody UserRequest userRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Role role = authentication.getAuthorities().stream()
-                .map(grantedAuthority -> Role.valueOf(grantedAuthority.getAuthority().replace("ROLE_", "")))
+        UserRole role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> UserRole.valueOf(grantedAuthority.getAuthority().replace("ROLE_", "")))
                 .findFirst()
                 .orElseThrow(() -> new AccessDeniedException("No role found for user"));
         return new ResponseEntity<>(userService.create(authentication.getName(), role, userRequest), HttpStatus.CREATED);
-//        String newUserId = UUID.randomUUID().toString();
-//
-//        Role defaultRole = Role.USER;
-//
-//        return new ResponseEntity<>(
-//                userService.create(newUserId, defaultRole, userRequest),
-//                HttpStatus.CREATED
-//        );
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<User> update(
+    public ResponseEntity<UserResponse> update(
             @PathVariable String userId,
             @Validated(OnUpdate.class) @RequestBody UserRequest userRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

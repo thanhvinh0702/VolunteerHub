@@ -21,7 +21,7 @@ public class UserLoginHistoryService {
     }
 
     public UserLoginHistory create(UserLoginHistoryRequest userLoginHistoryRequest) {
-        User user = userService.findById(userLoginHistoryRequest.getUserId());
+        User user = userService.findEntityById(userLoginHistoryRequest.getUserId());
         UserLoginHistory userLoginHistory = UserLoginHistory.builder()
                 .user(user)
                 .ipAddress(userLoginHistoryRequest.getIpAddress())

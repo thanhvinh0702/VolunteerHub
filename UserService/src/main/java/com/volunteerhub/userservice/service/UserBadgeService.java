@@ -21,7 +21,7 @@ public class UserBadgeService {
     }
 
     public UserBadge create(UserBadgeRequest userBadgeRequest) {
-        User user = userService.findById(userBadgeRequest.getUserId());
+        User user = userService.findEntityById(userBadgeRequest.getUserId());
         UserBadge userBadge = UserBadge.builder()
                 .badgeId(userBadgeRequest.getBadgeId())
                 .user(user)
