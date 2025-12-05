@@ -2,6 +2,8 @@ package com.volunteerhub.eventservice.advice;
 
 import com.volunteerhub.common.dto.ErrorDetails;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.amqp.AmqpConnectException;
+import org.springframework.amqp.AmqpException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -43,6 +46,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ErrorDetails> handleEmptyResultDataAccess(EmptyResultDataAccessException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorDetails> handleIOException(IOException ex) {
+        return buildResponse("Failed to read file: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class) // fallback for any other exception

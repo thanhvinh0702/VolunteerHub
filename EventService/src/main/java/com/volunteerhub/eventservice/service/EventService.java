@@ -19,7 +19,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final CategoryService categoryService;
     private final AddressService addressService;
+    private final FileStorageService fileStorageService;
     private final EventMapper eventMapper;
     private final EventPublisher eventPublisher;
 
@@ -85,14 +88,17 @@ public class EventService {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse createEvent(String userId, EventRequest eventRequest) {
+    public EventResponse createEvent(String userId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
         Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
 
         Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
+
+        String imageUrl = imageFile != null ? fileStorageService.uploadFile(imageFile) : null;
+
         Event event = Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
-                .imageUrl(eventRequest.getImageUrl())
+                .imageUrl(imageUrl)
                 .category(category)
                 .status(EventStatus.PENDING)
                 .startTime(eventRequest.getStartTime())
@@ -129,10 +135,6 @@ public class EventService {
             event.setDescription(eventRequest.getDescription());
             updatedFields.put("description", eventRequest.getDescription());
         }
-        if (eventRequest.getImageUrl() != null) {
-            event.setImageUrl(eventRequest.getImageUrl());
-            updatedFields.put("image_url", eventRequest.getImageUrl());
-        }
 
         if (eventRequest.getCategoryName() != null && !eventRequest.getCategoryName().isBlank()) {
             Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
@@ -156,6 +158,10 @@ public class EventService {
         if (eventRequest.getEndTime() != null) {
             event.setEndTime(eventRequest.getEndTime());
             updatedFields.put("end_time", eventRequest.getEndTime());
+        }
+        if (eventRequest.getRegistrationDeadline() != null) {
+            event.setRegistrationDeadline(eventRequest.getRegistrationDeadline());
+            updatedFields.put("registration_deadline", eventRequest.getRegistrationDeadline());
         }
 
         if (eventRequest.getCapacity() > 0) {
