@@ -1,9 +1,11 @@
 package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
+import com.volunteerhub.AggregationService.dto.EventWithRegistrationCountResponse;
 import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,4 +30,9 @@ public interface EventClient {
 
     @GetMapping("/api/v1/events/by-ids")
     List<EventResponse> getAllEventsByIds(@RequestParam List<Long> eventIds);
+
+    @GetMapping("/search")
+    List<EventResponse> searchEvents(@RequestParam("keyword") String keyword,
+                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                     @RequestParam(value = "pageSize", required = false) Integer pageSize);
 }
