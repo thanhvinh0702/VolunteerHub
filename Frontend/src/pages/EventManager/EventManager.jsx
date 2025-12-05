@@ -6,7 +6,10 @@ import { EVENT_STATUS } from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
-import { useEventPagination } from "../../hook/useEvent";
+import {
+  useEventPagination,
+  useOwnedEventsPagination,
+} from "../../hook/useEvent";
 
 const PAGE_SIZE = 15;
 
@@ -32,11 +35,12 @@ function EventManager() {
     setPage(0);
   }, [filterStatus]);
 
-  const { data, isLoading, isFetching, isError, error } = useEventPagination({
-    pageNum: page,
-    pageSize: PAGE_SIZE,
-    status: filterStatus === "all" ? undefined : filterStatus,
-  });
+  const { data, isLoading, isFetching, isError, error } =
+    useOwnedEventsPagination({
+      pageNum: page,
+      pageSize: PAGE_SIZE,
+      status: filterStatus === "all" ? undefined : filterStatus,
+    });
 
   // Track first successful load
   useEffect(() => {

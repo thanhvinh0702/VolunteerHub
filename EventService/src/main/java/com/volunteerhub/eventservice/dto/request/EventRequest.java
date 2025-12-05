@@ -8,9 +8,7 @@
     import jakarta.validation.constraints.NotNull;
     import jakarta.validation.constraints.Past;
     import lombok.Data;
-    import org.springframework.cglib.core.Local;
 
-    import java.time.LocalDate;
     import java.time.LocalDateTime;
 
     @Data
@@ -20,8 +18,6 @@
         private String name;
 
         private String description;
-
-        private String imageUrl;
 
         @NotBlank(message = "Category name cannot be blank", groups = OnCreate.class)
         private String categoryName;

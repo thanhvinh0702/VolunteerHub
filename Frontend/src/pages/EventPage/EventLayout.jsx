@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { api } from "./apidump";
 import EventHero from "../../components/EventPages/EventHero";
 import EventOverview from "../../components/EventPages/EventOverview";
 import Tabs from "../../components/Tabs.jsx/Tabs";
@@ -9,6 +8,7 @@ import OrganizationCard from "../../components/EventPages/OrganizationCard";
 import FeedPage from "../Post/FeedPage";
 import VolunteerList from "../../components/EventPages/VoluteerList";
 import getUser from "./user";
+import { calculateDuration } from "../../utils/date";
 
 export default function EventLayout() {
   const { id, tab } = useParams();
@@ -143,7 +143,7 @@ export default function EventLayout() {
           <EventHero
             id={id}
             imgURL={eventData?.imageUrl}
-            organizerName={eventData.name}
+            organizerName={eventData.owner?.username || "Unknown Organizer"}
             eventName={eventData.name}
           />
 
@@ -164,11 +164,14 @@ export default function EventLayout() {
 
       <aside className="col-span-4 max-sm:hidden p-6 bg-gray-50 flex flex-col gap-4">
         <RegistrationCard
-          duration={eventData?.duration || ""}
+          id={eventData?.id}
+          duration={calculateDuration(eventData?.startTime, eventData?.endTime)}
           minAge={eventData?.minAge || ""}
           registrationDeadline={eventData?.registrationDeadline || ""}
           registrationStatus={eventData?.status || ""}
           durationCancel={eventData?.durationCancel || ""}
+          registedVolunteer={eventData?.registrationCount || 0}
+          totalSpots={eventData?.capacity || 10}
           onAction={() => {}}
         />
         <OrganizationCard ownerId={eventData?.ownerId} />

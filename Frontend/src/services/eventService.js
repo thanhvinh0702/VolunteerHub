@@ -28,6 +28,31 @@ export const getEvents = async (params = {}) => {
     };
 };
 
+export const getOwnedEvents = async (params = {}) => {
+    const response = await axiosClient.get(`${EVENT_BASE_URL}/owned`, { params });
+    console.log('Owned Events API response:', response);
+
+    // Handle paginated response structure
+    if (response.data && response.meta) {
+        return {
+            data: response.data,
+            meta: response.meta
+        };
+    }
+
+    // Fallback for simple array response
+    const data = Array.isArray(response) ? response : (response.data || []);
+    console.log('Processed owned data:', data);
+
+    return {
+        data: data,
+        meta: {
+            totalPages: 1,
+            totalElements: data.length
+        }
+    };
+};
+
 export const getEventById = async (eventId) => {
     if (!eventId) {
         throw new Error("eventId is required to fetch event details");

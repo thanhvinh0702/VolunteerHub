@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
     getEvents,
+    getOwnedEvents,
     getEventById,
     createEvent,
     updateEvent,
@@ -12,6 +13,7 @@ import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 
 const EVENTS_QUERY_KEY = ["events"];
+const OWNED_EVENTS_QUERY_KEY = ["ownedEvents"];
 
 export const useEvents = (params) => {
     const queryKey = params ? [...EVENTS_QUERY_KEY, JSON.stringify(params)] : EVENTS_QUERY_KEY;
@@ -52,6 +54,47 @@ export const useEventPagination = (params) => {
 
     return query;
 }
+
+export const useOwnedEvents = (params) => {
+    const queryKey = params ? [...OWNED_EVENTS_QUERY_KEY, JSON.stringify(params)] : OWNED_EVENTS_QUERY_KEY;
+
+    return useQuery({
+        queryKey,
+        queryFn: () => getOwnedEvents(params),
+        placeholderData: (previousData) => previousData,
+    });
+};
+
+export const useOwnedEventsPagination = (params) => {
+    const queryClient = useQueryClient();
+    const { pageNum = 0, pageSize = 10, sortedBy = "id", order = "desc" } = params || {};
+    
+    const query = useQuery({
+        queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, sortedBy, order],
+        queryFn: async () => {
+            const result = await getOwnedEvents({ pageNum, pageSize, sortedBy, order });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Prefetch the next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, sortedBy, order],
+                queryFn: async () => {
+                    const result = await getOwnedEvents({ pageNum: nextPage, pageSize, sortedBy, order });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, pageNum, pageSize, sortedBy, order, queryClient]);
+
+    return query;
+};
 
 // New hook for search with debounce, pagination, and sorting
 export const useSearchEvents = ({

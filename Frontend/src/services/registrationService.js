@@ -36,10 +36,13 @@ export const checkUserParticipation = async (eventId) => {
 
 export const listUserOfAnEvent = async (eventId, params) => {
     try {
-        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/registrations/${eventId}`, { params });
+        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/events/${eventId}`, { params });
         return response.data;
     } catch (error) {
-        console.error("Error fetching number of registrations:", error);
+        // Only log non-permission errors
+        if (error?.response?.status !== 403 && error?.response?.status !== 500) {
+            console.error("Error fetching participant list:", error);
+        }
         throw error;
     }
 };

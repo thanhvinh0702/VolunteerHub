@@ -206,6 +206,53 @@ export function formatTimeRange(startInput, endInput, options = {}) {
 
 
 /**
+ * calculateDuration
+ * Calculate duration between start and end time
+ * Returns formatted string like "2 days 3 hours" or "5 hours 30 minutes"
+ * 
+ * @param {Date|string|number} startInput - Start time
+ * @param {Date|string|number} endInput - End time
+ * @returns {string} Formatted duration string
+ */
+export function calculateDuration(startInput, endInput) {
+    const start = toDate(startInput);
+    const end = toDate(endInput);
+
+    if (!start || !end) return "";
+
+    // Calculate difference in milliseconds
+    const diff = end.getTime() - start.getTime();
+
+    if (diff <= 0) return "0 minutes";
+
+    // Convert to time units
+    const totalMinutes = Math.floor(diff / (1000 * 60));
+    const totalHours = Math.floor(totalMinutes / 60);
+    const totalDays = Math.floor(totalHours / 24);
+
+    const days = totalDays;
+    const hours = totalHours % 24;
+    const minutes = totalMinutes % 60;
+
+    // Build result string
+    const parts = [];
+
+    if (days > 0) {
+        parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    }
+
+    if (hours > 0) {
+        parts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+    }
+
+    if (minutes > 0 && days === 0) { // Only show minutes if less than a day
+        parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+    }
+
+    return parts.join(' ') || "0 minutes";
+}
+
+/**
 * ========================================
 * HƯỚNG DẪN SỬ DỤNG
 * ========================================
