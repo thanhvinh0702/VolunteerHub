@@ -1,8 +1,12 @@
 package com.volunteerhub.userservice.service;
 
+import com.volunteerhub.common.dto.UserResponse;
+import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.utils.PageNumAndSizeResponse;
+import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.userservice.model.Address;
-import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -20,35 +24,38 @@ public class UserService {
 
     private final AddressService addressService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public User findById(String id) {
+    public User findEntityById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() ->
-                new NoSuchElementException("No such user with email " + email));
+    public UserResponse findById(String id) {
+        return userMapper.toResponse(this.findEntityById(id));
     }
 
-    public List<User> findAll(Integer page, Integer pageSize) {
-        if (page == null && pageSize == null) {
-            return userRepository.findAll();
-        }
-        if (page == null) {
-            return userRepository.findAll(PageRequest.of(0, pageSize)).getContent();
-        }
-        if (pageSize == null) {
-            return List.of();
-        }
-        return userRepository.findAll(PageRequest.of(page, pageSize)).getContent();
+    public List<UserResponse> findAllByIds(List<String> userIds) {
+        return userRepository.findAllByIds(userIds).stream().map(userMapper::toResponse).toList();
     }
 
-    public List<String> findAllIds(Role role) {
+    public UserResponse findByEmail(String email) {
+        return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("No such user with email " + email)));
+    }
+
+    public List<UserResponse> findAll(Integer page, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(page, pageSize);
+        return userRepository.findAll(PageRequest.of(pageNumAndSizeResponse.getPageNum(),
+                pageNumAndSizeResponse.getPageSize())).getContent().stream()
+                .map(userMapper::toResponse).toList();
+    }
+
+    public List<String> findAllIds(UserRole role) {
         return userRepository.findAllIdsByRole(role);
     }
 
-    public User create(String userId, Role userRole, UserRequest userRequest) {
+    public UserResponse create(String userId, UserRole userRole, UserRequest userRequest) {
         Address address = null;
         Long addressId = null;
 
@@ -73,12 +80,12 @@ public class UserService {
                 .username(userRequest.getUsername())
                 .isDarkMode(userRequest.isDarkMode() ? true : false)
                 .build();
-        return userRepository.save(user);
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     @PreAuthorize("authentication.name == #userId")
-    public User update(String userId, UserRequest userRequest) throws AccessDeniedException {
-        User existedUser = this.findById(userId);
+    public UserResponse update(String userId, UserRequest userRequest) throws AccessDeniedException {
+        User existedUser = this.findEntityById(userId);
         if (userRequest.getBio() != null) {
             existedUser.setBio(userRequest.getBio());
         }
@@ -106,6 +113,6 @@ public class UserService {
         } else {
             existedUser.setDarkMode(false);
         }
-        return userRepository.save(existedUser);
+        return userMapper.toResponse(userRepository.save(existedUser));
     }
 }

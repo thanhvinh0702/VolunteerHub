@@ -3,6 +3,8 @@ package com.volunteerhub.userservice.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.List;
 @Builder
 @Table(name = "users")
 public class User {
+
     @Id
     private String id;
 
@@ -42,7 +45,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private UserRole role;
 
     private String bio;
 
@@ -56,7 +59,7 @@ public class User {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.ACTIVE;
+    private UserStatus status = UserStatus.ACTIVE;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
@@ -97,16 +100,4 @@ public class User {
     @Builder.Default
     @Column(name = "is_dark_mode", nullable = false, columnDefinition = "boolean default false")
     private boolean isDarkMode = false;
-
-
-//    @JsonProperty("complete")
-//    @jakarta.persistence.Transient
-//    public boolean isProfileComplete() {
-//        return StringUtils.hasText(this.phoneNumber) &&
-//                this.dateOfBirth != null &&
-//                this.address != null &&
-//                this.skills != null && !this.skills.isEmpty()
-//                && this.phoneNumber != null
-//                && !this.skills.isEmpty();
-//    }
 }
