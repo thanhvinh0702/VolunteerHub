@@ -7,13 +7,10 @@ import com.volunteerhub.AggregationService.dto.TrendingEventResponse;
 import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.enums.EventStatus;
-import com.volunteerhub.common.utils.PageNumAndSizeResponse;
-import com.volunteerhub.common.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
