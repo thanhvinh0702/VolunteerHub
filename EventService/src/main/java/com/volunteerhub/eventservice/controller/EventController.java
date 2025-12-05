@@ -33,6 +33,11 @@ public class EventController {
         return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status, sortedBy, order));
     }
 
+    @GetMapping("/by-ids")
+    public ResponseEntity<List<EventResponse>> getAllEventsByIds(@RequestParam List<Long> eventIds) {
+        return ResponseEntity.ok(eventService.findByIds(eventIds));
+    }
+
     @GetMapping("/owned")
     public ResponseEntity<List<EventResponse>> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                                  @RequestParam(required = false) Integer pageSize,

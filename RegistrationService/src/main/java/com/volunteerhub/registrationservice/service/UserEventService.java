@@ -13,13 +13,13 @@ import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,18 +39,74 @@ public class UserEventService {
         return userEventRepository.countByEventIdAndStatus(eventId, UserEventStatus.APPROVED);
     }
 
-    public Long getCurrentRegistrationCount(Long eventId) {
-        return userEventRepository.countByEventId(eventId);
+    public List<EventRegistrationCount> getEventsParticipantCount(List<Long> eventIds) {
+        List<Object[]> registrationCountRows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.APPROVED);
+        List<Object[]> participantCountRows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.PENDING);
+        Map<Long, EventRegistrationCount> map = new HashMap<>();
+        for (Object[] row : registrationCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.put(eventId, EventRegistrationCount.builder()
+                    .eventId(eventId)
+                    .registrationCount(count)
+                    .participantCount(0L)
+                    .build());
+        }
+        for (Object[] row : participantCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.compute(eventId, (id, dto) -> {
+                if (dto == null) {
+                    return EventRegistrationCount.builder()
+                            .eventId(eventId)
+                            .registrationCount(0L)
+                            .participantCount(count)
+                            .build();
+                } else {
+                    dto.setParticipantCount(count);
+                    return dto;
+                }
+            });
+        }
+        return new ArrayList<>(map.values());
     }
 
-    public List<EventRegistrationCount> getEventsParticipantCount(List<Long> eventIds) {
-        List<Object[]> rows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.APPROVED);
-        return rows.stream()
-                .map(row -> EventRegistrationCount.builder()
-                        .eventId((Long) row[0])
-                        .count((Long) row[1])
-                        .build())
-                .toList();
+    public List<EventRegistrationCount> getAllEventsParticipantCount(Integer pageNum, Integer pageSize, LocalDateTime from, LocalDateTime to) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        PageRequest pageRequest = PageRequest.of(
+                pageNumAndSizeResponse.getPageNum(),
+                pageNumAndSizeResponse.getPageSize(),
+                Sort.by("statusCount").descending()
+        );
+        List<Object[]> registrationCountRows = userEventRepository.getAllEventRegistrationCount(UserEventStatus.APPROVED, from, to, pageRequest);
+        List<Object[]> participantCountRows = userEventRepository.getAllEventRegistrationCount(UserEventStatus.PENDING, from, to, pageRequest);
+        Map<Long, EventRegistrationCount> map = new HashMap<>();
+        for (Object[] row : registrationCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.put(eventId, EventRegistrationCount.builder()
+                    .eventId(eventId)
+                    .registrationCount(count)
+                    .participantCount(0L)
+                    .build());
+        }
+        for (Object[] row : participantCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.compute(eventId, (id, dto) -> {
+                if (dto == null) {
+                    return EventRegistrationCount.builder()
+                            .eventId(eventId)
+                            .registrationCount(0L)
+                            .participantCount(count)
+                            .build();
+                } else {
+                    dto.setParticipantCount(count);
+                    return dto;
+                }
+            });
+        }
+        return new ArrayList<>(map.values());
     }
 
     public List<UserEventResponse> findByUserId(String userId, UserEventStatus status, Integer pageNum, Integer pageSize) {

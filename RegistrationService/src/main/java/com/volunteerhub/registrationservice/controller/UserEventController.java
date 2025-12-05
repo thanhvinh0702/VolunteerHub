@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -29,12 +30,6 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByUserId(authentication.getName(), status, pageNum, pageSize));
     }
 
-    @GetMapping("/events/{eventId}/isParticipant")
-    public Boolean checkIsParticipant(@PathVariable Long eventId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userEventService.isParticipant(authentication.getName(), eventId);
-    }
-
     @GetMapping("/events/{eventId}")
     public ResponseEntity<List<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
                                                                     @RequestParam(required = false) UserEventStatus status,
@@ -44,14 +39,23 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByEventId(authentication.getName(), eventId, status, pageNum, pageSize));
     }
 
-    @GetMapping("/events/{eventId}/current-registration")
-    public ResponseEntity<Long> getRegistrationCount(@PathVariable Long eventId) {
-        return ResponseEntity.ok(userEventService.getCurrentRegistrationCount(eventId));
+    @GetMapping("/events/{eventId}/isParticipant")
+    public Boolean checkIsParticipant(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userEventService.isParticipant(authentication.getName(), eventId);
     }
 
-    @GetMapping("/events/current-participant")
-    public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam List<Long> eventIds) {
-        return ResponseEntity.ok(userEventService.getEventsParticipantCount(eventIds));
+    @GetMapping("/events/registration-count")
+    public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
+                                                                                   @RequestParam(required = false) Integer pageNum,
+                                                                                   @RequestParam(required = false) Integer pageSize,
+                                                                                   @RequestParam(required = false) Integer days) {
+        if (eventIds != null && !eventIds.isEmpty()) {
+            return ResponseEntity.ok(userEventService.getEventsParticipantCount(eventIds));
+        }
+        LocalDateTime to = days == null ? null : LocalDateTime.now();
+        LocalDateTime from = days == null ? null : to.minusDays(days);
+        return ResponseEntity.ok(userEventService.getAllEventsParticipantCount(pageNum, pageSize, from, to));
     }
 
     @PostMapping("/events/{eventId}")

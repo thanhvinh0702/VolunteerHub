@@ -45,6 +45,11 @@ public class EventService {
                 .orElseThrow(() -> new NoSuchElementException("No such event with id " + id)));
     }
 
+    public List<EventResponse> findByIds(List<Long> ids) {
+        return eventRepository.findByIdIn(ids).stream()
+                .map(eventMapper::toDto).toList();
+    }
+
     public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();

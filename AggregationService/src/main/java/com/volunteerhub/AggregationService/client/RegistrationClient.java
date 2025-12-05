@@ -11,6 +11,9 @@ import java.util.List;
 @FeignClient(name = "REGISTRATIONSERVICE", configuration = FeignConfig.class)
 public interface RegistrationClient {
 
-    @GetMapping("/api/v1/registrations/events/current-participant")
-    List<EventRegistrationCount> getEventsParticipantCounts(@RequestParam List<Long> eventIds);
+    @GetMapping("/api/v1/registrations/events/registration-count")
+    List<EventRegistrationCount> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
+                                                            @RequestParam(required = false) Integer pageNum,
+                                                            @RequestParam(required = false) Integer pageSize,
+                                                            @RequestParam(required = false) Integer days);
 }
