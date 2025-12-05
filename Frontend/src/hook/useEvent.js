@@ -1,10 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
     getEvents,
     getEventById,
     createEvent,
     updateEvent,
     deleteEvent,
+    approveEvent,
+    rejectEvent,
 } from "../services/eventService";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
@@ -26,18 +28,24 @@ export const useEventPagination = (params) => {
     const { pageNum = 0, pageSize = 10, status } = params || {};
     const query = useQuery({
         queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status],
-        queryFn: () => getEvents({ pageNum, pageSize, status }),
-        keepPreviousData: true,
+        queryFn: async () => {
+            const result = await getEvents({ pageNum, pageSize, status });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
         staleTime: 1000 * 60 * 5,
     });
 
     // Prefetch the next page
     useEffect(() => {
         const nextPage = pageNum + 1;
-        if (query.data?.meta.totalPages > nextPage) {
+        if (query.data?.meta?.totalPages > nextPage) {
             queryClient.prefetchQuery({
                 queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status],
-                queryFn: () => getEvents({ pageNum: nextPage, pageSize, status }),
+                queryFn: async () => {
+                    const result = await getEvents({ pageNum: nextPage, pageSize, status });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
             });
         }
     }, [query.data, pageNum, pageSize, status, queryClient]);
@@ -102,6 +110,43 @@ export const useDeleteEvent = (options = {}) => {
 
     return useMutation({
         mutationFn: (eventId) => deleteEvent(eventId),
+        onMutate: async (eventId) => {
+            // Cancel any outgoing refetches to avoid overwriting optimistic update
+            await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
+
+            // Snapshot the previous value
+            const previousEvents = queryClient.getQueriesData({ queryKey: EVENTS_QUERY_KEY });
+
+            // Optimistically update to show loading state
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                // Handle pagination data structure
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map((event) =>
+                            event.id === eventId
+                                ? { ...event, _isDeleting: true }
+                                : event
+                        ),
+                    };
+                }
+
+                // Handle simple array structure
+                if (Array.isArray(old)) {
+                    return old.map((event) =>
+                        event.id === eventId
+                            ? { ...event, _isDeleting: true }
+                            : event
+                    );
+                }
+
+                return old;
+            });
+
+            return { previousEvents };
+        },
         onSuccess: (data, variables, context) => {
             toast.success("Event deleted successfully.");
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
@@ -111,11 +156,216 @@ export const useDeleteEvent = (options = {}) => {
             options.onSuccess?.(data, variables, context);
         },
         onError: (error, variables, context) => {
+            // Rollback to previous state on error
+            if (context?.previousEvents) {
+                context.previousEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
             const message =
                 error?.response?.data?.message || error?.message || "Failed to delete event.";
             toast.error(message);
             options.onError?.(error, variables, context);
         },
-        onSettled: options.onSettled,
+        onSettled: (data, error, variables, context) => {
+            // Always refetch after error or success to ensure server state
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            options.onSettled?.(data, error, variables, context);
+        },
     });
 };
+
+export const useApproveEvent = (options = {}) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (eventId) => approveEvent(eventId),
+        onMutate: async (eventId) => {
+            // Cancel any outgoing refetches to avoid overwriting optimistic update
+            await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
+
+            // Snapshot the previous value
+            const previousEvents = queryClient.getQueriesData({ queryKey: EVENTS_QUERY_KEY });
+
+            // Optimistically update to show loading state
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                // Handle pagination data structure
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map((event) =>
+                            event.id === eventId
+                                ? { ...event, _isUpdating: true }
+                                : event
+                        ),
+                    };
+                }
+
+                // Handle simple array structure
+                if (Array.isArray(old)) {
+                    return old.map((event) =>
+                        event.id === eventId
+                            ? { ...event, _isUpdating: true }
+                            : event
+                    );
+                }
+
+                return old;
+            });
+
+            return { previousEvents };
+        },
+        onSuccess: (data, variables, context) => {
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                const applyUpdate = (event) =>
+                    event.id === variables
+                        ? {
+                            ...event,
+                            ...(data || {}),
+                            status: data?.status || "APPROVED",
+                            _isUpdating: false,
+                        }
+                        : event;
+
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map(applyUpdate),
+                    };
+                }
+
+                if (Array.isArray(old)) {
+                    return old.map(applyUpdate);
+                }
+
+                return old;
+            });
+
+            toast.success("Event approved successfully.");
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            if (variables) {
+                queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
+            }
+            options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            // Rollback to previous state on error
+            if (context?.previousEvents) {
+                context.previousEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            const message =
+                error?.response?.data?.message || error?.message || "Failed to approve event.";
+            toast.error(message);
+            options.onError?.(error, variables, context);
+        },
+        onSettled: (data, error, variables, context) => {
+            // Always refetch after error or success to ensure server state
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            options.onSettled?.(data, error, variables, context);
+        },
+    });
+};
+
+export const useRejectEvent = (options = {}) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (eventId) => rejectEvent(eventId),
+        onMutate: async (eventId) => {
+            // Cancel any outgoing refetches to avoid overwriting optimistic update
+            await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
+
+            // Snapshot the previous value
+            const previousEvents = queryClient.getQueriesData({ queryKey: EVENTS_QUERY_KEY });
+
+            // Optimistically update to show loading state
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                // Handle pagination data structure
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map((event) =>
+                            event.id === eventId
+                                ? { ...event, _isUpdating: true }
+                                : event
+                        ),
+                    };
+                }
+
+                // Handle simple array structure
+                if (Array.isArray(old)) {
+                    return old.map((event) =>
+                        event.id === eventId
+                            ? { ...event, _isUpdating: true }
+                            : event
+                    );
+                }
+
+                return old;
+            });
+
+            return { previousEvents };
+        },
+        onSuccess: (data, variables, context) => {
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                const applyUpdate = (event) =>
+                    event.id === variables
+                        ? {
+                            ...event,
+                            ...(data || {}),
+                            status: data?.status || "REJECTED",
+                            _isUpdating: false,
+                        }
+                        : event;
+
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map(applyUpdate),
+                    };
+                }
+
+                if (Array.isArray(old)) {
+                    return old.map(applyUpdate);
+                }
+
+                return old;
+            });
+
+            toast.success("Event rejected successfully.");
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            if (variables) {
+                queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
+            }
+            options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            // Rollback to previous state on error
+            if (context?.previousEvents) {
+                context.previousEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            const message =
+                error?.response?.data?.message || error?.message || "Failed to reject event.";
+            toast.error(message);
+            options.onError?.(error, variables, context);
+        },
+        onSettled: (data, error, variables, context) => {
+            // Always refetch after error or success to ensure server state
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            options.onSettled?.(data, error, variables, context);
+        },
+    });
+};
+

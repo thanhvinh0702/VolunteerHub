@@ -112,7 +112,7 @@ export default function ImageLightbox({
         <button
           onClick={goToNext}
           className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-1.5 md:p-2 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors z-10"
-          aria-label="Ảnh kế tiếp"
+          aria-label="next-image"
         >
           <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
         </button>

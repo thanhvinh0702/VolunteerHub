@@ -80,7 +80,7 @@ function ProjectCard({
               registered === capacity
                 ? "cursor-not-allowed bg-gray-500/80"
                 : "cursor-pointer bg-red-500/80"
-            } text-white rounded-xl py-2 font-bold text-sm  transition-all duration-500 ease-in-out hover:scale-105 font-lobster tracking-widest border-none active:scale-95`}
+            } text-white rounded-xl py-2 font-bold text-sm  transition-all duration-500 ease-in-out hover:scale-105 font-jost  border-none active:scale-95`}
             onClick={() => navigate(`/opportunities/${id}`)}
           >
             {registered === capacity ? "Full Slot" : "View Details"}

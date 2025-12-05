@@ -56,7 +56,7 @@ const eventSchema = yup.object({
     .transform((value, originalValue) => (originalValue === "" ? null : value))
     .notRequired(),
   street: yup.string().trim().required("Street is required."),
-  city: yup.string().trim().required("City is required."),
+  district: yup.string().trim().required("District is required."),
   province: yup.string().trim().required("Province is required."),
 });
 
@@ -81,7 +81,7 @@ function CreateEvent({ onSuccess, onCancel }) {
       registrationDeadline: "",
       minAge: "",
       street: "",
-      city: "",
+      district: "",
       province: "",
     },
   });
@@ -107,7 +107,7 @@ function CreateEvent({ onSuccess, onCancel }) {
       capacity: values.capacity,
       address: {
         street: values.street,
-        city: values.city,
+        district: values.district,
         province: values.province,
       },
     };
@@ -116,12 +116,12 @@ function CreateEvent({ onSuccess, onCancel }) {
   };
 
   const street = watch("street");
-  const city = watch("city");
+  const district = watch("district");
   const province = watch("province");
 
   const addressString = useMemo(
-    () => [street, city, province].filter(Boolean).join(", ") || "",
-    [street, city, province]
+    () => [street, district, province].filter(Boolean).join(", ") || "",
+    [street, district, province]
   );
 
   useEffect(() => {
@@ -300,19 +300,19 @@ function CreateEvent({ onSuccess, onCancel }) {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="city" className="text-sm text-gray-600">
-              City
+            <label htmlFor="district" className="text-sm text-gray-600">
+              District
             </label>
             <input
               type="text"
-              id="city"
-              {...register("city")}
+              id="district"
+              {...register("district")}
               placeholder="Da Nang"
               className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-            {errors.city && (
-              <p className="text-sm text-red-500">{errors.city.message}</p>
+            {errors.district && (
+              <p className="text-sm text-red-500">{errors.district.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-2">

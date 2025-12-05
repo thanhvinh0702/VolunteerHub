@@ -1,0 +1,82 @@
+import React from "react";
+import {
+  Calendar,
+  CircleArrowLeft,
+  CircleArrowRight,
+  FlameKindling,
+  MapPin,
+  MessageCircle,
+  TrendingUp,
+} from "lucide-react";
+import { futureVolunteer } from "../../assets/img";
+function TrendingCardHorizontal({
+  name,
+  location,
+  date,
+  thumbnail = "https://tse3.mm.bing.net/th/id/OIP.X4rVMWiixU1OHHX6qFCm4wHaE7?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
+  post,
+  comment,
+  ref,
+}) {
+  return (
+    <div
+      className="flex flex-col sm:flex-row bg-gradient-to-br from-pink-100 to-blue-200 transition-all duration-300 shadow-md hover:shadow-xl min-w-[280px] sm:min-w-[400px] md:min-w-[450px] p-4 sm:space-x-5 space-y-3 sm:space-y-0 rounded-2xl border border-green-200/50 snap-start"
+      ref={ref}
+    >
+      <div className="w-full sm:w-32 sm:h-32 h-48 rounded-xl overflow-hidden shadow-sm flex-shrink-0 items-center justify-center flex">
+        <img
+          src={futureVolunteer}
+          alt={name}
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+      <div className="flex flex-col justify-between flex-1 py-1">
+        <div className="space-y-2">
+          <p className="text-lg font-semibold text-gray-800 line-clamp-1 text-center sm:text-left">
+            {name}
+          </p>
+          <div className="flex flex-row gap-2 sm:gap-4 text-sm text-gray-600 items-center justify-between sm:justify-start">
+            <p className="flex items-center justify-center sm:justify-start gap-1">
+              <span className="text-green-600 w-4">
+                <MapPin className="w-full" />
+              </span>
+              <span className="truncate">{location}</span>
+            </p>
+            <p className="flex items-center justify-center sm:justify-start gap-1">
+              <span className="text-green-600 w-4">
+                <Calendar className="w-full" />
+              </span>
+              {date}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-row mt-3 sm:mt-2 justify-around gap-2">
+          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm basis-1/2 min-w-0">
+            <TrendingUp className="w-4 h-4 text-blue-600" />
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500 text-center">Posts</span>
+              <span className="text-sm font-semibold text-gray-800">
+                {post}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm basis-1/2 min-w-0">
+            <span className="text-purple-600">
+              <MessageCircle className="w-4 h-4" />
+            </span>
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500 text-center">
+                Comments
+              </span>
+              <span className="text-sm font-semibold text-gray-800">
+                {comment}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default TrendingCardHorizontal;

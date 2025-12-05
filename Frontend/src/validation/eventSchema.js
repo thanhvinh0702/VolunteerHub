@@ -17,7 +17,7 @@ const eventSchema = yup.object({
         .required(),
     registrationDeadline: yup.date().required(),
     street: yup.string().trim().required(),
-    city: yup.string().trim().required(),
+    district: yup.string().trim().required(),
     province: yup.string().trim().required(),
 });
 

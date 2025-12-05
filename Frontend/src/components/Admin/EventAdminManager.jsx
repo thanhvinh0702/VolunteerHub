@@ -1,49 +1,40 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import React, { useEffect, useState, useRef } from "react";
-import { mockEventManagerData } from "../../pages/EventManager/eventManagerData";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import EventManagerCardAd from "./EventManagerCardAd";
 import Pagination from "@mui/material/Pagination";
+import { useEventPagination } from "../../hook/useEvent";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 20;
 
 function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const isFirstLoad = useRef(true);
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setPage(1);
+      setPage(0);
     }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
   // Reset page when filter changes
   useEffect(() => {
-    setPage(1);
+    setPage(0);
   }, [filterStatus]);
 
-  const { data, isLoading, isFetching, isError, error } = useQuery({
-    queryKey: ["event-admin-manager", page, debouncedSearch, filterStatus],
-    queryFn: () =>
-      mockEventManagerData({
-        page,
-        pageSize: PAGE_SIZE,
-        search: debouncedSearch,
-        status: filterStatus,
-      }),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
+  const { data, isLoading, isFetching, isError, error } = useEventPagination({
+    pageNum: page,
+    pageSize: PAGE_SIZE,
+    status: filterStatus === "all" ? undefined : filterStatus.toUpperCase(),
   });
 
-  // Track first successful load
+  // Track first successful
   useEffect(() => {
     if (data && isFirstLoad.current) {
       isFirstLoad.current = false;
@@ -53,7 +44,7 @@ function EventAdminManager() {
   const showFullLoading = isLoading && isFirstLoad.current;
 
   const handlePageChange = (event, value) => {
-    setPage(value);
+    setPage(value - 1);
   };
 
   const handleBanEvent = async (id) => {
@@ -67,7 +58,7 @@ function EventAdminManager() {
         }
       }, 1000);
     });
-    console.log(`✅ Event cancelled successfully`);
+    console.log(`Event cancelled successfully`);
   };
 
   const handleView = (id) => {
@@ -167,13 +158,15 @@ function EventAdminManager() {
                 : "transition-opacity"
             }
           >
-            {data?.items && data.items.length > 0 ? (
-              data.items.map((event) => (
+            {data?.data && data.data.length > 0 ? (
+              data.data.map((event) => (
                 <EventManagerCardAd
                   key={event.id}
                   data={event}
+                  onCancelEvent={handleBanEvent}
                   onView={handleView}
                   onDelete={handleDelete}
+                  onEdit={handleView}
                 />
               ))
             ) : (
@@ -190,14 +183,14 @@ function EventAdminManager() {
       </div>
 
       {/* Pagination */}
-      {data?.items && data.items.length > 0 && (
+      {data?.data && data.data.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
           <p className="text-sm text-gray-500">
-            Showing {data.items.length} of {data.totalItems} events
+            Showing {data.data.length} of {data.meta?.totalElements || 0} events
           </p>
           <Pagination
-            count={data.totalPages}
-            page={page}
+            count={data.meta?.totalPages || 0}
+            page={page + 1}
             onChange={handlePageChange}
             sx={{
               "& .MuiPaginationItem-root": {

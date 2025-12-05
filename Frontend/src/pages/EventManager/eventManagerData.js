@@ -223,9 +223,9 @@ export const mockEventManagerData = async ({ page = 1, pageSize = 6, search = ""
 // New simplified status workflow:
 // Pending → (Admin approves) → Approved → (Org can cancel) → Cancelled
 export const EVENT_STATUS = {
-    PENDING: "pending",
-    APPROVED: "approved",
-    CANCELLED: "cancelled",
+    PENDING: "PENDING",
+    APPROVED: "APPROVED",
+    CANCELLED: "CANCELLED",
 };
 
 export const STATUS_CONFIG = {

@@ -4,7 +4,27 @@ const EVENT_BASE_URL = "/api/v1/events";
 
 export const getEvents = async (params = {}) => {
     const response = await axiosClient.get(EVENT_BASE_URL, { params });
-    return response;
+    console.log('Events API response:', response);
+
+    // Handle paginated response structure
+    if (response.data && response.meta) {
+        return {
+            data: response.data,
+            meta: response.meta
+        };
+    }
+
+    // Fallback for simple array response
+    const data = Array.isArray(response) ? response : (response.data || []);
+    console.log('Processed data:', data);
+
+    return {
+        data: data,
+        meta: {
+            totalPages: 1,
+            totalElements: data.length
+        }
+    };
 };
 
 export const getEventById = async (eventId) => {
@@ -16,6 +36,7 @@ export const getEventById = async (eventId) => {
 };
 
 export const createEvent = async (payload) => {
+    console.log("Creating event with payload:", payload);
     const response = await axiosClient.post(EVENT_BASE_URL, payload);
     return response;
 };
@@ -40,7 +61,7 @@ export const approveEvent = async (eventId) => {
     if (!eventId) {
         throw new Error("eventId is required to approve an event");
     }
-    const response = await axiosClient.post(`${EVENT_BASE_URL}/${eventId}/approve`);
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}/approve`);
     return response;
 };
 

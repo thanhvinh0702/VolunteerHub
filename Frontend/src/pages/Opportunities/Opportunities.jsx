@@ -3,6 +3,8 @@ import ProjectCard from "../../components/Project/card";
 import FilterHorizontal from "../../components/Filter/FilterHorizontal";
 import { getOpenEvents } from "./events";
 import { applyFilters } from "../../utils/filters";
+import TrendingCardHorizontal from "../../components/TrendingEvent/TrendingCardHorizontal";
+import TrendingScrollList from "../../components/TrendingEvent/TrendingScrollList";
 function OpportunitiesEvent() {
   const [events, setEvents] = useState([]);
   useEffect(() => {
@@ -44,7 +46,7 @@ function OpportunitiesEvent() {
   return (
     <div className="flex flex-col gap-2 p-5">
       <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold text-md">Volunteer Opportunities</p>
+        <p className="text-3xl font-bold text-md">Volunteer Opportunities</p>
         <p className="text-sm text-gray-600 mb-4">
           {" "}
           Discover meaningful ways to make a difference
@@ -63,8 +65,10 @@ function OpportunitiesEvent() {
         resetFilters={resetFilters}
       />
 
-      <div></div>
-      <div></div>
+      <div>
+        <TrendingScrollList />
+      </div>
+      <div className="text-xl font-bold px-4 mb-4">All Opportunities</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
         {filtered.map((item) => {
           return <ProjectCard key={item.id} {...item} />;

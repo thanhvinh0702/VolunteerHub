@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+
 import { approveRegistration, checkUserParticipation, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, unregisterFromEvent } from "../services/registrationService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
 const REGISTRAION_QUERY_KEY = ["registrations"];
@@ -12,18 +12,26 @@ export const useEventRegistrations = (params) => {
     const { pageNum = 0, pageSize = 10, status } = params || {};
     const query = useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, { pageNum, pageSize, status }],
-        queryFn: () => registerEventList({ pageNum, pageSize, status }),
-        keepPreviousData: true,
+        queryFn: async () => {
+            console.log('🔍 Fetching registrations with params:', { pageNum, pageSize, status });
+            const result = await registerEventList({ pageNum, pageSize, status });
+            console.log('📦 Registration response:', result);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     useEffect(() => {
         const nextPage = pageNum + 1;
         if (query.data?.meta?.totalPages > nextPage) {
-            queryClient.prefetchQuery(
-                [...REGISTRAION_QUERY_KEY, nextPage, pageSize, status],
-                () => registerEventList({ pageNum: nextPage, pageSize, status })
-            );
+            queryClient.prefetchQuery({
+                queryKey: [...REGISTRAION_QUERY_KEY, { pageNum: nextPage, pageSize, status }],
+                queryFn: async () => {
+                    const result = await registerEventList({ pageNum: nextPage, pageSize, status });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
         }
     }, [query.data, pageNum, pageSize, status, queryClient]);
     return query;

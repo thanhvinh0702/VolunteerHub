@@ -3,10 +3,23 @@ const REGISTRATION_BASE_URL = "/api/v1/registrations";
 
 export const registerEventList = async (params) => {
     try {
+        console.log('📡 API call with params:', params);
         const response = await axiosClient.get(`${REGISTRATION_BASE_URL}`, { params });
-        return response.data;
+        console.log('✅ API response:', response);
+        // Backend trả về List, không có pagination
+        // Tạo structure giống pagination để dễ sử dụng
+        const data = response.data || [];
+        return {
+            data: data,
+            meta: {
+                totalElements: data.length,
+                totalPages: 1,
+                pageNum: params.pageNum || 0,
+                pageSize: params.pageSize || data.length
+            }
+        };
     } catch (error) {
-        console.error("Error fetching registered events:", error);
+        console.error("❌ Error fetching registered events:", error);
         throw error;
     }
 };
