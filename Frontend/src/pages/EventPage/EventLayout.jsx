@@ -91,7 +91,21 @@ export default function EventLayout() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
-        return <EventOverview description={eventData.description} />;
+        return (
+          <EventOverview
+            description={eventData.description}
+            location={
+              eventData.address
+                ? `${eventData.address.street}, ${eventData.address.district}, ${eventData.address.province}`
+                : ""
+            }
+            startTime={eventData.startTime}
+            endTime={eventData.endTime}
+            capacity={eventData.capacity}
+            registered={eventData.registrationCount}
+            availableSlots={eventData.capacity - eventData.registrationCount}
+          />
+        );
       case "discussion":
         return <FeedPage />;
       case "members":
@@ -104,7 +118,21 @@ export default function EventLayout() {
           />
         );
       default:
-        return <EventOverview description={eventData.description} />;
+        return (
+          <EventOverview
+            description={eventData.description}
+            location={
+              eventData.address
+                ? `${eventData.address.street}, ${eventData.address.district}, ${eventData.address.province}`
+                : ""
+            }
+            startTime={eventData.startTime}
+            endTime={eventData.endTime}
+            capacity={eventData.capacity}
+            registered={eventData.registrationCount}
+            availableSlots={eventData.capacity - eventData.registrationCount}
+          />
+        );
     }
   };
 
@@ -136,14 +164,14 @@ export default function EventLayout() {
 
       <aside className="col-span-4 max-sm:hidden p-6 bg-gray-50 flex flex-col gap-4">
         <RegistrationCard
-          duration={eventData?.duration}
-          minAge={eventData?.minAge}
-          registrationDeadline={eventData?.registrationDeadline}
-          registrationStatus={eventData?.registrationStatus}
-          durationCancel={eventData?.durationCancel}
+          duration={eventData?.duration || ""}
+          minAge={eventData?.minAge || ""}
+          registrationDeadline={eventData?.registrationDeadline || ""}
+          registrationStatus={eventData?.status || ""}
+          durationCancel={eventData?.durationCancel || ""}
           onAction={() => {}}
         />
-        <OrganizationCard />
+        <OrganizationCard ownerId={eventData?.ownerId} />
         {/*<ContactCard />
         <RelatedEventsCard />*/}
       </aside>

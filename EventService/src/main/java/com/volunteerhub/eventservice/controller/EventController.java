@@ -14,9 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -35,11 +33,6 @@ public class EventController {
         return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status, sortedBy, order));
     }
 
-    @GetMapping("/by-ids")
-    public ResponseEntity<List<EventResponse>> getAllEventsByIds(@RequestParam List<Long> eventIds) {
-        return ResponseEntity.ok(eventService.findByIds(eventIds));
-    }
-
     @GetMapping("/owned")
     public ResponseEntity<List<EventResponse>> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                                  @RequestParam(required = false) Integer pageSize,
@@ -55,10 +48,9 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestPart @Validated(OnCreate.class) EventRequest eventRequest,
-                                                     @RequestPart(required = false) MultipartFile imageFile) throws IOException {
+    public ResponseEntity<EventResponse> createEvent(@RequestBody @Validated(OnCreate.class) EventRequest eventRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return new ResponseEntity<>(eventService.createEvent(auth.getName(), eventRequest, imageFile), HttpStatus.CREATED);
+        return new ResponseEntity<>(eventService.createEvent(auth.getName(), eventRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{eventId}")
