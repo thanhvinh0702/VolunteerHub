@@ -46,19 +46,22 @@ export const useCheckUserParticipation = (eventId) => {
     });
 };
 
-export const useRegisterForEvent = () => {
+export const useRegisterForEvent = (options = {}) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (eventId) => registerForEvent(eventId),
-        onSuccess: (_, eventId) => {
+        onSuccess: (data, eventId, context) => {
             toast.success("Registered successfully.");
             queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
             queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "participation", eventId]);
+            options.onSuccess?.(data, eventId, context);
         },
-        onError: (error) => {
+        onError: (error, variables, context) => {
             const message = error?.response?.data?.message || error.message || "Failed to register";
             toast.error(message);
+            options.onError?.(error, variables, context);
         },
+        onSettled: options.onSettled,
     });
 };
 

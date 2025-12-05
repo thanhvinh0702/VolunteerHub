@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Card from "../Card.jsx/Card";
 import { formatDateTime } from "../../utils/date";
 import { BsFillPeopleFill } from "react-icons/bs";
+import { useAuth } from "../../hook/useAuth";
+import { useRegisterForEvent } from "../../hook/useRegistration";
 function RegistrationCard({
   id,
   duration,
@@ -13,19 +15,29 @@ function RegistrationCard({
   registedVolunteer = 10,
   totalSpots = 10,
 }) {
-  console.log(
-    duration,
-    minAge,
-    registrationDeadline,
-    registrationStatus,
-    durationCancel
-  );
+  const { user, hasRole } = useAuth();
+  const [status, setStatus] = useState(null);
+
+  const registerMutation = useRegisterForEvent({
+    onSuccess: () => {
+      setStatus("PENDING");
+    },
+  });
+
   const width = (registedVolunteer / totalSpots) * 100;
-  console.log(width);
-  const active =
-    registedVolunteer == totalSpots
-      ? "bg-gray-500/80 cursor-not-allowed"
-      : "bg-red-500/80 cursor-pointer";
+
+  const handleRegister = () => {
+    registerMutation.mutate(id);
+  };
+
+  const isDisabled =
+    registedVolunteer >= totalSpots ||
+    registerMutation.isPending ||
+    status === "PENDING";
+  const buttonClass = isDisabled
+    ? "bg-gray-500/80 cursor-not-allowed"
+    : "bg-red-500/80 cursor-pointer hover:bg-red-600";
+
   return (
     <Card>
       <div className="flex flex-col text-sm/6 text-black gap-1">
@@ -68,11 +80,19 @@ function RegistrationCard({
         <div className="text-gray-600 text-sm/3">
           Cancellations must be made at least {durationCancel} hours in advance.
         </div>
-        <div
-          className={`border-none rounded-xl md:mt-8 text-white px-4 mt-1 py-1 text-center font-lobster tracking-widest hover:scale-105 transition-all duration-300 ease-in-out active:scale-95 ${active}`}
-        >
-          <button onClick={onAction}>Join</button>
-        </div>
+        {hasRole("USER") && user && (
+          <button
+            onClick={handleRegister}
+            disabled={isDisabled}
+            className={`border-none rounded-xl md:mt-8 text-white px-4 mt-1 py-1 text-center font-lobster tracking-widest hover:scale-105 transition-all duration-300 ease-in-out active:scale-95 disabled:hover:scale-100 ${buttonClass}`}
+          >
+            {registerMutation.isPending
+              ? "Joining..."
+              : status === "PENDING"
+              ? "Pending"
+              : "Join"}
+          </button>
+        )}
       </div>
     </Card>
   );

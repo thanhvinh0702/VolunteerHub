@@ -26,8 +26,8 @@ export const registerEventList = async (params) => {
 
 export const checkUserParticipation = async (eventId) => {
     try {
-        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/event/${eventId}/isParticipate`);
-        return response.data;
+        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/events/${eventId}/isParticipant`);
+        return response;
     } catch (error) {
         console.error("Error checking user participation:", error);
         throw error;
@@ -59,7 +59,7 @@ export const numberOfEventRegistrations = async (eventId) => {
 
 export const registerForEvent = async (eventId) => {
     try {
-        const response = await axiosClient.post(`${REGISTRATION_BASE_URL}/events/${eventId}/`);
+        const response = await axiosClient.post(`${REGISTRATION_BASE_URL}/events/${eventId}`);
         return response.data;
     } catch (error) {
         console.error("Error registering for event:", error);
@@ -68,7 +68,7 @@ export const registerForEvent = async (eventId) => {
 };
 export const unregisterFromEvent = async (eventId) => {
     try {
-        const response = await axiosClient.delete(`${REGISTRATION_BASE_URL}/events/${eventId}/`);
+        const response = await axiosClient.delete(`${REGISTRATION_BASE_URL}/events/${eventId}`);
         return response.data;
     } catch (error) {
         console.error("Error unregistering from event:", error);
