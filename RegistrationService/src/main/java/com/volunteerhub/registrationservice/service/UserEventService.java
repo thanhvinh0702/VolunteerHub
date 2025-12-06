@@ -147,9 +147,6 @@ public class UserEventService {
     }
 
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
-        if (!this.isParticipant(userId, eventId)) {
-            throw new AccessDeniedException("Insufficient permission to view users from event with id " + eventId);
-        }
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         return userEventRepository.findAllUserIdsByEventId(eventId,
                         PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
