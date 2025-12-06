@@ -84,13 +84,14 @@ public class UserEventController {
         );
     }
 
-    @GetMapping("/internal/list")
-    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByEventIds(
-            @RequestParam List<Long> eventIds,
+    @GetMapping("/internal/manager/{ownerId}")
+    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByOwnerId(
+            @PathVariable String ownerId,
+            @RequestParam(value = "eventId", required = false) Long eventId,
             @RequestParam(required = false) UserEventStatus status,
             @RequestParam(defaultValue = "0") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
-        return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(eventIds, status, pageNum, pageSize));
+        return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(ownerId, eventId, status, pageNum, pageSize));
     }
 }

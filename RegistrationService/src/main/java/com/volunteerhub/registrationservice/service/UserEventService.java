@@ -230,21 +230,15 @@ public class UserEventService {
     }
 
     public List<RegistrationResponse> getRegistrationsByEventIdsInternal(
-            List<Long> eventIds,
+            String ownerId,
+            Long eventId,
             UserEventStatus status,
             Integer pageNum,
             Integer pageSize
     ) {
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdAt").descending());
 
-        Page<UserEvent> pageResult;
-
-        if (status != null) {
-            pageResult = userEventRepository.findByEventIdInAndStatus(eventIds, status, pageable);
-        } else {
-            pageResult = userEventRepository.findByEventIdIn(eventIds, pageable);
-        }
-
+        Page<UserEvent> pageResult = userEventRepository.findAllByOwnerId(ownerId, eventId, status, pageable);
 
         return pageResult.getContent().stream()
                 .map(userEventMapper::toAggregatorDto)

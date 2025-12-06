@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-
+import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/aggregated")
 @RequiredArgsConstructor
@@ -24,8 +23,17 @@ public class ManagerAggregatorController {
             @RequestParam(required = false) Long eventId,
             @RequestParam(required = false) UserEventStatus status,
             @RequestParam(value = "pageNum", defaultValue = "0") Integer pageNum,
-            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            Principal principal
     ) {
-        return ResponseEntity.ok(managerAggregatorService.getManagerRegistrations(eventId, status, pageNum, pageSize));
+        String managerId = principal.getName();
+
+        return ResponseEntity.ok(managerAggregatorService.getManagerRegistrations(
+                managerId,
+                eventId,
+                status,
+                pageNum,
+                pageSize
+        ));
     }
 }
