@@ -1,10 +1,10 @@
 package com.volunteerhub.registrationservice.mapper;
 
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
-import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import org.springframework.stereotype.Component;
 

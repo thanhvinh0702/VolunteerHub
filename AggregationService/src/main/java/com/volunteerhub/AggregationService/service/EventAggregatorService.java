@@ -4,11 +4,14 @@ import com.volunteerhub.AggregationService.client.EventClient;
 import com.volunteerhub.AggregationService.client.RegistrationClient;
 import com.volunteerhub.AggregationService.client.UserClient;
 import com.volunteerhub.AggregationService.dto.AggregatedEventResponse;
+import com.volunteerhub.AggregationService.dto.AggregatedUserEventResponse;
 import com.volunteerhub.AggregationService.dto.TrendingEventResponse;
 import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.dto.EventResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.EventStatus;
+import com.volunteerhub.common.enums.UserEventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

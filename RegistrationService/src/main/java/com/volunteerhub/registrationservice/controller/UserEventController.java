@@ -1,9 +1,9 @@
 package com.volunteerhub.registrationservice.controller;
 
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
-import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,6 +41,7 @@ public class UserEventController {
 
     @GetMapping("/events/{eventId}/user-ids")
     public ResponseEntity<List<String>> findUserIdsByEventId(@PathVariable Long eventId,
+                                                             @RequestParam(required = false) UserEventStatus status,
                                                              @RequestParam(required = false) Integer pageNum,
                                                              @RequestParam(required = false) Integer pageSize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -80,8 +81,8 @@ public class UserEventController {
 
     @PutMapping("/events/{eventId}/participants/{participantId}")
     public ResponseEntity<UserEventResponse> reviewUserEventRegistration(@PathVariable Long eventId,
-                                                                                @PathVariable String participantId,
-                                                                                @RequestBody UserEventRequest userEventRequest) {
+                                                                         @PathVariable String participantId,
+                                                                         @RequestBody UserEventRequest userEventRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.reviewUserEventRegistrationRequest(
                 authentication.getName(),
