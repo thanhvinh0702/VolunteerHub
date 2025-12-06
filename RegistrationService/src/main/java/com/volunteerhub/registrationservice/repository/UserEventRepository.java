@@ -46,4 +46,8 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
                                                 @Param("to") LocalDateTime to,
                                                 PageRequest pageRequest);
 
+    Page<UserEvent> findByEventIdInAndStatus(List<Long> eventIds, UserEventStatus status, Pageable pageable);
+
+    Page<UserEvent> findByEventIdIn(List<Long> eventIds, Pageable pageable);
+
 }

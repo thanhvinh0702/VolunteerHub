@@ -1,6 +1,7 @@
 package com.volunteerhub.registrationservice.controller;
 
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.dto.UserEventResponse;
@@ -81,5 +82,15 @@ public class UserEventController {
                 eventId,
                 userEventRequest)
         );
+    }
+
+    @GetMapping("/internal/list")
+    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByEventIds(
+            @RequestParam List<Long> eventIds,
+            @RequestParam(required = false) UserEventStatus status,
+            @RequestParam(defaultValue = "0") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(eventIds, status, pageNum, pageSize));
     }
 }
