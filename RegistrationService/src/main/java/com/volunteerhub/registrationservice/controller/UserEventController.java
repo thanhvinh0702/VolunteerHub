@@ -93,14 +93,15 @@ public class UserEventController {
         );
     }
 
-    @GetMapping("/internal/manager/{ownerId}")
+    @GetMapping("/internal/manager")
     public ResponseEntity<List<RegistrationResponse>> getRegistrationsByOwnerId(
-            @PathVariable String ownerId,
             @RequestParam(value = "eventId", required = false) Long eventId,
             @RequestParam(required = false) UserEventStatus status,
             @RequestParam(defaultValue = "0") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerId = authentication.getName();
         return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(ownerId, eventId, status, pageNum, pageSize));
     }
 }
