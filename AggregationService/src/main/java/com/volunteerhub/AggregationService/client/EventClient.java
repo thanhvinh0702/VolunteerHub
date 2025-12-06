@@ -18,6 +18,7 @@ public interface EventClient {
     List<EventResponse> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                      @RequestParam(required = false) Integer pageSize,
                                      @RequestParam(required = false) EventStatus status,
+                                     @RequestParam(required = false) String categoryName,
                                      @RequestParam(defaultValue = "id") String sortedBy,
                                      @RequestParam(defaultValue = "desc") String order);
 
@@ -25,6 +26,7 @@ public interface EventClient {
     List<EventResponse> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                           @RequestParam(required = false) Integer pageSize,
                                           @RequestParam(required = false) EventStatus status,
+                                          @RequestParam(required = false) String categoryName,
                                           @RequestParam(defaultValue = "id") String sortedBy,
                                           @RequestParam(defaultValue = "desc") String order);
 

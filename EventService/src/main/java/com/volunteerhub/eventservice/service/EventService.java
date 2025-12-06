@@ -51,22 +51,21 @@ public class EventService {
                 .map(eventMapper::toDto).toList();
     }
 
-    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, String categoryName, EventStatus status, String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
-        if (status != null) {
-            return eventRepository.findByStatus(status, PageRequest.of(page, size)).getContent()
-                    .stream()
-                    .map(eventMapper::toDto)
-                    .toList();
-        }
 
-        Sort sort = order.equals("asc")
+        String searchCategory = (categoryName != null && !categoryName.trim().isEmpty()) ? categoryName.trim() : null;
+
+        Sort sort = order.equalsIgnoreCase("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
 
-        return eventRepository.findAll(PageRequest.of(page, size, sort)).getContent()
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return eventRepository.findByStatusAndCategoryName(status, searchCategory, pageable)
+                .getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();

@@ -29,10 +29,11 @@ public class EventController {
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
+                                                            @RequestParam(required = false) String category,
                                                             @RequestParam(required = false) EventStatus status,
                                                             @RequestParam(defaultValue = "id") String sortedBy,
                                                             @RequestParam(defaultValue = "desc") String order)  {
-        return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status, sortedBy, order));
+        return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, category, status, sortedBy, order));
     }
 
     @GetMapping("/by-ids")

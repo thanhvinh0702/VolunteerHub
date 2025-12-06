@@ -23,13 +23,13 @@ public class EventAggregatorService {
     private final EventClient eventClient;
     private final RegistrationClient registrationClient;
 
-    public List<EventWithRegistrationCountResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
-        List<EventResponse> events = eventClient.getAllEvents(pageNum, pageSize, status, sortedBy, order);
+    public List<EventWithRegistrationCountResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String category, String sortedBy, String order) {
+        List<EventResponse> events = eventClient.getAllEvents(pageNum, pageSize, status, category, sortedBy, order);
         return enrichEventsWithCounts(events);
     }
 
-    public List<EventWithRegistrationCountResponse> getAggregatedOwnedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
-        List<EventResponse> events = eventClient.getAllOwnedEvents(pageNum, pageSize, status, sortedBy, order);
+    public List<EventWithRegistrationCountResponse> getAggregatedOwnedEvents(Integer pageNum, Integer pageSize, EventStatus status,String category, String sortedBy, String order) {
+        List<EventResponse> events = eventClient.getAllOwnedEvents(pageNum, pageSize, status, category, sortedBy, order);
         return enrichEventsWithCounts(events);
     }
 
