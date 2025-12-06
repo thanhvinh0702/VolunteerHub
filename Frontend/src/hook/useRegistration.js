@@ -1,5 +1,5 @@
 
-import { approveRegistration, checkUserParticipation, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, unregisterFromEvent } from "../services/registrationService";
+import { approveRegistration, checkUserParticipation, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, reviewRegistration, unregisterFromEvent } from "../services/registrationService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -109,10 +109,13 @@ export const useUserIdList = (eventIid) => {
 export const useListUserOfAnEvent = (eventId, params) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "users", eventId, JSON.stringify(params)],
-        queryFn: () => listUserOfAnEvent(eventId, params),
+        queryFn: async () => {
+            const result = await listUserOfAnEvent(eventId, params);
+            return result || [];
+        },
         staleTime: 5 * 60 * 1000, // 5 minutes
         enabled: !!eventId,
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
         retry: false, // Don't retry on permission errors
         onError: (error) => {
             // Silently handle permission errors - user might not be event owner
@@ -130,4 +133,21 @@ export const useNumberOfEventRegistrations = (eventId) => {
         staleTime: 5 * 60 * 1000, // 5 minutes
         enabled: !!eventId,
     });
-}   
+}
+
+export const useReviewRegistration = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ eventId, participantId, status, note }) =>
+            reviewRegistration(eventId, participantId, status, note),
+        onSuccess: (data, variables) => {
+            const statusText = variables.status === "APPROVED" ? "approved" : "rejected";
+            toast.success(`Registration ${statusText} successfully.`);
+            queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
+        },
+        onError: (error) => {
+            const message = error?.response?.data?.message || error.message || "Failed to review registration";
+            toast.error(message);
+        },
+    });
+};   

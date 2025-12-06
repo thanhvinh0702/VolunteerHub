@@ -3,11 +3,10 @@ const REGISTRATION_BASE_URL = "/api/v1/registrations";
 
 export const registerEventList = async (params) => {
     try {
-        console.log('📡 API call with params:', params);
+        console.log('API call with params:', params);
         const response = await axiosClient.get(`${REGISTRATION_BASE_URL}`, { params });
-        console.log('✅ API response:', response);
-        // Backend trả về List, không có pagination
-        // Tạo structure giống pagination để dễ sử dụng
+        console.log('API response:', response);
+
         const data = response.data || [];
         return {
             data: data,
@@ -37,7 +36,8 @@ export const checkUserParticipation = async (eventId) => {
 export const listUserOfAnEvent = async (eventId, params) => {
     try {
         const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/events/${eventId}`, { params });
-        return response.data;
+        console.log("Participant list response:", response);
+        return response;
     } catch (error) {
         // Only log non-permission errors
         if (error?.response?.status !== 403 && error?.response?.status !== 500) {
@@ -82,6 +82,19 @@ export const approveRegistration = async (eventId) => {
         return response.data;
     } catch (error) {
         console.error("Error approving registration for event:", error);
+        throw error;
+    }
+};
+
+export const reviewRegistration = async (eventId, participantId, status, note = null) => {
+    try {
+        const response = await axiosClient.put(
+            `${REGISTRATION_BASE_URL}/events/${eventId}/participants/${participantId}`,
+            { status, note }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error reviewing registration:", error);
         throw error;
     }
 };
