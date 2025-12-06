@@ -151,17 +151,15 @@ function OverviewEventManager() {
     const normalizedCategoryName = editData.categoryName.toLowerCase();
 
     // Backend expects LocalDateTime without seconds; trim to yyyy-MM-ddTHH:mm
-    const normalizeDateTime = (value) =>
-      value ? value.toString().substring(0, 16) : value;
 
     const payload = {
       name: editData.name,
       description: editData.description,
       categoryName: normalizedCategoryName,
-      startTime: normalizeDateTime(editData.startTime),
-      endTime: normalizeDateTime(editData.endTime),
+      startTime: editData.startTime,
+      endTime: editData.endTime,
       capacity: parseInt(editData.capacity),
-      registrationDeadline: normalizeDateTime(editData.registrationDeadline),
+      registrationDeadline: editData.registrationDeadline,
       address: {
         street: editData.street,
         district: editData.district,
@@ -495,19 +493,6 @@ function OverviewEventManager() {
         <div className="flex flex-col gap-4">
           <Card>
             <div className="flex flex-col gap-5 font-medium font-jost">
-              {!isEditMode && (
-                <div className="border-gray-300 border rounded-xl p-2 cursor-pointer hover:bg-gray-50 transition">
-                  <button
-                    className="flex flex-row items-center gap-5 cursor-pointer w-full"
-                    onClick={handleEdit}
-                  >
-                    <span>
-                      <FaEdit />
-                    </span>
-                    Edit Event Information
-                  </button>
-                </div>
-              )}
               <div className="border-gray-300 border rounded-xl p-2 cursor-pointer hover:bg-gray-50 transition">
                 <button className="flex flex-row items-center gap-5 cursor-pointer">
                   <span>

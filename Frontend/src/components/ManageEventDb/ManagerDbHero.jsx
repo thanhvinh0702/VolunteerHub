@@ -1,12 +1,12 @@
-import { CircleCheckBig, ClockFading } from "lucide-react";
+import { CircleCheckBig, ClockFading, Pencil } from "lucide-react";
 import React from "react";
 
 function ManagerDbHero({
   thumbnail,
   title,
   subtitle,
-
   status = "pending",
+  onEditImage,
 }) {
   const icon =
     status === "pending" ? (
@@ -20,12 +20,20 @@ function ManagerDbHero({
       : "text-green-600 bg-green-500/20 ";
   return (
     <div className="p-4 flex flex-col w-full shadow-2xl rounded-2xl">
-      <div className="w-full aspect-[16/5] max-h-[380px] md:max-h-[280px] overflow-hidden rounded-xl bg-gray-100 mb-4">
+      <div className="w-full aspect-[16/5] max-h-[380px] md:max-h-[280px] overflow-hidden rounded-xl bg-gray-100 mb-4 relative group">
         <img
           src={thumbnail}
           alt={title}
           className="w-full h-full object-cover object-top"
         />
+        {/* Edit Button Overlay */}
+        <button
+          onClick={onEditImage}
+          className="absolute top-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all opacity-0 group-hover:opacity-100"
+          title="Edit image"
+        >
+          <Pencil size={20} />
+        </button>
       </div>
       <div className="flex flex-row max-lg:flex-col items-start max-sm:gap-2 max-sm:text-sm justify-between">
         <div className="flex flex-col gap-2 flex-1 min-w-0">

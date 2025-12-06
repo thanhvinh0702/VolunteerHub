@@ -1,16 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import ManagerDbHero from "../../components/ManageEventDb/ManagerDbHero";
 import Tabs from "../../components/Tabs.jsx/Tabs";
 import { Outlet, useParams } from "react-router-dom";
-import { useEventDetail } from "../../hook/useEvent";
+import { useEventDetail, useUpdateEvent } from "../../hook/useEvent";
+import { Upload, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 function ManagerEventForManager() {
   const { id } = useParams();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   // Fetch event data once at parent level
-  const { data: eventData, isLoading, error } = useEventDetail(id);
+  const { data: eventData, isLoading, error, refetch } = useEventDetail(id);
 
-  // Đổi thành relative paths (không có leading slash)
+  const updateEventMutation = useUpdateEvent({
+    onSuccess: () => {
+      toast.success("Image updated successfully");
+      setShowImageModal(false);
+      setImageFile(null);
+      setPreviewImage(null);
+      refetch();
+    },
+  });
+
   const headerItems = [
     { key: "overview", label: "Overview", to: "overview" },
     {
@@ -29,6 +43,53 @@ function ManagerEventForManager() {
       to: "mark-completion",
     },
   ];
+
+  const handleEditImage = () => {
+    setShowImageModal(true);
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setPreviewImage(null);
+  };
+
+  const handleCloseImageModal = () => {
+    setShowImageModal(false);
+    setImageFile(null);
+    setPreviewImage(null);
+  };
+
+  const handleSaveImage = () => {
+    if (!imageFile) {
+      toast.error("Please select an image");
+      return;
+    }
+
+    const formData = new FormData();
+
+    // Add empty eventRequest to maintain current event data
+    formData.append(
+      "eventRequest",
+      new Blob([JSON.stringify({})], { type: "application/json" })
+    );
+
+    // Add image file
+    formData.append("imageFile", imageFile);
+
+    updateEventMutation.mutate({ eventId: id, payload: formData });
+  };
 
   if (isLoading) {
     return (
@@ -63,6 +124,8 @@ function ManagerEventForManager() {
           subtitle={eventData.description}
           status={eventData.status}
           date={eventData.startTime}
+          id={eventData.id}
+          onEditImage={handleEditImage}
         />
       </div>
       <div>
@@ -73,6 +136,104 @@ function ManagerEventForManager() {
       <div className="mt-4">
         <Outlet context={{ eventId: id, eventData }} />
       </div>
+
+      {/* Image Upload Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Update Event Image
+                </h3>
+                <button
+                  onClick={handleCloseImageModal}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Current Image */}
+                {eventData.imageUrl && !previewImage && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Current Image
+                    </p>
+                    <img
+                      src={eventData.imageUrl}
+                      alt="Current event"
+                      className="w-full h-64 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+
+                {/* Preview New Image */}
+                {previewImage && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Preview New Image
+                    </p>
+                    <div className="relative">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="w-full h-64 object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Button */}
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
+                  >
+                    <Upload size={20} />
+                    <span className="text-gray-600">
+                      {previewImage ? "Change Image" : "Select Image"}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleCloseImageModal}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveImage}
+                    disabled={!imageFile || updateEventMutation.isPending}
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updateEventMutation.isPending
+                      ? "Uploading..."
+                      : "Upload Image"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
