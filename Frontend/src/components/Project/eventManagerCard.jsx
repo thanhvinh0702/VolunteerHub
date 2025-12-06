@@ -104,6 +104,14 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
     }
   };
 
+  const handleViewEvent = () => {
+    navigate(`/dashboard/eventmanager/${id}/overview`);
+  };
+
+  const handleEditEvent = () => {
+    navigate(`/dashboard/eventmanager/${id}/overview`);
+  };
+
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
       {/* Event Name & Category */}

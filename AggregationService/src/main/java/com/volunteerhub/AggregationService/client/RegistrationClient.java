@@ -2,6 +2,8 @@ package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.UserEventResponse;
+import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -19,6 +21,17 @@ public interface RegistrationClient {
                                                             @RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
                                                             @RequestParam(required = false) Integer days);
+
+    @GetMapping("/api/v1/registrations/events/{eventId}/user-ids")
+    List<String> findUserIdsByEventId(@PathVariable Long eventId,
+                                      @RequestParam(required = false) Integer pageNum,
+                                      @RequestParam(required = false) Integer pageSize);
+
+    @GetMapping("/api/v1/registrations/events/{eventId}")
+    List<UserEventResponse> findAllByEventId(@PathVariable Long eventId,
+                                             @RequestParam(required = false) UserEventStatus status,
+                                             @RequestParam(required = false) Integer pageNum,
+                                             @RequestParam(required = false) Integer pageSize);
 
     @GetMapping("/api/v1/registrations/internal/manager/{ownerId}")
     List<RegistrationResponse> getRegistrationsByOwnerId(@PathVariable("ownerId") String ownerId,

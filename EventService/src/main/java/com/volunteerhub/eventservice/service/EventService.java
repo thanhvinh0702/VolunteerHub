@@ -115,7 +115,7 @@ public class EventService {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest) {
+    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
         Event event = findEntityById(eventId);
 
         if (!event.getOwnerId().equals(userId)) {
@@ -123,6 +123,13 @@ public class EventService {
         }
 
         Map<String, Object> updatedFields = new HashMap<>();
+
+        String imageUrl = imageFile != null ? fileStorageService.uploadFile(imageFile) : null;
+
+        if (imageUrl != null) {
+            event.setImageUrl(imageUrl);
+            updatedFields.put("image_url", imageUrl);
+        }
 
         if (eventRequest.getName() != null) {
             event.setName(eventRequest.getName());

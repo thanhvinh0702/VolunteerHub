@@ -1,7 +1,7 @@
 import React from "react";
 import ManagerDbHero from "../../components/ManageEventDb/ManagerDbHero";
 import Tabs from "../../components/Tabs.jsx/Tabs";
-import { Outlet } from "react-router-dom"; // Thêm import này
+import { Outlet, useParams } from "react-router-dom";
 
 const dump = {
   id: 2,
@@ -14,6 +14,7 @@ const dump = {
 };
 
 function ManagerEventForManager() {
+  const { id } = useParams();
   const { thumbnail, title, subtitle, date } = dump;
 
   // Đổi thành relative paths (không có leading slash)
@@ -52,7 +53,7 @@ function ManagerEventForManager() {
 
       {/* Thay các div rỗng bằng Outlet để hiển thị nội dung theo tab */}
       <div className="mt-4">
-        <Outlet />
+        <Outlet context={{ eventId: id }} />
       </div>
     </div>
   );

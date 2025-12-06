@@ -2,6 +2,7 @@ package com.volunteerhub.registrationservice.service;
 
 import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.dto.RegistrationResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
@@ -147,6 +148,12 @@ public class UserEventService {
                 .getContent()
                 .stream().map(userEventMapper::toResponseDto)
                 .toList();
+    }
+
+    public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        return userEventRepository.findAllUserIdsByEventId(eventId,
+                        PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
     }
 
     @PreAuthorize("hasRole('SYSTEM')")

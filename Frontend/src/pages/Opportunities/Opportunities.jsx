@@ -16,7 +16,7 @@ const categories = [
 
 function OpportunitiesEvent() {
   const [pageNum, setPageNum] = useState(0);
-  const [pageSize] = useState(6);
+  const [pageSize] = useState(9);
 
   // Filter states
   const [query, setQuery] = useState("");

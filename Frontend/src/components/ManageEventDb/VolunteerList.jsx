@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Eye, Edit3, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { useListUserOfAnEvent } from "../../hook/useRegistration";
+import { useOutletContext } from "react-router-dom";
 
 const volunteers = [
   {
@@ -45,9 +47,20 @@ const volunteers = [
 ];
 
 function VolunteerList() {
+  const { eventId } = useOutletContext();
+  console.log("Event ID in VolunteerList:", eventId);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [itemsToShow, setItemsToShow] = useState(5);
+  const [pageNum, setPageNum] = useState(0);
+  const [status, setStatus] = useState(undefined); // undefined = all statuses
+
+  const { data, isLoading, isError } = useListUserOfAnEvent(eventId, {
+    pageNum,
+    pageSize: itemsToShow,
+    status,
+  });
+  console.log("Registered users data:", data);
 
   const filteredVolunteers = volunteers.filter(
     (volunteer) =>
