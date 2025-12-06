@@ -63,7 +63,7 @@ public class EventController {
 
     @PutMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long eventId,
-                                                     @RequestPart @Validated(OnCreate.class) EventRequest eventRequest,
+                                                     @RequestPart @Validated(OnUpdate.class) EventRequest eventRequest,
                                                      @RequestPart(required = false) MultipartFile imageFile) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.updateEvent(auth.getName(), eventId, eventRequest, imageFile));
