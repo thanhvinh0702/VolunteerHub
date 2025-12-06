@@ -82,6 +82,11 @@ public class EventAggregatorService {
                 .toList();
     }
 
+    public List<UserResponse> getEventUsers(Long eventId, Integer pageNum, Integer pageSize) {
+        List<String> userIds = registrationClient.findUserIdsByEventId(eventId, pageNum, pageSize);
+        return userClient.findAllByIds(userIds);
+    }
+
     private List<AggregatedEventResponse> enrichEvents(List<EventResponse> events) {
         if (events == null || events.isEmpty()) {
             return Collections.emptyList();

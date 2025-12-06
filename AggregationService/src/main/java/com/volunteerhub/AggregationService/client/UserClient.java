@@ -12,5 +12,5 @@ import java.util.List;
 public interface UserClient {
 
     @GetMapping("/api/v1/users/users/by-ids")
-    public List<UserResponse> findAllByIds(@RequestParam List<String> userIds);
+    List<UserResponse> findAllByIds(@RequestParam List<String> userIds);
 }
