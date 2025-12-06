@@ -46,7 +46,7 @@ public class EventAggregatorController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<EventWithRegistrationCountResponse>> searchEvents(
+    public ResponseEntity<List<AggregatedEventResponse>> searchEvents(
             @RequestParam String keyword,
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {

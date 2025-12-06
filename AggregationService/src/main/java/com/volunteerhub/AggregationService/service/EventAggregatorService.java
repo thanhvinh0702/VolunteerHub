@@ -24,143 +24,88 @@ public class EventAggregatorService {
 
     private final EventClient eventClient;
     private final RegistrationClient registrationClient;
+    private final UserClient userClient;
 
-    public List<EventWithRegistrationCountResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+    public List<AggregatedEventResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
         List<EventResponse> events = eventClient.getAllEvents(pageNum, pageSize, status, sortedBy, order);
-        List<Long> eventIds = events.stream().map(EventResponse::getId).toList();
-        List<String> userIds = events.stream().map(EventResponse::getOwnerId).toList();
-        List<EventRegistrationCount> eventRegistrationCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
-        List<UserResponse> userResponses = userClient.findAllByIds(userIds);
-        Map<Long, EventRegistrationCount> countMap = eventRegistrationCounts.stream()
-                .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
-        Map<String, UserResponse> userMap = userResponses.stream()
-                .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
-        return events.stream()
-                .map(e -> {
-                    EventRegistrationCount counts = countMap.getOrDefault(e.getId(),
-                            EventRegistrationCount.builder()
-                                    .eventId(e.getId())
-                                    .registrationCount(0L)
-                                    .participantCount(0L)
-                                    .build());
-
-                    UserResponse user = userMap.getOrDefault(e.getOwnerId(),
-                            UserResponse.builder().build());
-
-                    return AggregatedEventResponse.builder()
-                            .eventResponse(e)
-                            .owner(user)
-                            .registrationCount(counts.getRegistrationCount())
-                            .participantCount(counts.getParticipantCount())
-                            .build();
-                })
-                .toList();
+        return enrichEvents(events);
     }
 
     public List<AggregatedEventResponse> getAggregatedOwnedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
         List<EventResponse> events = eventClient.getAllOwnedEvents(pageNum, pageSize, status, sortedBy, order);
-        List<Long> eventIds = events.stream().map(EventResponse::getId).toList();
-        List<String> userIds = events.stream().map(EventResponse::getOwnerId).toList();
-        List<EventRegistrationCount> eventRegistrationCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
-        List<UserResponse> userResponses = userClient.findAllByIds(userIds);
-        Map<Long, EventRegistrationCount> countMap = eventRegistrationCounts.stream()
-                .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
-        Map<String, UserResponse> userMap = userResponses.stream()
-                .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
-        return events.stream()
-                .map(e -> {
-                    EventRegistrationCount counts = countMap.getOrDefault(e.getId(),
-                            EventRegistrationCount.builder()
-                                    .eventId(e.getId())
-                                    .registrationCount(0L)
-                                    .participantCount(0L)
-                                    .build());
+        return enrichEvents(events);
+    }
 
-                    UserResponse user = userMap.getOrDefault(e.getOwnerId(),
-                            UserResponse.builder().build());
-
-                    return AggregatedEventResponse.builder()
-                            .eventResponse(e)
-                            .owner(user)
-                            .registrationCount(counts.getRegistrationCount())
-                            .participantCount(counts.getParticipantCount())
-                            .build();
-                })
-                .toList();
+    public List<AggregatedEventResponse> searchAggregatedEvents(String keyword, Integer pageNum, Integer pageSize) {
+        List<EventResponse> events = eventClient.searchEvents(keyword, pageNum, pageSize);
+        return enrichEvents(events);
     }
 
     public List<TrendingEventResponse> getTrendingEvents(Integer pageNum, Integer pageSize, Integer days) {
-        List<EventRegistrationCount> eventRegistrationCounts = registrationClient.getEventsParticipantCounts(null, pageNum, pageSize, days);
-        if (eventRegistrationCounts == null || eventRegistrationCounts.isEmpty()) {
+        List<EventRegistrationCount> growthCounts = registrationClient.getEventsParticipantCounts(null, pageNum, pageSize, days);
+
+        if (growthCounts == null || growthCounts.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Long> eventIds = eventRegistrationCounts.stream().map(EventRegistrationCount::getEventId).toList();
+
+        List<Long> eventIds = growthCounts.stream().map(EventRegistrationCount::getEventId).toList();
         List<EventResponse> eventResponses = eventClient.getAllEventsByIds(eventIds);
-        List<EventRegistrationCount> allEventRegistrationCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
-        List<String> userIds = eventResponses.stream().map(EventResponse::getOwnerId).toList();
+        List<EventRegistrationCount> totalCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
+
+        List<String> userIds = eventResponses.stream().map(EventResponse::getOwnerId).distinct().toList();
         List<UserResponse> userResponses = userClient.findAllByIds(userIds);
-        Map<Long, EventRegistrationCount> countMap = allEventRegistrationCounts.stream()
+
+        Map<Long, EventRegistrationCount> totalCountMap = totalCounts.stream()
                 .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
-        Map<Long, EventRegistrationCount> growthCountMap = eventRegistrationCounts.stream()
+        Map<Long, EventRegistrationCount> growthCountMap = growthCounts.stream()
                 .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
         Map<String, UserResponse> userMap = userResponses.stream()
                 .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
+
         return eventResponses.stream()
                 .map(e -> {
-                    EventRegistrationCount counts = countMap.getOrDefault(e.getId(),
-                            EventRegistrationCount.builder()
-                                    .eventId(e.getId())
-                                    .registrationCount(0L)
-                                    .participantCount(0L)
-                                    .build());
-
-                    EventRegistrationCount growthCounts = growthCountMap.getOrDefault(e.getId(),
-                            EventRegistrationCount.builder()
-                                    .eventId(e.getId())
-                                    .registrationCount(0L)
-                                    .participantCount(0L)
-                                    .build());
-
-                    UserResponse user = userMap.getOrDefault(e.getOwnerId(),
-                            UserResponse.builder().build());
+                    EventRegistrationCount total = totalCountMap.getOrDefault(e.getId(), createEmptyCount(e.getId()));
+                    EventRegistrationCount growth = growthCountMap.getOrDefault(e.getId(), createEmptyCount(e.getId()));
+                    UserResponse user = userMap.getOrDefault(e.getOwnerId(), UserResponse.builder().build());
 
                     return TrendingEventResponse.builder()
                             .eventResponse(AggregatedEventResponse.builder()
                                     .owner(user)
                                     .eventResponse(e)
-                                    .participantCount(counts.getParticipantCount())
-                                    .registrationCount(counts.getRegistrationCount())
+                                    .participantCount(total.getParticipantCount())
+                                    .registrationCount(total.getRegistrationCount())
                                     .build())
-                            .registrationGrowth(growthCounts.getRegistrationCount())
-                            .participantGrowth(growthCounts.getParticipantCount())
+                            .registrationGrowth(growth.getRegistrationCount())
+                            .participantGrowth(growth.getParticipantCount())
                             .build();
                 })
                 .toList();
     }
 
-    public List<EventWithRegistrationCountResponse> searchAggregatedEvents(String keyword, Integer pageNum, Integer pageSize) {
-        List<EventResponse> events = eventClient.searchEvents(keyword, pageNum, pageSize);
-        return enrichEventsWithCounts(events);
-    }
-
-    private List<EventWithRegistrationCountResponse> enrichEventsWithCounts(List<EventResponse> events) {
+    private List<AggregatedEventResponse> enrichEvents(List<EventResponse> events) {
         if (events == null || events.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Long> eventIds = events.stream().map(EventResponse::getId).toList();
+        List<String> userIds = events.stream().map(EventResponse::getOwnerId).distinct().toList();
 
         List<EventRegistrationCount> eventRegistrationCounts = registrationClient.getEventsParticipantCounts(eventIds, null, null, null);
+        List<UserResponse> userResponses = userClient.findAllByIds(userIds);
 
         Map<Long, EventRegistrationCount> countMap = eventRegistrationCounts.stream()
                 .collect(Collectors.toMap(EventRegistrationCount::getEventId, Function.identity()));
+        Map<String, UserResponse> userMap = userResponses.stream()
+                .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
 
         return events.stream()
                 .map(e -> {
                     EventRegistrationCount counts = countMap.getOrDefault(e.getId(), createEmptyCount(e.getId()));
+                    UserResponse user = userMap.getOrDefault(e.getOwnerId(), UserResponse.builder().build());
 
-                    return EventWithRegistrationCountResponse.builder()
+                    return AggregatedEventResponse.builder()
                             .eventResponse(e)
+                            .owner(user)
                             .registrationCount(counts.getRegistrationCount())
                             .participantCount(counts.getParticipantCount())
                             .build();

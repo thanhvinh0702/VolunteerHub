@@ -1,7 +1,6 @@
 package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
-import com.volunteerhub.AggregationService.dto.EventWithRegistrationCountResponse;
 import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import org.springframework.cloud.openfeign.FeignClient;
