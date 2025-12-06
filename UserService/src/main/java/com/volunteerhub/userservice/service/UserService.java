@@ -1,16 +1,20 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.common.utils.PaginationValidation;
+import com.volunteerhub.userservice.dto.request.UserRequest;
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
+import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -107,5 +111,28 @@ public class UserService {
             existedUser.setDarkMode(false);
         }
         return userRepository.save(existedUser);
+    }
+
+    public List<UserResponse> getAllMembers(Integer pageNum, Integer pageSize) {
+        PageNumAndSizeResponse pageValidation = PaginationValidation.validate(pageNum, pageSize);
+
+        Pageable pageable = PageRequest.of(
+                pageValidation.getPageNum(),
+                pageValidation.getPageSize(),
+                Sort.by("fullName").ascending()
+        );
+
+        return userRepository.findAll(pageable)
+                .getContent()
+                .stream()
+                .map(this::mapToUserResponse)
+                .toList();
+    }
+
+    private UserResponse mapToUserResponse(User user) {
+        return UserResponse.builder()
+                .fullName(user.getFullName())
+                .avatarUrl(user.getAvatarUrl())
+                .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.userservice.dto.UserLoginHistoryRequest;
+import com.volunteerhub.userservice.dto.request.UserLoginHistoryRequest;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.repository.UserLoginHistoryRepository;

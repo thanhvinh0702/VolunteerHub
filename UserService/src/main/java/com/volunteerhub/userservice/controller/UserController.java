@@ -1,6 +1,7 @@
 package com.volunteerhub.userservice.controller;
 
-import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.dto.request.UserRequest;
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.model.Role;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserBadge;
@@ -20,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/users")
@@ -83,5 +83,13 @@ public class UserController {
             @Validated(OnUpdate.class) @RequestBody UserRequest userRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userService.update(authentication.getName(), userRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<UserResponse>> getAllMembers(
+            @RequestParam(defaultValue = "0") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return ResponseEntity.ok(userService.getAllMembers(pageNum, pageSize));
     }
 }
