@@ -13,21 +13,20 @@ import java.util.Enumeration;
 public class FeignConfig {
 
     @Bean
-    public RequestInterceptor headerForwardingInterceptor() {
+    public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-            ServletRequestAttributes attributes =
-                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
 
-                Enumeration<String> headerNames = request.getHeaderNames();
-                if (headerNames != null) {
-                    while (headerNames.hasMoreElements()) {
-                        String headerName = headerNames.nextElement();
-                        String headerValue = request.getHeader(headerName);
-                        requestTemplate.header(headerName, headerValue);
-                    }
+                    String authHeader = request.getHeader("Authorization");
+                if (authHeader != null) {
+                    requestTemplate.header("Authorization", authHeader);
+                }
+                
+                String correlationId = request.getHeader("X-Correlation-Id");
+                if (correlationId != null) {
+                    requestTemplate.header("X-Correlation-Id", correlationId);
                 }
             }
         };

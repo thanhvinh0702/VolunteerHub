@@ -3,6 +3,7 @@ package com.volunteerhub.AggregationService.controller;
 import com.volunteerhub.AggregationService.dto.ManagerRegistrationResponse;
 import com.volunteerhub.AggregationService.service.ManagerAggregatorService;
 import com.volunteerhub.common.enums.UserEventStatus;
+import jakarta.ws.rs.core.SecurityContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +24,10 @@ public class ManagerAggregatorController {
             @RequestParam(required = false) Long eventId,
             @RequestParam(required = false) UserEventStatus status,
             @RequestParam(value = "pageNum", defaultValue = "0") Integer pageNum,
-            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-            Principal principal
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ) {
-        String managerId = principal.getName();
 
         return ResponseEntity.ok(managerAggregatorService.getManagerRegistrations(
-                managerId,
                 eventId,
                 status,
                 pageNum,
