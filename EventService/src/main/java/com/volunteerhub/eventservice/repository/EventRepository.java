@@ -26,4 +26,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "e.name REGEXP :keyword OR e.description REGEXP :keyword",
             nativeQuery = true)
     Page<Event> searchEventsByRegex(@Param("keyword") String keyword, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"category", "address"})
+    @Query("SELECT e FROM Event e WHERE " +
+            "(:#{#status} IS NULL OR e.status = :#{#status}) AND " +
+            "(:#{#categoryName} IS NULL OR LOWER(e.category.name) LIKE LOWER(CONCAT('%', :#{#categoryName}, '%')))")
+    Page<Event> findByStatusAndCategoryName(
+            @Param("status") EventStatus status,
+            @Param("categoryName") String categoryName,
+            Pageable pageable
+    );
 }

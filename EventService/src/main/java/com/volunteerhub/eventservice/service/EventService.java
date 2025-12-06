@@ -14,6 +14,7 @@ import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -224,6 +225,31 @@ public class EventService {
         }
 
         return eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
+    }
+
+    public List<EventResponse> findByStatusAndCategory(Integer pageNum, Integer pageSize,
+                                                       EventStatus status,
+                                                       String category,
+                                                       String sortedBy, String order) {
+
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        int page = pageNumAndSizeResponse.getPageNum();
+        int size = pageNumAndSizeResponse.getPageSize();
+
+        String searchCategory = (category != null && !category.trim().isEmpty()) ? category.trim() : null;
+
+        Sort sort = order.equalsIgnoreCase("asc")
+                ? Sort.by(sortedBy).ascending()
+                : Sort.by(sortedBy).descending();
+
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return eventRepository.findByStatusAndCategoryName(status, searchCategory, pageable)
                 .getContent()
                 .stream()
                 .map(eventMapper::toDto)

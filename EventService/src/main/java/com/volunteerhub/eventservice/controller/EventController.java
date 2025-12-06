@@ -97,4 +97,15 @@ public class EventController {
             return ResponseEntity.ok(eventService.searchByKeyword(keyword, pageNum, pageSize));
     }
 
+    @GetMapping("/filter-all")
+    public ResponseEntity<List<EventResponse>> findByStatusAndCategory(
+            @RequestParam(required = false) EventStatus status,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(defaultValue = "id") String sortedBy,
+            @RequestParam(defaultValue = "desc") String order
+    ) {
+        return ResponseEntity.ok(eventService.findByStatusAndCategory(pageNum, pageSize, status, category, sortedBy, order));
+    }
 }
