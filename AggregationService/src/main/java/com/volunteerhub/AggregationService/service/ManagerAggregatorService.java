@@ -25,16 +25,17 @@ public class ManagerAggregatorService {
     private final RegistrationClient registrationClient;
     private final UserClient userClient;
 
-    public List<ManagerRegistrationResponse> getManagerRegistrations(String managerId, Long filterEventId, UserEventStatus status, Integer pageNum, Integer pageSize) {
+    public List<ManagerRegistrationResponse> getManagerRegistrations(Long filterEventId, UserEventStatus status, Integer pageNum, Integer pageSize) {
 
         List<RegistrationResponse> regList = registrationClient.getRegistrationsByOwnerId(
-                managerId, filterEventId, status, pageNum, pageSize
+                filterEventId, status, pageNum, pageSize
         );
 
         if (regList == null || regList.isEmpty()) {
             return Collections.emptyList();
         }
 
+        // ... (Phần logic enrich dữ liệu giữ nguyên) ...
         List<Long> eventIdsToFetch = regList.stream().map(RegistrationResponse::getEventId).distinct().toList();
         List<String> userIds = regList.stream().map(RegistrationResponse::getUserId).distinct().toList();
 
@@ -43,7 +44,6 @@ public class ManagerAggregatorService {
 
         Map<String, UserResponse> userMap = users.stream().collect(Collectors.toMap(UserResponse::getId, Function.identity()));
         Map<Long, String> eventNameMap = events.stream().collect(Collectors.toMap(EventResponse::getId, EventResponse::getName));
-
 
         return enrichRegistrations(regList, eventNameMap, userMap);
     }

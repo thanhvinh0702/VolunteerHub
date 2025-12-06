@@ -33,9 +33,8 @@ public interface RegistrationClient {
                                              @RequestParam(required = false) Integer pageNum,
                                              @RequestParam(required = false) Integer pageSize);
 
-    @GetMapping("/api/v1/registrations/internal/manager/{ownerId}")
-    List<RegistrationResponse> getRegistrationsByOwnerId(@PathVariable("ownerId") String ownerId,
-                                                         @RequestParam(value = "eventId", required = false) Long eventId,
+    @GetMapping("/api/v1/registrations/internal/manager")
+    List<RegistrationResponse> getRegistrationsByOwnerId(@RequestParam(value = "eventId", required = false) Long eventId,
                                                          @RequestParam(value = "status", required = false) UserEventStatus status,
                                                          @RequestParam("pageNum") Integer pageNum,
                                                          @RequestParam("pageSize") Integer pageSize
