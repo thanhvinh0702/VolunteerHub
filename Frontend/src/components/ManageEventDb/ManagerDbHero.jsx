@@ -5,7 +5,7 @@ function ManagerDbHero({
   thumbnail,
   title,
   subtitle,
-  date,
+
   status = "pending",
 }) {
   const icon =
@@ -32,7 +32,7 @@ function ManagerDbHero({
           <div
             className={`text-2xl font-bold flex gap-2 items-center flex-wrap`}
           >
-            <p className="text-xl max-md:text-[1rem] break-all line-clamp-2 min-w-0">
+            <p className="text-3xl font-jost not-only:max-md:text-[1rem] break-all line-clamp-2 min-w-0">
               {title}
             </p>
 

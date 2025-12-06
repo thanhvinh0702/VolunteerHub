@@ -102,7 +102,6 @@ function OverviewEventManager() {
           if (coords) {
             setCoordinates(coords);
             setMapError(null);
-          } else {
           }
         }
       } catch (error) {
@@ -151,14 +150,18 @@ function OverviewEventManager() {
     // Normalize categoryName to lowercase
     const normalizedCategoryName = editData.categoryName.toLowerCase();
 
+    // Backend expects LocalDateTime without seconds; trim to yyyy-MM-ddTHH:mm
+    const normalizeDateTime = (value) =>
+      value ? value.toString().substring(0, 16) : value;
+
     const payload = {
       name: editData.name,
       description: editData.description,
       categoryName: normalizedCategoryName,
-      startTime: editData.startTime,
-      endTime: editData.endTime,
+      startTime: normalizeDateTime(editData.startTime),
+      endTime: normalizeDateTime(editData.endTime),
       capacity: parseInt(editData.capacity),
-      registrationDeadline: editData.registrationDeadline,
+      registrationDeadline: normalizeDateTime(editData.registrationDeadline),
       address: {
         street: editData.street,
         district: editData.district,
@@ -174,6 +177,8 @@ function OverviewEventManager() {
       end: editData.endTime,
       deadline: editData.registrationDeadline,
     });
+
+    console.log("Payload sent as eventRequest:", payload);
 
     updateEventMutation.mutate({ eventId, payload });
   };

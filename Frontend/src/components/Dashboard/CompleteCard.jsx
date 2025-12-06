@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Card from "../Card.jsx/Card";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { Calendar, Clock, Building2 } from "lucide-react";
 
 function CompleteCard({
   title,
@@ -37,9 +38,18 @@ function CompleteCard({
           {/* DESKTOP INFO */}
           <div className="hidden sm:flex flex-col justify-center gap-1">
             <div className="font-semibold text-[18px]">{title}</div>
-            <div className="text-gray-600 text-sm">{organization}</div>
-            <div className="text-gray-600 text-sm">{date}</div>
-            <div className="text-gray-600 text-sm">{hours}</div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Building2 size={16} className="flex-shrink-0" />
+              <span>{organization}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Calendar size={16} className="flex-shrink-0" />
+              <span>{date}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Clock size={16} className="flex-shrink-0" />
+              <span>{hours}</span>
+            </div>
           </div>
 
           {/* MOBILE TITLE + CHEVRON */}

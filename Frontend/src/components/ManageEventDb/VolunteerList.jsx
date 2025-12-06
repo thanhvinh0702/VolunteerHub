@@ -1,77 +1,75 @@
 import React, { useState } from "react";
-import { Eye, Edit3, Search, ChevronDown, ChevronUp } from "lucide-react";
-import { useListUserOfAnEvent } from "../../hook/useRegistration";
+import {
+  Eye,
+  Edit3,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Delete,
+  Trash,
+} from "lucide-react";
+import {
+  useListUserOfAnEvent,
+  useRemoveParticipant,
+} from "../../hook/useRegistration";
 import { useOutletContext } from "react-router-dom";
-
-const volunteers = [
-  {
-    id: "VL-001",
-    name: "Alex Chen",
-    email: "alex@email.com",
-    age: 24,
-    address: "123 Nguyen Trai, Ha Noi",
-    initials: "AC",
-  },
-  {
-    id: "VL-002",
-    name: "Maria Rodriguez",
-    email: "maria@email.com",
-    age: 28,
-    address: "456 Le Loi, HCMC",
-    initials: "MR",
-  },
-  {
-    id: "VL-003",
-    name: "James Wilson",
-    email: "james@email.com",
-    age: 22,
-    address: "789 Tran Hung Dao, Da Nang",
-    initials: "JW",
-  },
-  {
-    id: "VL-004",
-    name: "Lisa Park",
-    email: "lisa@email.com",
-    age: 26,
-    address: "321 Bach Dang, Hai Phong",
-    initials: "LP",
-  },
-  {
-    id: "VL-005",
-    name: "David Kim",
-    email: "david@email.com",
-    age: 30,
-    address: "654 Hoang Hoa Tham, Hue",
-    initials: "DK",
-  },
-];
 
 function VolunteerList() {
   const { eventId } = useOutletContext();
-  console.log("Event ID in VolunteerList:", eventId);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState(new Set());
-  const [itemsToShow, setItemsToShow] = useState(5);
+  const [itemsToShow, setItemsToShow] = useState(10);
   const [pageNum, setPageNum] = useState(0);
-  const [status, setStatus] = useState(undefined); // undefined = all statuses
 
-  const { data, isLoading, isError } = useListUserOfAnEvent(eventId, {
+  const {
+    data: registrations = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useListUserOfAnEvent(eventId, {
     pageNum,
     pageSize: itemsToShow,
-    status,
   });
-  console.log("Registered users data:", data);
 
-  const filteredVolunteers = volunteers.filter(
-    (volunteer) =>
-      volunteer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      volunteer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      volunteer.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      volunteer.address.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { mutate: removeParticipant, isPending: isRemoving } =
+    useRemoveParticipant();
 
-  const displayedVolunteers = filteredVolunteers.slice(0, itemsToShow);
-  const hasMore = filteredVolunteers.length > itemsToShow;
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const filteredVolunteers = registrations.filter((registration) => {
+    const searchLower = searchQuery.toLowerCase();
+    const user = registration.user || {};
+    return (
+      user.fullName?.toLowerCase().includes(searchLower) ||
+      user.email?.toLowerCase().includes(searchLower) ||
+      user.username?.toLowerCase().includes(searchLower) ||
+      user.phoneNumber?.toLowerCase().includes(searchLower) ||
+      user.address?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const displayedVolunteers = filteredVolunteers;
+  const hasMore = false;
 
   const toggleExpand = (id) => {
     const newExpanded = new Set(expandedIds);
@@ -83,15 +81,50 @@ function VolunteerList() {
     setExpandedIds(newExpanded);
   };
 
-  const handleView = (volunteer) => {
-    console.log("View volunteer:", volunteer);
-    // TODO: Navigate to volunteer detail page or open modal
+  const handleView = (registration) => {
+    console.log("View registration:", registration);
   };
 
-  const handleEdit = (volunteer) => {
-    console.log("Edit volunteer:", volunteer);
-    // TODO: Navigate to edit page or open modal
+  const handleEdit = (registration) => {
+    console.log("Edit registration:", registration);
   };
+
+  const handleDelete = (registration) => {
+    if (
+      window.confirm(
+        `Are you sure you want to remove ${
+          registration.user?.fullName || "this volunteer"
+        } from the event?`
+      )
+    ) {
+      removeParticipant(
+        { eventId, participantId: registration.userId },
+        {
+          onSuccess: () => {
+            refetch();
+          },
+        }
+      );
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+        <div className="text-center py-8 text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+        <div className="text-center py-8 text-red-500">
+          Failed to load volunteers
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm gap-4 sm:gap-6 flex flex-col">
@@ -110,7 +143,7 @@ function VolunteerList() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
         <input
           type="text"
-          placeholder="Search by name, email, ID, or address..."
+          placeholder="Search by name, email, username, phone, or address..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-9 sm:pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -122,58 +155,77 @@ function VolunteerList() {
         <table className="w-full text-sm text-left">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-600">
-              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">Volunteer</th>
               <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Age</th>
+              <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Address</th>
+              <th className="px-4 py-3">Joined At</th>
               <th className="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filteredVolunteers.length > 0 ? (
-              filteredVolunteers.map((volunteer) => (
-                <tr key={volunteer.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">
-                    {volunteer.id}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 flex-shrink-0">
-                        {volunteer.initials}
+              filteredVolunteers.map((registration) => {
+                const user = registration.user || {};
+                return (
+                  <tr key={registration.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {user.avatarUrl ? (
+                          <img
+                            src={user.avatarUrl}
+                            alt={user.fullName}
+                            className="h-9 w-9 rounded-full flex-shrink-0 object-cover"
+                          />
+                        ) : (
+                          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 flex-shrink-0">
+                            {getInitials(user.fullName)}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {user.fullName || ""}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {user.username || ""}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {volunteer.name}
-                        </p>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {user.email || ""}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {user.phoneNumber || ""}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {user.address || ""}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {formatDate(registration.reviewedAt)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleView(registration)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleDelete(registration)}
+                          disabled={isRemoving}
+                          className="inline-flex items-center gap-1 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium bg-red-500 hover:bg-red-600 text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash className="h-4 w-4" />
+                          Delete
+                        </button>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{volunteer.email}</td>
-                  <td className="px-4 py-3 text-gray-600">{volunteer.age}</td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {volunteer.address}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleView(volunteer)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition"
-                      >
-                        <Eye className="h-4 w-4" />
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleEdit(volunteer)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                        Edit
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
@@ -188,31 +240,42 @@ function VolunteerList() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {displayedVolunteers.length > 0 ? (
-          displayedVolunteers.map((volunteer) => {
-            const isExpanded = expandedIds.has(volunteer.id);
+          displayedVolunteers.map((registration) => {
+            const user = registration.user || {};
+            const isExpanded = expandedIds.has(registration.id);
             return (
               <div
-                key={volunteer.id}
+                key={registration.id}
                 className="border border-gray-200 rounded-lg p-4 bg-white"
               >
                 {/* Summary Section */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 flex-shrink-0">
-                      {volunteer.initials}
-                    </div>
+                    {user.avatarUrl ? (
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.fullName}
+                        className="h-10 w-10 rounded-full flex-shrink-0 object-cover"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 flex-shrink-0">
+                        {getInitials(user.fullName)}
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-gray-900 truncate">
-                        {volunteer.name}
+                        {user.fullName || ""}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
-                        {volunteer.email}
+                        {user.email || ""}
                       </p>
-                      <p className="text-xs text-gray-400">{volunteer.id}</p>
+                      <p className="text-xs text-gray-400">
+                        {user.username || ""}
+                      </p>
                     </div>
                   </div>
                   <button
-                    onClick={() => toggleExpand(volunteer.id)}
+                    onClick={() => toggleExpand(registration.id)}
                     className="flex-shrink-0 p-1 rounded hover:bg-gray-100 transition"
                   >
                     {isExpanded ? (
@@ -227,31 +290,38 @@ function VolunteerList() {
                 {isExpanded && (
                   <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Age:</span>
+                      <span className="text-gray-500">Phone:</span>
                       <span className="text-gray-900 font-medium">
-                        {volunteer.age}
+                        {user.phoneNumber || ""}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Address:</span>
                       <span className="text-gray-900 font-medium text-right flex-1 ml-2">
-                        {volunteer.address}
+                        {user.address || ""}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Joined At:</span>
+                      <span className="text-gray-900 font-medium">
+                        {formatDate(registration.reviewedAt)}
                       </span>
                     </div>
                     <div className="flex gap-2 pt-2">
                       <button
-                        onClick={() => handleView(volunteer)}
+                        onClick={() => handleView(registration)}
                         className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-100 transition"
                       >
                         <Eye className="h-4 w-4" />
                         View
                       </button>
                       <button
-                        onClick={() => handleEdit(volunteer)}
-                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => handleDelete(registration)}
+                        disabled={isRemoving}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-red-300 px-3 py-2 text-xs font-medium bg-red-500 hover:bg-red-600 text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Edit3 className="h-4 w-4" />
-                        Edit
+                        <Trash className="h-4 w-4" />
+                        Delete
                       </button>
                     </div>
                   </div>

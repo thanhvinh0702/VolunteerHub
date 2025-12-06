@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Card from "../Card.jsx/Card";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { LogIn, Trash } from "lucide-react";
+import { LogIn, Trash, Calendar, MapPin, Building2 } from "lucide-react";
 
 function UpcomingCard({
   title,
@@ -34,9 +34,18 @@ function UpcomingCard({
           {/* DESKTOP INFO */}
           <div className="hidden sm:flex flex-col justify-center gap-1">
             <div className="font-semibold text-[18px]">{title}</div>
-            <div className="text-gray-600 text-sm">{organization}</div>
-            <div className="text-gray-600 text-sm">{date}</div>
-            <div className="text-gray-600 text-sm">{location}</div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Building2 size={16} className="flex-shrink-0" />
+              <span>{organization}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <Calendar size={16} className="flex-shrink-0" />
+              <span>{date}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm">
+              <MapPin size={16} className="flex-shrink-0" />
+              <span>{location}</span>
+            </div>
           </div>
 
           {/* MOBILE TITLE + CHEVRON */}

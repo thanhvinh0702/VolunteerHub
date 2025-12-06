@@ -1,4 +1,5 @@
 import { FiClock, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { Calendar, MapPin, Building2 } from "lucide-react";
 import Card from "../Card.jsx/Card";
 import React, { useState } from "react";
 
@@ -35,10 +36,20 @@ function AppliedCard({
             />
 
             {/* DESKTOP CONTENT */}
-            <div className="hidden sm:flex flex-col flex-1">
+            <div className="hidden sm:flex flex-col flex-1 gap-1">
               <div className="font-semibold text-[18px]">{title}</div>
-              <div className="text-gray-600">{organization}</div>
-              <div className="text-gray-600 text-[15px]">{date}</div>
+              <div className="flex items-center gap-2 text-gray-600 text-[15px]">
+                <Building2 size={16} className="flex-shrink-0" />
+                <span>{organization}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600 text-[15px]">
+                <Calendar size={16} className="flex-shrink-0" />
+                <span>{date}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600 text-[15px]">
+                <MapPin size={16} className="flex-shrink-0" />
+                <span>{location}</span>
+              </div>
             </div>
 
             {/* MOBILE TITLE + ARROW */}

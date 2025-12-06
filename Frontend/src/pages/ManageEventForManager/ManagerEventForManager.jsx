@@ -2,20 +2,13 @@ import React from "react";
 import ManagerDbHero from "../../components/ManageEventDb/ManagerDbHero";
 import Tabs from "../../components/Tabs.jsx/Tabs";
 import { Outlet, useParams } from "react-router-dom";
-
-const dump = {
-  id: 2,
-  thumbnail:
-    "https://th.bing.com/th/id/OIP.OJfse3bK8mEdtSh5qt9s5wHaE7?w=237&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3",
-  title: "Chiến dịch Marketing Mùa Đông ",
-  subtitle:
-    "Kế hoạch triển khai quảng cáo đa kênh và dự trù ngân sách quảng cáo.",
-  date: "2023-11-01",
-};
+import { useEventDetail } from "../../hook/useEvent";
 
 function ManagerEventForManager() {
   const { id } = useParams();
-  const { thumbnail, title, subtitle, date } = dump;
+
+  // Fetch event data once at parent level
+  const { data: eventData, isLoading, error } = useEventDetail(id);
 
   // Đổi thành relative paths (không có leading slash)
   const headerItems = [
@@ -37,23 +30,48 @@ function ManagerEventForManager() {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Loading event...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-red-500">Error loading event: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (!eventData) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Event not found</p>
+      </div>
+    );
+  }
+  console.log("Event Data in ManagerEventForManager:", eventData);
   return (
     <div className="flex flex-col gap-5">
       <div>
         <ManagerDbHero
-          thumbnail={thumbnail}
-          title={title}
-          subtitle={subtitle}
-          date={date}
+          thumbnail={eventData.imageUrl}
+          title={eventData.name}
+          subtitle={eventData.description}
+          status={eventData.status}
+          date={eventData.startTime}
         />
       </div>
       <div>
         <Tabs items={headerItems} variant="header" asLink />
       </div>
 
-      {/* Thay các div rỗng bằng Outlet để hiển thị nội dung theo tab */}
+      {/* Pass eventData to child routes via context */}
       <div className="mt-4">
-        <Outlet context={{ eventId: id }} />
+        <Outlet context={{ eventId: id, eventData }} />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 
-import { approveRegistration, checkUserParticipation, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, reviewRegistration, unregisterFromEvent } from "../services/registrationService";
+import { approveRegistration, checkUserParticipation, getAggregatedRegistrations, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, removeParticipant, reviewRegistration, unregisterFromEvent } from "../services/registrationService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +34,34 @@ export const useEventRegistrations = (params) => {
             });
         }
     }, [query.data, pageNum, pageSize, status, queryClient]);
+    return query;
+};
+
+export const useAggregatedRegistrations = (params) => {
+    const queryClient = useQueryClient();
+    const { pageNum = 0, pageSize = 10, status, eventName } = params || {};
+    const query = useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "aggregated", { pageNum, pageSize, status, eventName }],
+        queryFn: async () => {
+            const result = await getAggregatedRegistrations({ pageNum, pageSize, status, eventName });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...REGISTRAION_QUERY_KEY, "aggregated", { pageNum: nextPage, pageSize, status, eventName }],
+                queryFn: async () => {
+                    const result = await getAggregatedRegistrations({ pageNum: nextPage, pageSize, status, eventName });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, pageNum, pageSize, status, eventName, queryClient]);
     return query;
 };
 
@@ -147,6 +175,22 @@ export const useReviewRegistration = () => {
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to review registration";
+            toast.error(message);
+        },
+    });
+};
+
+export const useRemoveParticipant = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ eventId, participantId }) =>
+            removeParticipant(eventId, participantId),
+        onSuccess: () => {
+            toast.success("Participant removed successfully.");
+            queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
+        },
+        onError: (error) => {
+            const message = error?.response?.data?.message || error.message || "Failed to remove participant";
             toast.error(message);
         },
     });

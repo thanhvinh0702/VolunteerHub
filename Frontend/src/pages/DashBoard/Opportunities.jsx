@@ -3,12 +3,17 @@ import Tabs from "../../components/Tabs.jsx/Tabs";
 import UpcomingCard from "../../components/Dashboard/UpcomingCard";
 import AppliedCard from "../../components/Dashboard/AppliedCard";
 import CompleteCard from "../../components/Dashboard/CompleteCard";
-import { mockApiFetch } from "./dumpapi";
-import { useQueries } from "@tanstack/react-query";
+import { useAggregatedRegistrations } from "../../hook/useRegistration";
 import Pagination from "@mui/material/Pagination";
+import { formatDateTime } from "../../utils/date";
 
 const PAGE_SIZE = 4;
-const TABS = ["applied", "upcoming", "completed"];
+
+const STATUS_MAP = {
+  applied: "PENDING",
+  upcoming: "APPROVED",
+  completed: "COMPLETED",
+};
 
 const ComponentMap = {
   applied: AppliedCard,
@@ -18,30 +23,49 @@ const ComponentMap = {
 
 export default function Opportunities() {
   const [activeTab, setActiveTab] = React.useState("applied");
-  const [pageState, setPageState] = React.useState({
-    applied: 1,
-    upcoming: 1,
-    completed: 1,
+  const [appliedPageNum, setAppliedPageNum] = React.useState(0);
+  const [upcomingPageNum, setUpcomingPageNum] = React.useState(0);
+  const [completedPageNum, setCompletedPageNum] = React.useState(0);
+
+  // Separate hooks for each tab
+  const appliedQuery = useAggregatedRegistrations({
+    pageNum: appliedPageNum,
+    pageSize: PAGE_SIZE,
+    status: "PENDING",
   });
 
-  // Prefetch all 3 tabs in parallel
-  const queries = useQueries({
-    queries: TABS.map((tab) => ({
-      queryKey: ["opportunities", tab, pageState[tab]],
-      queryFn: () =>
-        mockApiFetch(`/api/opportunities/${tab}`, {
-          page: pageState[tab],
-          pageSize: PAGE_SIZE,
-        }),
-      staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-      refetchOnWindowFocus: false,
-    })),
+  const upcomingQuery = useAggregatedRegistrations({
+    pageNum: upcomingPageNum,
+    pageSize: PAGE_SIZE,
+    status: "APPROVED",
   });
 
-  // Get current tab's query result
-  const tabIndex = TABS.indexOf(activeTab);
-  const { data, isLoading } = queries[tabIndex];
+  const completedQuery = useAggregatedRegistrations({
+    pageNum: completedPageNum,
+    pageSize: PAGE_SIZE,
+    status: "COMPLETED",
+  });
 
+  // Get current tab's query
+  const queryMap = {
+    applied: appliedQuery,
+    upcoming: upcomingQuery,
+    completed: completedQuery,
+  };
+
+  const pageNumMap = {
+    applied: appliedPageNum,
+    upcoming: upcomingPageNum,
+    completed: completedPageNum,
+  };
+
+  const setPageNumMap = {
+    applied: setAppliedPageNum,
+    upcoming: setUpcomingPageNum,
+    completed: setCompletedPageNum,
+  };
+
+  const { data, isLoading } = queryMap[activeTab];
   const CardComponent = ComponentMap[activeTab];
 
   const handleTabChange = (key) => {
@@ -49,8 +73,60 @@ export default function Opportunities() {
   };
 
   const handlePageChange = (event, value) => {
-    setPageState((prev) => ({ ...prev, [activeTab]: value }));
+    setPageNumMap[activeTab](value - 1); // Convert to 0-based
   };
+
+  const formatCardData = (item) => {
+    const event = item.event || {};
+    const address = event.address || {};
+    const category = event.category || {};
+
+    // Format location
+    const locationParts = [
+      address.street,
+      address.district,
+      address.province,
+    ].filter(Boolean);
+    const location =
+      locationParts.length > 0 ? locationParts.join(", ") : "Chưa có địa chỉ";
+
+    // Format date - show full start and end datetime
+    let dateDisplay = "Chưa xác định";
+    if (event.startTime && event.endTime) {
+      const start = formatDateTime(event.startTime, { withTime: true });
+      const end = formatDateTime(event.endTime, { withTime: true });
+      dateDisplay = `${start} - ${end}`;
+    } else if (event.startTime) {
+      dateDisplay = formatDateTime(event.startTime, { withTime: true });
+    }
+
+    // Calculate hours if both start and end time exist
+    let hoursDisplay = "N/A";
+    if (event.startTime && event.endTime) {
+      const start = new Date(event.startTime);
+      const end = new Date(event.endTime);
+      const diffInHours = Math.abs(end - start) / (1000 * 60 * 60);
+      hoursDisplay = `${diffInHours.toFixed(1)} giờ`;
+    }
+
+    return {
+      id: item.id,
+      title: event.name || "Tên sự kiện",
+      organization: category.name || "Danh mục chưa có",
+      date: dateDisplay,
+      location: location,
+      status: item.status,
+      notes: item.note || event.description,
+      thumbnail: event.imageUrl,
+      hours: hoursDisplay,
+      statusApply: item.status,
+      // Pass full event data for cards that need it
+      event: event,
+      registration: item,
+    };
+  };
+
+  console.log("Opportunities data:", data);
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm gap-4 flex flex-col">
       <div>
@@ -69,18 +145,23 @@ export default function Opportunities() {
         />
         <div className="mt-6 p-2 flex gap-5 flex-col">
           {isLoading ? (
-            <div>Loading...</div>
-          ) : (
+            <div className="flex justify-center items-center py-10">
+              <div className="text-gray-500">Loading...</div>
+            </div>
+          ) : data?.data && data.data.length > 0 ? (
             <>
               <div key={activeTab} className="flex gap-5 flex-col">
-                {data?.items?.map((item) => (
-                  <CardComponent key={`${activeTab}-${item.id}`} {...item} />
+                {data.data.map((item) => (
+                  <CardComponent
+                    key={`${activeTab}-${item.id}`}
+                    {...formatCardData(item)}
+                  />
                 ))}
               </div>
               <div className="flex justify-center pt-2">
                 <Pagination
-                  count={data?.totalPages ?? 1}
-                  page={pageState[activeTab]}
+                  count={data?.meta?.totalPages ?? 1}
+                  page={pageNumMap[activeTab] + 1}
                   onChange={handlePageChange}
                   sx={{
                     "& .MuiPaginationItem-root": {
@@ -96,6 +177,26 @@ export default function Opportunities() {
                 />
               </div>
             </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+              <svg
+                className="w-16 h-16 mb-4 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <p className="text-lg font-medium">No events found</p>
+              <p className="text-sm mt-1">
+                You don't have any {activeTab} events yet
+              </p>
+            </div>
           )}
         </div>
       </div>
