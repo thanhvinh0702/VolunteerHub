@@ -1,18 +1,22 @@
 package com.volunteerhub.registrationservice.service;
 
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
+//import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;
 import com.volunteerhub.registrationservice.model.EventSnapshot;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -231,4 +235,21 @@ public class UserEventService {
         userEventRepository.delete(userEvent);
         return userEventMapper.toResponseDto(userEvent);
     }
+
+    public List<RegistrationResponse> getRegistrationsByEventIdsInternal(
+            String ownerId,
+            Long eventId,
+            UserEventStatus status,
+            Integer pageNum,
+            Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdAt").descending());
+
+        Page<UserEvent> pageResult = userEventRepository.findAllByOwnerId(ownerId, eventId, status, pageable);
+
+        return pageResult.getContent().stream()
+                .map(userEventMapper::toAggregatorDto)
+                .toList();
+    }
+
 }

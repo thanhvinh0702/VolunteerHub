@@ -49,4 +49,19 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
                                                 @Param("to") LocalDateTime to,
                                                 PageRequest pageRequest);
 
+    Page<UserEvent> findByEventIdInAndStatus(List<Long> eventIds, UserEventStatus status, Pageable pageable);
+
+    Page<UserEvent> findByEventIdIn(List<Long> eventIds, Pageable pageable);
+
+    @Query("SELECT ue FROM UserEvent ue " +
+            "JOIN ue.eventSnapshot es " +
+            "WHERE es.ownerId = :ownerId " +
+            "AND (:#{#eventId} IS NULL OR ue.eventId = :#{#eventId}) " +
+            "AND (:#{#status} IS NULL OR ue.status = :#{#status})")
+    Page<UserEvent> findAllByOwnerId(
+            @Param("ownerId") String ownerId,
+            @Param("eventId") Long eventId,
+            @Param("status") UserEventStatus status,
+            Pageable pageable
+    );
 }
