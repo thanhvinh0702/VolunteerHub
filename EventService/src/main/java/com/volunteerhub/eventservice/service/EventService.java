@@ -152,7 +152,8 @@ public class EventService {
             Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
             event.setAddress(address);
             event.setAddressId(address.getId());
-            updatedFields.put("address", address);
+            String addressString = address.getStreet() + ", " + address.getDistrict() + ", " + address.getProvince();
+            updatedFields.put("address", addressString);
         }
 
         if (eventRequest.getStartTime() != null) {
