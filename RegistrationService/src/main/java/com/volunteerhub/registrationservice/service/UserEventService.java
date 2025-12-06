@@ -231,4 +231,15 @@ public class UserEventService {
         userEventRepository.delete(userEvent);
         return userEventMapper.toResponseDto(userEvent);
     }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    public UserEventResponse managerDeleteUserEventRegistrationRequest(String ownerId, String userId, Long eventId) {
+        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
+        if (eventSnapshot.getOwnerId().equals(ownerId)) {
+            throw new AccessDeniedException("Insufficient permission to delete user's registration");
+        }
+        UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
+        userEventRepository.delete(userEvent);
+        return userEventMapper.toResponseDto(userEvent);
+    }
 }
