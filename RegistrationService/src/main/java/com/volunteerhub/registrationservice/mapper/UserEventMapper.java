@@ -7,7 +7,7 @@ import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMes
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
 import com.volunteerhub.registrationservice.dto.UserEventExport;
-import com.volunteerhub.registrationservice.dto.UserEventResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import org.springframework.stereotype.Component;
 

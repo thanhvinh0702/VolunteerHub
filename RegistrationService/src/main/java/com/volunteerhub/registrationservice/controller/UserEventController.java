@@ -6,7 +6,7 @@ import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
-import com.volunteerhub.registrationservice.dto.UserEventResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

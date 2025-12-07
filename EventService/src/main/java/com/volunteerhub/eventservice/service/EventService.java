@@ -5,7 +5,7 @@ import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.eventservice.dto.response.EventResponse;
+import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.io.IOException;
 
