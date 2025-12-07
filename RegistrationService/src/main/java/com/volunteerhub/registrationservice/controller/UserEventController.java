@@ -55,6 +55,12 @@ public class UserEventController {
         return userEventService.isParticipant(authentication.getName(), eventId);
     }
 
+    @GetMapping("/events/{eventId}/status")
+    public ResponseEntity<UserEventStatus> getStatus(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.getRegistrationStatus(authentication.getName(), eventId));
+    }
+
     @GetMapping("/events/registration-count")
     public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
                                                                                    @RequestParam(required = false) Integer pageNum,
@@ -78,6 +84,13 @@ public class UserEventController {
     public ResponseEntity<UserEventResponse> deleteUserEventRegister(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.deleteUserEventRegistrationRequest(authentication.getName(), eventId));
+    }
+
+    @DeleteMapping("/events/{eventId}/participants/{participantId}")
+    public ResponseEntity<UserEventResponse> managerDeleteUserEventRegister(@PathVariable Long eventId,
+                                                                            @PathVariable String participantId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.managerDeleteUserEventRegistrationRequest(authentication.getName(), participantId, eventId));
     }
 
     @PutMapping("/events/{eventId}/participants/{participantId}")
