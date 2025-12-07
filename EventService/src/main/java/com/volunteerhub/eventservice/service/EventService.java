@@ -71,8 +71,7 @@ public class EventService {
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
         Page<Event> events = eventRepository.findAll(
-                EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district,
-                        street),
+                EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street, null),
                 PageRequest.of(page, size, sort));
         List<EventResponse> dtoList = events.getContent()
                 .stream()
@@ -84,15 +83,17 @@ public class EventService {
                 events.getTotalElements());
     }
 
-    public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy,
-            String order) {
+    public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, EventStatus status,
+                                                 String categoryName, LocalDateTime startAfter, LocalDateTime endBefore,
+                                                 String province, String district, String street,
+                                                 String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
         Page<Event> events = eventRepository
-                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(),
-                        pageNumAndSizeResponse.getPageSize(), sort));
+                .findAll(EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street, userId),
+                         PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort));
         List<EventResponse> dtoList = events
                 .getContent()
                 .stream()

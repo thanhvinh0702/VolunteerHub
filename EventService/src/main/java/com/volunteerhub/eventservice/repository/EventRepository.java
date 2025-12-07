@@ -4,7 +4,6 @@ import com.volunteerhub.common.enums.EventStatus;
 import com.volunteerhub.eventservice.model.Event;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +16,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     @EntityGraph(attributePaths = { "category", "address" })
     List<Event> findByIdIn(List<Long> ids);
-
-    @EntityGraph(attributePaths = { "category", "address" })
-    Page<Event> findAllByOwnerId(String ownerId, PageRequest pageRequest);
 
     @Query(value = "SELECT * FROM event e " +
             "WHERE e.name ~* :keyword OR e.description ~* :keyword", countQuery = "SELECT COUNT(*) FROM event e " +

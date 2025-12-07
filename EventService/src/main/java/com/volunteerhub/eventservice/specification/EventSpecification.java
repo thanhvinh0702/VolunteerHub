@@ -18,7 +18,8 @@ public class EventSpecification {
             LocalDateTime endBefore,
             String province,
             String district,
-            String street
+            String street,
+            String ownerId
     ) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
@@ -78,6 +79,11 @@ public class EventSpecification {
             if (endBefore != null) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.lessThanOrEqualTo(root.get("endTime"), endBefore));
+            }
+
+            if (ownerId != null) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("ownerId"), ownerId));
             }
 
             return predicate;
