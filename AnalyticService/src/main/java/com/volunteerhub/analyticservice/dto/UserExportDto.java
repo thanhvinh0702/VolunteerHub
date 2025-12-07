@@ -12,6 +12,5 @@ public record UserExportDto(
         String provider,
         String dateOfBirth,
         Integer totalEvents,
-        Integer badgeCount,
         String joinedDate
 ) {}

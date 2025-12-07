@@ -12,6 +12,5 @@ public record EventExportDto(
         String fullAddress,
         String startTime,
         String endTime,
-        Integer capacity,
-        Integer badgeCount
+        Integer capacity
 ) {}

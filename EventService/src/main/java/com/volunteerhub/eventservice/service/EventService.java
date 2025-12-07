@@ -265,10 +265,10 @@ public class EventService {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public Long countEvents() {
-        return eventRepository.countEvents();
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public Long countEvents() {
+//        return eventRepository.countEvents();
+//    }
 
     // Trong EventService hoặc Mapper
     public EventResponseCSV convertToExportData(Event event) {

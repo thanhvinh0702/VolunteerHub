@@ -21,7 +21,7 @@ public class ExportService {
     public ByteArrayInputStream exportUsersToCSV(List<UserExportDto> users) {
         String[] HEADERS = {
                 "ID", "Name", "Email", "DOB", "Role", "Status",
-                "Provider", "Total Events", "Badge Count", "Badges List", "Joined Date"
+                "Provider", "Total Events", "Joined Date"
         };
 
         return createCSV(HEADERS, (printer) -> {
@@ -35,7 +35,6 @@ public class ExportService {
                         user.status(),
                         user.provider(),
                         user.totalEvents(),
-                        user.badgeCount(),
                         user.joinedDate()
                 );
             }
@@ -46,7 +45,7 @@ public class ExportService {
         String[] HEADERS = {
                 "ID", "Name", "Owner ID", "Status",
                 "Category", "Address", "Start Time", "End Time",
-                "Capacity", "Badge Count"
+                "Capacity",
         };
 
         return createCSV(HEADERS, (printer) -> {
@@ -60,8 +59,7 @@ public class ExportService {
                         event.fullAddress(),
                         event.startTime(),
                         event.endTime(),
-                        event.capacity(),
-                        event.badgeCount()
+                        event.capacity()
                 );
             }
         });

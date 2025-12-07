@@ -101,10 +101,10 @@ public class EventController {
             return ResponseEntity.ok(eventService.searchByKeyword(keyword, pageNum, pageSize));
     }
 
-    @GetMapping("/stats/count")
-    public ResponseEntity<Long> countEvents() {
-        return ResponseEntity.ok(eventService.countEvents());
-    }
+//    @GetMapping("/stats/count")
+//    public ResponseEntity<Long> countEvents() {
+//        return ResponseEntity.ok(eventService.countEvents());
+//    }
 
     @GetMapping("/export-list")
     public ResponseEntity<List<EventResponseCSV>> getExportList() {
