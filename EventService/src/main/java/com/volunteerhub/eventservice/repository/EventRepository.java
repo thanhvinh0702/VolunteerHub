@@ -22,8 +22,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @EntityGraph(attributePaths = {"category", "address"})
     Page<Event> findAllByOwnerId(String ownerId, PageRequest pageRequest);
 
-    @Query(value = "SELECT * FROM events e WHERE " +
-            "e.name REGEXP :keyword OR e.description REGEXP :keyword",
-            nativeQuery = true)
+    @Query(
+            value = "SELECT * FROM event e " +
+                    "WHERE e.name ~* :keyword OR e.description ~* :keyword",
+            countQuery = "SELECT COUNT(*) FROM event e " +
+                    "WHERE e.name ~* :keyword OR e.description ~* :keyword",
+            nativeQuery = true
+    )
     Page<Event> searchEventsByRegex(@Param("keyword") String keyword, Pageable pageable);
+
 }
