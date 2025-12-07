@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -23,18 +24,40 @@ public class EventAggregatorController {
     public ResponseEntity<PageResponse<AggregatedEventResponse>> getAllAggregatedEvents(@RequestParam(required = false) Integer pageNum,
                                                                                         @RequestParam(required = false) Integer pageSize,
                                                                                         @RequestParam(required = false) EventStatus status,
+                                                                                        @RequestParam(required = false) String category,
+                                                                                        @RequestParam(required = false) LocalDateTime startAfter,
+                                                                                        @RequestParam(required = false) LocalDateTime endBefore,
+                                                                                        @RequestParam(required = false) String province,
+                                                                                        @RequestParam(required = false) String district,
+                                                                                        @RequestParam(required = false) String street,
                                                                                         @RequestParam(defaultValue = "id") String sortedBy,
                                                                                         @RequestParam(defaultValue = "desc") String order) {
-        return ResponseEntity.ok(eventAggregatorService.getAggregatedEvents(pageNum, pageSize, status, sortedBy, order));
+        return ResponseEntity.ok(eventAggregatorService.getAggregatedEvents(
+                pageNum, pageSize, status,
+                category, startAfter, endBefore,
+                province, district, street,
+                sortedBy, order
+        ));
     }
 
     @GetMapping("/owned")
     public ResponseEntity<PageResponse<AggregatedEventResponse>> getAllAggregatedOwnedEvents(@RequestParam(required = false) Integer pageNum,
-                                                                                     @RequestParam(required = false) Integer pageSize,
-                                                                                     @RequestParam(required = false) EventStatus status,
-                                                                                     @RequestParam(defaultValue = "id") String sortedBy,
-                                                                                     @RequestParam(defaultValue = "desc") String order) {
-        return ResponseEntity.ok(eventAggregatorService.getAggregatedOwnedEvents(pageNum, pageSize, status, sortedBy, order));
+                                                                                             @RequestParam(required = false) Integer pageSize,
+                                                                                             @RequestParam(required = false) EventStatus status,
+                                                                                             @RequestParam(required = false) String category,
+                                                                                             @RequestParam(required = false) LocalDateTime startAfter,
+                                                                                             @RequestParam(required = false) LocalDateTime endBefore,
+                                                                                             @RequestParam(required = false) String province,
+                                                                                             @RequestParam(required = false) String district,
+                                                                                             @RequestParam(required = false) String street,
+                                                                                             @RequestParam(defaultValue = "id") String sortedBy,
+                                                                                             @RequestParam(defaultValue = "desc") String order) {
+        return ResponseEntity.ok(eventAggregatorService.getAggregatedOwnedEvents(
+                pageNum, pageSize, status,
+                category, startAfter, endBefore,
+                province, district, street,
+                sortedBy, order
+        ));
     }
 
     // TODO: pagination metadata, total comments, posts, reaction, maybe need standalone service for trending computing

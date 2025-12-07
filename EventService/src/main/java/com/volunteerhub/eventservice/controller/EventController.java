@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -31,9 +32,18 @@ public class EventController {
     public ResponseEntity<Page<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
                                                             @RequestParam(required = false) EventStatus status,
+                                                            @RequestParam(required = false) String category,
+                                                            @RequestParam(required = false) LocalDateTime startAfter,
+                                                            @RequestParam(required = false) LocalDateTime endBefore,
+                                                            @RequestParam(required = false) String province,
+                                                            @RequestParam(required = false) String district,
+                                                            @RequestParam(required = false) String street,
                                                             @RequestParam(defaultValue = "id") String sortedBy,
                                                             @RequestParam(defaultValue = "desc") String order)  {
-        return ResponseEntity.ok(eventService.findAll(pageNum, pageSize, status, sortedBy, order));
+        return ResponseEntity.ok(eventService.findAll(
+                pageNum, pageSize, status, category,
+                startAfter, endBefore, province, district,
+                street, sortedBy, order));
     }
 
     @GetMapping("/by-ids")

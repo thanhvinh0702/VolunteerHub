@@ -12,6 +12,7 @@ import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.eventservice.publisher.EventPublisher;
 import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
+import com.volunteerhub.eventservice.specification.EventSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -52,29 +54,19 @@ public class EventService {
                 .map(eventMapper::toDto).toList();
     }
 
-    public Page<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+    public Page<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status,
+                                       String categoryName, LocalDateTime startAfter, LocalDateTime endBefore,
+                                       String province, String district, String street,
+                                       String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
-        if (status != null) {
-            Page<Event> events = eventRepository.findByStatus(status, PageRequest.of(page, size));
-
-            List<EventResponse> dtoList = events.getContent()
-                    .stream()
-                    .map(eventMapper::toDto)
-                    .toList();
-
-            return new PageImpl<>(
-                    dtoList,
-                    events.getPageable(),
-                    events.getTotalElements()
-            );
-        }
 
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
-        Page<Event> events = eventRepository.findAll(PageRequest.of(page, size, sort));
+        Page<Event> events = eventRepository.findAll(EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street),
+                PageRequest.of(page, size, sort));
         List<EventResponse> dtoList = events.getContent()
                 .stream()
                 .map(eventMapper::toDto)

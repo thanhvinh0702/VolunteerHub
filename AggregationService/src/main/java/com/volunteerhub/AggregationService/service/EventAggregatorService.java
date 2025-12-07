@@ -10,6 +10,7 @@ import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +25,29 @@ public class EventAggregatorService {
     private final RegistrationClient registrationClient;
     private final UserClient userClient;
 
-    public PageResponse<AggregatedEventResponse> getAggregatedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
-        PageResponse<EventResponse> events = eventClient.getAllEvents(pageNum, pageSize, status, sortedBy, order);
+    public PageResponse<AggregatedEventResponse> getAggregatedEvents(
+            Integer pageNum, Integer pageSize, EventStatus status,
+            String category, LocalDateTime startAfter, LocalDateTime endBefore,
+            String province, String district, String street,
+            String sortedBy, String order
+    ) {
+        PageResponse<EventResponse> events = eventClient.getAllEvents(
+                pageNum, pageSize, status, category, startAfter, endBefore,
+                province, district, street, sortedBy, order
+        );
         return enrichEventsPage(events);
     }
 
-    public PageResponse<AggregatedEventResponse> getAggregatedOwnedEvents(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
-        PageResponse<EventResponse> events = eventClient.getAllOwnedEvents(pageNum, pageSize, status, sortedBy, order);
+    public PageResponse<AggregatedEventResponse> getAggregatedOwnedEvents(
+            Integer pageNum, Integer pageSize, EventStatus status,
+            String category, LocalDateTime startAfter, LocalDateTime endBefore,
+            String province, String district, String street,
+            String sortedBy, String order
+    ) {
+        PageResponse<EventResponse> events = eventClient.getAllOwnedEvents(
+                pageNum, pageSize, status, category, startAfter, endBefore,
+                province, district, street, sortedBy, order
+        );
         return enrichEventsPage(events);
     }
 

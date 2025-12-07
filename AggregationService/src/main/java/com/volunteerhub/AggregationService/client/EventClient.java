@@ -8,6 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @FeignClient(name = "EVENTSERVICE", configuration = FeignConfig.class)
@@ -17,15 +18,27 @@ public interface EventClient {
     PageResponse<EventResponse> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                              @RequestParam(required = false) Integer pageSize,
                                              @RequestParam(required = false) EventStatus status,
+                                             @RequestParam(required = false) String category,
+                                             @RequestParam(required = false) LocalDateTime startAfter,
+                                             @RequestParam(required = false) LocalDateTime endBefore,
+                                             @RequestParam(required = false) String province,
+                                             @RequestParam(required = false) String district,
+                                             @RequestParam(required = false) String street,
                                              @RequestParam(defaultValue = "id") String sortedBy,
                                              @RequestParam(defaultValue = "desc") String order);
 
     @GetMapping("/api/v1/events/owned")
     PageResponse<EventResponse> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
-                                          @RequestParam(required = false) Integer pageSize,
-                                          @RequestParam(required = false) EventStatus status,
-                                          @RequestParam(defaultValue = "id") String sortedBy,
-                                          @RequestParam(defaultValue = "desc") String order);
+                                                  @RequestParam(required = false) Integer pageSize,
+                                                  @RequestParam(required = false) EventStatus status,
+                                                  @RequestParam(required = false) String category,
+                                                  @RequestParam(required = false) LocalDateTime startAfter,
+                                                  @RequestParam(required = false) LocalDateTime endBefore,
+                                                  @RequestParam(required = false) String province,
+                                                  @RequestParam(required = false) String district,
+                                                  @RequestParam(required = false) String street,
+                                                  @RequestParam(defaultValue = "id") String sortedBy,
+                                                  @RequestParam(defaultValue = "desc") String order);
 
     @GetMapping("/api/v1/events/by-ids")
     List<EventResponse> getAllEventsByIds(@RequestParam List<Long> eventIds);
