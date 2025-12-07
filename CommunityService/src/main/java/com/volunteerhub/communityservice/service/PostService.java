@@ -12,6 +12,7 @@ import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -69,9 +70,10 @@ public class PostService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(#eventId)")
-    public List<PostResponse> findByEventId(Long eventId, Integer pageNum, Integer pageSize) {
+    public List<PostResponse> findByEventId(Long eventId, String sortedBy, String order, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
-        return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
+        Sort sort = order.equals("desc") ? Sort.by(sortedBy).descending() : Sort.by(sortedBy).ascending();
+        return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize(), sort))
                 .getContent()
                 .stream()
                 .map(p -> {
