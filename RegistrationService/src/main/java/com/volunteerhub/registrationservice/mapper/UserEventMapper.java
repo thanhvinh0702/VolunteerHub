@@ -1,5 +1,6 @@
 package com.volunteerhub.registrationservice.mapper;
 
+import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
@@ -65,6 +66,18 @@ public class UserEventMapper {
                 .status(userEvent.getStatus())
                 .note(userEvent.getNote())
                 .completedAt(userEvent.getCompletedAt())
+                .build();
+    }
+    public RegistrationResponse toAggregatorDto(UserEvent userEvent) {
+        if (userEvent == null) return null;
+
+        return RegistrationResponse.builder()
+                .id(userEvent.getId())
+                .userId(userEvent.getUserId())
+                .eventId(userEvent.getEventId())
+                .status(userEvent.getStatus())
+                .createdAt(userEvent.getCreatedAt())
+                .updatedAt(userEvent.getUpdatedAt())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.volunteerhub.registrationservice.controller;
 
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
@@ -97,5 +98,17 @@ public class UserEventController {
                 eventId,
                 userEventRequest)
         );
+    }
+
+    @GetMapping("/internal/manager")
+    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByOwnerId(
+            @RequestParam(value = "eventId", required = false) Long eventId,
+            @RequestParam(required = false) UserEventStatus status,
+            @RequestParam(defaultValue = "0") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerId = authentication.getName();
+        return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(ownerId, eventId, status, pageNum, pageSize));
     }
 }
