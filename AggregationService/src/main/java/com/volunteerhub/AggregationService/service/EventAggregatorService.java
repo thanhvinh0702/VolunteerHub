@@ -51,6 +51,21 @@ public class EventAggregatorService {
         return enrichEventsPage(events);
     }
 
+    public AggregatedEventResponse getAggregatedEventById(Long eventId) {
+        EventResponse eventResponse = eventClient.getEventById(eventId);
+        UserResponse userResponse = userClient.findById(eventResponse.getOwnerId());
+        EventRegistrationCount totalCounts = registrationClient.getEventsParticipantCounts(List.of(eventId), null, null, null)
+                .stream()
+                .findFirst()
+                .orElse(EventRegistrationCount.builder().eventId(eventId).registrationCount(0L).participantCount(0L).build());
+        return AggregatedEventResponse.builder()
+                .eventResponse(eventResponse)
+                .owner(userResponse)
+                .registrationCount(totalCounts.getRegistrationCount())
+                .participantCount(totalCounts.getParticipantCount())
+                .build();
+    }
+
     public PageResponse<AggregatedEventResponse> searchAggregatedEvents(String keyword, Integer pageNum, Integer pageSize) {
         PageResponse<EventResponse> events = eventClient.searchEvents(keyword, pageNum, pageSize);
         return enrichEventsPage(events);

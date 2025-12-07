@@ -6,15 +6,16 @@ import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@FeignClient(name = "EVENTSERVICE", configuration = FeignConfig.class)
+@FeignClient(name = "EVENTSERVICE", path = "/api/v1/events", configuration = FeignConfig.class)
 public interface EventClient {
 
-    @GetMapping("/api/v1/events")
+    @GetMapping
     PageResponse<EventResponse> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                              @RequestParam(required = false) Integer pageSize,
                                              @RequestParam(required = false) EventStatus status,
@@ -27,7 +28,7 @@ public interface EventClient {
                                              @RequestParam(defaultValue = "id") String sortedBy,
                                              @RequestParam(defaultValue = "desc") String order);
 
-    @GetMapping("/api/v1/events/owned")
+    @GetMapping("/owned")
     PageResponse<EventResponse> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                   @RequestParam(required = false) Integer pageSize,
                                                   @RequestParam(required = false) EventStatus status,
@@ -40,10 +41,13 @@ public interface EventClient {
                                                   @RequestParam(defaultValue = "id") String sortedBy,
                                                   @RequestParam(defaultValue = "desc") String order);
 
-    @GetMapping("/api/v1/events/by-ids")
+    @GetMapping("/{eventId}")
+    EventResponse getEventById(@PathVariable Long eventId);
+
+    @GetMapping("/by-ids")
     List<EventResponse> getAllEventsByIds(@RequestParam List<Long> eventIds);
 
-    @GetMapping("/api/v1/events/search")
+    @GetMapping("/search")
     PageResponse<EventResponse> searchEvents(@RequestParam("keyword") String keyword,
                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                      @RequestParam(value = "pageSize", required = false) Integer pageSize);

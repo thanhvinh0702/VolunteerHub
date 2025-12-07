@@ -40,6 +40,11 @@ public class EventAggregatorController {
         ));
     }
 
+    @GetMapping("/{eventId}")
+    public ResponseEntity<AggregatedEventResponse> getAggregatedEventById(@PathVariable Long eventId) {
+        return ResponseEntity.ok(eventAggregatorService.getAggregatedEventById(eventId));
+    }
+
     @GetMapping("/owned")
     public ResponseEntity<PageResponse<AggregatedEventResponse>> getAllAggregatedOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                                                              @RequestParam(required = false) Integer pageSize,
