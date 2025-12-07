@@ -1,5 +1,8 @@
 package com.volunteerhub.registrationservice.service;
 
+import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.RegistrationResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
@@ -13,7 +16,10 @@ import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
 import com.volunteerhub.registrationservice.repository.EventSnapshotRepository;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -32,6 +38,7 @@ public class UserEventService {
     private final EventSnapshotService eventSnapshotService;
     private final UserEventMapper userEventMapper;
     private final RegistrationPublisher registrationPublisher;
+
     public UserEvent findEntityByUserIdAndEventId(String userId, Long eventId) {
         return userEventRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() ->
                 new NoSuchElementException("User-event registration with user id " + userId + " and event id " + eventId + " does not exits"));
@@ -41,8 +48,74 @@ public class UserEventService {
         return userEventRepository.countByEventIdAndStatus(eventId, UserEventStatus.APPROVED);
     }
 
-    public Long getCurrentRegistrationCount(Long eventId) {
-        return userEventRepository.countByEventId(eventId);
+    public List<EventRegistrationCount> getEventsParticipantCount(List<Long> eventIds) {
+        List<Object[]> registrationCountRows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.APPROVED);
+        List<Object[]> participantCountRows = userEventRepository.getEventRegistrationCount(eventIds, UserEventStatus.PENDING);
+        Map<Long, EventRegistrationCount> map = new HashMap<>();
+        for (Object[] row : registrationCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.put(eventId, EventRegistrationCount.builder()
+                    .eventId(eventId)
+                    .registrationCount(count)
+                    .participantCount(0L)
+                    .build());
+        }
+        for (Object[] row : participantCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.compute(eventId, (id, dto) -> {
+                if (dto == null) {
+                    return EventRegistrationCount.builder()
+                            .eventId(eventId)
+                            .registrationCount(0L)
+                            .participantCount(count)
+                            .build();
+                } else {
+                    dto.setParticipantCount(count);
+                    return dto;
+                }
+            });
+        }
+        return new ArrayList<>(map.values());
+    }
+
+    public List<EventRegistrationCount> getAllEventsParticipantCount(Integer pageNum, Integer pageSize, LocalDateTime from, LocalDateTime to) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        PageRequest pageRequest = PageRequest.of(
+                pageNumAndSizeResponse.getPageNum(),
+                pageNumAndSizeResponse.getPageSize(),
+                Sort.by("statusCount").descending()
+        );
+        List<Object[]> registrationCountRows = userEventRepository.getAllEventRegistrationCount(UserEventStatus.APPROVED, from, to, pageRequest);
+        List<Object[]> participantCountRows = userEventRepository.getAllEventRegistrationCount(UserEventStatus.PENDING, from, to, pageRequest);
+        Map<Long, EventRegistrationCount> map = new HashMap<>();
+        for (Object[] row : registrationCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.put(eventId, EventRegistrationCount.builder()
+                    .eventId(eventId)
+                    .registrationCount(count)
+                    .participantCount(0L)
+                    .build());
+        }
+        for (Object[] row : participantCountRows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.compute(eventId, (id, dto) -> {
+                if (dto == null) {
+                    return EventRegistrationCount.builder()
+                            .eventId(eventId)
+                            .registrationCount(0L)
+                            .participantCount(count)
+                            .build();
+                } else {
+                    dto.setParticipantCount(count);
+                    return dto;
+                }
+            });
+        }
+        return new ArrayList<>(map.values());
     }
 
     public List<UserEventResponse> findByUserId(String userId, UserEventStatus status, Integer pageNum, Integer pageSize) {
@@ -82,6 +155,12 @@ public class UserEventService {
                 .toList();
     }
 
+    public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        return userEventRepository.findAllUserIdsByEventId(eventId,
+                        PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
+    }
+
     @PreAuthorize("hasRole('SYSTEM')")
     public List<String> findUserIdsByEventId(Long eventId) {
         return userEventRepository.findAllUserIdsByEventId(eventId);
@@ -101,6 +180,7 @@ public class UserEventService {
         UserEvent userEvent = UserEvent.builder()
                 .userId(userId)
                 .eventId(eventId)
+                .eventSnapshot(eventSnapshot)
                 .build();
         UserEvent savedUserEvent = userEventRepository.save(userEvent);
         registrationPublisher.publishEvent(userEventMapper.toCreatedMessage(userEvent, eventSnapshot.getOwnerId()));
@@ -147,7 +227,6 @@ public class UserEventService {
         userEvent.setStatus(UserEventStatus.REJECTED);
         userEvent.setNote(note);
         userEvent.setReviewedAt(LocalDateTime.now());
-
     }
 
     private void completeUserEvent(UserEvent userEvent, String note) {
@@ -158,12 +237,26 @@ public class UserEventService {
 
     public UserEventResponse deleteUserEventRegistrationRequest(String userId, Long eventId) {
         UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
-        EventSnapshot tmp = eventSnapshotRepository.findById(eventId)
-                .orElseThrow(() -> new NoSuchElementException("Event not found"));
         userEventRepository.delete(userEvent);
-
         return userEventMapper.toResponseDto(userEvent);
     }
+
+    public List<RegistrationResponse> getRegistrationsByEventIdsInternal(
+            String ownerId,
+            Long eventId,
+            UserEventStatus status,
+            Integer pageNum,
+            Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdAt").descending());
+
+        Page<UserEvent> pageResult = userEventRepository.findAllByOwnerId(ownerId, eventId, status, pageable);
+
+        return pageResult.getContent().stream()
+                .map(userEventMapper::toAggregatorDto)
+                .toList();
+    }
+
 
     public Long getApplicationRate(String ownerId) {
         long totalApps = userEventRepository.countApplicationsByOwnerId(ownerId);

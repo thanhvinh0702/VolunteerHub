@@ -5,10 +5,12 @@ import com.volunteerhub.registrationservice.model.UserEvent;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +25,46 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     Page<UserEvent> findByEventIdAndStatus(Long eventId, UserEventStatus status, PageRequest pageRequest);
     Long countByEventIdAndStatus(Long eventId, UserEventStatus status);
     Long countByEventId(Long eventId);
+
     @Query("SELECT ue.userId FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN ('APPROVED', 'COMPLETED')")
     List<String> findAllUserIdsByEventId(@Param("eventId") Long eventId);
+
+    @Query("SELECT ue.userId FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN ('APPROVED', 'COMPLETED')")
+    List<String> findAllUserIdsByEventId(@Param("eventId") Long eventId, PageRequest pageRequest);
+
+    @Query("SELECT ue.eventId AS eventId, COUNT(ue) AS statusCount " +
+            "FROM UserEvent ue " +
+            "WHERE ue.status = :status AND ue.eventId IN :eventIds " +
+            "GROUP BY ue.eventId")
+    List<Object[]> getEventRegistrationCount(@Param("eventIds") List<Long> eventIds,
+                                             @Param("status") UserEventStatus status);
+
+    @Query("SELECT ue.eventId AS eventId, COUNT(ue) AS statusCount " +
+            "FROM UserEvent ue " +
+            "WHERE ue.status = :status " +
+            "AND ue.createdAt >= COALESCE(:from, ue.createdAt) " +
+            "AND ue.createdAt <= COALESCE(:to, ue.createdAt) " +
+            "GROUP BY ue.eventId")
+    List<Object[]> getAllEventRegistrationCount(@Param("status") UserEventStatus status,
+                                                @Param("from") LocalDateTime from,
+                                                @Param("to") LocalDateTime to,
+                                                PageRequest pageRequest);
+
+    Page<UserEvent> findByEventIdInAndStatus(List<Long> eventIds, UserEventStatus status, Pageable pageable);
+
+    Page<UserEvent> findByEventIdIn(List<Long> eventIds, Pageable pageable);
+
+    @Query("SELECT ue FROM UserEvent ue " +
+            "JOIN ue.eventSnapshot es " +
+            "WHERE es.ownerId = :ownerId " +
+            "AND (:#{#eventId} IS NULL OR ue.eventId = :#{#eventId}) " +
+            "AND (:#{#status} IS NULL OR ue.status = :#{#status})")
+    Page<UserEvent> findAllByOwnerId(
+            @Param("ownerId") String ownerId,
+            @Param("eventId") Long eventId,
+            @Param("status") UserEventStatus status,
+            Pageable pageable
+    );
 
     @Query("SELECT ue FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN :statuses")
     List<UserEvent> findAllByEventIdAndStatus(

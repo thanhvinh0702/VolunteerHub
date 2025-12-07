@@ -1,5 +1,11 @@
 package com.volunteerhub.userservice.service;
 
+import com.volunteerhub.common.dto.UserResponse;
+import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.utils.PageNumAndSizeResponse;
+import com.volunteerhub.common.utils.PaginationValidation;
+import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.enums.UserStatus;
 import com.volunteerhub.userservice.dto.request.UserRequest;
@@ -11,8 +17,6 @@ import com.volunteerhub.userservice.model.Status;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,17 +27,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
 
     private final AddressService addressService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     public User findById(String id) {
+    private final UserMapper userMapper;
+
+    public User findEntityById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
     }
@@ -46,8 +53,24 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new NoSuchElementException("No such user with email " + email));
+    public UserResponse findById(String id) {
+        return userMapper.toResponse(this.findEntityById(id));
     }
 
+    public List<UserResponse> findAllByIds(List<String> userIds) {
+        return userRepository.findAllByIds(userIds).stream().map(userMapper::toResponse).toList();
+    }
+
+    public UserResponse findByEmail(String email) {
+        return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("No such user with email " + email)));
+    }
+
+    public List<UserResponse> findAll(Integer page, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(page, pageSize);
+        return userRepository.findAll(PageRequest.of(pageNumAndSizeResponse.getPageNum(),
+                pageNumAndSizeResponse.getPageSize())).getContent().stream()
+                .map(userMapper::toResponse).toList();
     public List<UserResponse> findAll(Integer page, Integer pageSize) {
         if (page == null || pageSize == null) {
             return userRepository.findAll().stream()
@@ -63,7 +86,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<String> findAllIds(Role role) {
+    public List<String> findAllIds(UserRole role) {
         return userRepository.findAllIdsByRole(role);
     }
 
@@ -72,6 +95,7 @@ public class UserService {
         // 1. Xử lý Address trước
         Address address = null;
         Long addressId = null;
+
         if (userRequest.getAddress() != null) {
             address = addressService.findOrCreateAddress(userRequest.getAddress());
             addressId = address.getId();
@@ -116,6 +140,12 @@ public class UserService {
             existingUser.setAddressId(address.getId());
         }
 
+        if (userRequest.isDarkMode()) {
+            existedUser.setDarkMode(true);
+        } else {
+            existedUser.setDarkMode(false);
+        }
+        return userMapper.toResponse(userRepository.save(existedUser));
         User savedUser = userRepository.save(existingUser);
         return userMapper.toResponse(savedUser);
     }

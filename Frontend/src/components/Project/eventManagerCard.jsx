@@ -7,14 +7,31 @@ import {
   canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
 import { useNavigate } from "react-router-dom";
+import { useDeleteEvent } from "../../hook/useEvent";
 function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
   const navigate = useNavigate();
-  const { id, title, category, date, location, status, registered, capacity } =
-    data;
+
+  // Map API data to component props
+  const {
+    id,
+    name: title,
+    category,
+    address,
+    startTime,
+    endTime,
+    status,
+    capacity,
+  } = data;
+  const deleteEventMutation = useDeleteEvent();
+
+  // Hardcode registered volunteers since not in API
+  const registered = Math.floor(Math.random() * capacity);
+
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isCancelling, setIsCancelling] = useState(false);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     const d = new Date(dateString);
     return d.toLocaleDateString("en-US", {
       month: "numeric",
@@ -24,6 +41,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
   };
 
   const formatTime = (dateString) => {
+    if (!dateString) return "N/A";
     const d = new Date(dateString);
     return d.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -56,7 +74,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
       await onCancelEvent?.(id);
 
       // Success
-      console.log(`✅ Event cancelled successfully`);
+      console.log(`Event cancelled successfully`);
       // TODO: Show success toast
     } catch (error) {
       // Error - rollback
@@ -72,13 +90,37 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
     return Math.round((registered / capacity) * 100);
   };
 
+  const handleDeleteEvent = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteEventMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+  };
+
+  const handleViewEvent = () => {
+    navigate(`/dashboard/eventmanager/${id}/overview`);
+  };
+
+  const handleEditEvent = () => {
+    navigate(`/dashboard/eventmanager/${id}/overview`);
+  };
+
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
       {/* Event Name & Category */}
       <td className="px-6 py-4">
         <div className="flex flex-col">
           <span className="font-semibold text-gray-900">{title}</span>
-          <span className="text-sm text-gray-500">{category}</span>
+          <span className="text-sm text-gray-500">
+            {category?.name || "N/A"}
+          </span>
         </div>
       </td>
 
@@ -87,11 +129,13 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
         <div className="flex flex-col text-sm">
           <div className="flex items-center gap-1 text-gray-700">
             <i className="ri-calendar-line"></i>
-            <span>{formatDate(date)}</span>
+            <span>{formatDate(startTime)}</span>
           </div>
           <div className="flex items-center gap-1 text-gray-500">
             <i className="ri-time-line"></i>
-            <span>{formatTime(date)}</span>
+            <span>
+              {formatTime(startTime)} - {formatTime(endTime)}
+            </span>
           </div>
         </div>
       </td>
@@ -100,7 +144,11 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
       <td className="px-6 py-4">
         <div className="flex items-center gap-2 text-sm text-gray-700">
           <i className="ri-map-pin-fill text-gray-400"></i>
-          <span className="max-w-[150px] truncate">{location}</span>
+          <span className="max-w-[150px] truncate">
+            {address
+              ? `${address.street}, ${address.district}, ${address.province}`
+              : "N/A"}
+          </span>
         </div>
       </td>
 
@@ -204,11 +252,35 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
             <Eye className="w-4 h-4 text-gray-600" />
           </button>
           <button
-            onClick={() => onDelete?.(id)}
-            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+            onClick={handleDeleteEvent}
+            className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Delete"
+            disabled={deleteEventMutation.isPending}
           >
-            <Trash2 className="w-4 h-4 text-red-500" />
+            {deleteEventMutation.isPending ? (
+              <svg
+                className="animate-spin h-4 w-4 text-red-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              <Trash2 className="w-4 h-4 text-red-500" />
+            )}
           </button>
         </div>
       </td>

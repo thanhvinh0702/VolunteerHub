@@ -19,11 +19,14 @@ const categoryOptions = [
 const eventSchema = yup.object({
   name: yup.string().trim().required("Event title is required."),
   description: yup.string().trim().required("Description is required."),
-  imageUrl: yup
-    .string()
-    .url("Image URL must be valid.")
+  imageFile: yup
+    .mixed()
     .nullable()
-    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .test("fileType", "Only image files are allowed", (value) => {
+      if (!value || value.length === 0) return true;
+      const file = value[0];
+      return file && file.type.startsWith("image/");
+    })
     .notRequired(),
   categoryName: yup.string().required("Please select a category."),
   startTime: yup.string().required("Start time is required."),
@@ -56,7 +59,7 @@ const eventSchema = yup.object({
     .transform((value, originalValue) => (originalValue === "" ? null : value))
     .notRequired(),
   street: yup.string().trim().required("Street is required."),
-  city: yup.string().trim().required("City is required."),
+  district: yup.string().trim().required("District is required."),
   province: yup.string().trim().required("Province is required."),
 });
 
@@ -73,7 +76,7 @@ function CreateEvent({ onSuccess, onCancel }) {
     defaultValues: {
       name: "",
       description: "",
-      imageUrl: "",
+      imageFile: null,
       categoryName: "",
       startTime: "",
       endTime: "",
@@ -81,47 +84,66 @@ function CreateEvent({ onSuccess, onCancel }) {
       registrationDeadline: "",
       minAge: "",
       street: "",
-      city: "",
+      district: "",
       province: "",
     },
   });
 
   const [coordinates, setCoordinates] = useState({ lat: null, lon: null });
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const createEventMutation = useCreateEvent({
     onSuccess: (data, variables, context) => {
       reset();
       setCoordinates({ lat: null, lon: null });
+      setPreviewImage(null);
       onSuccess?.(data, variables, context);
     },
   });
 
   const onSubmit = (values) => {
-    const payload = {
+    const formData = new FormData();
+
+    // Create eventRequest object
+    const eventRequest = {
       name: values.name,
       description: values.description,
-      imageUrl: values.imageUrl || undefined,
       categoryName: values.categoryName,
       startTime: values.startTime,
       endTime: values.endTime,
       capacity: values.capacity,
+      registrationDeadline: values.registrationDeadline,
+      minAge: values.minAge || undefined,
       address: {
         street: values.street,
-        city: values.city,
+        district: values.district,
         province: values.province,
       },
     };
 
-    createEventMutation.mutate(payload);
+    // Add eventRequest as JSON blob with application/json content type
+    formData.append(
+      "eventRequest",
+      new Blob([JSON.stringify(eventRequest)], { type: "application/json" })
+    );
+
+    // Add imageFile if exists
+    if (values.imageFile && values.imageFile[0]) {
+      formData.append("imageFile", values.imageFile[0]);
+    }
+
+    createEventMutation.mutate(formData);
   };
 
   const street = watch("street");
-  const city = watch("city");
+  const district = watch("district");
   const province = watch("province");
+  const imageFile = watch("imageFile");
 
   const addressString = useMemo(
-    () => [street, city, province].filter(Boolean).join(", ") || "",
-    [street, city, province]
+    () => [street, district, province].filter(Boolean).join(", ") || "",
+    [street, district, province]
   );
 
   useEffect(() => {
@@ -159,6 +181,24 @@ function CreateEvent({ onSuccess, onCancel }) {
 
     return () => clearTimeout(handler);
   }, [addressString]);
+
+  // Handle image preview
+  useEffect(() => {
+    if (imageFile && imageFile[0]) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(imageFile[0]);
+    } else {
+      setPreviewImage(null);
+    }
+  }, [imageFile]);
+
+  const handleRemoveImage = () => {
+    setPreviewImage(null);
+    reset({ ...watch(), imageFile: null });
+  };
 
   return (
     <FormLayout
@@ -219,6 +259,50 @@ function CreateEvent({ onSuccess, onCancel }) {
         )}
       </div>
 
+      <div className="flex flex-col gap-2">
+        <label htmlFor="imageFile">Event Image (Optional)</label>
+        {previewImage ? (
+          <div className="flex items-center gap-3">
+            <div 
+              className="relative w-32 h-32 flex-shrink-0 cursor-pointer group"
+              onClick={() => setShowImageModal(true)}
+            >
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg border-2 border-gray-300 group-hover:border-blue-500 transition"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition rounded-lg flex items-center justify-center">
+                <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">
+                  Click to view
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-gray-600">Image selected</p>
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium"
+              >
+                Remove Image
+              </button>
+            </div>
+          </div>
+        ) : (
+          <input
+            type="file"
+            id="imageFile"
+            accept="image/*"
+            {...register("imageFile")}
+            className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        )}
+        {errors.imageFile && (
+          <p className="text-sm text-red-500">{errors.imageFile.message}</p>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label htmlFor="startTime">Start Time *</label>
@@ -266,7 +350,7 @@ function CreateEvent({ onSuccess, onCancel }) {
         <div className="flex flex-col gap-2">
           <label htmlFor="registrationDeadline">Registration Deadline *</label>
           <input
-            type="date"
+            type="datetime-local"
             id="registrationDeadline"
             {...register("registrationDeadline")}
             className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -300,19 +384,19 @@ function CreateEvent({ onSuccess, onCancel }) {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="city" className="text-sm text-gray-600">
-              City
+            <label htmlFor="district" className="text-sm text-gray-600">
+              District
             </label>
             <input
               type="text"
-              id="city"
-              {...register("city")}
+              id="district"
+              {...register("district")}
               placeholder="Da Nang"
               className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-            {errors.city && (
-              <p className="text-sm text-red-500">{errors.city.message}</p>
+            {errors.district && (
+              <p className="text-sm text-red-500">{errors.district.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -347,6 +431,7 @@ function CreateEvent({ onSuccess, onCancel }) {
           onClick={() => {
             reset();
             setCoordinates({ lat: null, lon: null });
+            setPreviewImage(null);
             onCancel?.();
           }}
           className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 text-base font-medium text-gray-600 hover:bg-gray-50 transition"
@@ -361,6 +446,30 @@ function CreateEvent({ onSuccess, onCancel }) {
           {createEventMutation.isPending ? "Creating..." : "Create Event"}
         </button>
       </div>
+
+      {/* Image Preview Modal */}
+      {showImageModal && previewImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+            <img
+              src={previewImage}
+              alt="Preview full size"
+              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </FormLayout>
   );
 }

@@ -1,5 +1,8 @@
 package com.volunteerhub.registrationservice.controller;
 
+import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.RegistrationResponse;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
@@ -13,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -30,12 +34,6 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByUserId(authentication.getName(), status, pageNum, pageSize));
     }
 
-    @GetMapping("/events/{eventId}/isParticipant")
-    public Boolean checkIsParticipant(@PathVariable Long eventId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userEventService.isParticipant(authentication.getName(), eventId);
-    }
-
     @GetMapping("/events/{eventId}")
     public ResponseEntity<List<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
                                                                     @RequestParam(required = false) UserEventStatus status,
@@ -45,9 +43,32 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByEventId(authentication.getName(), eventId, status, pageNum, pageSize));
     }
 
-    @GetMapping("/events/{eventId}/current-registration")
-    public ResponseEntity<Long> getRegistrationCount(@PathVariable Long eventId) {
-        return ResponseEntity.ok(userEventService.getCurrentRegistrationCount(eventId));
+    @GetMapping("/events/{eventId}/user-ids")
+    public ResponseEntity<List<String>> findUserIdsByEventId(@PathVariable Long eventId,
+                                                             @RequestParam(required = false) UserEventStatus status,
+                                                             @RequestParam(required = false) Integer pageNum,
+                                                             @RequestParam(required = false) Integer pageSize) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.findUserIdsByEventId(authentication.getName(), eventId, pageNum, pageSize));
+    }
+
+    @GetMapping("/events/{eventId}/isParticipant")
+    public Boolean checkIsParticipant(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userEventService.isParticipant(authentication.getName(), eventId);
+    }
+
+    @GetMapping("/events/registration-count")
+    public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
+                                                                                   @RequestParam(required = false) Integer pageNum,
+                                                                                   @RequestParam(required = false) Integer pageSize,
+                                                                                   @RequestParam(required = false) Integer days) {
+        if (eventIds != null && !eventIds.isEmpty()) {
+            return ResponseEntity.ok(userEventService.getEventsParticipantCount(eventIds));
+        }
+        LocalDateTime to = days == null ? null : LocalDateTime.now();
+        LocalDateTime from = days == null ? null : to.minusDays(days);
+        return ResponseEntity.ok(userEventService.getAllEventsParticipantCount(pageNum, pageSize, from, to));
     }
 
     @PostMapping("/events/{eventId}")
@@ -64,8 +85,8 @@ public class UserEventController {
 
     @PutMapping("/events/{eventId}/participants/{participantId}")
     public ResponseEntity<UserEventResponse> reviewUserEventRegistration(@PathVariable Long eventId,
-                                                                                @PathVariable String participantId,
-                                                                                @RequestBody UserEventRequest userEventRequest) {
+                                                                         @PathVariable String participantId,
+                                                                         @RequestBody UserEventRequest userEventRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.reviewUserEventRegistrationRequest(
                 authentication.getName(),
@@ -73,6 +94,18 @@ public class UserEventController {
                 eventId,
                 userEventRequest)
         );
+    }
+
+    @GetMapping("/internal/manager")
+    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByOwnerId(
+            @RequestParam(value = "eventId", required = false) Long eventId,
+            @RequestParam(required = false) UserEventStatus status,
+            @RequestParam(defaultValue = "0") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerId = authentication.getName();
+        return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(ownerId, eventId, status, pageNum, pageSize));
     }
 
     @GetMapping("/application_rate")

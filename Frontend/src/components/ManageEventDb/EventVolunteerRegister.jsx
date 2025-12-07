@@ -1,17 +1,38 @@
 import { useState } from "react";
+import Pagination from "@mui/material/Pagination";
 import RegistrationFilters from "../Registration/RegistrationFilters";
 import RegistrationTableForAd from "./RegistrationTableForAd";
 import RegistrationDetailModal from "../Registration/RegistrationDetailModal";
 import EventVolunteerRegisterFilter from "./EventVolunteerRegisterFilter";
+import { useOutletContext } from "react-router-dom";
+import { useListUserOfAnEvent } from "../../hook/useRegistration";
 
 export default function EventVolunteerRegister() {
+  const { eventId } = useOutletContext();
   const [filters, setFilters] = useState({
     event: "all",
     status: "pending",
     search: "",
   });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = 2; // Fixed to 2 pages temporarily
+
+  const {
+    data: registrations = [],
+    isLoading,
+    isError,
+  } = useListUserOfAnEvent(eventId, {
+    pageNum: page - 1, // MUI Pagination starts from 1, API starts from 0
+    pageSize,
+    status: "PENDING", // Only fetch PENDING registrations
+  });
 
   const [selectedReg, setSelectedReg] = useState(null);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm ">
@@ -32,12 +53,49 @@ export default function EventVolunteerRegister() {
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <RegistrationTableForAd
-            filters={filters}
-            onSelect={(reg) => setSelectedReg(reg)}
-          />
-        </div>
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">
+            Loading registrations...
+          </div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">
+            Error loading registrations
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <RegistrationTableForAd
+                registrations={registrations}
+                filters={filters}
+                onSelect={(reg) => setSelectedReg(reg)}
+              />
+            </div>
+
+            {/* Pagination */}
+            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
+              <p className="text-sm text-gray-500">
+                Showing {registrations.length} pending registration(s) on page{" "}
+                {page} of {totalPages}
+              </p>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    "&.Mui-selected": {
+                      backgroundColor: "#3b82f6",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "#2563eb",
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {selectedReg && (

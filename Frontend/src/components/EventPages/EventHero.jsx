@@ -1,6 +1,7 @@
 import React from "react";
 import { FaEarthAfrica } from "react-icons/fa6";
 import VolunteerHero from "./VolunteerHero";
+import { useListUserOfAnEvent } from "../../hook/useRegistration";
 const dumpData = [
   {
     id: 1,
@@ -151,6 +152,13 @@ function EventHero({
   userList = dumpData,
 }) {
   //console.log(id, imgURL, organizerName, eventName);
+  // Lấy 8 người đã được accept
+  const { data } = useListUserOfAnEvent(id, {
+    status: "ACCEPTED",
+    pageSize: 8,
+    pageNum: 0,
+  });
+  console.log("User list for event:", data);
 
   return (
     <div className="flex flex-col w-full">
@@ -162,7 +170,7 @@ function EventHero({
         />
       </div>
       <div className="text-black mb-4">
-        <p className="text-2xl font-bold mb-1">{organizerName}</p>
+        <p className="text-2xl font-bold mb-1">{eventName}</p>
 
         <p className="max-md:text-sm inline-flex items-center gap-2 text-gray-600/80 mb-3">
           <span>

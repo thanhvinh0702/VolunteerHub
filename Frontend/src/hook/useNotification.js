@@ -1,13 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchNotifications, markAllAsRead, markAsRead } from "../services/notificationService";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteNotification, fetchNotifications, markAllAsRead, markAsRead } from "../services/notificationService";
 
 const NOTIFICATION_KEY = ['notifications']
 
+// Infinite scroll hook
+export const useInfiniteNotifications = (pageSize = 3) => {
+    return useInfiniteQuery({
+        queryKey: [...NOTIFICATION_KEY, 'infinite'],
+        queryFn: ({ pageParam = 0 }) => fetchNotifications({ pageParam, pageSize }),
+        getNextPageParam: (lastPage) => lastPage.nextPage,
+        staleTime: 1000 * 60 * 5,
+        initialPageParam: 0,
+    });
+};
+
+// Legacy hook (keep for backward compatibility)
 export const useNotification = () => {
-    return useQuery({
+    return useInfiniteQuery({
         queryKey: NOTIFICATION_KEY,
-        queryFn: fetchNotifications,
-        staleTime: 1000 * 60 * 5
+        queryFn: ({ pageParam = 0 }) => fetchNotifications({ pageParam, pageSize: 10 }),
+        getNextPageParam: (lastPage) => lastPage.nextPage,
+        staleTime: 1000 * 60 * 5,
+        initialPageParam: 0,
     });
 };
 
@@ -16,11 +30,37 @@ export const useMarkAsRead = () => {
     return useMutation({
         mutationFn: markAsRead,
         onSuccess: (data, notificationId) => {
+            // Update infinite query cache
+            queryClient.setQueryData([...NOTIFICATION_KEY, 'infinite'], (oldData) => {
+                if (!oldData) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.map(notification =>
+                            notification.id === notificationId
+                                ? { ...notification, isRead: true }
+                                : notification
+                        )
+                    }))
+                };
+            });
+
+            // Also update legacy query cache
             queryClient.setQueryData(NOTIFICATION_KEY, (oldData) => {
                 if (!oldData) return oldData;
-                return oldData.map((notification) => {
-                    notification.id === notificationId ? { ...notification, isRead: true } : notification
-                });
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.map(notification =>
+                            notification.id === notificationId
+                                ? { ...notification, isRead: true }
+                                : notification
+                        )
+                    }))
+                };
             });
         },
     });
@@ -30,13 +70,36 @@ export const useMarkAllRead = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: markAllAsRead,
-
         onSuccess: () => {
+            // Update infinite query cache
+            queryClient.setQueryData([...NOTIFICATION_KEY, 'infinite'], (oldData) => {
+                if (!oldData) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.map(notification => ({
+                            ...notification,
+                            isRead: true
+                        }))
+                    }))
+                };
+            });
+
+            // Also update legacy query cache
             queryClient.setQueryData(NOTIFICATION_KEY, (oldData) => {
                 if (!oldData) return oldData;
-                return oldData.map((notification) => {
-                    return { ...notification, isRead: true };
-                });
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.map(notification => ({
+                            ...notification,
+                            isRead: true
+                        }))
+                    }))
+                };
             });
         },
     });
@@ -78,3 +141,36 @@ export const useMarkAllRead = () => {
 //       });
 //     }
 //   };
+
+export const useDeleteNotification = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deleteNotification,
+        onSuccess: (data, notificationId) => {
+            // Update infinite query cache
+            queryClient.setQueryData([...NOTIFICATION_KEY, 'infinite'], (oldData) => {
+                if (!oldData) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.filter(notification => notification.id !== notificationId)
+                    }))
+                };
+            }
+            );
+            // Also update legacy query cache
+            queryClient.setQueryData(NOTIFICATION_KEY, (oldData) => {
+                if (!oldData) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map(page => ({
+                        ...page,
+                        data: page.data.filter(notification => notification.id !== notificationId)
+                    }))
+                };
+            }
+            );
+        },
+    });
+}

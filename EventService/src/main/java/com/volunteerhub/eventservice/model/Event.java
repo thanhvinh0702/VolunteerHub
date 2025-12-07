@@ -1,5 +1,6 @@
 package com.volunteerhub.eventservice.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.volunteerhub.common.enums.EventStatus;
 import jakarta.persistence.*;
@@ -48,9 +49,15 @@ public class Event {
     private String approvedBy;
 
     @Column(name = "start_time", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startTime;
 
+    @Column(name = "registration_deadline", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime registrationDeadline;
+
     @Column(name = "end_time", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

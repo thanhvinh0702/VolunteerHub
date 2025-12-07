@@ -1,8 +1,9 @@
 package com.volunteerhub.userservice.repository;
 
-import com.volunteerhub.userservice.model.Role;
+import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.userservice.model.User;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,14 @@ public interface UserRepository extends JpaRepository<User, String> {
     Long countUsers(@Param("role") Role role);
 
     @Query("SELECT u.id FROM User u WHERE u.role = :role")
+    List<String> findAllIdsByRole(@Param("role") UserRole role);
+
+    @Query("""
+    select u from User u
+    left join fetch u.address
+    where u.id in :userIds
+    """)
+    List<User> findAllByIds(@Param("userIds") List<String> userIds);
     List<String> findAllIdsByRole(@Param("role") Role role);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.role = com.volunteerhub.userservice.model.Role.ADMIN")

@@ -1,5 +1,8 @@
 package com.volunteerhub.eventservice.service;
 
+import com.volunteerhub.common.dto.EventResponse;
+import com.volunteerhub.common.utils.PageNumAndSizeResponse;
+import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
 import com.volunteerhub.eventservice.dto.response.EventResponse;
@@ -13,10 +16,13 @@ import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -24,13 +30,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
     private final EventRepository eventRepository;
     private final CategoryService categoryService;
     private final AddressService addressService;
+    private final FileStorageService fileStorageService;
     private final EventMapper eventMapper;
     private final EventPublisher eventPublisher;
 
@@ -44,40 +53,62 @@ public class EventService {
                 .orElseThrow(() -> new NoSuchElementException("No such event with id " + id)));
     }
 
-    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status) {
-        int page = (pageNum == null) ? 0 : pageNum;
-        int size = (pageSize == null) ? 10 : pageSize;
-        if (page < 0) {
-            throw new IllegalArgumentException("Page number must be greater than or equal to 0");
-        }
-        if (size <= 0) {
-            throw new IllegalArgumentException("Page size must be greater than 0");
-        }
+    public List<EventResponse> findByIds(List<Long> ids) {
+        return eventRepository.findByIdIn(ids).stream()
+                .map(eventMapper::toDto).toList();
+    }
+
+    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        int page = pageNumAndSizeResponse.getPageNum();
+        int size = pageNumAndSizeResponse.getPageSize();
         if (status != null) {
             return eventRepository.findByStatus(status, PageRequest.of(page, size)).getContent()
                     .stream()
                     .map(eventMapper::toDto)
                     .toList();
         }
-        return eventRepository.findAll(PageRequest.of(page, size)).getContent()
+
+        Sort sort = order.equals("asc")
+                ? Sort.by(sortedBy).ascending()
+                : Sort.by(sortedBy).descending();
+
+        return eventRepository.findAll(PageRequest.of(page, size, sort)).getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
+    }
+
+    public List<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy, String order) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        Sort sort = order.equals("asc")
+                ? Sort.by(sortedBy).ascending()
+                : Sort.by(sortedBy).descending();
+        return eventRepository
+                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort))
+                .getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse createEvent(String userId, EventRequest eventRequest) {
+    public EventResponse createEvent(String userId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
         Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
 
         Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
+
+        String imageUrl = imageFile != null ? fileStorageService.uploadFile(imageFile) : null;
+
         Event event = Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
-                .imageUrl(eventRequest.getImageUrl())
+                .imageUrl(imageUrl)
                 .category(category)
                 .status(EventStatus.PENDING)
                 .startTime(eventRequest.getStartTime())
                 .endTime(eventRequest.getEndTime())
+                .registrationDeadline(eventRequest.getRegistrationDeadline())
                 .address(address)
                 .capacity(eventRequest.getCapacity())
                 .ownerId(userId)
@@ -92,7 +123,7 @@ public class EventService {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest) {
+    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
         Event event = findEntityById(eventId);
 
         if (!event.getOwnerId().equals(userId)) {
@@ -101,6 +132,13 @@ public class EventService {
 
         Map<String, Object> updatedFields = new HashMap<>();
 
+        String imageUrl = imageFile != null ? fileStorageService.uploadFile(imageFile) : null;
+
+        if (imageUrl != null) {
+            event.setImageUrl(imageUrl);
+            updatedFields.put("image_url", imageUrl);
+        }
+
         if (eventRequest.getName() != null) {
             event.setName(eventRequest.getName());
             updatedFields.put("name", eventRequest.getName());
@@ -108,10 +146,6 @@ public class EventService {
         if (eventRequest.getDescription() != null) {
             event.setDescription(eventRequest.getDescription());
             updatedFields.put("description", eventRequest.getDescription());
-        }
-        if (eventRequest.getImageUrl() != null) {
-            event.setImageUrl(eventRequest.getImageUrl());
-            updatedFields.put("image_url", eventRequest.getImageUrl());
         }
 
         if (eventRequest.getCategoryName() != null && !eventRequest.getCategoryName().isBlank()) {
@@ -126,7 +160,8 @@ public class EventService {
             Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
             event.setAddress(address);
             event.setAddressId(address.getId());
-            updatedFields.put("address", address);
+            String addressString = address.getStreet() + ", " + address.getDistrict() + ", " + address.getProvince();
+            updatedFields.put("address", addressString);
         }
 
         if (eventRequest.getStartTime() != null) {
@@ -136,6 +171,10 @@ public class EventService {
         if (eventRequest.getEndTime() != null) {
             event.setEndTime(eventRequest.getEndTime());
             updatedFields.put("end_time", eventRequest.getEndTime());
+        }
+        if (eventRequest.getRegistrationDeadline() != null) {
+            event.setRegistrationDeadline(eventRequest.getRegistrationDeadline());
+            updatedFields.put("registration_deadline", eventRequest.getRegistrationDeadline());
         }
 
         if (eventRequest.getCapacity() > 0) {
@@ -156,10 +195,12 @@ public class EventService {
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
-        if (!event.getOwnerId().equals(userId)) {
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin && !event.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
-
         eventRepository.delete(event);
         return eventMapper.toDto(event);
     }
@@ -182,11 +223,26 @@ public class EventService {
         if (!event.getStatus().equals(EventStatus.PENDING)) {
             throw new IllegalArgumentException("Unable to reject this event.");
         }
-
         event.setStatus(EventStatus.REJECTED);
         event.setApprovedBy(userId);
         eventPublisher.publishEvent(eventMapper.toRejectedMessage(event, request.getReason()));
         return eventMapper.toDto(eventRepository.save(event));
+    }
+
+    public List<EventResponse> searchByKeyword(String keyword, Integer pageNum, Integer pageSize) {
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        int page = pageNumAndSizeResponse.getPageNum();
+        int size = pageNumAndSizeResponse.getPageSize();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(eventMapper::toDto)
+                .toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

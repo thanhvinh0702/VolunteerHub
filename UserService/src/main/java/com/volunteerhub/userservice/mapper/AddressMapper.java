@@ -1,6 +1,5 @@
 package com.volunteerhub.userservice.mapper;
 
-import com.volunteerhub.userservice.dto.response.AddressResponse;
 import com.volunteerhub.userservice.model.Address;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,6 +8,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AddressMapper {
     public AddressResponse toResponse(Address address) {
+        if (address == null) {
+            return null;
+        }
         return AddressResponse.builder()
                 .province(address.getProvince())
                 .district(address.getDistrict())

@@ -1,20 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
 import Pagination from "@mui/material/Pagination";
 import EventManagerCard from "../../components/Project/eventManagerCard";
-import { mockEventManagerData, EVENT_STATUS } from "./eventManagerData";
+import { EVENT_STATUS } from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
+import {
+  useEventPagination,
+  useOwnedEventsPagination,
+} from "../../hook/useEvent";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 15;
 
 function EventManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0); // API uses 0-based pagination
   const [openCreateForm, setOpenCreateForm] = useState(false);
   const isFirstLoad = useRef(true);
 
@@ -22,29 +25,22 @@ function EventManager() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setPage(1); // Reset to page 1 when search changes
+      setPage(0); // Reset to page 0 when search changes
     }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
   // Reset page when filter changes
   useEffect(() => {
-    setPage(1);
+    setPage(0);
   }, [filterStatus]);
 
-  const { data, isLoading, isFetching, isError, error } = useQuery({
-    queryKey: ["event-manager", page, debouncedSearch, filterStatus],
-    queryFn: () =>
-      mockEventManagerData({
-        page,
-        pageSize: PAGE_SIZE,
-        search: debouncedSearch,
-        status: filterStatus,
-      }),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  });
+  const { data, isLoading, isFetching, isError, error } =
+    useOwnedEventsPagination({
+      pageNum: page,
+      pageSize: PAGE_SIZE,
+      status: filterStatus === "all" ? undefined : filterStatus,
+    });
 
   // Track first successful load
   useEffect(() => {
@@ -75,7 +71,7 @@ function EventManager() {
   });
 
   const handlePageChange = (event, value) => {
-    setPage(value);
+    setPage(value - 1); // Convert from 1-based (UI) to 0-based (API)
   };
 
   const handleCancelEvent = async (id) => {
@@ -213,8 +209,8 @@ function EventManager() {
                 : "transition-opacity"
             }
           >
-            {data?.items && data.items.length > 0 ? (
-              data.items.map((event) => (
+            {data?.data && data.data.length > 0 ? (
+              data.data.map((event) => (
                 <EventManagerCard
                   key={event.id}
                   data={event}
@@ -244,14 +240,14 @@ function EventManager() {
       </div>
 
       {/* Pagination & Stats Footer */}
-      {data?.items && data.items.length > 0 && (
+      {data?.data && data.data.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
           <p className="text-sm text-gray-500">
-            Showing {data.items.length} of {data.totalItems} events
+            Showing {data.data.length} of {data.meta?.totalElements || 0} events
           </p>
           <Pagination
-            count={data.totalPages}
-            page={page}
+            count={data.meta?.totalPages || 0}
+            page={page + 1}
             onChange={handlePageChange}
             sx={{
               "& .MuiPaginationItem-root": {

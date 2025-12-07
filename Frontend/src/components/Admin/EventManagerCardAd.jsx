@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Ban,
   CircleCheckBig,
@@ -18,14 +18,40 @@ import {
   canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
 import { useNavigate } from "react-router-dom";
+import {
+  useApproveEvent,
+  useRejectEvent,
+  useDeleteEvent,
+} from "../../hook/useEvent";
 
 function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
   const navigate = useNavigate();
-  const { id, title, category, date, location, status, registered, capacity } =
-    data;
+  const approveEventMutation = useApproveEvent();
+  const rejectEventMutation = useRejectEvent();
+  const deleteEventMutation = useDeleteEvent();
+
+  // Map API response to component props
+  const id = data.id;
+  const title = data.name;
+  const category = data.category?.name || "Unknown";
+  const date = data.startTime;
+  const endTime = data.endTime;
+  const location = `${data.address?.street || ""}, ${
+    data.address?.district || ""
+  }, ${data.address?.province || ""}`.trim();
+  const status = data.status;
+  const registered = data.currentRegistrations || 0; // Hardcode tạm
+  const capacity = data.capacity;
+  const isUpdating = data._isUpdating || false; // Optimistic update flag
+  const isDeleting = data._isDeleting || false; // Optimistic delete flag
+
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isCancelling, setIsCancelling] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    setCurrentStatus(status);
+  }, [status]);
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -75,6 +101,50 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
 
   const getProgressPercentage = () => {
     return Math.round((registered / capacity) * 100);
+  };
+
+  const handleApproveEvent = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to approve "${title}"?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await approveEventMutation.mutateAsync(id);
+      setCurrentStatus(EVENT_STATUS.APPROVED);
+    } catch (error) {
+      console.error("Failed to approve event:", error);
+    }
+  };
+
+  const handleRejectEvent = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to reject "${title}"?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await rejectEventMutation.mutateAsync(id);
+      setCurrentStatus(EVENT_STATUS.REJECTED);
+    } catch (error) {
+      console.error("Failed to reject event:", error);
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteEventMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
   };
 
   return (
@@ -132,12 +202,26 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
 
         <td className="px-6 py-4">
           <span
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize min-w-[90px] inline-block text-center ${getStatusColor(
-              currentStatus
-            )}`}
-            title={STATUS_CONFIG[currentStatus]?.description}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize min-w-[90px] inline-block text-center ${
+              isDeleting
+                ? "bg-red-100 text-red-700 animate-pulse"
+                : isUpdating
+                ? "bg-yellow-100 text-yellow-700 animate-pulse"
+                : getStatusColor(currentStatus)
+            }`}
+            title={
+              isDeleting
+                ? "Deleting..."
+                : isUpdating
+                ? "Processing..."
+                : STATUS_CONFIG[currentStatus]?.description
+            }
           >
-            {STATUS_CONFIG[currentStatus]?.label || currentStatus}
+            {isDeleting
+              ? "Deleting..."
+              : isUpdating
+              ? "Processing..."
+              : STATUS_CONFIG[currentStatus]?.label || currentStatus}
           </span>
         </td>
 
@@ -146,7 +230,8 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             {currentStatus === EVENT_STATUS.APPROVED && (
               <button
                 onClick={() => onEdit?.(id)}
-                className="p-2 hover:bg-red-500 rounded-lg transition-colors bg-red-800/80"
+                disabled={isUpdating || isDeleting}
+                className="p-2 hover:bg-red-500 rounded-lg transition-colors bg-red-800/80 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Cancel Event"
               >
                 <Ban className="w-4 h-4 text-white" />
@@ -154,8 +239,11 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             )}
             {currentStatus === EVENT_STATUS.PENDING && (
               <button
-                onClick={() => onEdit?.(id)}
-                className="p-2 bg-green-500/90 text-white hover:bg-green-500 rounded-lg transition-colors"
+                onClick={handleApproveEvent}
+                disabled={
+                  approveEventMutation.isPending || isUpdating || isDeleting
+                }
+                className="p-2 bg-green-500/90 text-white hover:bg-green-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Approve Event"
               >
                 <CircleCheckBig className="w-4 h-4" />
@@ -163,14 +251,18 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             )}
             <button
               onClick={() => navigate(`/dashboard/eventmanager/${id}`)}
-              className="p-2 border-gray-500/20 border hover:bg-gray-100 rounded-lg transition-colors"
+              disabled={isUpdating || isDeleting}
+              className="p-2 border-gray-500/20 border hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="View Details"
             >
               <Eye className="w-4 h-4 text-gray-600" />
             </button>
             <button
-              onClick={() => onDelete?.(id)}
-              className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors"
+              onClick={handleDeleteEvent}
+              disabled={
+                deleteEventMutation.isPending || isUpdating || isDeleting
+              }
+              className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Delete Event"
             >
               <Trash2 className="w-4 h-4 text-white" />
@@ -199,11 +291,19 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-gray-500">{category}</span>
                     <span
-                      className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${getStatusColor(
-                        currentStatus
-                      )}`}
+                      className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${
+                        isDeleting
+                          ? "bg-red-100 text-red-700 animate-pulse"
+                          : isUpdating
+                          ? "bg-yellow-100 text-yellow-700 animate-pulse"
+                          : getStatusColor(currentStatus)
+                      }`}
                     >
-                      {STATUS_CONFIG[currentStatus]?.label || currentStatus}
+                      {isDeleting
+                        ? "Deleting..."
+                        : isUpdating
+                        ? "Processing..."
+                        : STATUS_CONFIG[currentStatus]?.label || currentStatus}
                     </span>
                   </div>
                 </div>
@@ -296,7 +396,8 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                         e.stopPropagation();
                         handleCancelEvent();
                       }}
-                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      disabled={isUpdating || isDeleting}
+                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Ban className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
@@ -308,13 +409,20 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onEdit?.(id);
+                        handleApproveEvent();
                       }}
-                      className="col-span-4 py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      disabled={
+                        approveEventMutation.isPending ||
+                        isUpdating ||
+                        isDeleting
+                      }
+                      className="col-span-4 py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CircleCheckBig className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
-                        Approve Event
+                        {approveEventMutation.isPending
+                          ? "Approving..."
+                          : "Approve Event"}
                       </span>
                     </button>
                   )}
@@ -323,7 +431,8 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                       e.stopPropagation();
                       navigate(`/dashboard/eventmanager/${id}`);
                     }}
-                    className="col-span-2 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    disabled={isUpdating || isDeleting}
+                    className="col-span-2 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Eye className="w-4 h-4 text-white" />
                     <span className="text-white text-sm font-medium">View</span>
@@ -331,9 +440,12 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDelete?.(id);
+                      handleDeleteEvent();
                     }}
-                    className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center"
+                    disabled={
+                      deleteEventMutation.isPending || isUpdating || isDeleting
+                    }
+                    className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="w-4 h-4 text-white" />
                   </button>

@@ -12,8 +12,9 @@ export default function FilterHorizontal({
   categories,
   selectedCategories,
   toggleCategory,
-  filter,
-  setFilter,
+  sortBy,
+  setSortBy,
+  resetFilters,
 }) {
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -97,14 +98,14 @@ export default function FilterHorizontal({
               </div>
             </div>
             <div className="basis-1/2 max-md:basis-1/4 pl-10 max-md:pl-0">
+              <p className="font-bold mb-2">Sort By</p>
               <DropdownSelect
                 className="w-full"
-                value={filter}
-                onChange={setFilter}
+                value={sortBy}
+                onChange={setSortBy}
                 options={[
                   { value: "Date", label: "Date" },
                   { value: "Name", label: "Name" },
-                  { value: "Size", label: "Size" },
                 ]}
               />
             </div>
