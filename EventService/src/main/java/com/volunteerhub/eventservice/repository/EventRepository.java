@@ -1,5 +1,6 @@
 package com.volunteerhub.eventservice.repository;
 
+import com.volunteerhub.common.enums.EventStatus;
 import com.volunteerhub.eventservice.model.Event;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -10,9 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -30,6 +28,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.category LEFT JOIN FETCH e.address")
     List<Event> findAllForExport();
+
+    @Query("SELECT COUNT(*) FROM Event")
+    Long countEvents();
 
     @Query("SELECT COUNT(e) FROM Event e WHERE e.ownerId = :ownerId")
     Long countEventsByOwnerId(@Param("ownerId") String ownerId);
