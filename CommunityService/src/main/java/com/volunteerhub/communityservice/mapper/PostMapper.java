@@ -13,6 +13,7 @@ public class PostMapper {
                 .id(post.getId())
                 .eventId(post.getEventId())
                 .content(post.getContent())
+                .imageUrls(post.getImageUrls())
                 .ownerId(post.getOwnerId())
                 .reactionCount(reactionCount)
                 .commentCount(commentCount)

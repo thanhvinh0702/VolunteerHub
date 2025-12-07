@@ -16,16 +16,26 @@ export default function EventVolunteerRegister() {
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const totalPages = 2; // Fixed to 2 pages temporarily
+  const totalPages = 2;
+
+  // Map frontend filter status to API status
+  const getApiStatus = (filterStatus) => {
+    const statusMap = {
+      pending: "PENDING",
+      rejected: "REJECTED",
+    };
+    return statusMap[filterStatus] || "PENDING";
+  };
 
   const {
     data: registrations = [],
     isLoading,
     isError,
+    refetch,
   } = useListUserOfAnEvent(eventId, {
     pageNum: page - 1, // MUI Pagination starts from 1, API starts from 0
     pageSize,
-    status: "PENDING", // Only fetch PENDING registrations
+    status: getApiStatus(filters.status),
   });
 
   const [selectedReg, setSelectedReg] = useState(null);
@@ -74,8 +84,8 @@ export default function EventVolunteerRegister() {
             {/* Pagination */}
             <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
               <p className="text-sm text-gray-500">
-                Showing {registrations.length} pending registration(s) on page{" "}
-                {page} of {totalPages}
+                Showing {registrations.length} {filters.status} registration(s)
+                on page {page} of {totalPages}
               </p>
               <Pagination
                 count={totalPages}
@@ -101,7 +111,10 @@ export default function EventVolunteerRegister() {
       {selectedReg && (
         <RegistrationDetailModal
           registration={selectedReg}
-          onClose={() => setSelectedReg(null)}
+          onClose={() => {
+            setSelectedReg(null);
+            refetch(); // Refresh data after closing modal
+          }}
         />
       )}
     </div>

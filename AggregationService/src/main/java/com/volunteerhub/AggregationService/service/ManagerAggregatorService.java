@@ -35,6 +35,7 @@ public class ManagerAggregatorService {
             return Collections.emptyList();
         }
 
+        // ... (Phần logic enrich dữ liệu giữ nguyên) ...
         List<Long> eventIdsToFetch = regList.stream().map(RegistrationResponse::getEventId).distinct().toList();
         List<String> userIds = regList.stream().map(RegistrationResponse::getUserId).distinct().toList();
 

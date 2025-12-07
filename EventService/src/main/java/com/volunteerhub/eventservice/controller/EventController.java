@@ -9,6 +9,7 @@ import com.volunteerhub.eventservice.validation.OnCreate;
 import com.volunteerhub.eventservice.validation.OnUpdate;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +30,7 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
+    public ResponseEntity<Page<EventResponse>> getAllEvents(@RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
                                                             @RequestParam(required = false) EventStatus status,
                                                             @RequestParam(defaultValue = "id") String sortedBy,
@@ -43,7 +44,7 @@ public class EventController {
     }
 
     @GetMapping("/owned")
-    public ResponseEntity<List<EventResponse>> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
+    public ResponseEntity<Page<EventResponse>> getAllOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                                  @RequestParam(required = false) Integer pageSize,
                                                                  @RequestParam(defaultValue = "id") String sortedBy,
                                                                  @RequestParam(defaultValue = "desc") String order)  {
@@ -65,7 +66,7 @@ public class EventController {
 
     @PutMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long eventId,
-                                                     @RequestPart @Validated(OnCreate.class) EventRequest eventRequest,
+                                                     @RequestPart @Validated(OnUpdate.class) EventRequest eventRequest,
                                                      @RequestPart(required = false) MultipartFile imageFile) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.updateEvent(auth.getName(), eventId, eventRequest, imageFile));
@@ -92,7 +93,7 @@ public class EventController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<EventResponse>> searchEvents(
+    public ResponseEntity<Page<EventResponse>> searchEvents(
             @RequestParam("keyword") String keyword,
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {

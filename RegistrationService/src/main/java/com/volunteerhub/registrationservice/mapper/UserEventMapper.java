@@ -9,7 +9,11 @@ import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMess
 import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.model.UserEvent;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class UserEventMapper {
@@ -26,6 +30,18 @@ public class UserEventMapper {
                 .createdAt(userEvent.getCreatedAt())
                 .updatedAt(userEvent.getUpdatedAt())
                 .build();
+    }
+
+    public Page<UserEventResponse> toResponseDtoPage(Page<UserEvent> userEventPage) {
+        List<UserEventResponse> dtoList = userEventPage
+                .getContent()
+                .stream().map(this::toResponseDto)
+                .toList();
+        return new PageImpl<>(
+                dtoList,
+                userEventPage.getPageable(),
+                userEventPage.getTotalElements()
+        );
     }
 
     public RegistrationCreatedMessage toCreatedMessage(UserEvent userEvent, String eventOwnerId) {

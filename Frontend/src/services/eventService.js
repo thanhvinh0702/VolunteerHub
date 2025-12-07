@@ -3,6 +3,7 @@ import axiosClient from "./axiosClient";
 const EVENT_BASE_URL = "/api/v1/events";
 const EVENT_AGGREGATED_BASE_URL = "/api/v1/aggregated/events";
 
+
 export const getEvents = async (params = {}) => {
     const response = await axiosClient.get(EVENT_AGGREGATED_BASE_URL, { params });
     console.log('Events API response:', response);
@@ -71,7 +72,38 @@ export const updateEvent = async (eventId, payload) => {
     if (!eventId) {
         throw new Error("eventId is required to update an event");
     }
-    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, payload);
+    // If caller already built FormData, send it as-is
+    if (payload instanceof FormData) {
+        const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response;
+    }
+
+    // Otherwise build FormData similar to createEvent: eventRequest JSON + optional imageFile
+    const formData = new FormData();
+
+    // Allow callers to pass either a flat payload or an object with eventRequest
+    const { imageFile, eventRequest, ...rest } = payload || {};
+    const body = eventRequest || rest || {};
+
+    formData.append(
+        "eventRequest",
+        new Blob([JSON.stringify(body)], { type: "application/json" })
+    );
+
+    if (imageFile) {
+        const fileToSend = Array.isArray(imageFile)
+            ? imageFile[0]
+            : imageFile?.[0] || imageFile;
+        if (fileToSend) {
+            formData.append("imageFile", fileToSend);
+        }
+    }
+
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
     return response;
 };
 

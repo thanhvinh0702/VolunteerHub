@@ -11,6 +11,4 @@ public class PostRequest {
 
     @NotNull(message = "content must not be null", groups = OnCreate.class)
     private String content;
-
-    private List<String> imageUrls;
 }

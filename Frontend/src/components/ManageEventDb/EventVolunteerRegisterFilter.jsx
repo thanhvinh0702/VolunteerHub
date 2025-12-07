@@ -20,7 +20,7 @@ export default function EventVolunteerRegisterFilter({ filters, setFilters }) {
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
           <option value="pending">Pending</option>
-          <option value="approved">Accept</option>
+
           <option value="rejected">Reject</option>
         </select>
       </div>

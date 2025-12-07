@@ -12,12 +12,15 @@ import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +33,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ReactionRepository reactionRepository;
     private final EventRegistrationService eventRegistrationService;
+    private final FileStorageService fileStorageService;
     private final PostMapper postMapper;
     private final RedisTemplate<String, Integer> stringIntegerRedisTemplate;
     private final PostPublisher postPublisher;
@@ -66,9 +70,10 @@ public class PostService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(#eventId)")
-    public List<PostResponse> findByEventId(Long eventId, Integer pageNum, Integer pageSize) {
+    public List<PostResponse> findByEventId(Long eventId, String sortedBy, String order, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
-        return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
+        Sort sort = order.equals("desc") ? Sort.by(sortedBy).descending() : Sort.by(sortedBy).ascending();
+        return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize(), sort))
                 .getContent()
                 .stream()
                 .map(p -> {
@@ -80,11 +85,12 @@ public class PostService {
     }
 
     @PreAuthorize("@eventRegistrationService.isParticipant(#eventId)")
-    public PostResponse create(String ownerId, Long eventId, PostRequest postRequest) {
+    public PostResponse create(String ownerId, Long eventId, PostRequest postRequest, List<MultipartFile> imageFiles) throws IOException {
+        List<String> imageUrls = fileStorageService.uploadFiles(imageFiles);
         Post post = Post.builder()
                 .eventId(eventId)
                 .content(postRequest.getContent())
-                .imageUrls(postRequest.getImageUrls())
+                .imageUrls(imageUrls)
                 .ownerId(ownerId)
                 .build();
         Post savedPost = postRepository.save(post);
@@ -99,9 +105,6 @@ public class PostService {
         }
         if (postRequest.getContent() != null) {
             post.setContent(postRequest.getContent());
-        }
-        if (postRequest.getImageUrls() != null) {
-            post.setImageUrls(postRequest.getImageUrls());
         }
         return postMapper.toDto(postRepository.save(post), getCachedReactionCount(postId), getCachedCommentCount(postId));
     }

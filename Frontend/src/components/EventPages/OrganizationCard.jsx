@@ -2,25 +2,22 @@ import React from "react";
 import Card from "../Card.jsx/Card";
 import { CiCircleCheck } from "react-icons/ci";
 import { FaCircle, FaCircleCheck } from "react-icons/fa6";
-function OrganizationCard({
-  avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=b",
-  name = "demo org",
-  description,
-  totalEvent = 5,
-  totalVolunteer = 100,
-}) {
+function OrganizationCard({ data }) {
+  console.log("Organization data:", data);
+  const { fullName, description, avatarUrl, totalEvent, totalVolunteer } =
+    data || {};
   return (
     <Card>
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <img
             src={avatarUrl}
-            alt={name}
+            alt={fullName}
             className="w-10 h-10 rounded-full bg-red-400 object-cover ring-1 ring-red-950"
           />
           <div className="font-semibold">
-            <p className="inline-flex items-center gap-4">
-              {name}
+            <p className="inline-flex items-center gap-2">
+              {fullName}
               <span>
                 <FaCircleCheck className="text-green-500" />
               </span>

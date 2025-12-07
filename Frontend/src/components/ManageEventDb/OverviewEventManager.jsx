@@ -102,7 +102,6 @@ function OverviewEventManager() {
           if (coords) {
             setCoordinates(coords);
             setMapError(null);
-          } else {
           }
         }
       } catch (error) {
@@ -151,6 +150,8 @@ function OverviewEventManager() {
     // Normalize categoryName to lowercase
     const normalizedCategoryName = editData.categoryName.toLowerCase();
 
+    // Backend expects LocalDateTime without seconds; trim to yyyy-MM-ddTHH:mm
+
     const payload = {
       name: editData.name,
       description: editData.description,
@@ -174,6 +175,8 @@ function OverviewEventManager() {
       end: editData.endTime,
       deadline: editData.registrationDeadline,
     });
+
+    console.log("Payload sent as eventRequest:", payload);
 
     updateEventMutation.mutate({ eventId, payload });
   };
@@ -490,19 +493,6 @@ function OverviewEventManager() {
         <div className="flex flex-col gap-4">
           <Card>
             <div className="flex flex-col gap-5 font-medium font-jost">
-              {!isEditMode && (
-                <div className="border-gray-300 border rounded-xl p-2 cursor-pointer hover:bg-gray-50 transition">
-                  <button
-                    className="flex flex-row items-center gap-5 cursor-pointer w-full"
-                    onClick={handleEdit}
-                  >
-                    <span>
-                      <FaEdit />
-                    </span>
-                    Edit Event Information
-                  </button>
-                </div>
-              )}
               <div className="border-gray-300 border rounded-xl p-2 cursor-pointer hover:bg-gray-50 transition">
                 <button className="flex flex-row items-center gap-5 cursor-pointer">
                   <span>

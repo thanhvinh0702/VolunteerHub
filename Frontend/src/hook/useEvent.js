@@ -55,6 +55,38 @@ export const useEventPagination = (params) => {
     return query;
 }
 
+export const useEventPaginationAdmin = (params) => {
+    const queryClient = useQueryClient();
+    const { pageNum = 0, pageSize = 10, status, search } = params || {};
+    const query = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'admin', 'pagination', pageNum, pageSize, status, search],
+        queryFn: async () => {
+            const result = await getEvents({ pageNum, pageSize, status, search });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 6,
+        refetchInterval: 1000 * 5,
+        refetchIntervalInBackground: true,
+    });
+
+    // Prefetch the next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...EVENTS_QUERY_KEY, 'admin', 'pagination', nextPage, pageSize, status, search],
+                queryFn: async () => {
+                    const result = await getEvents({ pageNum: nextPage, pageSize, status, search });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, pageNum, pageSize, status, search, queryClient]);
+
+    return query;
+}
+
 export const useOwnedEvents = (params) => {
     const queryKey = params ? [...OWNED_EVENTS_QUERY_KEY, JSON.stringify(params)] : OWNED_EVENTS_QUERY_KEY;
 
@@ -67,16 +99,19 @@ export const useOwnedEvents = (params) => {
 
 export const useOwnedEventsPagination = (params) => {
     const queryClient = useQueryClient();
-    const { pageNum = 0, pageSize = 10, sortedBy = "id", order = "desc" } = params || {};
-    
+    const { pageNum = 0, pageSize = 10, sortedBy = "id", order = "desc", status } = params || {};
+
     const query = useQuery({
-        queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, sortedBy, order],
+        queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, sortedBy, order, status],
         queryFn: async () => {
-            const result = await getOwnedEvents({ pageNum, pageSize, sortedBy, order });
+            const result = await getOwnedEvents({ pageNum, pageSize, sortedBy, order, status });
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 30,
+        refetchInterval: 1000 * 5,
+        refetchIntervalInBackground: true,
+        structuralSharing: false,
     });
 
     // Prefetch the next page
@@ -84,14 +119,14 @@ export const useOwnedEventsPagination = (params) => {
         const nextPage = pageNum + 1;
         if (query.data?.meta?.totalPages > nextPage) {
             queryClient.prefetchQuery({
-                queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, sortedBy, order],
+                queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, sortedBy, order, status],
                 queryFn: async () => {
-                    const result = await getOwnedEvents({ pageNum: nextPage, pageSize, sortedBy, order });
+                    const result = await getOwnedEvents({ pageNum: nextPage, pageSize, sortedBy, order, status });
                     return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
                 },
             });
         }
-    }, [query.data, pageNum, pageSize, sortedBy, order, queryClient]);
+    }, [query.data, pageNum, pageSize, sortedBy, order, status, queryClient]);
 
     return query;
 };
@@ -376,6 +411,7 @@ export const useApproveEvent = (options = {}) => {
 
             toast.success("Event approved successfully.");
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
             if (variables) {
                 queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
             }
@@ -473,6 +509,7 @@ export const useRejectEvent = (options = {}) => {
 
             toast.success("Event rejected successfully.");
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
             if (variables) {
                 queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
             }

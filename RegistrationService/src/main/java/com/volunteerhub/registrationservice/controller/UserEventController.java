@@ -9,6 +9,7 @@ import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ public class UserEventController {
     private final UserEventService userEventService;
 
     @GetMapping
-    public ResponseEntity<List<UserEventResponse>> findAllByUserId(@RequestParam(required = false) UserEventStatus status,
+    public ResponseEntity<Page<UserEventResponse>> findAllByUserId(@RequestParam(required = false) UserEventStatus status,
                                                                    @RequestParam(required = false) Integer pageNum,
                                                                    @RequestParam(required = false) Integer pageSize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -35,7 +36,7 @@ public class UserEventController {
     }
 
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<List<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
+    public ResponseEntity<Page<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
                                                                     @RequestParam(required = false) UserEventStatus status,
                                                                     @RequestParam(required = false) Integer pageNum,
                                                                     @RequestParam(required = false) Integer pageSize) {
@@ -56,6 +57,12 @@ public class UserEventController {
     public Boolean checkIsParticipant(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userEventService.isParticipant(authentication.getName(), eventId);
+    }
+
+    @GetMapping("/events/{eventId}/status")
+    public ResponseEntity<UserEventStatus> getStatus(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.getRegistrationStatus(authentication.getName(), eventId));
     }
 
     @GetMapping("/events/registration-count")
@@ -81,6 +88,13 @@ public class UserEventController {
     public ResponseEntity<UserEventResponse> deleteUserEventRegister(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.deleteUserEventRegistrationRequest(authentication.getName(), eventId));
+    }
+
+    @DeleteMapping("/events/{eventId}/participants/{participantId}")
+    public ResponseEntity<UserEventResponse> managerDeleteUserEventRegister(@PathVariable Long eventId,
+                                                                            @PathVariable String participantId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.managerDeleteUserEventRegistrationRequest(authentication.getName(), participantId, eventId));
     }
 
     @PutMapping("/events/{eventId}/participants/{participantId}")

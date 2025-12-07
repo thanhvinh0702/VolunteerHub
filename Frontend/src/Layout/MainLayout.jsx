@@ -26,9 +26,9 @@ export default function MainLayout() {
     return null;
   }
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-soft-gradient flex flex-col overflow-x-hidden">
       {/* Navbar fixed (desktop / tablet) */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b shadow-sm bg-white border-b-gray-400/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
           <NavBar />
         </div>
