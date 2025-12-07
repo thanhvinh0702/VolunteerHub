@@ -55,6 +55,12 @@ public class UserEventController {
         return userEventService.isParticipant(authentication.getName(), eventId);
     }
 
+    @GetMapping("/events/{eventId}/status")
+    public ResponseEntity<UserEventStatus> getStatus(@PathVariable Long eventId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.getRegistrationStatus(authentication.getName(), eventId));
+    }
+
     @GetMapping("/events/registration-count")
     public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
                                                                                    @RequestParam(required = false) Integer pageNum,

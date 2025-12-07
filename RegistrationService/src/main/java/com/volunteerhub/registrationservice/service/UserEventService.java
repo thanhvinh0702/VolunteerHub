@@ -181,6 +181,11 @@ public class UserEventService {
         }
     }
 
+    public UserEventStatus getRegistrationStatus(String userId, Long eventId) {
+        return userEventRepository.findByUserIdAndEventId(userId, eventId).orElseThrow(() -> new NoSuchElementException("No registration found!"))
+                .getStatus();
+    }
+
     public UserEventResponse registerUserEvent(String userId, Long eventId) {
         EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
         UserEvent userEvent = UserEvent.builder()
