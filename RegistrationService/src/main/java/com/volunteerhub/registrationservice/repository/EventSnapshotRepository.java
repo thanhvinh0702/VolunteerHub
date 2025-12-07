@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventSnapshotRepository extends JpaRepository<EventSnapshot, Long> {
-    @Query("SELECT SUM(es.capacity) FROM EventSnapshot es WHERE es.ownerId = :ownerId")
+    @Query("SELECT COALESCE(SUM(es.capacity), 0) FROM EventSnapshot es WHERE es.ownerId = :ownerId")
     public Long findCapacityPerManager(@Param("ownerId") String ownerId);
 
     @Query("SELECT COUNT(*) FROM EventSnapshot es WHERE es.ownerId = :ownerId")

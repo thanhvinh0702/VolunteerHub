@@ -22,10 +22,17 @@ public class AnalyticService {
     private final String templateAnalytic = "analytic:";
 
     private Long getCached(String ownerId, String suffix, Supplier<Long> calculator) {
-        String key = templateAnalytic + ownerId + suffix;
+        String key = templateAnalytic + (ownerId == null ? "global" : ownerId) + suffix;
 
-        Long cachedVal = stringLongRedisTemplate.opsForValue().get(key);
-        if (cachedVal != null) return cachedVal;
+        RedisTemplate<String, Object> genericTemplate = (RedisTemplate) stringLongRedisTemplate;
+
+        Object cachedObject = genericTemplate.opsForValue().get(key);
+
+        if (cachedObject != null) {
+            if (cachedObject instanceof Number) {
+                return ((Number) cachedObject).longValue();
+            }
+        }
 
         try {
             Long realVal = calculator.get();
@@ -64,7 +71,7 @@ public class AnalyticService {
                 SecurityContextHolder.getContext().getAuthentication().getName(),
                 ":total_events_mine",
                 () -> eventClient.get()
-                        .uri("/my/total-events")
+                        .uri("/stats/total-events-by-manager")
                         .retrieve()
                         .body(Long.class)
         );
@@ -74,7 +81,7 @@ public class AnalyticService {
         return getCached(SecurityContextHolder.getContext().getAuthentication().getName()
                 , ":total_active_events", () ->
                 eventClient.get()
-                        .uri("/total_active_events")
+                        .uri("/stats/active-events-by-manager")
                         .retrieve()
                         .body(Long.class)
         );

@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 @Configuration
 public class ServiceClientConfig {
 
-    @Value("${services.user.url:http://localhost:8081}")
+    @Value("${services.user.url:http://localhost:8081/api/v1/users/users}")
     private String userServiceUrl;
 
-    @Value("${services.event.url:http://localhost:8084}")
+    @Value("${services.event.url:http://localhost:8082/api/v1/events}")
     private String eventServiceUrl;
 
-    @Value("${services.registration.url:http://localhost:8082}")
+    @Value("${services.registration.url:http://localhost:8084/api/v1/registrations}")
     private String registrationServiceUrl;
 
 

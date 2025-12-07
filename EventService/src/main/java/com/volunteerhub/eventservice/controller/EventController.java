@@ -100,7 +100,7 @@ public class EventController {
             return ResponseEntity.ok(eventService.searchByKeyword(keyword, pageNum, pageSize));
     }
 
-    @GetMapping("/count_events")
+    @GetMapping("/stats/count")
     public ResponseEntity<Long> countEvents() {
         return ResponseEntity.ok(eventService.countEvents());
     }
@@ -110,14 +110,14 @@ public class EventController {
         return ResponseEntity.ok(eventService.getDataForExport());
     }
 
-    @GetMapping("/total_events")
+    @GetMapping("/stats/total-events-by-manager")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Long> countEventsByOwnerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.countEventsByOwnerId(authentication.getName()));
     }
 
-    @GetMapping("/total_active_events")
+    @GetMapping("/stats/active-events-by-manager")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Long> countActiveEventsByOwnerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
