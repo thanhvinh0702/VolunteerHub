@@ -37,14 +37,13 @@ export const getAggregatedRegistrations = async (params) => {
 
 export const checkUserParticipation = async (eventId) => {
     try {
-        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/events/${eventId}/isParticipant`);
+        const response = await axiosClient.get(`${REGISTRATION_BASE_URL}/events/${eventId}/status`);
         return response;
     } catch (error) {
         console.error("Error checking user participation:", error);
         throw error;
     }
 };
-
 export const listUserOfAnEvent = async (eventId, params) => {
     try {
         const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}`, { params });

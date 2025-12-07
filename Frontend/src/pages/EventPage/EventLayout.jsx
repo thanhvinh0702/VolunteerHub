@@ -9,15 +9,28 @@ import FeedPage from "../Post/FeedPage";
 import VolunteerList from "../../components/EventPages/VoluteerList";
 import getUser from "./user";
 import { calculateDuration } from "../../utils/date";
+import { useCheckUserParticipation } from "../../hook/useRegistration";
+import { getEventById } from "../../services/eventService";
+import { useAuth } from "../../hook/useAuth";
 
 export default function EventLayout() {
   const { id, tab } = useParams();
   const location = useLocation();
   const passedEventData = location.state?.eventData;
 
+  // Check user's participation status
+  const { data: participationData, isLoading: isCheckingStatus } =
+    useCheckUserParticipation(id);
+  const userRegistrationStatus = participationData;
+  console.log("User registration status:", userRegistrationStatus);
+  const isApproved =
+    userRegistrationStatus === "APPROVED" ||
+    userRegistrationStatus === "COMPLETED";
+
   // Get active tab from URL params, default to overview
   const activeTab = tab || "overview";
-
+  const { data } = localStorage.getItem("user");
+  console.log("User data in EventLayout:", data);
   console.log(id);
   console.log("Passed event data:", passedEventData);
 
@@ -50,7 +63,7 @@ export default function EventLayout() {
 
       try {
         setLoading(true);
-        const data = await api.get(`/events/${id}`);
+        const data = await getEventById(id);
         setEventData(data);
         setError(null);
         console.log("Fetched from API:", data);
@@ -107,8 +120,60 @@ export default function EventLayout() {
           />
         );
       case "discussion":
+        if (!isApproved) {
+          return (
+            <div className="p-8 text-center bg-gray-50 rounded-lg">
+              <div className="text-gray-600 mb-4">
+                <svg
+                  className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                <p className="text-lg font-semibold">Access Restricted</p>
+                <p className="mt-2">
+                  You must join the event and wait for approval to access
+                  discussions.
+                </p>
+              </div>
+            </div>
+          );
+        }
         return <FeedPage />;
       case "members":
+        if (!isApproved) {
+          return (
+            <div className="p-8 text-center bg-gray-50 rounded-lg">
+              <div className="text-gray-600 mb-4">
+                <svg
+                  className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                <p className="text-lg font-semibold">Access Restricted</p>
+                <p className="mt-2">
+                  You must join the event and wait for approval to see the
+                  volunteer list.
+                </p>
+              </div>
+            </div>
+          );
+        }
         return (
           <VolunteerList
             userList={userList}
@@ -172,6 +237,8 @@ export default function EventLayout() {
           durationCancel={eventData?.durationCancel || ""}
           registedVolunteer={eventData?.registrationCount || 0}
           totalSpots={eventData?.capacity || 10}
+          userRegistrationStatus={userRegistrationStatus}
+          isCheckingStatus={isCheckingStatus}
           onAction={() => {}}
         />
         <OrganizationCard data={passedEventData?.owner} />
