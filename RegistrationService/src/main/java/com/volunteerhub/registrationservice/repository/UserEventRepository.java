@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,4 +65,31 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
             @Param("status") UserEventStatus status,
             Pageable pageable
     );
+
+    @Query("SELECT ue FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN :statuses")
+    List<UserEvent> findAllByEventIdAndStatus(
+            @Param("eventId") Long eventId,
+            @Param("statuses") List<UserEventStatus> statuses
+    );
+
+    @Query("""
+    SELECT COUNT(ue.id)
+    FROM UserEvent ue
+    JOIN EventSnapshot es ON ue.eventId = es.eventId
+    WHERE es.ownerId = :ownerId
+""")
+    Long countApplicationsByOwnerId(@Param("ownerId") String ownerId);
+
+    @Query("""
+    SELECT COUNT(ue.id)
+    FROM UserEvent ue
+    JOIN EventSnapshot es ON ue.eventId = es.eventId
+    WHERE es.ownerId = :ownerId
+      AND ue.status = 'APPROVED'
+""")
+    Long countApprovedByOwnerId(@Param("ownerId") String ownerId);
+
+    @Query("SELECT COUNT(u) FROM UserEvent u WHERE u.userId = :userId AND u.status IN :statuses")
+    Long countUserEventsByStatuses(@Param("userId") String userId, @Param("statuses") Collection<UserEventStatus> statuses);
+
 }

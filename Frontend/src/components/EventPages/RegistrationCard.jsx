@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../Card.jsx/Card";
 import { formatDateTime } from "../../utils/date";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { useAuth } from "../../hook/useAuth";
-import { useRegisterForEvent } from "../../hook/useRegistration";
+import {
+  useRegisterForEvent,
+  useCheckUserParticipation,
+} from "../../hook/useRegistration";
+
 function RegistrationCard({
   id,
   duration,
@@ -14,29 +18,101 @@ function RegistrationCard({
   onAction,
   registedVolunteer = 10,
   totalSpots = 10,
+  userRegistrationStatus, // Received from parent
+  isCheckingStatus, // Received from parent
 }) {
   const { user, hasRole } = useAuth();
-  const [status, setStatus] = useState(null);
 
-  const registerMutation = useRegisterForEvent({
-    onSuccess: () => {
-      setStatus("PENDING");
-    },
-  });
+  const registerMutation = useRegisterForEvent();
 
   const width = (registedVolunteer / totalSpots) * 100;
+
+  // Check if registration deadline has passed
+  const isDeadlinePassed =
+    registrationDeadline && new Date(registrationDeadline) < new Date();
 
   const handleRegister = () => {
     registerMutation.mutate(id);
   };
 
-  const isDisabled =
-    registedVolunteer >= totalSpots ||
-    registerMutation.isPending ||
-    status === "PENDING";
-  const buttonClass = isDisabled
-    ? "bg-gray-500/80 cursor-not-allowed"
-    : "bg-red-500/80 cursor-pointer hover:bg-red-600";
+  // Determine button text and state based on registration status
+  const getButtonConfig = () => {
+    if (isCheckingStatus) {
+      return {
+        text: "Checking...",
+        disabled: true,
+        className: "bg-gray-500/80 cursor-not-allowed",
+      };
+    }
+
+    // User has not registered yet (404 or no data)
+    if (!userRegistrationStatus) {
+      if (isDeadlinePassed) {
+        return {
+          text: "Registration Closed",
+          disabled: true,
+          className: "bg-gray-500/80 cursor-not-allowed",
+        };
+      }
+      if (registedVolunteer >= totalSpots) {
+        return {
+          text: "Event Full",
+          disabled: true,
+          className: "bg-gray-500/80 cursor-not-allowed",
+        };
+      }
+      if (registerMutation.isPending) {
+        return {
+          text: "Joining...",
+          disabled: true,
+          className: "bg-purple-500/80 cursor-not-allowed",
+        };
+      }
+      return {
+        text: "Join",
+        disabled: false,
+        className:
+          "bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 cursor-pointer hover:from-purple-500 hover:via-fuchsia-500 hover:to-pink-500",
+      };
+    }
+
+    // User status-based configurations
+    switch (userRegistrationStatus) {
+      case "PENDING":
+        return {
+          text: "Pending Approval",
+          disabled: true,
+          className: "bg-yellow-400 cursor-not-allowed",
+        };
+      case "APPROVED":
+        return {
+          text: "✓ You're Participating",
+          disabled: true,
+          className: "bg-green-500/80 cursor-not-allowed",
+        };
+      case "COMPLETED":
+        return {
+          text: "✓ Event Completed",
+          disabled: true,
+          className: "bg-blue-500/80 cursor-not-allowed",
+        };
+      case "REJECTED":
+        return {
+          text: "Registration Rejected",
+          disabled: true,
+          className: "bg-red-500/80 cursor-not-allowed",
+        };
+      default:
+        return {
+          text: "Join",
+          disabled: false,
+          className:
+            "bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 cursor-pointer hover:from-purple-500 hover:via-fuchsia-500 hover:to-pink-500",
+        };
+    }
+  };
+
+  const buttonConfig = getButtonConfig();
 
   return (
     <Card>
@@ -46,7 +122,7 @@ function RegistrationCard({
           <div className="flex flex-row items-center gap-5">
             <div className="bg-gray-600/20 h-2 w-full relative rounded-full">
               <div
-                className="bg-red-400 h-2 absolute top-0 left-0 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-purple-400 to-pink-400 h-2 absolute top-0 left-0 rounded-full transition-all duration-300"
                 style={{ width: `${width}%` }}
               ></div>
             </div>
@@ -83,14 +159,10 @@ function RegistrationCard({
         {hasRole("USER") && user && (
           <button
             onClick={handleRegister}
-            disabled={isDisabled}
-            className={`border-none rounded-xl md:mt-8 text-white px-4 mt-1 py-1 text-center font-lobster tracking-widest hover:scale-105 transition-all duration-300 ease-in-out active:scale-95 disabled:hover:scale-100 ${buttonClass}`}
+            disabled={buttonConfig.disabled}
+            className={`border-none rounded-xl md:mt-8 text-white px-4 mt-1 py-1 text-center font-lobster tracking-widest hover:scale-105 transition-all duration-300 ease-in-out active:scale-95 disabled:hover:scale-100 ${buttonConfig.className}`}
           >
-            {registerMutation.isPending
-              ? "Joining..."
-              : status === "PENDING"
-              ? "Pending"
-              : "Join"}
+            {buttonConfig.text}
           </button>
         )}
       </div>

@@ -1,5 +1,5 @@
 
-import { approveRegistration, checkUserParticipation, getAggregatedRegistrations, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, removeParticipant, reviewRegistration, unregisterFromEvent } from "../services/registrationService";
+import { approveRegistration, checkUserParticipation, getAggregatedRegistrations, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, removeParticipant, reviewRegistration, unregisterFromEvent, UserApprovedList } from "../services/registrationService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -196,4 +196,13 @@ export const useRemoveParticipant = () => {
             toast.error(message);
         },
     });
-};   
+};
+
+export const useConstUserApprovedList = (eventId) => {
+    return useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "constUserApprovedList", eventId],
+        queryFn: () => UserApprovedList(eventId),
+        staleTime: 5 * 60 * 1000,
+        enabled: !!eventId,
+    });
+};

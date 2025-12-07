@@ -6,12 +6,13 @@ import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
+import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
-//import com.volunteerhub.registrationservice.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.mapper.UserEventMapper;
 import com.volunteerhub.registrationservice.model.EventSnapshot;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
+import com.volunteerhub.registrationservice.repository.EventSnapshotRepository;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -21,12 +22,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserEventService {
 
     private final UserEventRepository userEventRepository;
+    private final EventSnapshotRepository eventSnapshotRepository;
     private final EventSnapshotService eventSnapshotService;
     private final UserEventMapper userEventMapper;
     private final RegistrationPublisher registrationPublisher;
@@ -262,6 +265,51 @@ public class UserEventService {
         return pageResult.getContent().stream()
                 .map(userEventMapper::toAggregatorDto)
                 .toList();
+    }
+
+
+    public Long getApplicationRate(String ownerId) {
+        long totalApps = userEventRepository.countApplicationsByOwnerId(ownerId);
+        long totalCapacity = eventSnapshotRepository.findCapacityPerManager(ownerId);
+
+        if (totalCapacity == 0) return 0L;
+        return (long) ((double) totalApps / totalCapacity * 100);
+    }
+
+    public Long getApprovalRate(String ownerId) {
+        long approvedCount = userEventRepository.countApprovedByOwnerId(ownerId);
+        long totalApps = userEventRepository.countApplicationsByOwnerId(ownerId);
+
+        if (totalApps == 0) return 0L;
+        return (long) ((double) approvedCount / totalApps * 100);
+    }
+
+    public List<UserEventExport> getAllForExport() {
+        return userEventRepository.findAll().stream()
+                .map(userEventMapper::toExportDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserEventExport> getByEventForExport(Long eventId) {
+        List<UserEventStatus> validStatuses = List.of(
+                UserEventStatus.APPROVED,
+                UserEventStatus.COMPLETED
+        );
+
+        List<UserEvent> events = userEventRepository.findAllByEventIdAndStatus(eventId, validStatuses);
+
+        return events.stream()
+                .map(userEventMapper::toExportDto)
+                .collect(Collectors.toList());
+    }
+
+    public Long countParticipatedEvents(String userId) {
+        List<UserEventStatus> activeStatuses = List.of(
+                UserEventStatus.APPROVED,
+                UserEventStatus.COMPLETED
+        );
+
+        return userEventRepository.countUserEventsByStatuses(userId, activeStatuses);
     }
 
 }

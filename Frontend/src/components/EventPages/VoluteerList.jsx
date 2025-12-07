@@ -11,7 +11,7 @@ function VoluteerList({ userList, loadMore, end }) {
         </div>
         <div className="flex flex-col gap-1 md:gap-4">
           {userList.map((item) => (
-            <UserCard key={item.id} {...item} />
+            <UserCard key={item.id} data={item} />
           ))}
         </div>
         <p

@@ -1,8 +1,8 @@
 package com.volunteerhub.userservice.controller;
 
-import com.volunteerhub.common.dto.UserResponse;
+import com.volunteerhub.userservice.dto.request.UserRequest;
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.common.enums.UserRole;
-import com.volunteerhub.userservice.dto.UserRequest;
 import com.volunteerhub.userservice.model.UserBadge;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.service.UserBadgeService;
@@ -14,12 +14,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/users")
@@ -33,7 +35,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(userService.findById(authentication.getName()));
+        return ResponseEntity.ok(userService.getUserResponseById(authentication.getName()));
     }
 
     @GetMapping("/{userId}")
@@ -80,4 +82,23 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userService.update(authentication.getName(), userRequest), HttpStatus.OK);
     }
+
+    @GetMapping("/total_users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Long> countUsers() {
+        return ResponseEntity.ok(userService.countUsers());
+    }
+
+    @GetMapping("/total_managers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Long> countManagers() {
+        return ResponseEntity.ok(userService.countManagers());
+    }
+
+//    @GetMapping("/export-all")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<List<UserResponse>> exportAllUsers() {
+//        return ResponseEntity.ok(userService.getAllUsersForExport());
+//    }
+
 }

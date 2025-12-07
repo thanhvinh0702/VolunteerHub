@@ -4,12 +4,15 @@ import com.volunteerhub.common.dto.EventRegistrationCount;
 import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
+import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -76,7 +79,7 @@ public class UserEventController {
     }
 
     @PostMapping("/events/{eventId}")
-    public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
+        public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userEventService.registerUserEvent(authentication.getName(), eventId), HttpStatus.CREATED);
     }
@@ -117,5 +120,39 @@ public class UserEventController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ownerId = authentication.getName();
         return ResponseEntity.ok(userEventService.getRegistrationsByEventIdsInternal(ownerId, eventId, status, pageNum, pageSize));
+    }
+
+    @GetMapping("/application_rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApplicationRate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        return ResponseEntity.ok(userEventService.getApplicationRate(currentUserId));
+    }
+
+    @GetMapping("/approved_rate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Long> getApprovedRate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+        return ResponseEntity.ok(userEventService.getApprovalRate(currentUserId));
+    }
+
+    @GetMapping("/export-all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserEventExport>> exportAllRegistrations() {
+        return ResponseEntity.ok(userEventService.getAllForExport());
+    }
+
+    @GetMapping("/event/{eventId}/export")
+    public ResponseEntity<List<UserEventExport>> exportByEvent(@PathVariable Long eventId) {
+        return ResponseEntity.ok(userEventService.getByEventForExport(eventId));
+    }
+
+    @GetMapping("/my-stats/participated-events")
+    public ResponseEntity<Long> getMyTotalParticipatedEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.countParticipatedEvents(authentication.getName()));
     }
 }

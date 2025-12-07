@@ -1,5 +1,6 @@
 package com.volunteerhub.registrationservice.service;
 
+import com.volunteerhub.common.enums.EventStatus;
 import com.volunteerhub.registrationservice.dto.EventSnapshotRequest;
 import com.volunteerhub.registrationservice.model.EventSnapshot;
 import com.volunteerhub.registrationservice.repository.EventSnapshotRepository;
@@ -45,4 +46,13 @@ public class EventSnapshotService {
         EventSnapshot eventSnapshot = findEntityById(eventSnapshotId);
         eventSnapshotRepository.delete(eventSnapshot);
     }
+
+    public Long countEventPerManager(String ownerId) {
+        return eventSnapshotRepository.countEventPerManager(ownerId);
+    }
+
+    public Long countEventActivePerManager(String ownerId) {
+        return eventSnapshotRepository.countSnapshotsByStatus(ownerId, EventStatus.APPROVED);
+    }
+
 }

@@ -12,7 +12,7 @@ function OrganizationCard({ data }) {
         <div className="flex flex-row items-center gap-2">
           <img
             src={avatarUrl}
-            alt={name}
+            alt={fullName}
             className="w-10 h-10 rounded-full bg-red-400 object-cover ring-1 ring-red-950"
           />
           <div className="font-semibold">

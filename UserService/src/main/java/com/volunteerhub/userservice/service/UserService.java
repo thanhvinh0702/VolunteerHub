@@ -1,22 +1,33 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
-import com.volunteerhub.userservice.dto.UserRequest;
+import com.volunteerhub.userservice.mapper.UserMapper;
+import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.enums.UserStatus;
+import com.volunteerhub.userservice.dto.request.UserRequest;
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -35,26 +46,42 @@ public class UserService {
         return userMapper.toResponse(this.findEntityById(id));
     }
 
+
+    public UserResponse getUserResponseById(String id) {
+        UserResponse user = findById(id);
+        return user;
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new NoSuchElementException("No such user with email " + email));
+}
+
     public List<UserResponse> findAllByIds(List<String> userIds) {
         return userRepository.findAllByIds(userIds).stream().map(userMapper::toResponse).toList();
     }
 
-    public UserResponse findByEmail(String email) {
-        return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow(() ->
-                new NoSuchElementException("No such user with email " + email)));
-    }
 
     public List<UserResponse> findAll(Integer page, Integer pageSize) {
-        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(page, pageSize);
-        return userRepository.findAll(PageRequest.of(pageNumAndSizeResponse.getPageNum(),
-                pageNumAndSizeResponse.getPageSize())).getContent().stream()
-                .map(userMapper::toResponse).toList();
+        if (page == null || pageSize == null) {
+            return userRepository.findAll().stream()
+                    .map(userMapper::toResponse)
+                    .collect(Collectors.toList());
+        }
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        return userPage.getContent().stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     public List<String> findAllIds(UserRole role) {
         return userRepository.findAllIdsByRole(role);
     }
 
+    @Transactional
     public UserResponse create(String userId, UserRole userRole, UserRequest userRequest) {
         Address address = null;
         Long addressId = null;
@@ -68,8 +95,10 @@ public class UserService {
                 .id(userId)
                 .email(userRequest.getEmail())
                 .fullName(userRequest.getFullName())
+                .username(userRequest.getUsername())
                 .authProvider(userRequest.getAuthProvider())
                 .role(userRole)
+                .status(UserStatus.ACTIVE)
                 .bio(userRequest.getBio())
                 .avatarUrl(userRequest.getAvatarUrl())
                 .skills(userRequest.getSkills())
@@ -77,12 +106,14 @@ public class UserService {
                 .phoneNumber(userRequest.getPhoneNumber())
                 .address(address)
                 .addressId(addressId)
-                .username(userRequest.getUsername())
-                .isDarkMode(userRequest.isDarkMode() ? true : false)
+                .isDarkMode(userRequest.isDarkMode())
                 .build();
-        return userMapper.toResponse(userRepository.save(user));
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toResponse(savedUser);
     }
 
+    @Transactional
     @PreAuthorize("authentication.name == #userId")
     public UserResponse update(String userId, UserRequest userRequest) throws AccessDeniedException {
         User existedUser = this.findEntityById(userId);
@@ -115,4 +146,50 @@ public class UserService {
         }
         return userMapper.toResponse(userRepository.save(existedUser));
     }
+
+
+    public Long countManagers() {
+        return userRepository.countUsers(UserRole.MANAGER);
+    }
+
+    public Long countUsers() {
+        return userRepository.countUsers(UserRole.USER);
+    }
+
+    public UserResponse convertToExportData(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .authProvider(user.getAuthProvider())
+                .totalEvents(user.getTotalEvents())
+                .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .badgeCount(user.getBadges() == null ? 0 : user.getBadges().size())
+
+                .build();
+    }
+
+    public List<UserResponse> getExportDataForSelectedUsers(List<String> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<User> users = userRepository.findAllByIdsWithBadges(userIds);
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getAllUsersForExport() {
+        List<User> users = userRepository.findAllForExport();
+
+        return users.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
 }

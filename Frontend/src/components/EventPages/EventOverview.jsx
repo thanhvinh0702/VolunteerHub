@@ -3,6 +3,7 @@ import { FiCalendar } from "react-icons/fi";
 import Card from "../Card.jsx/Card";
 import { FaLocationPin } from "react-icons/fa6";
 import { formatDateTime } from "../../utils/date";
+import { Book, BookOpen } from "lucide-react";
 
 function EventOverview({ description, location, startTime, endTime }) {
   const [showMore, setShowMore] = useState(false);
@@ -11,7 +12,9 @@ function EventOverview({ description, location, startTime, endTime }) {
 
   React.useEffect(() => {
     if (descriptionRef.current && description) {
-      const lineHeight = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
+      const lineHeight = parseFloat(
+        getComputedStyle(descriptionRef.current).lineHeight
+      );
       const height = descriptionRef.current.scrollHeight;
       const lines = Math.ceil(height / lineHeight);
       setShouldShowButton(lines > 5);
@@ -23,7 +26,7 @@ function EventOverview({ description, location, startTime, endTime }) {
   return (
     <div className="p-4 flex gap-4 flex-col">
       {/* Make cards equal height */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
         <Card className="h-full">
           <div className="flex items-start gap-3 h-full flex-col justify-between">
             <div className="flex items-start gap-3">
@@ -67,15 +70,26 @@ function EventOverview({ description, location, startTime, endTime }) {
         </Card>
       </div>
 
-      <div className="flex flex-col gap-5 border border-gray-300 p-4 rounded-2xl duration-300">
-        <p 
+      <div className="flex flex-col gap-5 border border-gray-300 p-4 rounded-2xl duration-300 mt-5">
+        <p className="text-md font-semibold  flex items-center gap-1">
+          <span className="text-blue-500 w-4">
+            <Book className="w-full" />
+          </span>
+          Description
+        </p>
+        <p
           ref={descriptionRef}
-          className={`whitespace-pre-line ${!showMore && shouldShowButton ? "line-clamp-5" : ""}`}
+          className={`whitespace-pre-line ${
+            !showMore && shouldShowButton ? "line-clamp-5" : ""
+          }`}
         >
           {description || "No description available"}
         </p>
         {shouldShowButton && (
-          <span onClick={toggleShowMore} className="text-blue-500 cursor-pointer">
+          <span
+            onClick={toggleShowMore}
+            className="text-blue-500 cursor-pointer"
+          >
             {showMore ? "Show less ↑" : "Show more ↓"}
           </span>
         )}

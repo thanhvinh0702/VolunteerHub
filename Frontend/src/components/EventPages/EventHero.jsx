@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEarthAfrica } from "react-icons/fa6";
 import VolunteerHero from "./VolunteerHero";
-import { useListUserOfAnEvent } from "../../hook/useRegistration";
+import { useConstUserApprovedList } from "../../hook/useRegistration";
 const dumpData = [
   {
     id: 1,
@@ -144,21 +144,20 @@ const dumpData = [
     createdAt: "2025-11-11T17:00:00.000Z",
   },
 ];
-function EventHero({
-  id,
-  imgURL,
-  organizerName,
-  eventName,
-  userList = dumpData,
-}) {
-  //console.log(id, imgURL, organizerName, eventName);
-  // Lấy 8 người đã được accept
-  const { data } = useListUserOfAnEvent(id, {
-    status: "ACCEPTED",
-    pageSize: 8,
-    pageNum: 0,
-  });
-  console.log("User list for event:", data);
+function EventHero({ id, imgURL, organizerName, eventName }) {
+  const [displayCount, setDisplayCount] = useState(8);
+
+  // Fetch all approved users
+  const { data: approvedUsers, isLoading } = useConstUserApprovedList(id);
+  console.log("Approved users for event:", approvedUsers);
+
+  const userList = approvedUsers || [];
+  const displayedUsers = userList.slice(0, displayCount);
+  const hasMore = userList.length > displayCount;
+
+  const handleShowMore = () => {
+    setDisplayCount((prev) => prev + 5);
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -178,9 +177,20 @@ function EventHero({
           </span>
           <span>{organizerName}</span>
         </p>
-        <div>
-          <VolunteerHero userList={userList} />
-        </div>
+        {isLoading ? (
+          <div className="text-sm text-gray-500">Loading volunteers...</div>
+        ) : userList.length > 0 ? (
+          <div>
+            <VolunteerHero
+              userList={displayedUsers}
+              totalCount={userList.length}
+              hasMore={hasMore}
+              onShowMore={handleShowMore}
+            />
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500">No volunteers yet</div>
+        )}
       </div>
     </div>
   );

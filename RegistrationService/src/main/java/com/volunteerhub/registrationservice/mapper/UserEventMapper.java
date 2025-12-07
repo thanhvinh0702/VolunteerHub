@@ -6,6 +6,8 @@ import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMess
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationRejectedMessage;
+import com.volunteerhub.registrationservice.dto.UserEventExport;
+import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.model.UserEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -94,6 +96,20 @@ public class UserEventMapper {
                 .status(userEvent.getStatus())
                 .createdAt(userEvent.getCreatedAt())
                 .updatedAt(userEvent.getUpdatedAt())
+                .build();
+    }
+
+    public UserEventExport toExportDto(UserEvent userEvent) {
+        return UserEventExport.builder()
+                .id(userEvent.getId())
+                .eventId(userEvent.getEventId())
+                .userId(userEvent.getUserId())
+
+                .status(userEvent.getStatus().name())
+
+                .note(userEvent.getNote() != null ? userEvent.getNote() : "")
+
+                .registeredAt(userEvent.getCreatedAt().toString())
                 .build();
     }
 }

@@ -1,16 +1,18 @@
-package com.volunteerhub.userservice.dto;
+package com.volunteerhub.userservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.volunteerhub.userservice.validation.OnCreate;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
 public class UserRequest {
     @NotNull(message = "Auth provider cannot be null", groups = OnCreate.class)
     private String authProvider;

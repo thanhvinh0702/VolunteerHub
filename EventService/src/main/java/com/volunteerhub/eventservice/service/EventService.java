@@ -5,6 +5,8 @@ import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
+import com.volunteerhub.common.dto.EventResponse;
+import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
 import com.volunteerhub.eventservice.model.Category;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +60,9 @@ public class EventService {
     }
 
     public Page<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status,
-                                       String categoryName, LocalDateTime startAfter, LocalDateTime endBefore,
-                                       String province, String district, String street,
-                                       String sortedBy, String order) {
+            String categoryName, LocalDateTime startAfter, LocalDateTime endBefore,
+            String province, String district, String street,
+            String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
@@ -65,7 +70,9 @@ public class EventService {
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
-        Page<Event> events = eventRepository.findAll(EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street),
+        Page<Event> events = eventRepository.findAll(
+                EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district,
+                        street),
                 PageRequest.of(page, size, sort));
         List<EventResponse> dtoList = events.getContent()
                 .stream()
@@ -74,17 +81,18 @@ public class EventService {
         return new PageImpl<>(
                 dtoList,
                 events.getPageable(),
-                events.getTotalElements()
-        );
+                events.getTotalElements());
     }
 
-    public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy, String order) {
+    public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy,
+            String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
         Page<Event> events = eventRepository
-                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort));
+                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(),
+                        pageNumAndSizeResponse.getPageSize(), sort));
         List<EventResponse> dtoList = events
                 .getContent()
                 .stream()
@@ -93,12 +101,12 @@ public class EventService {
         return new PageImpl<>(
                 dtoList,
                 events.getPageable(),
-                events.getTotalElements()
-        );
+                events.getTotalElements());
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse createEvent(String userId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
+    public EventResponse createEvent(String userId, EventRequest eventRequest, MultipartFile imageFile)
+            throws IOException {
         Category category = categoryService.findByNameOrCreate(eventRequest.getCategoryName());
 
         Address address = addressService.findOrCreateAddress(eventRequest.getAddress());
@@ -128,7 +136,8 @@ public class EventService {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest, MultipartFile imageFile) throws IOException {
+    public EventResponse updateEvent(String userId, Long eventId, EventRequest eventRequest, MultipartFile imageFile)
+            throws IOException {
         Event event = findEntityById(eventId);
 
         if (!event.getOwnerId().equals(userId)) {
@@ -196,9 +205,8 @@ public class EventService {
         return eventMapper.toDto(savedEvent);
     }
 
-
-    // TODO: publish event an event has been deleted (notification and registration)
-    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
+    // TODO: publish event an event has been deleted
+    @PreAuthorize("hasRole('MANAGER')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
         boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
@@ -249,7 +257,53 @@ public class EventService {
         return new PageImpl<>(
                 dtoList,
                 events.getPageable(),
-                events.getTotalElements()
-        );
+                events.getTotalElements());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Long countEvents() {
+        return eventRepository.countEvents();
+    }
+
+    // Trong EventService hoặc Mapper
+    public EventResponseCSV convertToExportData(Event event) {
+        return EventResponseCSV.builder()
+                .id(event.getId())
+                .name(event.getName())
+                .ownerId(event.getOwnerId())
+                .status(event.getStatus().name())
+
+                .categoryName(event.getCategory() != null
+                        ? event.getCategory().getName()
+                        : "Uncategorized")
+
+                .fullAddress(event.getAddress() != null
+                        ? event.getAddress().getStreet() + ", " + event.getAddress().getDistrict() + ", "
+                                + event.getAddress().getProvince()
+                        : "Online/Unknown")
+
+                .startTime(event.getStartTime().toString())
+                .endTime(event.getEndTime().toString())
+
+                .capacity(event.getCapacity())
+                .badgeCount(event.getBadges() == null ? 0 : event.getBadges().size())
+
+                .build();
+    }
+
+    public List<EventResponseCSV> getDataForExport() {
+        List<Event> events = eventRepository.findAllForExport();
+
+        return events.stream()
+                .map(this::convertToExportData)
+                .collect(Collectors.toList());
+    }
+
+    public Long countEventsByOwnerId(String ownerId) {
+        return eventRepository.countEventsByOwnerId(ownerId);
+    }
+
+    public Long countActiveEventsByOwnerId(String ownerId) {
+        return eventRepository.countByOwnerIdAndStatus(ownerId, EventStatus.APPROVED);
     }
 }

@@ -1,6 +1,6 @@
 package com.volunteerhub.userservice.controller;
 
-import com.volunteerhub.common.dto.UserResponse;
+import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.service.UserLoginHistoryService;
@@ -29,4 +29,5 @@ public class AdminController {
     public ResponseEntity<List<UserLoginHistory>> findByUserId(@PathVariable String userId) {
         return ResponseEntity.ok(userLoginHistoryService.findByUserId(userId));
     }
+
 }
