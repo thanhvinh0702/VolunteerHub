@@ -65,8 +65,8 @@ function RegistrationCard({
           <p>{duration}</p>
         </div>
         <div className="flex flex-row justify-between">
-          <p>Min age:</p>
-          <p>{minAge}</p>
+          <p>Min age: </p>
+          <p>{minAge || 16}</p>
         </div>
         <div className="flex flex-row justify-between">
           <p>Deadline:</p>

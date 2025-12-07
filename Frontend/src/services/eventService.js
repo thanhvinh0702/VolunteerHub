@@ -3,6 +3,7 @@ import axiosClient from "./axiosClient";
 const EVENT_BASE_URL = "/api/v1/events";
 const EVENT_AGGREGATED_BASE_URL = "/api/v1/aggregated/events";
 
+
 export const getEvents = async (params = {}) => {
     const response = await axiosClient.get(EVENT_AGGREGATED_BASE_URL, { params });
     console.log('Events API response:', response);

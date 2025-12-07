@@ -131,7 +131,9 @@ export default function Opportunities() {
     <div className="bg-white p-6 rounded-xl shadow-sm gap-4 flex flex-col">
       <div>
         <h4 className="text-2xl font-semibold mb-1">Opportunities</h4>
-        <p className="text-gray-500">Nội dung cơ hội sẽ hiển thị ở đây.</p>
+        <p className="text-gray-500">
+          Manage your event registrations and participation
+        </p>
       </div>
       <div>
         <Tabs

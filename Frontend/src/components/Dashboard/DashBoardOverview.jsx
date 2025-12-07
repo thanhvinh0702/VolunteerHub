@@ -36,7 +36,6 @@ function DashBoardOverview() {
             );
           }
 
-          // Hiển thị Card với dữ liệu thật
           return <EventCard key={card.id || index} {...card} />;
         })}
       </div>

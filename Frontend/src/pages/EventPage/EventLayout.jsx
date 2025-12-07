@@ -174,7 +174,7 @@ export default function EventLayout() {
           totalSpots={eventData?.capacity || 10}
           onAction={() => {}}
         />
-        <OrganizationCard ownerId={eventData?.ownerId} />
+        <OrganizationCard data={passedEventData?.owner} />
         {/*<ContactCard />
         <RelatedEventsCard />*/}
       </aside>

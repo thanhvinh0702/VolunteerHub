@@ -3,7 +3,7 @@ import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import EventManagerCardAd from "./EventManagerCardAd";
 import Pagination from "@mui/material/Pagination";
-import { useEventPagination } from "../../hook/useEvent";
+import { useEventPaginationAdmin } from "../../hook/useEvent";
 
 const PAGE_SIZE = 20;
 
@@ -28,11 +28,13 @@ function EventAdminManager() {
     setPage(0);
   }, [filterStatus]);
 
-  const { data, isLoading, isFetching, isError, error } = useEventPagination({
-    pageNum: page,
-    pageSize: PAGE_SIZE,
-    status: filterStatus === "all" ? undefined : filterStatus.toUpperCase(),
-  });
+  const { data, isLoading, isFetching, isError, error } =
+    useEventPaginationAdmin({
+      pageNum: page,
+      pageSize: PAGE_SIZE,
+      status: filterStatus === "all" ? undefined : filterStatus.toUpperCase(),
+      search: debouncedSearch.trim() ? debouncedSearch.trim() : undefined,
+    });
 
   // Track first successful
   useEffect(() => {

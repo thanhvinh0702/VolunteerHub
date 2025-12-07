@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit, Eye, Trash2, X } from "lucide-react";
 import {
   getStatusColor,
@@ -29,6 +29,11 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
 
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isCancelling, setIsCancelling] = useState(false);
+
+  // Keep the local status in sync with the latest server payload so the row updates after admin actions
+  useEffect(() => {
+    setCurrentStatus(status);
+  }, [status]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";

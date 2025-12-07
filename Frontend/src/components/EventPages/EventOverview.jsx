@@ -5,7 +5,19 @@ import { FaLocationPin } from "react-icons/fa6";
 import { formatDateTime } from "../../utils/date";
 
 function EventOverview({ description, location, startTime, endTime }) {
-  const [showMore, setShowMore] = useState(true);
+  const [showMore, setShowMore] = useState(false);
+  const [shouldShowButton, setShouldShowButton] = useState(false);
+  const descriptionRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (descriptionRef.current && description) {
+      const lineHeight = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
+      const height = descriptionRef.current.scrollHeight;
+      const lines = Math.ceil(height / lineHeight);
+      setShouldShowButton(lines > 5);
+    }
+  }, [description]);
+
   const toggleShowMore = () => setShowMore(!showMore);
 
   return (
@@ -56,12 +68,17 @@ function EventOverview({ description, location, startTime, endTime }) {
       </div>
 
       <div className="flex flex-col gap-5 border border-gray-300 p-4 rounded-2xl duration-300">
-        <p className={`whitespace-pre-line ${showMore ? "line-clamp-10" : ""}`}>
+        <p 
+          ref={descriptionRef}
+          className={`whitespace-pre-line ${!showMore && shouldShowButton ? "line-clamp-5" : ""}`}
+        >
           {description || "No description available"}
         </p>
-        <span onClick={toggleShowMore} className="text-blue-500 cursor-pointer">
-          {showMore ? "Show more ↓" : "Show less ↑"}
-        </span>
+        {shouldShowButton && (
+          <span onClick={toggleShowMore} className="text-blue-500 cursor-pointer">
+            {showMore ? "Show less ↑" : "Show more ↓"}
+          </span>
+        )}
       </div>
       {/* <div>
         <Card>

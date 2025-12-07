@@ -47,7 +47,9 @@ export const useAggregatedRegistrations = (params) => {
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 1000 * 30, // 30 seconds
+        refetchInterval: 1000 * 5, // Auto-refetch every 5 seconds
+        refetchIntervalInBackground: true, // Continue refetch even when tab is not focused
     });
 
     useEffect(() => {
