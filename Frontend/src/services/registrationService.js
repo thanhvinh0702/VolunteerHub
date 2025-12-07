@@ -1,7 +1,8 @@
+import { EVENT_STATUS } from "../pages/EventManager/eventManagerData";
 import axiosClient from "./axiosClient";
 const REGISTRATION_BASE_URL = "/api/v1/registrations";
 const AGGREGATED_REGISTRATION_BASE_URL = "/api/v1/aggregated/registrations";
-
+const AGGREGATED_EVENT_BASE_URL = "/api/v1/aggregated/events";
 export const registerEventList = async (params) => {
     try {
         console.log('API call with params:', params);
@@ -128,6 +129,16 @@ export const constUserIdList = async (eventId) => {
         return response.data;
     } catch (error) {
         console.error("Error fetching user IDs for event:", error);
+        throw error;
+    }
+};
+
+export const UserApprovedList = async (eventId) => {
+    try {
+        const response = await axiosClient.get(`${AGGREGATED_EVENT_BASE_URL}/${eventId}/users`);
+        return response;
+    } catch (error) {
+        console.error("Error fetching approved users for event:", error);
         throw error;
     }
 };

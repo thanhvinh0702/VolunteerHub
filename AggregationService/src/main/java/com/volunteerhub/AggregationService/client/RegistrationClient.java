@@ -2,6 +2,7 @@ package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
 import com.volunteerhub.common.dto.EventRegistrationCount;
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.common.dto.RegistrationResponse;
@@ -16,6 +17,11 @@ import java.util.List;
 @FeignClient(name = "REGISTRATIONSERVICE", configuration = FeignConfig.class)
 public interface RegistrationClient {
 
+    @GetMapping("/api/v1/registrations")
+    PageResponse<UserEventResponse> findAllByUserId(@RequestParam(required = false) UserEventStatus status,
+                                                    @RequestParam(required = false) Integer pageNum,
+                                                    @RequestParam(required = false) Integer pageSize);
+
     @GetMapping("/api/v1/registrations/events/registration-count")
     List<EventRegistrationCount> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
                                                             @RequestParam(required = false) Integer pageNum,
@@ -28,10 +34,10 @@ public interface RegistrationClient {
                                       @RequestParam(required = false) Integer pageSize);
 
     @GetMapping("/api/v1/registrations/events/{eventId}")
-    List<UserEventResponse> findAllByEventId(@PathVariable Long eventId,
-                                             @RequestParam(required = false) UserEventStatus status,
-                                             @RequestParam(required = false) Integer pageNum,
-                                             @RequestParam(required = false) Integer pageSize);
+    PageResponse<UserEventResponse> findAllByEventId(@PathVariable Long eventId,
+                                                     @RequestParam(required = false) UserEventStatus status,
+                                                     @RequestParam(required = false) Integer pageNum,
+                                                     @RequestParam(required = false) Integer pageSize);
 
     @GetMapping("/api/v1/registrations/internal/manager")
     List<RegistrationResponse> getRegistrationsByOwnerId(@RequestParam(value = "eventId", required = false) Long eventId,

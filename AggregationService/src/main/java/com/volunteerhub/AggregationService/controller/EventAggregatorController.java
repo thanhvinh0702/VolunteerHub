@@ -3,6 +3,7 @@ package com.volunteerhub.AggregationService.controller;
 import com.volunteerhub.AggregationService.dto.AggregatedEventResponse;
 import com.volunteerhub.AggregationService.dto.TrendingEventResponse;
 import com.volunteerhub.AggregationService.service.EventAggregatorService;
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +20,16 @@ public class EventAggregatorController {
     private final EventAggregatorService eventAggregatorService;
 
     @GetMapping
-    public ResponseEntity<List<AggregatedEventResponse>> getAllAggregatedEvents(@RequestParam(required = false) Integer pageNum,
-                                                                                @RequestParam(required = false) Integer pageSize,
-                                                                                @RequestParam(required = false) EventStatus status,
-                                                                                @RequestParam(defaultValue = "id") String sortedBy,
-                                                                                @RequestParam(defaultValue = "desc") String order) {
+    public ResponseEntity<PageResponse<AggregatedEventResponse>> getAllAggregatedEvents(@RequestParam(required = false) Integer pageNum,
+                                                                                        @RequestParam(required = false) Integer pageSize,
+                                                                                        @RequestParam(required = false) EventStatus status,
+                                                                                        @RequestParam(defaultValue = "id") String sortedBy,
+                                                                                        @RequestParam(defaultValue = "desc") String order) {
         return ResponseEntity.ok(eventAggregatorService.getAggregatedEvents(pageNum, pageSize, status, sortedBy, order));
     }
 
     @GetMapping("/owned")
-    public ResponseEntity<List<AggregatedEventResponse>> getAllAggregatedOwnedEvents(@RequestParam(required = false) Integer pageNum,
+    public ResponseEntity<PageResponse<AggregatedEventResponse>> getAllAggregatedOwnedEvents(@RequestParam(required = false) Integer pageNum,
                                                                                      @RequestParam(required = false) Integer pageSize,
                                                                                      @RequestParam(required = false) EventStatus status,
                                                                                      @RequestParam(defaultValue = "id") String sortedBy,
@@ -36,6 +37,7 @@ public class EventAggregatorController {
         return ResponseEntity.ok(eventAggregatorService.getAggregatedOwnedEvents(pageNum, pageSize, status, sortedBy, order));
     }
 
+    // TODO: pagination metadata, total comments, posts, reaction, maybe need standalone service for trending computing
     @GetMapping("/trending")
     public ResponseEntity<List<TrendingEventResponse>> getAllTrendingEvents(@RequestParam(required = false) Integer pageNum,
                                                                             @RequestParam(required = false) Integer pageSize,
@@ -44,7 +46,7 @@ public class EventAggregatorController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<AggregatedEventResponse>> searchEvents(
+    public ResponseEntity<PageResponse<AggregatedEventResponse>> searchEvents(
             @RequestParam String keyword,
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {
