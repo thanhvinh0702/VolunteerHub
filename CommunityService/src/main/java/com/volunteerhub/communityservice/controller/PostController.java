@@ -24,9 +24,11 @@ public class PostController {
 
     @GetMapping
     public List<PostResponse> findAll(@PathVariable Long eventId,
+                                      @RequestParam(defaultValue = "id") String sortedBy,
+                                      @RequestParam(defaultValue = "desc") String order,
                                       @RequestParam(required = false) Integer pageNum,
                                       @RequestParam(required = false) Integer pageSize) {
-        return postService.findByEventId(eventId, pageNum, pageSize);
+        return postService.findByEventId(eventId, sortedBy, order, pageNum, pageSize);
     }
 
     @GetMapping("/{postId}")
