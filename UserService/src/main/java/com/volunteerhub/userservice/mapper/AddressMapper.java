@@ -1,5 +1,6 @@
 package com.volunteerhub.userservice.mapper;
 
+import com.volunteerhub.userservice.dto.response.AddressResponse;
 import com.volunteerhub.userservice.model.Address;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -115,15 +115,28 @@ public class UserService {
 
     @Transactional
     @PreAuthorize("authentication.name == #userId")
-    public UserResponse update(String userId, UserRequest userRequest) {
-        UserResponse existingUser = this.findById(userId);
-
-        updateUserFields(existingUser, userRequest);
-
-        if (userRequest.getAddress() != null) {
+    public UserResponse update(String userId, UserRequest userRequest) throws AccessDeniedException {
+        User existedUser = this.findEntityById(userId);
+        if (userRequest.getBio() != null) {
+            existedUser.setBio(userRequest.getBio());
+        }
+        if (userRequest.getAvatarUrl() != null) {
+            existedUser.setAvatarUrl(userRequest.getAvatarUrl());
+        }
+        if (userRequest.getSkills() != null) {
+            existedUser.setSkills(userRequest.getSkills());
+        }
+        if (userRequest.getDateOfBirth() != null) {
+            existedUser.setDateOfBirth(userRequest.getDateOfBirth());
+        }
+        if (userRequest.getPhoneNumber() != null) {
+            existedUser.setPhoneNumber(userRequest.getPhoneNumber());
+        }
+        if (userRequest.getAddress() != null && userRequest.getAddress().getDistrict() != null &&
+                userRequest.getAddress().getProvince() != null && userRequest.getAddress().getStreet() != null) {
             Address address = addressService.findOrCreateAddress(userRequest.getAddress());
-            existingUser.setAddress(address);
-            existingUser.setAddressId(address.getId());
+            existedUser.setAddress(address);
+            existedUser.setAddressId(address.getId());
         }
 
         if (userRequest.isDarkMode()) {
@@ -132,18 +145,6 @@ public class UserService {
             existedUser.setDarkMode(false);
         }
         return userMapper.toResponse(userRepository.save(existedUser));
-        User savedUser = userRepository.save(existingUser);
-        return userMapper.toResponse(savedUser);
-    }
-
-    private void updateUserFields(User user, UserRequest userRequest) {
-        if (userRequest.getFullName() != null) user.setFullName(userRequest.getFullName());
-        if (userRequest.getBio() != null) user.setBio(userRequest.getBio());
-        if (userRequest.getAvatarUrl() != null) user.setAvatarUrl(userRequest.getAvatarUrl());
-        if (userRequest.getSkills() != null) user.setSkills(userRequest.getSkills());
-        if (userRequest.getDateOfBirth() != null) user.setDateOfBirth(userRequest.getDateOfBirth());
-        if (userRequest.getPhoneNumber() != null) user.setPhoneNumber(userRequest.getPhoneNumber());
-        user.setDarkMode(userRequest.isDarkMode());
     }
 
 

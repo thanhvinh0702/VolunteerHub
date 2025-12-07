@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public final AddressMapper addressMapper;
 
-    private final AddressMapper addressMapper;
-
     public UserResponse toResponse(User user) {
         if (user == null) {
             return null;
@@ -21,7 +19,6 @@ public class UserMapper {
                 .id(user.getId())
                 .authProvider(user.getAuthProvider())
                 .fullName(user.getFullName())
-                .username(user.getUsername())
                 .email(user.getEmail())
                 .avatarUrl(user.getAvatarUrl())
                 .role(user.getRole())
@@ -33,8 +30,7 @@ public class UserMapper {
                 .dateOfBirth(user.getDateOfBirth())
                 .phoneNumber(user.getPhoneNumber())
                 .address(addressMapper.toResponse(user.getAddress()))
-                .isDarkMode(user.isDarkMode())
-                .createdAt(user.getCreatedAt())
+                .darkMode(user.isDarkMode())
                 .build();
     }
 }
