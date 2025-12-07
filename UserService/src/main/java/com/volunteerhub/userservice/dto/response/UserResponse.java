@@ -1,8 +1,8 @@
 package com.volunteerhub.userservice.dto.response;
 
-import com.volunteerhub.userservice.dto.request.AddressRequest;
-import com.volunteerhub.userservice.model.Role;
-import com.volunteerhub.userservice.model.Status;
+import com.volunteerhub.common.enums.UserRole;
+import com.volunteerhub.common.enums.UserStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +19,8 @@ public class UserResponse {
     private String id;
     private String fullName;
     private String email;
-    private Role role;
-    private Status status;
+    private UserRole role;
+    private UserStatus status;
     private String authProvider;
     private String bio;
     private Integer totalEvents;

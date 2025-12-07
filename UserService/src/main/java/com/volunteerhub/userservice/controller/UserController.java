@@ -2,11 +2,7 @@ package com.volunteerhub.userservice.controller;
 
 import com.volunteerhub.userservice.dto.request.UserRequest;
 import com.volunteerhub.userservice.dto.response.UserResponse;
-import com.volunteerhub.userservice.model.Role;
-import com.volunteerhub.userservice.model.User;
-import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.UserRole;
-import com.volunteerhub.userservice.dto.UserRequest;
 import com.volunteerhub.userservice.model.UserBadge;
 import com.volunteerhub.userservice.model.UserLoginHistory;
 import com.volunteerhub.userservice.service.UserBadgeService;

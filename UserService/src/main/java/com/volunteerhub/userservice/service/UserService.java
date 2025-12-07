@@ -1,10 +1,8 @@
 package com.volunteerhub.userservice.service;
 
-import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
-import com.volunteerhub.userservice.dto.UserRequest;
 import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.enums.UserStatus;
@@ -12,11 +10,10 @@ import com.volunteerhub.userservice.dto.request.UserRequest;
 import com.volunteerhub.userservice.dto.response.UserResponse;
 import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.userservice.model.Address;
-import com.volunteerhub.userservice.model.Role;
-import com.volunteerhub.userservice.model.Status;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,8 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -37,40 +36,32 @@ public class UserService {
     private final AddressService addressService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    public User findById(String id) {
-    private final UserMapper userMapper;
 
     public User findEntityById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No such user with id " + id));
     }
 
+    public UserResponse findById(String id) {
+        return userMapper.toResponse(this.findEntityById(id));
+    }
+
+
     public UserResponse getUserResponseById(String id) {
-        User user = findById(id);
-        return userMapper.toResponse(user);
+        UserResponse user = findById(id);
+        return user;
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new NoSuchElementException("No such user with email " + email));
-    public UserResponse findById(String id) {
-        return userMapper.toResponse(this.findEntityById(id));
-    }
+}
 
     public List<UserResponse> findAllByIds(List<String> userIds) {
         return userRepository.findAllByIds(userIds).stream().map(userMapper::toResponse).toList();
     }
 
-    public UserResponse findByEmail(String email) {
-        return userMapper.toResponse(userRepository.findByEmail(email).orElseThrow(() ->
-                new NoSuchElementException("No such user with email " + email)));
-    }
 
-    public List<UserResponse> findAll(Integer page, Integer pageSize) {
-        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(page, pageSize);
-        return userRepository.findAll(PageRequest.of(pageNumAndSizeResponse.getPageNum(),
-                pageNumAndSizeResponse.getPageSize())).getContent().stream()
-                .map(userMapper::toResponse).toList();
     public List<UserResponse> findAll(Integer page, Integer pageSize) {
         if (page == null || pageSize == null) {
             return userRepository.findAll().stream()
@@ -91,8 +82,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse create(String userId, Role userRole, UserRequest userRequest) {
-        // 1. Xử lý Address trước
+    public UserResponse create(String userId, UserRole userRole, UserRequest userRequest) {
         Address address = null;
         Long addressId = null;
 
@@ -108,7 +98,7 @@ public class UserService {
                 .username(userRequest.getUsername())
                 .authProvider(userRequest.getAuthProvider())
                 .role(userRole)
-                .status(Status.ACTIVE)
+                .status(UserStatus.ACTIVE)
                 .bio(userRequest.getBio())
                 .avatarUrl(userRequest.getAvatarUrl())
                 .skills(userRequest.getSkills())
@@ -126,14 +116,10 @@ public class UserService {
     @Transactional
     @PreAuthorize("authentication.name == #userId")
     public UserResponse update(String userId, UserRequest userRequest) {
-        User existingUser = this.findById(userId);
+        UserResponse existingUser = this.findById(userId);
 
-        // 1. Update các trường cơ bản (Sử dụng Mapper update partial là tốt nhất)
-        // Nếu dùng MapStruct: userMapper.updateUserFromDto(request, existingUser);
-        // Dưới đây là cách thủ công nếu chưa có Mapper update:
         updateUserFields(existingUser, userRequest);
 
-        // 2. Xử lý Address đặc biệt
         if (userRequest.getAddress() != null) {
             Address address = addressService.findOrCreateAddress(userRequest.getAddress());
             existingUser.setAddress(address);
@@ -160,60 +146,13 @@ public class UserService {
         user.setDarkMode(userRequest.isDarkMode());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public User lockUser(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("No such user with id " + userId));
-
-        if (user.getRole() == Role.ADMIN) {
-            throw new AccessDeniedException("Unable to lock an admin account");
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String name = authentication.getName();
-        User admin = userRepository.findByNameAdmin(name)
-                .orElseThrow(() -> new NoSuchElementException("No admin found"));
-        UUID adminID = UUID.fromString(admin.getId());
-        user.setStatus(Status.BANNED);
-        UserStatus userStatus = switchingType(user.getStatus());
-        UserRole userRole = switchingRole(user.getRole());
-        return userRepository.save(user);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public User unlockUser(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("No such user with id " + userId));
-
-        if (user.getRole() == Role.ADMIN) {
-            throw new AccessDeniedException("Cannot unlock an admin account");
-        }
-
-        user.setStatus(Status.ACTIVE);
-        return userRepository.save(user);
-    }
-
-    protected UserStatus switchingType(Status status) {
-        if (Objects.requireNonNull(status) == Status.ACTIVE) {
-            return UserStatus.ACTIVE;
-        }
-        return UserStatus.BANNED;
-    }
-
-    protected UserRole switchingRole(Role role) {
-        switch(role) {
-            case Role.MANAGER -> { return UserRole.MANAGER; }
-            case Role.USER -> { return UserRole.USER; }
-            default -> { return UserRole.ADMIN; }
-        }
-    }
 
     public Long countManagers() {
-        return userRepository.countUsers(Role.MANAGER);
+        return userRepository.countUsers(UserRole.MANAGER);
     }
 
     public Long countUsers() {
-        return userRepository.countUsers(Role.USER);
+        return userRepository.countUsers(UserRole.USER);
     }
 
     public UserResponse convertToExportData(User user) {

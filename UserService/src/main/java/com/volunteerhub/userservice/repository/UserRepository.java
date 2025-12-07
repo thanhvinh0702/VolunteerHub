@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     @Query("SELECT COUNT(*) FROM User u WHERE u.role = :role")
-    Long countUsers(@Param("role") Role role);
+    Long countUsers(@Param("role") UserRole role);
 
     @Query("SELECT u.id FROM User u WHERE u.role = :role")
     List<String> findAllIdsByRole(@Param("role") UserRole role);
@@ -27,7 +27,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     where u.id in :userIds
     """)
     List<User> findAllByIds(@Param("userIds") List<String> userIds);
-    List<String> findAllIdsByRole(@Param("role") Role role);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.role = com.volunteerhub.userservice.model.Role.ADMIN")
     Optional<User> findByNameAdmin(@Param("username") String name);
