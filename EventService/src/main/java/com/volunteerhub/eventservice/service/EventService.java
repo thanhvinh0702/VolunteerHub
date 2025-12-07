@@ -13,6 +13,8 @@ import com.volunteerhub.eventservice.publisher.EventPublisher;
 import com.volunteerhub.eventservice.repository.EventRepository;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,38 +52,57 @@ public class EventService {
                 .map(eventMapper::toDto).toList();
     }
 
-    public List<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
+    public Page<EventResponse> findAll(Integer pageNum, Integer pageSize, EventStatus status, String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
         if (status != null) {
-            return eventRepository.findByStatus(status, PageRequest.of(page, size)).getContent()
+            Page<Event> events = eventRepository.findByStatus(status, PageRequest.of(page, size));
+
+            List<EventResponse> dtoList = events.getContent()
                     .stream()
                     .map(eventMapper::toDto)
                     .toList();
+
+            return new PageImpl<>(
+                    dtoList,
+                    events.getPageable(),
+                    events.getTotalElements()
+            );
         }
 
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
-
-        return eventRepository.findAll(PageRequest.of(page, size, sort)).getContent()
+        Page<Event> events = eventRepository.findAll(PageRequest.of(page, size, sort));
+        List<EventResponse> dtoList = events.getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();
+        return new PageImpl<>(
+                dtoList,
+                events.getPageable(),
+                events.getTotalElements()
+        );
     }
 
-    public List<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy, String order) {
+    public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, String sortedBy, String order) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         Sort sort = order.equals("asc")
                 ? Sort.by(sortedBy).ascending()
                 : Sort.by(sortedBy).descending();
-        return eventRepository
-                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort))
+        Page<Event> events = eventRepository
+                .findAllByOwnerId(userId, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort));
+        List<EventResponse> dtoList = events
                 .getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();
+        return new PageImpl<>(
+                dtoList,
+                events.getPageable(),
+                events.getTotalElements()
+        );
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -222,19 +243,21 @@ public class EventService {
         return eventMapper.toDto(eventRepository.save(event));
     }
 
-    public List<EventResponse> searchByKeyword(String keyword, Integer pageNum, Integer pageSize) {
+    public Page<EventResponse> searchByKeyword(String keyword, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size))
+        Page<Event> events = eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size));
+        List<EventResponse> dtoList = events
                 .getContent()
                 .stream()
                 .map(eventMapper::toDto)
                 .toList();
+        return new PageImpl<>(
+                dtoList,
+                events.getPageable(),
+                events.getTotalElements()
+        );
     }
 }

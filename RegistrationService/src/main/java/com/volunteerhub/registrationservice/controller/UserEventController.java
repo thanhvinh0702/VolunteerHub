@@ -7,6 +7,7 @@ import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class UserEventController {
     private final UserEventService userEventService;
 
     @GetMapping
-    public ResponseEntity<List<UserEventResponse>> findAllByUserId(@RequestParam(required = false) UserEventStatus status,
+    public ResponseEntity<Page<UserEventResponse>> findAllByUserId(@RequestParam(required = false) UserEventStatus status,
                                                                    @RequestParam(required = false) Integer pageNum,
                                                                    @RequestParam(required = false) Integer pageSize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -32,7 +33,7 @@ public class UserEventController {
     }
 
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<List<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
+    public ResponseEntity<Page<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
                                                                     @RequestParam(required = false) UserEventStatus status,
                                                                     @RequestParam(required = false) Integer pageNum,
                                                                     @RequestParam(required = false) Integer pageSize) {

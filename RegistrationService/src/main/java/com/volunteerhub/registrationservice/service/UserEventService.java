@@ -14,10 +14,7 @@ import com.volunteerhub.registrationservice.model.UserEvent;
 import com.volunteerhub.registrationservice.publisher.RegistrationPublisher;
 import com.volunteerhub.registrationservice.repository.UserEventRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -117,27 +114,19 @@ public class UserEventService {
         return new ArrayList<>(map.values());
     }
 
-    public List<UserEventResponse> findByUserId(String userId, UserEventStatus status, Integer pageNum,
+    public Page<UserEventResponse> findByUserId(String userId, UserEventStatus status, Integer pageNum,
             Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         if (status != null) {
-            return userEventRepository.findByUserIdAndStatus(userId,
-                    status,
-                    PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()))
-                    .getContent()
-                    .stream().map(userEventMapper::toResponseDto)
-                    .toList();
+            return userEventMapper.toResponseDtoPage(userEventRepository.findByUserIdAndStatus(userId, status,
+                    PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize())));
         }
-        return userEventRepository
-                .findByUserId(userId,
-                        PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()))
-                .getContent()
-                .stream().map(userEventMapper::toResponseDto)
-                .toList();
+        return userEventMapper.toResponseDtoPage(userEventRepository.findByUserId(userId,
+                PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize())));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    public List<UserEventResponse> findByEventId(String userId, Long eventId, UserEventStatus status, Integer pageNum,
+    public Page<UserEventResponse> findByEventId(String userId, Long eventId, UserEventStatus status, Integer pageNum,
             Integer pageSize) {
         EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
         if (!eventSnapshot.getOwnerId().equals(userId)) {
@@ -145,19 +134,13 @@ public class UserEventService {
         }
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         if (status != null) {
-            return userEventRepository.findByEventIdAndStatus(eventId,
-                    status,
-                    PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()))
-                    .getContent()
-                    .stream().map(userEventMapper::toResponseDto)
-                    .toList();
+            Page<UserEvent> userEvents = userEventRepository.findByEventIdAndStatus(eventId, status, PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
+            return userEventMapper.toResponseDtoPage(userEvents);
         }
-        return userEventRepository
+        Page<UserEvent> userEvents = userEventRepository
                 .findByEventId(eventId,
-                        PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()))
-                .getContent()
-                .stream().map(userEventMapper::toResponseDto)
-                .toList();
+                        PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
+        return userEventMapper.toResponseDtoPage(userEvents);
     }
 
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
