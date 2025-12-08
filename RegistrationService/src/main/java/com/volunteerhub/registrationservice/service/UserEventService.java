@@ -157,8 +157,6 @@ public class UserEventService {
         return userEventMapper.toResponseDtoPage(userEvents);
     }
 
-
-    @PreAuthorize("hasRole('MANAGER')")
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         return userEventRepository.findAllUserIdsByEventId(eventId,
