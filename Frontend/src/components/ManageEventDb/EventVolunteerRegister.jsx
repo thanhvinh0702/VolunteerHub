@@ -15,7 +15,7 @@ export default function EventVolunteerRegister() {
     search: "",
   });
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(5);
 
   // Fetch ALL registrations once, then filter client-side for view needs
   const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
@@ -54,7 +54,9 @@ export default function EventVolunteerRegister() {
     let filtered = all;
     if (status === "approved") {
       filtered = all.filter(
-        (r) => r.registrationStatus === "APPROVED" || r.registrationStatus === "COMPLETED"
+        (r) =>
+          r.registrationStatus === "APPROVED" ||
+          r.registrationStatus === "COMPLETED"
       );
     } else if (status === "completed") {
       filtered = all.filter((r) => r.registrationStatus === "COMPLETED");
@@ -83,7 +85,8 @@ export default function EventVolunteerRegister() {
     }
 
     const totalElements = filtered.length;
-    const totalPages = totalElements > 0 ? Math.ceil(totalElements / pageSize) : 0;
+    const totalPages =
+      totalElements > 0 ? Math.ceil(totalElements / pageSize) : 0;
     const safePage = totalPages > 0 ? Math.min(page, totalPages) : 1;
     const start = (safePage - 1) * pageSize;
     const registrations = filtered.slice(start, start + pageSize);

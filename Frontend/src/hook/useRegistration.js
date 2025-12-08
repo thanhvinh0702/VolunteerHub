@@ -4,6 +4,7 @@ import {
     getAggregatedRegistrations,
     listUserAllEventManagement,
     listUserOfAnEvent,
+    listUserOfAnEventAprovedAndCompleted,
     numberOfEventRegistrations,
     registerEventList,
     registerForEvent,
@@ -159,6 +160,20 @@ export const useListUserOfAnEvent = (eventId, params) => {
     });
 };
 
+export const useListUserOfAnEventApproveAndCompleted = (eventId, params) => {
+    return useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "usersApproveAndCompleted", eventId, JSON.stringify(params)],
+        queryFn: async () => {
+            const result = await listUserOfAnEventAprovedAndCompleted(eventId, params);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        staleTime: 5 * 60 * 1000,
+        enabled: !!eventId,
+        placeholderData: keepPreviousData,
+        retry: false,
+    });
+};
+
 export const useNumberOfEventRegistrations = (eventId) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "numberOfRegistrations", eventId],
@@ -176,8 +191,8 @@ export const useReviewRegistration = () => {
         onSuccess: (data, variables) => {
             const statusText =
                 variables.status === "APPROVED" ? "approved" :
-                variables.status === "REJECTED" ? "rejected" :
-                variables.status === "COMPLETED" ? "completed" : "updated";
+                    variables.status === "REJECTED" ? "rejected" :
+                        variables.status === "COMPLETED" ? "completed" : "updated";
             toast.success(`Registration ${statusText} successfully.`);
             queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
             queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "manager"]);
@@ -226,11 +241,9 @@ export const useAllRegistrationForManager = ({
     const normalizedEvent = event?.toLowerCase() || "all";
 
     const query = useQuery({
-        queryKey: [...REGISTRAION_QUERY_KEY, "manager", { status: normalizedStatus }],
+        queryKey: [...REGISTRAION_QUERY_KEY, "manager"],
         queryFn: async () => {
-            const params = {};
-            if (normalizedStatus !== "ALL") params.status = normalizedStatus;
-            const response = await listUserAllEventManagement(params);
+            const response = await listUserAllEventManagement();
             return Array.isArray(response) ? response : [];
         },
         staleTime: 5 * 60 * 1000,
