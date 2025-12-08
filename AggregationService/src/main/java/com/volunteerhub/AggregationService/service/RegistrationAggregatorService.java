@@ -72,4 +72,28 @@ public class RegistrationAggregatorService {
                 .totalElements(userEventResponses.getTotalElements())
                 .build();
     }
+
+    public PageResponse<AggregatedUserEventResponse> getAllParticipantsByEventId(Long eventId, Integer pageNum, Integer pageSize) {
+        PageResponse<UserEventResponse> userEventResponsePageResponses = registrationClient.findAllParticipants(eventId, pageNum, pageSize);
+        List<String> userIds = userEventResponsePageResponses.getContent().stream().map(UserEventResponse::getUserId).toList();
+        List<UserResponse> userResponses = userClient.findAllByIds(userIds);
+        Map<String, UserResponse> userMap = userResponses.stream()
+                .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
+        List<AggregatedUserEventResponse> dtoList = userEventResponsePageResponses.getContent().stream()
+                .map(ue -> {
+                    UserResponse userResponse = userMap.getOrDefault(ue.getUserId(), UserResponse.builder().build());
+                    return AggregatedUserEventResponse.builder()
+                            .userEventResponse(ue)
+                            .user(userResponse)
+                            .build();
+                })
+                .toList();
+        return PageResponse.<AggregatedUserEventResponse>builder()
+                .content(dtoList)
+                .size(userEventResponsePageResponses.getSize())
+                .number(userEventResponsePageResponses.getNumber())
+                .totalPages(userEventResponsePageResponses.getTotalPages())
+                .totalElements(userEventResponsePageResponses.getTotalElements())
+                .build();
+    }
 }

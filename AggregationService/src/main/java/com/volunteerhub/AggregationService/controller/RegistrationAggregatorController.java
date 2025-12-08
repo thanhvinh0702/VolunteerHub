@@ -23,6 +23,13 @@ public class RegistrationAggregatorController {
         return ResponseEntity.ok(registrationAggregatorService.getAllRegistrations(status, pageNum, pageSize));
     }
 
+    @GetMapping("/events/{eventId}/participants")
+    public ResponseEntity<PageResponse<AggregatedUserEventResponse>> getAllEventParticipants(@PathVariable Long eventId,
+                                                                                             @RequestParam(required = false) Integer pageNum,
+                                                                                             @RequestParam(required = false) Integer pageSize) {
+        return ResponseEntity.ok(registrationAggregatorService.getAllParticipantsByEventId(eventId, pageNum, pageSize));
+    }
+
     @GetMapping("/events/{eventId}")
     public ResponseEntity<PageResponse<AggregatedUserEventResponse>> getAllEventRegistration(@PathVariable Long eventId,
                                                                                              @RequestParam(required = false) UserEventStatus status,
@@ -30,4 +37,5 @@ public class RegistrationAggregatorController {
                                                                                              @RequestParam(required = false) Integer pageSize) {
         return ResponseEntity.ok(registrationAggregatorService.getEventRegistration(eventId, status, pageNum, pageSize));
     }
+
 }

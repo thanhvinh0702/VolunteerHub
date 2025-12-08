@@ -27,6 +27,11 @@ public interface RegistrationClient {
                                                             @RequestParam(required = false) Integer pageSize,
                                                             @RequestParam(required = false) Integer days);
 
+    @GetMapping("/events/{eventId}/participants")
+    PageResponse<UserEventResponse> findAllParticipants(@PathVariable Long eventId,
+                                                        @RequestParam(required = false) Integer pageNum,
+                                                        @RequestParam(required = false) Integer pageSize);
+
     @GetMapping("/events/{eventId}/user-ids")
     List<String> findUserIdsByEventId(@PathVariable Long eventId,
                                       @RequestParam(required = false) Integer pageNum,

@@ -35,14 +35,6 @@ public class UserEventController {
         return ResponseEntity.ok(userEventService.findByUserId(authentication.getName(), status, pageNum, pageSize));
     }
 
-    @GetMapping("/events/{eventId}")
-    public ResponseEntity<Page<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
-                                                                    @RequestParam(required = false) UserEventStatus status,
-                                                                    @RequestParam(required = false) Integer pageNum,
-                                                                    @RequestParam(required = false) Integer pageSize) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(userEventService.findByEventId(authentication.getName(), eventId, status, pageNum, pageSize));
-    }
 
     @GetMapping("/events/{eventId}/user-ids")
     public ResponseEntity<List<String>> findUserIdsByEventId(@PathVariable Long eventId,
@@ -51,6 +43,14 @@ public class UserEventController {
                                                              @RequestParam(required = false) Integer pageSize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.findUserIdsByEventId(authentication.getName(), eventId, pageNum, pageSize));
+    }
+
+    @GetMapping("/events/{eventId}/participants")
+    public ResponseEntity<Page<UserEventResponse>> findAllParticipants(@PathVariable Long eventId,
+                                                                       @RequestParam(required = false) Integer pageNum,
+                                                                       @RequestParam(required = false) Integer pageSize) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.findAllUsers(authentication.getName(), eventId, pageNum, pageSize));
     }
 
     @GetMapping("/events/{eventId}/isParticipant")
@@ -63,6 +63,16 @@ public class UserEventController {
     public ResponseEntity<UserEventStatus> getStatus(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.getRegistrationStatus(authentication.getName(), eventId));
+    }
+
+
+    @GetMapping("/events/{eventId}")
+    public ResponseEntity<Page<UserEventResponse>> findAllByEventId(@PathVariable Long eventId,
+                                                                    @RequestParam(required = false) UserEventStatus status,
+                                                                    @RequestParam(required = false) Integer pageNum,
+                                                                    @RequestParam(required = false) Integer pageSize) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.findByEventId(authentication.getName(), eventId, status, pageNum, pageSize));
     }
 
     @GetMapping("/events/registration-count")

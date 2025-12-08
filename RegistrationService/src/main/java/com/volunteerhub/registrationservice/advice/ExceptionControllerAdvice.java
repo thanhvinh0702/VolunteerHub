@@ -47,7 +47,7 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(Exception.class) // fallback for any other exception
     public ResponseEntity<ErrorDetails> handleAll(Exception ex) {
-        return buildResponse("Internal server error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse("[REGISTRATION-SERVICE] Internal server error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<ErrorDetails> buildResponse(String message, HttpStatus status) {
