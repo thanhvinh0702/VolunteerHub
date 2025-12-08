@@ -1,30 +1,39 @@
 import axiosClient from "./axiosClient";
 
-const EVENT_BASE_URL = "/api/v1/events";
-const EVENT_AGGREGATED_BASE_URL = "/api/v1/aggregated/events";
+const EVENT_BASE_URL = "api/v1/events";
+const EVENT_AGGREGATED_BASE_URL = "api/v1/aggregated/events";
 
 
 export const getEvents = async (params = {}) => {
+    console.log("params", params);
     const response = await axiosClient.get(EVENT_AGGREGATED_BASE_URL, { params });
     console.log('Events API response:', response);
 
-    // Handle paginated response structure
-    if (response.data && response.meta) {
+    // Handle paginated response structure from API
+
+    if (response.content !== undefined) {
         return {
-            data: response.data,
-            meta: response.meta
+            data: response.content,
+            meta: {
+                totalPages: response.totalPages || 0,
+                totalElements: response.totalElements || 0,
+                currentPage: response.number || 0,
+                pageSize: response.size || params.pageSize || 10
+            }
         };
     }
 
     // Fallback for simple array response
     const data = Array.isArray(response) ? response : (response.data || []);
-    console.log('Processed data:', data);
+
 
     return {
         data: data,
         meta: {
             totalPages: 1,
-            totalElements: data.length
+            totalElements: data.length,
+            currentPage: 0,
+            pageSize: data.length
         }
     };
 };
@@ -130,3 +139,10 @@ export const rejectEvent = async (eventId) => {
     const response = await axiosClient.post(`${EVENT_BASE_URL}/${eventId}/ban`);
     return response;
 }
+
+export const searchEventByName = async (name) => {
+    const response = await axiosClient.get(`${EVENT_BASE_URL}/search`, {
+        params: { keyword: name }
+    });
+    return response;
+};

@@ -27,30 +27,52 @@ export const useEvents = (params) => {
 
 export const useEventPagination = (params) => {
     const queryClient = useQueryClient();
-    const { pageNum = 0, pageSize = 10, status } = params || {};
+    const {
+        pageNum = 0,
+        pageSize = 10,
+        status,
+        sortedBy,
+        order,
+        capacity
+    } = params || {};
+
     const query = useQuery({
-        queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status],
+        queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status, sortedBy, order, capacity],
         queryFn: async () => {
-            const result = await getEvents({ pageNum, pageSize, status });
+            // Build apiParams, only include defined values
+            const apiParams = { pageNum, pageSize };
+            if (status) apiParams.status = status;
+            if (sortedBy) apiParams.sortedBy = sortedBy;
+            if (order) apiParams.order = order;
+            if (capacity) apiParams.capacity = capacity;
+
+            console.log("useEventPagination - API params:", apiParams);
+            const result = await getEvents(apiParams);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
-        placeholderData: keepPreviousData,
-        staleTime: 1000 * 60 * 5,
+        placeholderData: keepPreviousData, // Giữ data cũ khi đang fetch data mới
+        staleTime: 1000 * 30, // Data được coi là fresh
     });
 
     // Prefetch the next page
     useEffect(() => {
         const nextPage = pageNum + 1;
         if (query.data?.meta?.totalPages > nextPage) {
+            const prefetchParams = { pageNum: nextPage, pageSize };
+            if (status) prefetchParams.status = status;
+            if (sortedBy) prefetchParams.sortedBy = sortedBy;
+            if (order) prefetchParams.order = order;
+            if (capacity) prefetchParams.capacity = capacity;
+
             queryClient.prefetchQuery({
-                queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status],
+                queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status, sortedBy, order, capacity],
                 queryFn: async () => {
-                    const result = await getEvents({ pageNum: nextPage, pageSize, status });
+                    const result = await getEvents(prefetchParams);
                     return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
                 },
             });
         }
-    }, [query.data, pageNum, pageSize, status, queryClient]);
+    }, [query.data, pageNum, pageSize, status, sortedBy, order, queryClient, capacity]);
 
     return query;
 }
@@ -188,6 +210,7 @@ export const useSearchEvents = ({
         if (query.data?.meta?.totalPages > nextPage) {
             queryClient.prefetchQuery({
                 queryKey: [...EVENTS_QUERY_KEY, 'search', debouncedSearch, nextPage, pageSize, status, sortBy, filterBy, filterValue],
+
                 queryFn: async () => {
                     const params = {
                         pageNum: nextPage,

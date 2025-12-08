@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProjectCard from "../../components/Project/card";
 import FilterHorizontal from "../../components/Filter/FilterHorizontal";
 import TrendingScrollList from "../../components/TrendingEvent/TrendingScrollList";
-import { useSearchEvents } from "../../hook/useEvent";
-import { Pagination } from "@mui/material";
+import { useEventPagination } from "../../hook/useEvent";
+import { Pagination, Skeleton } from "@mui/material";
 
 const categories = [
   "education",
@@ -16,7 +16,7 @@ const categories = [
 
 function OpportunitiesEvent() {
   const [pageNum, setPageNum] = useState(0);
-  const [pageSize] = useState(9);
+  const [pageSize] = useState(6);
 
   // Filter states
   const [query, setQuery] = useState("");
@@ -24,16 +24,51 @@ function OpportunitiesEvent() {
   const [timeRange, setTimeRange] = useState("all");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortBy, setSortBy] = useState("Date"); // Date, Name
+  const [order, setOrder] = useState("asc"); // asc, desc
+  const getSortBy = () => {
+    switch (sortBy) {
+      case "Date":
+        return "startTime";
+      case "Name":
+        return "name";
+      case "Capacity":
+        return "capacity";
+      default:
+        return "startTime";
+    }
+  };
 
-  const { data, isLoading, isFetching, isError, error } = useSearchEvents({
-    search: query,
-    pageNum,
-    pageSize,
+  // Debounce filter params để tránh gọi API quá nhiều
+  const [debouncedParams, setDebouncedParams] = useState({
     status: status === "all" ? undefined : status,
-    sortBy: sortBy,
-    filterBy: selectedCategories.length > 0 ? "category" : undefined,
-    filterValue: selectedCategories.length > 0 ? selectedCategories : undefined,
+    sortedBy: getSortBy(),
+    order,
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedParams({
+        status: status === "all" ? undefined : status,
+        sortedBy: getSortBy(),
+        order,
+      });
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(timer);
+  }, [status, sortBy, order]);
+
+  // Sử dụng useEventPagination với debounced params
+  const { data, isLoading, isFetching, isError, error, isPlaceholderData } =
+    useEventPagination({
+      pageNum,
+      pageSize,
+      ...debouncedParams,
+    });
+
+  // Reset pageNum về 0 khi filter thay đổi
+  useEffect(() => {
+    setPageNum(0);
+  }, [query, status, sortBy, order, selectedCategories]);
 
   if (isError) {
     return (
@@ -46,10 +81,11 @@ function OpportunitiesEvent() {
       </div>
     );
   }
+  console.log(data);
 
   const events = data?.data || [];
-  const totalPages = 2; // Default to 2 pages
-  const totalElements = 7;
+  const totalPages = data?.meta?.totalPages || 0;
+  const totalElements = data?.meta?.totalElements || 0;
 
   // Category options
   const toggleCategory = (category) => {
@@ -58,7 +94,6 @@ function OpportunitiesEvent() {
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
-    setPageNum(0); // Reset to first page when filter changes
   };
 
   const resetFilters = () => {
@@ -67,11 +102,12 @@ function OpportunitiesEvent() {
     setStatus("APPROVED");
     setTimeRange("all");
     setSortBy("Date");
+    setOrder("asc");
     setPageNum(0);
   };
 
   const handlePageChange = (event, value) => {
-    setPageNum(value - 1); // Convert from 1-based (UI) to 0-based (API)
+    setPageNum(value - 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -96,6 +132,8 @@ function OpportunitiesEvent() {
         toggleCategory={toggleCategory}
         sortBy={sortBy}
         setSortBy={setSortBy}
+        order={order}
+        setOrder={setOrder}
         resetFilters={resetFilters}
       />
 
@@ -105,21 +143,50 @@ function OpportunitiesEvent() {
 
       <div className="flex justify-between items-center px-4 mb-4">
         <div className="text-xl font-bold">All Opportunities</div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 flex items-center gap-2">
+          {isFetching && (
+            <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+          )}
           {isLoading ? "Loading..." : `${totalElements} events found`}
         </div>
       </div>
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading opportunities...</div>
+      {isLoading && !data && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+          {[...Array(pageSize)].map((_, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-sm overflow-hidden"
+            >
+              <Skeleton variant="rectangular" height={180} animation="wave" />
+              <div className="p-4">
+                <Skeleton
+                  variant="text"
+                  width="60%"
+                  height={24}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="text"
+                  width="80%"
+                  height={20}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="text"
+                  width="40%"
+                  height={20}
+                  animation="wave"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && events.length === 0 && (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-64 transition-opacity duration-300">
           <div className="text-center">
             <div className="text-gray-400 text-5xl mb-4">🔍</div>
             <p className="text-gray-500">No opportunities found</p>
@@ -133,16 +200,24 @@ function OpportunitiesEvent() {
         </div>
       )}
 
-      {/* Events Grid */}
-      {!isLoading && events.length > 0 && (
+      {(events.length > 0 || isPlaceholderData) && (
         <>
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr ${
-              isFetching ? "opacity-50" : ""
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr transition-opacity duration-300 ease-in-out ${
+              isFetching ? "opacity-60" : "opacity-100"
             }`}
+            style={{ pointerEvents: isFetching ? "none" : "auto" }}
           >
-            {events.map((item) => (
-              <ProjectCard key={item.id} {...item} />
+            {events.map((item, index) => (
+              <div
+                key={item.id}
+                className="transform transition-all duration-300 ease-out"
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                }}
+              >
+                <ProjectCard {...item} />
+              </div>
             ))}
           </div>
 
