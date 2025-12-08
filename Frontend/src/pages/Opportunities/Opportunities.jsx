@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import ProjectCard from "../../components/Project/card";
 import FilterHorizontal from "../../components/Filter/FilterHorizontal";
 import TrendingScrollList from "../../components/TrendingEvent/TrendingScrollList";
-import { useEventPagination } from "../../hook/useEvent";
+import { useEventPagination, useSearchEventByName } from "../../hook/useEvent";
 import { Pagination, Skeleton } from "@mui/material";
 
 const categories = [
@@ -156,15 +156,30 @@ function OpportunitiesEvent() {
     return () => clearTimeout(timer);
   }, [status, sortBy, order, selectedCategories, dateRange]);
 
-  // Sử dụng useEventPagination với debounced params
-  const { data, isLoading, isFetching, isError, error, isPlaceholderData } =
-    useEventPagination({
-      pageNum,
-      pageSize,
-      ...debouncedParams,
-    });
+  // check search or not
+  const isSearchMode = query.trim().length > 0;
 
-  // Reset pageNum về 0 khi filter thay đổi
+  // Hook cho filtered pagination (khi không search)
+  const filterQuery = useEventPagination({
+    pageNum,
+    pageSize,
+    ...debouncedParams,
+  });
+
+  // Hook cho search by name
+  const searchQuery = useSearchEventByName({
+    keyword: query,
+    pageNum,
+    pageSize,
+    enabled: isSearchMode,
+  });
+
+  // Chọn data source dựa trên mode search hay không
+  const activeQuery = isSearchMode ? searchQuery : filterQuery;
+  const { data, isLoading, isFetching, isError, error, isPlaceholderData } =
+    activeQuery;
+
+  // Reset pageNum
   useEffect(() => {
     setPageNum(0);
   }, [
@@ -189,7 +204,7 @@ function OpportunitiesEvent() {
       </div>
     );
   }
-  console.log(data);
+  console.log("Active query data:", data, "isSearchMode:", isSearchMode);
 
   const events = data?.data || [];
   const totalPages = data?.meta?.totalPages || 0;
@@ -256,7 +271,9 @@ function OpportunitiesEvent() {
       </div>
 
       <div className="flex justify-between items-center px-4 mb-4">
-        <div className="text-xl font-bold">All Opportunities</div>
+        <div className="text-xl font-bold">
+          {isSearchMode ? `Search results for "${query}"` : "All Opportunities"}
+        </div>
         <div className="text-sm text-gray-600 flex items-center gap-2">
           {isFetching && (
             <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />

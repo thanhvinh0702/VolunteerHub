@@ -8,6 +8,7 @@ import {
     deleteEvent,
     approveEvent,
     rejectEvent,
+    searchEventByName,
 } from "../services/eventService";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -246,6 +247,60 @@ export const useSearchEvents = ({
 
     return query;
 }
+
+// Hook riêng cho search by name có debounce
+export const useSearchEventByName = ({
+    keyword = "",
+    pageNum = 0,
+    pageSize = 6,
+    debounceDelay = 400,
+    enabled = true,
+}) => {
+    const queryClient = useQueryClient();
+    const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
+
+    // Debounce keyword
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedKeyword(keyword);
+        }, debounceDelay);
+
+        return () => clearTimeout(timer);
+    }, [keyword, debounceDelay]);
+
+    const query = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, pageNum, pageSize],
+        queryFn: async () => {
+            if (!debouncedKeyword.trim()) {
+                return { data: [], meta: { totalPages: 0, totalElements: 0 } };
+            }
+            const result = await searchEventByName({ keyword: debouncedKeyword, pageNum, pageSize });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        enabled: enabled && Boolean(debouncedKeyword.trim()),
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 60, // 1 minute
+    });
+
+    // Prefetch next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (debouncedKeyword.trim() && query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, nextPage, pageSize],
+                queryFn: async () => {
+                    const result = await searchEventByName({ keyword: debouncedKeyword, pageNum: nextPage, pageSize });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, debouncedKeyword, pageNum, pageSize, queryClient]);
+
+    return {
+        ...query,
+        debouncedKeyword, // check xem search chưa
+    };
+};
 
 export const useEventDetail = (eventId, options = {}) => {
     return useQuery({

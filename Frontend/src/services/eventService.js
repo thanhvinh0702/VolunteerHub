@@ -140,9 +140,29 @@ export const rejectEvent = async (eventId) => {
     return response;
 }
 
-export const searchEventByName = async (name) => {
+export const searchEventByName = async (params = {}) => {
+    const { keyword, pageNum = 0, pageSize = 6 } = params;
     const response = await axiosClient.get(`${EVENT_BASE_URL}/search`, {
-        params: { keyword: name }
+        params: { keyword, pageNum, pageSize }
     });
-    return response;
+    console.log('Search API response:', response);
+
+    // API trả về: { content, totalElements, totalPages, number, size }
+    // Transform thành format thống nhất với getEvents
+    if (response.content !== undefined) {
+        return {
+            data: response.content,
+            meta: {
+                totalPages: response.totalPages || 0,
+                totalElements: response.totalElements || 0,
+                currentPage: response.number || 0,
+                pageSize: response.size || pageSize
+            }
+        };
+    }
+
+    return {
+        data: [],
+        meta: { totalPages: 0, totalElements: 0, currentPage: 0, pageSize }
+    };
 };

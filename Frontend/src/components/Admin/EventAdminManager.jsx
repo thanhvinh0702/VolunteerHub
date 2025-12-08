@@ -5,7 +5,7 @@ import EventManagerCardAd from "./EventManagerCardAd";
 import Pagination from "@mui/material/Pagination";
 import { useEventPaginationAdmin } from "../../hook/useEvent";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
