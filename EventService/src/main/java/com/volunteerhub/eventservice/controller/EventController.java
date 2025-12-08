@@ -1,9 +1,9 @@
 package com.volunteerhub.eventservice.controller;
 
 import com.volunteerhub.common.dto.EventResponse;
+import com.volunteerhub.common.dto.EventResponseCSV;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.service.EventService;
 import com.volunteerhub.eventservice.validation.OnCreate;
 import com.volunteerhub.eventservice.validation.OnUpdate;
