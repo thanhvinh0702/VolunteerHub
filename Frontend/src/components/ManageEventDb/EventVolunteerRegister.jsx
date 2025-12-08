@@ -15,8 +15,7 @@ export default function EventVolunteerRegister() {
     search: "",
   });
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const totalPages = 2;
+  const [pageSize] = useState(10);
 
   // Map frontend filter status to API status
   const getApiStatus = (filterStatus) => {
@@ -27,16 +26,16 @@ export default function EventVolunteerRegister() {
     return statusMap[filterStatus] || "PENDING";
   };
 
-  const {
-    data: registrations = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useListUserOfAnEvent(eventId, {
+  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
     pageNum: page - 1, // MUI Pagination starts from 1, API starts from 0
     pageSize,
     status: getApiStatus(filters.status),
   });
+
+  // Extract data from paginated response
+  const registrations = data?.data || [];
+  const totalPages = data?.meta?.totalPages || 0;
+  const totalElements = data?.meta?.totalElements || 0;
 
   const [selectedReg, setSelectedReg] = useState(null);
 
@@ -82,28 +81,30 @@ export default function EventVolunteerRegister() {
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
-              <p className="text-sm text-gray-500">
-                Showing {registrations.length} {filters.status} registration(s)
-                on page {page} of {totalPages}
-              </p>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    "&.Mui-selected": {
-                      backgroundColor: "#3b82f6",
-                      color: "white",
-                      "&:hover": {
-                        backgroundColor: "#2563eb",
+            {totalPages > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
+                <p className="text-sm text-gray-500">
+                  Showing {registrations.length} of {totalElements}{" "}
+                  {filters.status} registration(s)
+                </p>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handlePageChange}
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      "&.Mui-selected": {
+                        backgroundColor: "#3b82f6",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#2563eb",
+                        },
                       },
                     },
-                  },
-                }}
-              />
-            </div>
+                  }}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

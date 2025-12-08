@@ -42,11 +42,16 @@ export const getOwnedEvents = async (params = {}) => {
     const response = await axiosClient.get(`${EVENT_BASE_URL}/owned`, { params });
     console.log('Owned Events API response:', response);
 
-    // Handle paginated response structure
-    if (response.data && response.meta) {
+    // Handle paginated response: { content, totalElements, totalPages, number, size }
+    if (response.content !== undefined) {
         return {
-            data: response.data,
-            meta: response.meta
+            data: response.content,
+            meta: {
+                totalPages: response.totalPages || 0,
+                totalElements: response.totalElements || 0,
+                currentPage: response.number || 0,
+                pageSize: response.size || params.pageSize || 10
+            }
         };
     }
 
@@ -58,7 +63,9 @@ export const getOwnedEvents = async (params = {}) => {
         data: data,
         meta: {
             totalPages: 1,
-            totalElements: data.length
+            totalElements: data.length,
+            currentPage: 0,
+            pageSize: data.length
         }
     };
 };

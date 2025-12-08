@@ -131,7 +131,7 @@ export const useOwnedEvents = (params) => {
 
 export const useOwnedEventsPagination = (params) => {
     const queryClient = useQueryClient();
-    const { pageNum = 0, pageSize = 10, sortedBy = "id", order = "desc", status } = params || {};
+    const { pageNum = 0, pageSize = 10, sortedBy = "startTime", order = "desc", status } = params || {};
 
     const query = useQuery({
         queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, sortedBy, order, status],
@@ -141,9 +141,6 @@ export const useOwnedEventsPagination = (params) => {
         },
         placeholderData: keepPreviousData,
         staleTime: 1000 * 30,
-        refetchInterval: 1000 * 5,
-        refetchIntervalInBackground: true,
-        structuralSharing: false,
     });
 
     // Prefetch the next page

@@ -21,15 +21,14 @@ function VolunteerList() {
   const [itemsToShow, setItemsToShow] = useState(10);
   const [pageNum, setPageNum] = useState(0);
 
-  const {
-    data: registrations = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useListUserOfAnEvent(eventId, {
+  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
     pageNum,
     pageSize: itemsToShow,
+    status: "APPROVED",
   });
+
+  // Extract data from paginated response
+  const registrations = data?.data || [];
 
   const { mutate: removeParticipant, isPending: isRemoving } =
     useRemoveParticipant();
@@ -349,8 +348,8 @@ function VolunteerList() {
       {/* Results Count */}
       {filteredVolunteers.length > 0 && (
         <div className="text-xs sm:text-sm text-gray-500 text-center sm:text-left pt-2 border-t border-gray-100">
-          Showing {displayedVolunteers.length} of {filteredVolunteers.length}{" "}
-          volunteers
+          Showing {displayedVolunteers.length} of{" "}
+          {data?.meta?.totalElements || filteredVolunteers.length} volunteers
         </div>
       )}
     </div>
