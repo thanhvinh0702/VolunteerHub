@@ -146,6 +146,19 @@ public class UserEventService {
         return userEventMapper.toResponseDtoPage(userEvents);
     }
 
+    public Page<UserEventResponse> findAllUsers(String userId, Long eventId, Integer pageNum, Integer pageSize) {
+        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
+        if (!eventSnapshot.getOwnerId().equals(userId) && !isParticipant(userId, eventId)) {
+            throw new AccessDeniedException("Insufficient permission to read registration of event with id " + eventId);
+        }
+        PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
+        Page<UserEvent> userEvents = userEventRepository.findAllByEventIdAndStatuses(eventId, List.of(UserEventStatus.APPROVED, UserEventStatus.COMPLETED),
+                PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
+        return userEventMapper.toResponseDtoPage(userEvents);
+    }
+
+
+    @PreAuthorize("hasRole('MANAGER')")
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         return userEventRepository.findAllUserIdsByEventId(eventId,
