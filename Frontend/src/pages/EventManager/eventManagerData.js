@@ -225,7 +225,7 @@ export const mockEventManagerData = async ({ page = 1, pageSize = 6, search = ""
 export const EVENT_STATUS = {
     PENDING: "PENDING",
     APPROVED: "APPROVED",
-    CANCELLED: "CANCELLED",
+    CANCELLED: "REJECTED",
 };
 
 export const STATUS_CONFIG = {

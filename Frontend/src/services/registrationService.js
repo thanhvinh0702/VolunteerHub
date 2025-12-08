@@ -25,11 +25,35 @@ export const registerEventList = async (params) => {
     }
 };
 
-export const getAggregatedRegistrations = async (params) => {
+export const getAggregatedRegistrations = async (params = {}) => {
     try {
         const response = await axiosClient.get(`${AGGREGATED_REGISTRATION_BASE_URL}`, { params });
         console.log("Aggregated registrations response:", response);
-        return response;
+
+        // Handle paginated response: { content, totalElements, totalPages, number, size }
+        if (response.content !== undefined) {
+            return {
+                data: response.content,
+                meta: {
+                    totalPages: response.totalPages || 0,
+                    totalElements: response.totalElements || 0,
+                    currentPage: response.number || 0,
+                    pageSize: response.size || params.pageSize || 10
+                }
+            };
+        }
+
+        // Fallback for array response
+        const data = Array.isArray(response) ? response : [];
+        return {
+            data: data,
+            meta: {
+                totalPages: 1,
+                totalElements: data.length,
+                currentPage: 0,
+                pageSize: data.length
+            }
+        };
     } catch (error) {
         console.error("Error fetching aggregated registrations:", error);
         throw error;
@@ -45,11 +69,49 @@ export const checkUserParticipation = async (eventId) => {
         throw error;
     }
 };
-export const listUserOfAnEvent = async (eventId, params) => {
+// export const listUserOfAnEvent = async (eventId, params) => {
+//     try {
+//         const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}`, { params });
+//         console.log("Participant list response:", response);
+//         return response;
+//     } catch (error) {
+//         // Only log non-permission errors
+//         if (error?.response?.status !== 403 && error?.response?.status !== 500) {
+//             console.error("Error fetching participant list:", error);
+//         }
+//         throw error;
+//     }
+// };
+
+export const listUserOfAnEvent = async (eventId, params = {}) => {
     try {
         const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}`, { params });
         console.log("Participant list response:", response);
-        return response;
+
+        // Handle paginated response: { content, totalElements, totalPages, number, size }
+        if (response.content !== undefined) {
+            return {
+                data: response.content,
+                meta: {
+                    totalPages: response.totalPages || 0,
+                    totalElements: response.totalElements || 0,
+                    currentPage: response.number || 0,
+                    pageSize: response.size || params.pageSize || 10
+                }
+            };
+        }
+
+        // Fallback for array response
+        const data = Array.isArray(response) ? response : [];
+        return {
+            data: data,
+            meta: {
+                totalPages: 1,
+                totalElements: data.length,
+                currentPage: 0,
+                pageSize: data.length
+            }
+        };
     } catch (error) {
         // Only log non-permission errors
         if (error?.response?.status !== 403 && error?.response?.status !== 500) {

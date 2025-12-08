@@ -136,7 +136,7 @@ function EventManager() {
               { value: "all", label: "All Status" },
               { value: EVENT_STATUS.PENDING, label: "Pending" },
               { value: EVENT_STATUS.APPROVED, label: "Approved" },
-              { value: EVENT_STATUS.CANCELLED, label: "Cancelled" },
+              { value: EVENT_STATUS.REJECTED, label: "Rejected" },
             ]}
             className="w-[160px]"
           />

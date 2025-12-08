@@ -3,38 +3,45 @@ import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import EventManagerCardAd from "./EventManagerCardAd";
 import Pagination from "@mui/material/Pagination";
-import { useEventPaginationAdmin } from "../../hook/useEvent";
+import {
+  useEventPaginationAdmin,
+  useSearchEventByName,
+} from "../../hook/useEvent";
 
 const PAGE_SIZE = 5;
 
 function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(0);
   const isFirstLoad = useRef(true);
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Reset page when filter changes
+  // Reset page when filter or search changes
   useEffect(() => {
     setPage(0);
-  }, [filterStatus]);
+  }, [filterStatus, searchTerm]);
 
-  const { data, isLoading, isFetching, isError, error } =
-    useEventPaginationAdmin({
-      pageNum: page,
-      pageSize: PAGE_SIZE,
-      status: filterStatus === "all" ? undefined : filterStatus.toUpperCase(),
-      search: debouncedSearch.trim() ? debouncedSearch.trim() : undefined,
-    });
+  // Check if in search mode
+  const isSearchMode = searchTerm.trim().length > 0;
+
+  // Hook cho filtered pagination (khi không search)
+  const filterQuery = useEventPaginationAdmin({
+    pageNum: page,
+    pageSize: PAGE_SIZE,
+    status: filterStatus === "all" ? undefined : filterStatus.toUpperCase(),
+  });
+
+  // Hook cho search by name (khi có search query)
+  const searchQuery = useSearchEventByName({
+    keyword: searchTerm,
+    pageNum: page,
+    pageSize: PAGE_SIZE,
+    enabled: isSearchMode,
+  });
+
+  // Chọn data source dựa trên mode
+  const activeQuery = isSearchMode ? searchQuery : filterQuery;
+  const { data, isLoading, isFetching, isError, error } = activeQuery;
 
   // Track first successful
   useEffect(() => {
@@ -97,8 +104,14 @@ function EventAdminManager() {
     <div className="bg-white p-6 rounded-xl shadow-sm gap-6 flex flex-col">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold text-gray-900">Event Manager</h2>
-        <p className="text-gray-500">Manage all events</p>
+        <h2 className="text-2xl font-semibold text-gray-900">
+          {isSearchMode ? `Search: "${searchTerm}"` : "Event Manager"}
+        </h2>
+        <p className="text-gray-500">
+          {isSearchMode
+            ? `Found ${data?.meta?.totalElements || 0} events`
+            : "Manage all events"}
+        </p>
       </div>
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center relative">
@@ -106,11 +119,17 @@ function EventAdminManager() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search events..."
+          placeholder="Search events by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        {/* Loading indicator for search */}
+        {isSearchMode && isFetching && (
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
       </div>
       {/* Filter & Create */}
       <div className="flex gap-3 items-center">

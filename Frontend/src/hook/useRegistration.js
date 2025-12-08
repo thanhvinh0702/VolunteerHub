@@ -141,18 +141,12 @@ export const useListUserOfAnEvent = (eventId, params) => {
         queryKey: [...REGISTRAION_QUERY_KEY, "users", eventId, JSON.stringify(params)],
         queryFn: async () => {
             const result = await listUserOfAnEvent(eventId, params);
-            return result || [];
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
         enabled: !!eventId,
         placeholderData: keepPreviousData,
         retry: false, // Don't retry on permission errors
-        onError: (error) => {
-            // Silently handle permission errors - user might not be event owner
-            if (error?.response?.status === 403 || error?.response?.status === 500) {
-                console.log("Unable to fetch participant list - permission denied or not event owner");
-            }
-        },
     });
 }
 
