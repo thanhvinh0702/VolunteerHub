@@ -71,6 +71,11 @@ public class EventAggregatorService {
         return enrichEventsPage(events);
     }
 
+    public PageResponse<AggregatedEventResponse> searchAggregatedOwnedEvents(String keyword, Integer pageNum, Integer pageSize) {
+        PageResponse<EventResponse> events = eventClient.searchOwnedEvents(keyword, pageNum, pageSize);
+        return enrichEventsPage(events);
+    }
+
     public List<TrendingEventResponse> getTrendingEvents(Integer pageNum, Integer pageSize, Integer days) {
         List<EventRegistrationCount> growthCounts = registrationClient.getEventsParticipantCounts(null, pageNum, pageSize, days);
 

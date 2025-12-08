@@ -116,7 +116,15 @@ public class EventController {
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) {
 
-            return ResponseEntity.ok(eventService.searchByKeyword(keyword, pageNum, pageSize));
+            return ResponseEntity.ok(eventService.searchByKeyword(keyword, null, pageNum, pageSize));
+    }
+
+    @GetMapping("/owned/search")
+    public ResponseEntity<Page<EventResponse>> searchOwnedEvents(@RequestParam("keyword") String keyword,
+                                                                 @RequestParam(required = false) Integer pageNum,
+                                                                 @RequestParam(required = false) Integer pageSize) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(eventService.searchByKeyword(keyword, authentication.getName(), pageNum, pageSize));
     }
 
     @GetMapping("/stats/count")

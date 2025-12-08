@@ -17,10 +17,20 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     @EntityGraph(attributePaths = { "category", "address" })
     List<Event> findByIdIn(List<Long> ids);
 
-    @Query(value = "SELECT * FROM event e " +
-            "WHERE e.name ~* :keyword OR e.description ~* :keyword", countQuery = "SELECT COUNT(*) FROM event e " +
-                    "WHERE e.name ~* :keyword OR e.description ~* :keyword", nativeQuery = true)
+    @Query(
+            value = "SELECT * FROM event e WHERE e.name ~* :keyword OR e.description ~* :keyword",
+            countQuery = "SELECT COUNT(*) FROM event e WHERE e.name ~* :keyword OR e.description ~* :keyword",
+            nativeQuery = true
+    )
     Page<Event> searchEventsByRegex(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query(
+            value = "SELECT * FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.owner_id = :ownerId",
+            countQuery = "SELECT COUNT(*) FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.owner_id = :ownerId",
+            nativeQuery = true
+    )
+    Page<Event> searchEventsByRegexAndOwnerId(@Param("keyword") String keyword, @Param("ownerId") String ownerId, Pageable pageable);
+
 
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.category LEFT JOIN FETCH e.address")
     List<Event> findAllForExport();
