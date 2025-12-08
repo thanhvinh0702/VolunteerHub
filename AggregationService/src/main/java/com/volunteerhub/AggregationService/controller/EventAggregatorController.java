@@ -65,6 +65,13 @@ public class EventAggregatorController {
         ));
     }
 
+    @GetMapping("/owned/search")
+    public ResponseEntity<PageResponse<AggregatedEventResponse>> searchAggregatedOwnedEvents(@RequestParam("keyword") String keyword,
+                                                                                             @RequestParam(required = false) Integer pageNum,
+                                                                                             @RequestParam(required = false) Integer pageSize) {
+        return ResponseEntity.ok(eventAggregatorService.searchAggregatedOwnedEvents(keyword, pageNum, pageSize));
+    }
+
     // TODO: pagination metadata, total comments, posts, reaction, maybe need standalone service for trending computing
     @GetMapping("/trending")
     public ResponseEntity<List<TrendingEventResponse>> getAllTrendingEvents(@RequestParam(required = false) Integer pageNum,

@@ -73,14 +73,7 @@ public class EventService {
         Page<Event> events = eventRepository.findAll(
                 EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street, null),
                 PageRequest.of(page, size, sort));
-        List<EventResponse> dtoList = events.getContent()
-                .stream()
-                .map(eventMapper::toDto)
-                .toList();
-        return new PageImpl<>(
-                dtoList,
-                events.getPageable(),
-                events.getTotalElements());
+        return eventMapper.toDtoPage(events);
     }
 
     public Page<EventResponse> findAllOwnedEvent(String userId, Integer pageNum, Integer pageSize, EventStatus status,
@@ -94,15 +87,8 @@ public class EventService {
         Page<Event> events = eventRepository
                 .findAll(EventSpecification.filterEvents(categoryName, status, startAfter, endBefore, province, district, street, userId),
                          PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize(), sort));
-        List<EventResponse> dtoList = events
-                .getContent()
-                .stream()
-                .map(eventMapper::toDto)
-                .toList();
-        return new PageImpl<>(
-                dtoList,
-                events.getPageable(),
-                events.getTotalElements());
+
+        return eventMapper.toDtoPage(events);
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -244,21 +230,17 @@ public class EventService {
         return eventMapper.toDto(eventRepository.save(event));
     }
 
-    public Page<EventResponse> searchByKeyword(String keyword, Integer pageNum, Integer pageSize) {
+    public Page<EventResponse> searchByKeyword(String keyword, String ownerId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
+        if (ownerId == null || ownerId.isBlank()) {
+            Page<Event> events = eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size));
+            return eventMapper.toDtoPage(events);
+        }
 
-        Page<Event> events = eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size));
-        List<EventResponse> dtoList = events
-                .getContent()
-                .stream()
-                .map(eventMapper::toDto)
-                .toList();
-        return new PageImpl<>(
-                dtoList,
-                events.getPageable(),
-                events.getTotalElements());
+        Page<Event> events = eventRepository.searchEventsByRegexAndOwnerId(keyword.trim(), ownerId, PageRequest.of(page, size));
+        return eventMapper.toDtoPage(events);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -5,6 +5,8 @@ import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,4 +53,9 @@ public interface EventClient {
     PageResponse<EventResponse> searchEvents(@RequestParam("keyword") String keyword,
                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                      @RequestParam(value = "pageSize", required = false) Integer pageSize);
+
+    @GetMapping("/owned/search")
+    PageResponse<EventResponse> searchOwnedEvents(@RequestParam("keyword") String keyword,
+                                                          @RequestParam(required = false) Integer pageNum,
+                                                          @RequestParam(required = false) Integer pageSize);
 }

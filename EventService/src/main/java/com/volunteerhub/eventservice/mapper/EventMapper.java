@@ -7,8 +7,11 @@ import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
 import com.volunteerhub.eventservice.model.Event;
 import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -37,6 +40,17 @@ public class EventMapper {
                 .approvedBy(event.getApprovedBy())
                 .optional(event.getOptional())
                 .build();
+    }
+
+    public Page<EventResponse> toDtoPage(Page<Event> events) {
+        List<EventResponse> dtoList = events.getContent().stream()
+                .map(this::toDto)
+                .toList();
+        return new PageImpl<>(
+                dtoList,
+                events.getPageable(),
+                events.getTotalElements()
+        );
     }
 
     public EventCreatedMessage toCreatedMessage(Event event) {
