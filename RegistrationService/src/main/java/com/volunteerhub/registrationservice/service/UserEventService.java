@@ -44,10 +44,10 @@ public class UserEventService {
     }
 
     public List<EventRegistrationCount> getEventsParticipantCount(List<Long> eventIds) {
-        List<Object[]> registrationCountRows = userEventRepository.getEventRegistrationCount(eventIds,
-                UserEventStatus.APPROVED);
         List<Object[]> participantCountRows = userEventRepository.getEventRegistrationCount(eventIds,
-                UserEventStatus.PENDING);
+                List.of(UserEventStatus.APPROVED, UserEventStatus.COMPLETED));
+        List<Object[]> registrationCountRows = userEventRepository.getEventRegistrationCount(eventIds,
+                List.of(UserEventStatus.PENDING));
         Map<Long, EventRegistrationCount> map = new HashMap<>();
         for (Object[] row : registrationCountRows) {
             Long eventId = (Long) row[0];
@@ -84,9 +84,9 @@ public class UserEventService {
                 pageNumAndSizeResponse.getPageNum(),
                 pageNumAndSizeResponse.getPageSize(),
                 Sort.by("statusCount").descending());
-        List<Object[]> registrationCountRows = userEventRepository
-                .getAllEventRegistrationCount(UserEventStatus.APPROVED, from, to, pageRequest);
-        List<Object[]> participantCountRows = userEventRepository.getAllEventRegistrationCount(UserEventStatus.PENDING,
+        List<Object[]> participantCountRows = userEventRepository
+                .getAllEventRegistrationCount(List.of(UserEventStatus.APPROVED, UserEventStatus.COMPLETED), from, to, pageRequest);
+        List<Object[]> registrationCountRows = userEventRepository.getAllEventRegistrationCount(List.of(UserEventStatus.PENDING),
                 from, to, pageRequest);
         Map<Long, EventRegistrationCount> map = new HashMap<>();
         for (Object[] row : registrationCountRows) {
@@ -157,8 +157,6 @@ public class UserEventService {
         return userEventMapper.toResponseDtoPage(userEvents);
     }
 
-
-    @PreAuthorize("hasRole('MANAGER')")
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         return userEventRepository.findAllUserIdsByEventId(eventId,
