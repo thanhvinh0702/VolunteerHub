@@ -10,7 +10,7 @@ function MarkCompletionCard({
   onMarkCompleted,
   onUndo,
 }) {
-  const { name, email, status, hoursLogged, rating, feedback, avatar } =
+  const { name, email, status, hoursLogged, rating, feedback, avatar, eventName, eventId } =
     volunteer;
 
   // Card cho người đã Registered - hiển thị nút Mark Attended/Absent
@@ -46,6 +46,9 @@ function MarkCompletionCard({
               </div>
               <p className="text-xs sm:text-sm text-gray-600 truncate">
                 {email}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-700">
+                Sự kiện: {eventName ?? "—"} • ID: {eventId ?? "—"}
               </p>
             </div>
           </div>
@@ -107,6 +110,9 @@ function MarkCompletionCard({
                 {email}
               </p>
               <p className="text-xs sm:text-sm text-gray-700">
+                Sự kiện: {eventName ?? "—"} • ID: {eventId ?? "—"}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-700">
                 {hoursLogged} hours logged
               </p>
             </div>
@@ -159,6 +165,9 @@ function MarkCompletionCard({
               </div>
               <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">
                 {email}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-700">
+                Sự kiện: {eventName ?? "—"} • ID: {eventId ?? "—"}
               </p>
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 mb-2 flex-wrap">
                 <span className="font-medium">{hoursLogged} hours logged</span>
@@ -219,6 +228,9 @@ function MarkCompletionCard({
               </div>
               <p className="text-xs sm:text-sm text-gray-600 truncate">
                 {email}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-700">
+                Sự kiện: {eventName ?? "—"} • ID: {eventId ?? "—"}
               </p>
             </div>
           </div>

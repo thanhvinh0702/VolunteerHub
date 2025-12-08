@@ -174,7 +174,10 @@ export const useReviewRegistration = () => {
         mutationFn: ({ eventId, participantId, status, note }) =>
             reviewRegistration(eventId, participantId, status, note),
         onSuccess: (data, variables) => {
-            const statusText = variables.status === "APPROVED" ? "approved" : "rejected";
+            const statusText =
+                variables.status === "APPROVED" ? "approved" :
+                variables.status === "REJECTED" ? "rejected" :
+                variables.status === "COMPLETED" ? "completed" : "updated";
             toast.success(`Registration ${statusText} successfully.`);
             queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
             queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "manager"]);
@@ -223,9 +226,11 @@ export const useAllRegistrationForManager = ({
     const normalizedEvent = event?.toLowerCase() || "all";
 
     const query = useQuery({
-        queryKey: [...REGISTRAION_QUERY_KEY, "manager"],
+        queryKey: [...REGISTRAION_QUERY_KEY, "manager", { status: normalizedStatus }],
         queryFn: async () => {
-            const response = await listUserAllEventManagement();
+            const params = {};
+            if (normalizedStatus !== "ALL") params.status = normalizedStatus;
+            const response = await listUserAllEventManagement(params);
             return Array.isArray(response) ? response : [];
         },
         staleTime: 5 * 60 * 1000,
@@ -280,5 +285,5 @@ export const useAllRegistrationForManager = ({
         };
     }, [query.data, normalizedEvent, normalizedSearch, normalizedStatus, page, pageSize]);
 
-    return { ...query, data: paginatedData };
+    return { ...query, data: paginatedData, rawData: query.data };
 };

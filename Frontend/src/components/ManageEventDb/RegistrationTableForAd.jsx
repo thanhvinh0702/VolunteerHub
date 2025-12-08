@@ -1,49 +1,38 @@
 import RegistrationRowSingle from "./RegistrationRowSingle";
 
-export default function RegistrationTableForAd({
-  registrations = [],
-  filters,
-  onSelect,
-}) {
-  // Filter data based on search
-  const filteredData = registrations.filter((reg) => {
-    const searchLower = filters.search.toLowerCase();
-    return (
-      reg.userId?.toLowerCase().includes(searchLower) ||
-      reg.id?.toString().includes(searchLower)
-    );
-  });
-
+export default function RegistrationTableForAd({ registrations, filters, onSelect }) {
   return (
-    <div className="bg-white rounded-xl">
-      <table className="w-full">
-        <thead className="bg-gray-100">
-          <tr className="border-b border-b-gray-600/20 text-base">
-            <th className="p-4 text-left">Volunteer</th>
-            <th className="p-4 text-left">Register Date</th>
-            <th className="p-4 text-left">Status</th>
-            <th className="p-4 text-left">Action</th>
-          </tr>
-        </thead>
+    <div className="bg-white rounded-xl border border-gray-200">
+      {/* Header */}
+      <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-200">
+        <div className="col-span-5">
+          <p className="text-sm font-medium text-gray-600">Volunteer</p>
+        </div>
+        <div className="col-span-3">
+          <p className="text-sm font-medium text-gray-600">User ID</p>
+        </div>
+        <div className="col-span-2">
+          <p className="text-sm font-medium text-gray-600">Registered at</p>
+        </div>
+        <div className="col-span-2">
+          <p className="text-sm font-medium text-gray-600">Status</p>
+        </div>
+      </div>
 
-        <tbody>
-          {filteredData.length > 0 ? (
-            filteredData.map((reg) => (
-              <RegistrationRowSingle
-                key={reg.id}
-                reg={reg}
-                onSelect={() => onSelect(reg)}
-              />
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" className="p-8 text-center text-gray-500">
-                No pending registrations found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {/* Body */}
+      <div className="divide-y divide-gray-200">
+        {registrations.length === 0 ? (
+          <div className="p-6 text-center text-gray-500">No registrations found</div>
+        ) : (
+          registrations.map((reg) => (
+            <RegistrationRowSingle
+              key={reg.registrationId}
+              reg={reg}
+              onSelect={() => onSelect(reg)}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 }

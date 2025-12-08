@@ -1,132 +1,190 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { Search, CheckCircle, Send } from "lucide-react";
+import DropdownSelect from "../Dropdown/DropdownSelect";
 import MarkCompletionCard from "./MarkCompletionCard";
-import { Search, CheckCircle, Send, Download } from "lucide-react";
-
-// Dummy data
-const initialVolunteers = [
-  {
-    id: 1,
-    name: "Alex Chen",
-    email: "alex@email.com",
-    status: "registered",
-    avatar: null,
-  },
-  {
-    id: 2,
-    name: "Maria Rodriguez",
-    email: "maria@email.com",
-    status: "completed",
-    hoursLogged: 4,
-    rating: 5,
-    feedback: "Excellent volunteer! Very enthusiastic and helpful.",
-    avatar: null,
-  },
-  {
-    id: 3,
-    name: "James Wilson",
-    email: "james@email.com",
-    status: "attended",
-    hoursLogged: 4,
-    avatar: null,
-  },
-  {
-    id: 4,
-    name: "Lisa Park",
-    email: "lisa@email.com",
-    status: "absent",
-    avatar: null,
-  },
-];
+import {
+  useAllRegistrationForManager,
+  useReviewRegistration,
+} from "../../hook/useRegistration";
 
 function MarkCompletionList() {
-  const [volunteers, setVolunteers] = useState(initialVolunteers);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filter, setFilter] = useState("attended");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
 
-  const handleMarkAttended = (volunteer) => {
-    console.log("Mark Attended:", volunteer);
-    // Update volunteer status to attended
-    setVolunteers(
-      volunteers.map((v) =>
-        v.id === volunteer.id ? { ...v, status: "attended", hoursLogged: 0 } : v
-      )
+  const mappedStatus = useMemo(() => {
+    switch (filter) {
+      case "attended":
+        return "APPROVED";
+      case "completed":
+        return "COMPLETED";
+      case "absent":
+        return "REJECTED";
+      case "all":
+        return "all";
+      default:
+        return "APPROVED";
+    }
+  }, [filter]);
+
+  const { data, rawData, isLoading, isError, refetch } =
+    useAllRegistrationForManager({
+      page,
+      pageSize,
+      search: searchQuery,
+      status: mappedStatus,
+      event: "all",
+    });
+
+  useEffect(() => {
+    console.group("[MarkCompletionList] Aggregated Manager Data");
+    console.log("Query params:", {
+      page,
+      pageSize,
+      search: searchQuery,
+      status: mappedStatus,
+    });
+    console.log("Raw API data (unfiltered):", rawData);
+    if (Array.isArray(rawData) && rawData.length) {
+      console.log("Sample raw item event fields:", {
+        eventId: rawData[0]?.eventId,
+        eventName: rawData[0]?.eventName,
+        status: rawData[0]?.status,
+      });
+    }
+    console.log("Processed data (paginated):", data);
+    console.log("Items:", data?.items);
+    console.log("Pagination:", {
+      totalItems: data?.totalItems,
+      totalPages: data?.totalPages,
+      page: data?.page,
+      pageSize: data?.pageSize,
+    });
+    console.groupEnd();
+  }, [rawData, data, page, pageSize, searchQuery, mappedStatus]);
+
+  const registrations = data?.items || [];
+
+  // Local overrides for immediate UI after completion/note edit
+  const [statusOverrides, setStatusOverrides] = useState({}); // { [regKey]: { status: "COMPLETED", note: string|null } }
+  const getRegKey = (reg) =>
+    reg.registrationId ?? `${reg.eventId}-${reg.userId}`;
+  const getEffectiveRegistrationStatus = (reg) => {
+    const override = statusOverrides[getRegKey(reg)];
+    return override?.status || reg.registrationStatus || reg.status;
+  };
+
+  const displayedRegistrations =
+    filter === "all"
+      ? registrations.filter(
+          (reg) => (reg.registrationStatus ?? reg.status)?.toUpperCase() !== "PENDING"
+        )
+      : registrations;
+
+  const volunteers = displayedRegistrations.map((reg) => {
+    const regKey = reg.registrationId ?? `${reg.eventId}-${reg.userId}`;
+    const regStatus = getEffectiveRegistrationStatus(reg);
+    const cardStatus =
+      regStatus === "APPROVED"
+        ? "attended"
+        : regStatus === "COMPLETED"
+        ? "completed"
+        : regStatus === "REJECTED"
+        ? "absent"
+        : "registered";
+
+    return {
+      id: regKey,
+      name: reg.fullName || reg.username || "Unknown",
+      email: reg.email || "",
+      status: cardStatus,
+      hoursLogged: reg.hoursLogged ?? 0,
+      rating: undefined,
+      feedback: statusOverrides[regKey]?.note ?? reg.note ?? undefined,
+      avatar: reg.avatarUrl || null,
+      eventName: reg.eventName,
+      eventId: reg.eventId,
+    };
+  });
+
+  const regMap = useMemo(() => {
+    const m = new Map();
+    registrations.forEach((reg) => {
+      const regKey = reg.registrationId ?? `${reg.eventId}-${reg.userId}`;
+      m.set(regKey, reg);
+    });
+    return m;
+  }, [registrations]);
+
+  // Completion note modal state
+  const [selectedReg, setSelectedReg] = useState(null);
+  const [note, setNote] = useState("");
+  const reviewMutation = useReviewRegistration();
+
+  const openNoteModalForVolunteer = (vol) => {
+    const reg = regMap.get(vol.id);
+    if (!reg) return;
+    setSelectedReg(reg);
+    const regKey = reg.registrationId ?? `${reg.eventId}-${reg.userId}`;
+    setNote(statusOverrides[regKey]?.note ?? reg.note ?? "");
+  };
+
+  const handleComplete = () => {
+    if (!selectedReg) return;
+    reviewMutation.mutate(
+      {
+        eventId: selectedReg.eventId,
+        participantId: selectedReg.userId,
+        status: "COMPLETED",
+        note: note.trim(),
+      },
+      {
+        onSuccess: (resp) => {
+          console.log(
+            "[MarkCompletionList] reviewRegistration response:",
+            resp
+          );
+          const regKey =
+            selectedReg.registrationId ??
+            `${selectedReg.eventId}-${selectedReg.userId}`;
+          setStatusOverrides((prev) => ({
+            ...prev,
+            [regKey]: { status: "COMPLETED", note: note.trim() || null },
+          }));
+          setSelectedReg(null);
+          setNote("");
+          refetch();
+        },
+      }
     );
   };
 
-  const handleMarkAbsent = (volunteer) => {
-    console.log("Mark Absent:", volunteer);
-    // Update volunteer status to absent
-    setVolunteers(
-      volunteers.map((v) =>
-        v.id === volunteer.id ? { ...v, status: "absent" } : v
-      )
+  const handleEditCompletion = (vol) => openNoteModalForVolunteer(vol);
+  const handleMarkCompleted = (vol) => openNoteModalForVolunteer(vol);
+
+  // Unused actions for now
+  const handleMarkAttended = () => {};
+  const handleMarkAbsent = () => {};
+  const handleUndo = () => {};
+
+  if (isLoading) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+        <div className="text-center py-8 text-gray-500">Loading...</div>
+      </div>
     );
-  };
+  }
 
-  const handleMarkCompleted = (volunteer) => {
-    console.log("Mark Completed:", volunteer);
-    // Update volunteer status to completed (would open modal to add rating/feedback)
-    setVolunteers(
-      volunteers.map((v) =>
-        v.id === volunteer.id
-          ? {
-              ...v,
-              status: "completed",
-              rating: 5,
-              feedback: "Great volunteer!",
-            }
-          : v
-      )
+  if (isError) {
+    return (
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+        <div className="text-center py-8 text-red-500">
+          Failed to load volunteers
+        </div>
+      </div>
     );
-  };
-
-  const handleEditCompletion = (volunteer) => {
-    console.log("Edit Completion:", volunteer);
-    // Open modal to edit completion details
-  };
-
-  const handleUndo = (volunteer) => {
-    console.log("Undo:", volunteer);
-    // Revert volunteer status back to registered
-    setVolunteers(
-      volunteers.map((v) =>
-        v.id === volunteer.id ? { ...v, status: "registered" } : v
-      )
-    );
-  };
-
-  const handleMarkAllAsCompleted = () => {
-    console.log("Mark all attended as completed");
-    // Mark all attended volunteers as completed
-    setVolunteers(
-      volunteers.map((v) =>
-        v.status === "attended"
-          ? {
-              ...v,
-              status: "completed",
-              rating: 5,
-              feedback: "Great volunteer!",
-            }
-          : v
-      )
-    );
-  };
-
-  const handleSendCertificates = () => {
-    console.log("Send certificates");
-    // Send certificates to all completed volunteers
-  };
-
-  const handleExportReport = () => {
-    console.log("Export report");
-    // Export report of all volunteers
-  };
-
-  // Filter volunteers based on search query
-  const filteredVolunteers = volunteers.filter(
-    (v) =>
-      v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  }
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm gap-4 sm:gap-6 flex flex-col">
@@ -149,15 +207,18 @@ function MarkCompletionList() {
             type="text"
             placeholder="Search volunteers..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
             className="w-full pl-9 sm:pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-sm sm:text-base"
           />
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 sm:gap-3 pb-1 max-md:self-end relative">
           <button
-            onClick={handleMarkAllAsCompleted}
+            onClick={() => {}}
             className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors whitespace-nowrap text-xs sm:text-sm"
           >
             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
@@ -167,37 +228,45 @@ function MarkCompletionList() {
             </span>
           </button>
           <button
-            onClick={handleSendCertificates}
+            onClick={() => {}}
             className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors whitespace-nowrap text-xs sm:text-sm"
           >
             <Send className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             <span className="hidden xs:inline">Send Certificates</span>
             <span className="xs:hidden">Send</span>
           </button>
-          <button
-            onClick={handleExportReport}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-300 hover:bg-red-500 transition-colors bg-red-400 text-white font-semibold whitespace-nowrap text-xs sm:text-sm"
-          >
-            <Download className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <span className="hidden xs:inline">Export Report</span>
-            <span className="xs:hidden">Export</span>
-          </button>
+
+          <div className="relative z-50 overflow-visible">
+            <DropdownSelect
+              options={[
+                { label: "All", value: "all" },
+                { label: "Attended", value: "attended" },
+                { label: "Completed", value: "completed" },
+                { label: "Absent", value: "absent" },
+              ]}
+              value={filter}
+              onChange={(next) => {
+                setFilter(next);
+                setPage(1);
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Tip Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
         <p className="text-xs sm:text-sm text-gray-700">
-          <span className="font-semibold">Tip:</span> Mark volunteers as
-          "Attended" first, then individually mark as "Completed" with hours and
-          feedback for certificate generation.
+          <span className="font-semibold">Tip:</span> Filter by "Attended" to
+          view the list of approved volunteers, then mark them as "Completed"
+          and add a note to issue certificates.
         </p>
       </div>
 
       {/* Volunteer List */}
       <div className="space-y-3 sm:space-y-4">
-        {filteredVolunteers.length > 0 ? (
-          filteredVolunteers.map((volunteer) => (
+        {volunteers.length > 0 ? (
+          volunteers.map((volunteer) => (
             <MarkCompletionCard
               key={volunteer.id}
               volunteer={volunteer}
@@ -214,6 +283,59 @@ function MarkCompletionList() {
           </div>
         )}
       </div>
+
+      {/* Completion Note Modal */}
+      {selectedReg && (
+        <div className="fixed inset-0 bg-gray-900/60 bg-opacity-40 flex items-center justify-center p-4 z-50">
+          <div className="bg-white w-full max-w-[500px] p-6 rounded-xl shadow-lg">
+            <h3 className="text-xl font-semibold mb-3 text-center">
+              Mark Completion
+            </h3>
+            <p className="text-sm text-gray-600 text-center mb-3">
+              Event: {selectedReg?.eventName ?? "—"} • ID:{" "}
+              {selectedReg?.eventId ?? "—"}
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Completion Note (optional):
+                </p>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Enter completion note (optional)"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  disabled={reviewMutation.isPending}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                  onClick={() => {
+                    setSelectedReg(null);
+                    setNote("");
+                  }}
+                  disabled={reviewMutation.isPending}
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleComplete}
+                  disabled={reviewMutation.isPending}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {reviewMutation.isPending
+                    ? "Processing..."
+                    : "Confirm Completion"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

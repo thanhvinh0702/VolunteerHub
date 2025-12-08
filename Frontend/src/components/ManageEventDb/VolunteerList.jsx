@@ -21,11 +21,21 @@ function VolunteerList() {
   const [itemsToShow, setItemsToShow] = useState(10);
   const [pageNum, setPageNum] = useState(0);
 
-  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
+  let { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
     pageNum,
     pageSize: itemsToShow,
-    status: "APPROVED",
+
+    status: "COMPLETED",
   });
+  const { data2, isLoading2, isError2, refetch2 } = useListUserOfAnEvent(
+    eventId,
+    {
+      pageNum,
+      pageSize: itemsToShow,
+      status: "APPROVED",
+    }
+  );
+  data = { ...data, ...data2 };
 
   // Extract data from paginated response
   const registrations = data?.data || [];
