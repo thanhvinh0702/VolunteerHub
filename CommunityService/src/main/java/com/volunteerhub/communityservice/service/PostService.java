@@ -98,10 +98,15 @@ public class PostService {
         return postMapper.toDto(savedPost, 0, 0);
     }
 
-    public PostResponse update(String userId, Long postId, PostRequest postRequest) {
+    // TODO: Delete old images
+    public PostResponse update(String userId, Long postId, PostRequest postRequest, List<MultipartFile> imageFiles) throws IOException {
         Post post = findEntityById(postId);
         if (!post.getOwnerId() .equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to modify this record.");
+        }
+        if (imageFiles != null) {
+            List<String> imageUrls = fileStorageService.uploadFiles(imageFiles);
+            post.setImageUrls(imageUrls);
         }
         if (postRequest.getContent() != null) {
             post.setContent(postRequest.getContent());
@@ -109,6 +114,7 @@ public class PostService {
         return postMapper.toDto(postRepository.save(post), getCachedReactionCount(postId), getCachedCommentCount(postId));
     }
 
+    // TODO: Delete old images
     public PostResponse delete(String userId, Long postId) {
         Post post = findEntityById(postId);
         if (!post.getOwnerId() .equals(userId)) {

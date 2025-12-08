@@ -51,11 +51,11 @@ public interface EventClient {
 
     @GetMapping("/search")
     PageResponse<EventResponse> searchEvents(@RequestParam("keyword") String keyword,
-                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                     @RequestParam(value = "pageSize", required = false) Integer pageSize);
+                                             @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                             @RequestParam(value = "pageSize", required = false) Integer pageSize);
 
     @GetMapping("/owned/search")
     PageResponse<EventResponse> searchOwnedEvents(@RequestParam("keyword") String keyword,
-                                                          @RequestParam(required = false) Integer pageNum,
-                                                          @RequestParam(required = false) Integer pageSize);
+                                                  @RequestParam(required = false) Integer pageNum,
+                                                  @RequestParam(required = false) Integer pageSize);
 }
