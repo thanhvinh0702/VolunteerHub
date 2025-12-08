@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Eye,
   Edit3,
@@ -8,27 +8,34 @@ import {
   Delete,
   Trash,
 } from "lucide-react";
+import Pagination from "@mui/material/Pagination";
 import {
   useListUserOfAnEventApproveAndCompleted,
   useRemoveParticipant,
 } from "../../hook/useRegistration";
 import { useOutletContext } from "react-router-dom";
 
+const PAGE_SIZE = 10; // giống cách đặt PAGE_SIZE trong EventManager
+
 function VolunteerList() {
   const { eventId } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState(new Set());
-  const [itemsToShow, setItemsToShow] = useState(10);
-  const [pageNum, setPageNum] = useState(0);
+  const [page, setPage] = useState(0); // API dùng 0-based
+
+  // Reset page khi thay đổi search
+  useEffect(() => {
+    setPage(0);
+  }, [searchQuery]);
 
   let { data, isLoading, isError, refetch } =
     useListUserOfAnEventApproveAndCompleted(eventId, {
-      pageNum,
-      pageSize: itemsToShow,
+      pageNum: page,
+      pageSize: PAGE_SIZE,
       status: "COMPLETED",
     });
 
-  // Extract data from paginated response
+  // Extract data từ response
   const registrations = data?.data || [];
 
   const { mutate: removeParticipant, isPending: isRemoving } =
@@ -69,7 +76,6 @@ function VolunteerList() {
   });
 
   const displayedVolunteers = filteredVolunteers;
-  const hasMore = false;
 
   const toggleExpand = (id) => {
     const newExpanded = new Set(expandedIds);
@@ -106,6 +112,10 @@ function VolunteerList() {
         }
       );
     }
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value - 1); // từ 1-based (UI) sang 0-based (API)
   };
 
   if (isLoading) {
@@ -334,23 +344,31 @@ function VolunteerList() {
             No volunteers found
           </div>
         )}
-
-        {/* Load More Button - Mobile */}
-        {hasMore && (
-          <button
-            onClick={() => setItemsToShow(itemsToShow + 5)}
-            className="w-full py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-          >
-            Load More ({filteredVolunteers.length - itemsToShow} remaining)
-          </button>
-        )}
       </div>
 
-      {/* Results Count */}
-      {filteredVolunteers.length > 0 && (
-        <div className="text-xs sm:text-sm text-gray-500 text-center sm:text-left pt-2 border-t border-gray-100">
-          Showing {displayedVolunteers.length} of{" "}
-          {data?.meta?.totalElements || filteredVolunteers.length} volunteers
+      {/* Pagination & Stats Footer */}
+      {data?.data && data.data.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200 gap-4">
+          <p className="text-xs sm:text-sm text-gray-500">
+            Showing {data.data.length} of {data.meta?.totalElements || 0}{" "}
+            volunteers
+          </p>
+          <Pagination
+            count={data.meta?.totalPages || 0}
+            page={page + 1}
+            onChange={handlePageChange}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "&.Mui-selected": {
+                  backgroundColor: "#3b82f6",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#2563eb",
+                  },
+                },
+              },
+            }}
+          />
         </div>
       )}
     </div>
