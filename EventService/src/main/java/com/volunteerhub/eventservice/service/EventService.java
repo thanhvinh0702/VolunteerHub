@@ -5,7 +5,6 @@ import com.volunteerhub.common.utils.PageNumAndSizeResponse;
 import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.eventservice.dto.request.EventRequest;
 import com.volunteerhub.eventservice.dto.request.RejectRequest;
-import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.eventservice.dto.response.EventResponseCSV;
 import com.volunteerhub.eventservice.mapper.EventMapper;
 import com.volunteerhub.eventservice.model.Address;
@@ -17,10 +16,8 @@ import com.volunteerhub.common.enums.EventStatus;
 import com.volunteerhub.eventservice.specification.EventSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +28,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -192,7 +188,7 @@ public class EventService {
         return eventMapper.toDto(savedEvent);
     }
 
-    // TODO: publish event an event has been deleted
+    // TODO: publish event an event has been deleted (send notification, delete registration), delete old images
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);

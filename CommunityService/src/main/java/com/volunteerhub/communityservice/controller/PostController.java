@@ -46,9 +46,10 @@ public class PostController {
 
     @PutMapping("/{postId}")
     public PostResponse update(@PathVariable Long postId,
-                               @RequestBody @Validated(OnUpdate.class) PostRequest postRequest) {
+                               @RequestPart @Validated(OnUpdate.class) PostRequest postRequest,
+                               @RequestPart List<MultipartFile> imageFiles) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return postService.update(authentication.getName(), postId, postRequest);
+        return postService.update(authentication.getName(), postId, postRequest, imageFiles);
     }
 
     @DeleteMapping("/{postId}")
