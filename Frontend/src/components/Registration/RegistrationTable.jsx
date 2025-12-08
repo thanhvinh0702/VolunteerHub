@@ -22,7 +22,7 @@ export default function RegistrationTable({ data = [], isFetching, onSelect }) {
           {data.length > 0 ? (
             data.map((reg) => (
               <RegistrationRow
-                key={reg.id}
+                key={reg.registrationId}
                 reg={reg}
                 onSelect={() => onSelect(reg)}
               />

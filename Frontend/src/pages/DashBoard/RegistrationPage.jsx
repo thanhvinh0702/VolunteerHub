@@ -1,17 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import Pagination from "@mui/material/Pagination";
 import RegistrationFilters from "../../components/Registration/RegistrationFilters";
 import RegistrationTable from "../../components/Registration/RegistrationTable";
 import RegistrationDetailModal from "../../components/Registration/RegistrationDetailModal";
-import { mockRegistrationData } from "./registrationData";
+import { useAllRegistrationForManager } from "../../hook/useRegistration";
 
 const PAGE_SIZE = 6;
 
 export default function RegistrationPage() {
   const [filters, setFilters] = useState({
     event: "all",
-    status: "pending",
+    status: "all",
     search: "",
   });
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -33,25 +32,12 @@ export default function RegistrationPage() {
     setPage(1);
   }, [filters.status, filters.event]);
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: [
-      "registrations",
-      page,
-      debouncedSearch,
-      filters.status,
-      filters.event,
-    ],
-    queryFn: () =>
-      mockRegistrationData({
-        page,
-        pageSize: PAGE_SIZE,
-        search: debouncedSearch,
-        status: filters.status,
-        event: filters.event,
-      }),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
+  const { data, isLoading, isFetching } = useAllRegistrationForManager({
+    page,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch,
+    status: filters.status,
+    event: filters.event,
   });
 
   // Track first successful load
@@ -90,7 +76,11 @@ export default function RegistrationPage() {
         </div>
 
         <div className="">
-          <RegistrationFilters filters={filters} setFilters={setFilters} />
+          <RegistrationFilters
+            filters={filters}
+            setFilters={setFilters}
+            eventOptions={data?.eventOptions || []}
+          />
         </div>
 
         <div className="overflow-x-auto">
@@ -107,22 +97,24 @@ export default function RegistrationPage() {
             <p className="text-sm text-gray-500">
               Showing {data.items.length} of {data.totalItems} registrations
             </p>
-            <Pagination
-              count={data.totalPages}
-              page={page}
-              onChange={handlePageChange}
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  "&.Mui-selected": {
-                    backgroundColor: "#f87171",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "#ef4444",
+            {data.totalPages > 0 && (
+              <Pagination
+                count={data.totalPages}
+                page={page}
+                onChange={handlePageChange}
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    "&.Mui-selected": {
+                      backgroundColor: "#f87171",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "#ef4444",
+                      },
                     },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            )}
           </div>
         )}
       </div>

@@ -1,9 +1,20 @@
-
-import { approveRegistration, checkUserParticipation, getAggregatedRegistrations, listUserOfAnEvent, numberOfEventRegistrations, registerEventList, registerForEvent, removeParticipant, reviewRegistration, unregisterFromEvent, UserApprovedList } from "../services/registrationService";
-import { useEffect } from "react";
+import {
+    approveRegistration,
+    checkUserParticipation,
+    getAggregatedRegistrations,
+    listUserAllEventManagement,
+    listUserOfAnEvent,
+    numberOfEventRegistrations,
+    registerEventList,
+    registerForEvent,
+    removeParticipant,
+    reviewRegistration,
+    unregisterFromEvent,
+    UserApprovedList,
+} from "../services/registrationService";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 
 const REGISTRAION_QUERY_KEY = ["registrations"];
 
@@ -13,13 +24,11 @@ export const useEventRegistrations = (params) => {
     const query = useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, { pageNum, pageSize, status }],
         queryFn: async () => {
-            console.log('🔍 Fetching registrations with params:', { pageNum, pageSize, status });
             const result = await registerEventList({ pageNum, pageSize, status });
-            console.log('📦 Registration response:', result);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
     });
 
     useEffect(() => {
@@ -47,9 +56,9 @@ export const useAggregatedRegistrations = (params) => {
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,
-        staleTime: 1000 * 30, // 30 seconds
-        refetchInterval: 1000 * 5, // Auto-refetch every 5 seconds
-        refetchIntervalInBackground: true, // Continue refetch even when tab is not focused
+        staleTime: 1000 * 30,
+        refetchInterval: 1000 * 5,
+        refetchIntervalInBackground: true,
     });
 
     useEffect(() => {
@@ -71,7 +80,7 @@ export const useCheckUserParticipation = (eventId) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "participation", eventId],
         queryFn: () => checkUserParticipation(eventId),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         enabled: !!eventId,
     });
 };
@@ -131,7 +140,7 @@ export const useUserIdList = (eventIid) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "userList", eventIid],
         queryFn: () => listUserOfAnEvent(eventIid),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         enabled: !!eventIid,
     });
 };
@@ -143,21 +152,21 @@ export const useListUserOfAnEvent = (eventId, params) => {
             const result = await listUserOfAnEvent(eventId, params);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         enabled: !!eventId,
         placeholderData: keepPreviousData,
-        retry: false, // Don't retry on permission errors
+        retry: false,
     });
-}
+};
 
 export const useNumberOfEventRegistrations = (eventId) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "numberOfRegistrations", eventId],
         queryFn: () => numberOfEventRegistrations(eventId),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         enabled: !!eventId,
     });
-}
+};
 
 export const useReviewRegistration = () => {
     const queryClient = useQueryClient();
@@ -168,6 +177,7 @@ export const useReviewRegistration = () => {
             const statusText = variables.status === "APPROVED" ? "approved" : "rejected";
             toast.success(`Registration ${statusText} successfully.`);
             queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
+            queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "manager"]);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to review registration";
@@ -199,4 +209,76 @@ export const useConstUserApprovedList = (eventId) => {
         staleTime: 5 * 60 * 1000,
         enabled: !!eventId,
     });
+};
+
+export const useAllRegistrationForManager = ({
+    page = 1,
+    pageSize = 10,
+    search = "",
+    status = "all",
+    event = "all",
+} = {}) => {
+    const normalizedStatus = status?.toUpperCase() || "ALL";
+    const normalizedSearch = search?.toLowerCase() || "";
+    const normalizedEvent = event?.toLowerCase() || "all";
+
+    const query = useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "manager"],
+        queryFn: async () => {
+            const response = await listUserAllEventManagement();
+            return Array.isArray(response) ? response : [];
+        },
+        staleTime: 5 * 60 * 1000,
+        placeholderData: keepPreviousData,
+    });
+
+    const paginatedData = useMemo(() => {
+        const allRegistrations = Array.isArray(query.data) ? query.data : [];
+
+        const filtered = allRegistrations.filter((registration) => {
+            const matchesStatus =
+                normalizedStatus === "ALL" ||
+                registration.status?.toUpperCase() === normalizedStatus;
+
+            const matchesEvent =
+                normalizedEvent === "all" ||
+                registration.eventName?.toLowerCase() === normalizedEvent ||
+                String(registration.eventId) === normalizedEvent;
+
+            const matchesSearch =
+                !normalizedSearch ||
+                registration.fullName?.toLowerCase().includes(normalizedSearch) ||
+                registration.email?.toLowerCase().includes(normalizedSearch) ||
+                registration.username?.toLowerCase().includes(normalizedSearch) ||
+                registration.eventName?.toLowerCase().includes(normalizedSearch);
+
+            return matchesStatus && matchesEvent && matchesSearch;
+        });
+
+        const totalItems = filtered.length;
+        const totalPages = totalItems > 0 ? Math.ceil(totalItems / pageSize) : 0;
+        const safePage = totalPages > 0 ? Math.min(page, totalPages) : 1;
+        const start = (safePage - 1) * pageSize;
+        const items = filtered.slice(start, start + pageSize).map((item) => ({
+            ...item,
+            userId: item.id || item.userId,
+            registrationId: item.registrationId || item.id,
+            registrationStatus: item.status,
+        }));
+
+        const eventOptions = allRegistrations
+            .map((item) => item.eventName)
+            .filter(Boolean);
+
+        return {
+            items,
+            totalItems,
+            totalPages,
+            page: safePage,
+            pageSize,
+            eventOptions: Array.from(new Set(eventOptions)),
+        };
+    }, [query.data, normalizedEvent, normalizedSearch, normalizedStatus, page, pageSize]);
+
+    return { ...query, data: paginatedData };
 };

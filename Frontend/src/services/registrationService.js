@@ -20,7 +20,7 @@ export const registerEventList = async (params) => {
             }
         };
     } catch (error) {
-        console.error("❌ Error fetching registered events:", error);
+        console.error("Error fetching registered events:", error);
         throw error;
     }
 };
@@ -201,6 +201,26 @@ export const UserApprovedList = async (eventId) => {
         return response;
     } catch (error) {
         console.error("Error fetching approved users for event:", error);
+        throw error;
+    }
+};
+
+
+export const listUserAllEventManagement = async (params) => {
+    try {
+        console.log('API call with params:', params);
+        const response = await axiosClient.get(`api/v1/aggregated/manager/registrations`, { params });
+        console.log('API response:', response);
+        const data = response?.data ?? response;
+        if (data?.content) {
+            return data.content;
+        }
+        if (Array.isArray(data)) {
+            return data;
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching all event management registrations:", error);
         throw error;
     }
 };

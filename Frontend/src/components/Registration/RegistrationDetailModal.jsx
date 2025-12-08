@@ -59,18 +59,30 @@ export default function RegistrationDetailModal({ registration, onClose }) {
         <div className="space-y-4">
           <div className="flex flex-row gap-5">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold">
-                NA
-              </div>
+              {registration.avatarUrl ? (
+                <img
+                  src={registration.avatarUrl}
+                  alt={registration.fullName || "User"}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold">
+                  {registration.fullName?.charAt(0)?.toUpperCase() || "NA"}
+                </div>
+              )}
             </div>
             <div className="flex-1">
               <p className="mb-1">
                 <b>Name:</b>{" "}
-                <span className="text-gray-500 italic">Chưa có</span>
+                {registration.fullName || (
+                  <span className="text-gray-500 italic">Chưa có</span>
+                )}
               </p>
               <p className="mb-1">
                 <b>Email:</b>{" "}
-                <span className="text-gray-500 italic">Chưa có</span>
+                {registration.email || (
+                  <span className="text-gray-500 italic">Chưa có</span>
+                )}
               </p>
               <p className="mb-1">
                 <b>User ID:</b>{" "}
@@ -83,45 +95,75 @@ export default function RegistrationDetailModal({ registration, onClose }) {
 
           <div className="border-t pt-4">
             <p className="mb-2">
-              <b>Registration ID:</b> #{registration.id}
+              <b>Event:</b>{" "}
+              {registration.eventName || (
+                <span className="text-gray-500 italic">Unknown Event</span>
+              )}
+            </p>
+            <p className="mb-2">
+              <b>Registration ID:</b> #{registration.registrationId}
             </p>
             <p className="mb-2">
               <b>Status:</b>{" "}
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  registration.status === "PENDING"
+                  registration.registrationStatus === "PENDING"
                     ? "bg-yellow-100 text-yellow-800"
-                    : registration.status === "APPROVED"
+                    : registration.registrationStatus === "APPROVED"
                     ? "bg-green-100 text-green-800"
-                    : registration.status === "REJECTED"
+                    : registration.registrationStatus === "REJECTED"
                     ? "bg-red-100 text-red-800"
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {registration.status}
+                {registration.registrationStatus}
               </span>
             </p>
             <p className="mb-2">
-              <b>Created At:</b> {formatDate(registration.createdAt)}
+              <b>Registered At:</b> {formatDate(registration.registeredAt)}
             </p>
-            <p className="mb-2">
-              <b>Updated At:</b> {formatDate(registration.updatedAt)}
-            </p>
+            {registration.phoneNumber && (
+              <p className="mb-2">
+                <b>Phone:</b> {registration.phoneNumber}
+              </p>
+            )}
+            {registration.address && (
+              <p className="mb-2">
+                <b>Address:</b> {registration.address}
+              </p>
+            )}
           </div>
 
-          <div className="flex flex-col gap-2 border-t pt-4">
-            <b>Skills:</b>
-            {/* <div className="flex flex-row gap-2">
-              {registration.skills.length > 0 &&
-                registration.skills.map((item) => {
-                  return (
-                    <div className="text-sm border-gray-600 border w-fit rounded-2xl px-2">
-                      {item}
+          {registration.skills && (
+            <div className="flex flex-col gap-2 border-t pt-4">
+              <b>Skills:</b>
+              <div className="flex flex-row gap-2 flex-wrap">
+                {registration.skills.length > 0 ? (
+                  registration.skills.map((skill, index) => (
+                    <div
+                      key={index}
+                      className="text-sm border-gray-600 border w-fit rounded-2xl px-3 py-1"
+                    >
+                      {skill}
                     </div>
-                  );
-                })}
-            </div> */}
-          </div>
+                  ))
+                ) : (
+                  <span className="text-gray-500 italic text-sm">
+                    No skills listed
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {registration.bio && (
+            <div className="flex flex-col gap-2 border-t pt-4">
+              <b>Bio:</b>
+              <div className="bg-gray-100 p-3 rounded-lg text-sm">
+                {registration.bio}
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-2 border-t pt-4">
             <p>
@@ -146,7 +188,8 @@ export default function RegistrationDetailModal({ registration, onClose }) {
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               disabled={
-                reviewMutation.isPending || registration.status !== "PENDING"
+                reviewMutation.isPending ||
+                registration.registrationStatus !== "PENDING"
               }
             />
           </div>
@@ -163,7 +206,8 @@ export default function RegistrationDetailModal({ registration, onClose }) {
           <button
             onClick={handleReject}
             disabled={
-              reviewMutation.isPending || registration.status !== "PENDING"
+              reviewMutation.isPending ||
+              registration.registrationStatus !== "PENDING"
             }
             className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -172,7 +216,8 @@ export default function RegistrationDetailModal({ registration, onClose }) {
           <button
             onClick={handleApprove}
             disabled={
-              reviewMutation.isPending || registration.status !== "PENDING"
+              reviewMutation.isPending ||
+              registration.registrationStatus !== "PENDING"
             }
             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
