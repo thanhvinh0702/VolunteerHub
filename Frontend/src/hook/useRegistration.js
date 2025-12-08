@@ -300,3 +300,33 @@ export const useAllRegistrationForManager = ({
 
     return { ...query, data: paginatedData, rawData: query.data };
 };
+
+export const useUpcomingApprovedRegistrations = ({ pageSize = 3, status = "APPROVED", eventName, sortedBy = "date", order = "desc" } = {}) => {
+    return useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "aggregated", "upcomingApproved", { pageNum: 0, pageSize, status, eventName, sortedBy, order }],
+        queryFn: async () => {
+            const result = await getAggregatedRegistrations({ pageNum: 0, pageSize, status, eventName, sortedBy, order });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        retry: false,
+        staleTime: 1000 * 30,
+        refetchIntervalInBackground: true,
+    });
+};
+
+export const useRecentPendingRegistrations = (params = {}) => {
+    const { pageSize = 3, sortedBy = "date", order = "desc" } = params;
+
+    return useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "aggregated", "pending", { pageNum: 0, pageSize, status: "PENDING", sortedBy, order }],
+        queryFn: async () => {
+            const result = await getAggregatedRegistrations({ pageNum: 0, pageSize, status: "PENDING", sortedBy, order });
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        retry: false,
+        staleTime: 1000 * 30,
+        refetchIntervalInBackground: true,
+    });
+};
