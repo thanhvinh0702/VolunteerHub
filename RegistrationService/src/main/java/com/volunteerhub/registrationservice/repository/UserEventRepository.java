@@ -34,18 +34,18 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
 
     @Query("SELECT ue.eventId AS eventId, COUNT(ue) AS statusCount " +
             "FROM UserEvent ue " +
-            "WHERE ue.status = :status AND ue.eventId IN :eventIds " +
+            "WHERE ue.status IN :status AND ue.eventId IN :eventIds " +
             "GROUP BY ue.eventId")
     List<Object[]> getEventRegistrationCount(@Param("eventIds") List<Long> eventIds,
-                                             @Param("status") UserEventStatus status);
+                                             @Param("status") List<UserEventStatus> status);
 
     @Query("SELECT ue.eventId AS eventId, COUNT(ue) AS statusCount " +
             "FROM UserEvent ue " +
-            "WHERE ue.status = :status " +
+            "WHERE ue.status in :statuses " +
             "AND ue.createdAt >= COALESCE(:from, ue.createdAt) " +
             "AND ue.createdAt <= COALESCE(:to, ue.createdAt) " +
             "GROUP BY ue.eventId")
-    List<Object[]> getAllEventRegistrationCount(@Param("status") UserEventStatus status,
+    List<Object[]> getAllEventRegistrationCount(@Param("statuses") List<UserEventStatus> statuses,
                                                 @Param("from") LocalDateTime from,
                                                 @Param("to") LocalDateTime to,
                                                 PageRequest pageRequest);
