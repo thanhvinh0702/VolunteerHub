@@ -9,7 +9,7 @@ import {
   Trash,
 } from "lucide-react";
 import {
-  useListUserOfAnEvent,
+  useListUserOfAnEventApproveAndCompleted,
   useRemoveParticipant,
 } from "../../hook/useRegistration";
 import { useOutletContext } from "react-router-dom";
@@ -21,11 +21,12 @@ function VolunteerList() {
   const [itemsToShow, setItemsToShow] = useState(10);
   const [pageNum, setPageNum] = useState(0);
 
-  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, {
-    pageNum,
-    pageSize: itemsToShow,
-    status: "APPROVED",
-  });
+  let { data, isLoading, isError, refetch } =
+    useListUserOfAnEventApproveAndCompleted(eventId, {
+      pageNum,
+      pageSize: itemsToShow,
+      status: "COMPLETED",
+    });
 
   // Extract data from paginated response
   const registrations = data?.data || [];
