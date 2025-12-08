@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ProjectCard from "../../components/Project/card";
 import FilterHorizontal from "../../components/Filter/FilterHorizontal";
 import TrendingScrollList from "../../components/TrendingEvent/TrendingScrollList";
@@ -14,6 +14,78 @@ const categories = [
   "sport",
 ];
 
+// Helper function format Date theo api format
+const formatToLocalDateTime = (date) => {
+  if (!date) return null;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
+// Helper function để tính startAfter và endBefore từ timeRange sau sẽ đưa vào utils
+const getDateRangeFromPreset = (preset) => {
+  const now = new Date();
+  let startAfter = null;
+  let endBefore = null;
+
+  switch (preset) {
+    case "today":
+      startAfter = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      endBefore = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59
+      );
+      break;
+    case "this_week": {
+      const dayOfWeek = now.getDay();
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      startAfter = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + diffToMonday
+      );
+      endBefore = new Date(startAfter);
+      endBefore.setDate(endBefore.getDate() + 6);
+      endBefore.setHours(23, 59, 59);
+      break;
+    }
+    case "this_month":
+      startAfter = new Date(now.getFullYear(), now.getMonth(), 1);
+      endBefore = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59
+      );
+      break;
+    case "this_year":
+      startAfter = new Date(now.getFullYear(), 0, 1);
+      endBefore = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      break;
+    case "upcoming":
+      startAfter = now;
+      endBefore = null; // Không giới hạn
+      break;
+    default:
+      return { startAfter: null, endBefore: null };
+  }
+
+  return {
+    startAfter: formatToLocalDateTime(startAfter),
+    endBefore: formatToLocalDateTime(endBefore),
+  };
+};
+
 function OpportunitiesEvent() {
   const [pageNum, setPageNum] = useState(0);
   const [pageSize] = useState(6);
@@ -25,6 +97,11 @@ function OpportunitiesEvent() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortBy, setSortBy] = useState("Date"); // Date, Name
   const [order, setOrder] = useState("asc"); // asc, desc
+
+  // Custom date range states
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
+
   const getSortBy = () => {
     switch (sortBy) {
       case "Date":
@@ -38,11 +115,29 @@ function OpportunitiesEvent() {
     }
   };
 
+  // Tính toán startAfter và endBefore dựa trên timeRange
+  const dateRange = useMemo(() => {
+    if (timeRange === "custom") {
+      return {
+        startAfter: customStartDate
+          ? formatToLocalDateTime(new Date(customStartDate + "T00:00:00"))
+          : null,
+        endBefore: customEndDate
+          ? formatToLocalDateTime(new Date(customEndDate + "T23:59:59"))
+          : null,
+      };
+    }
+    return getDateRangeFromPreset(timeRange);
+  }, [timeRange, customStartDate, customEndDate]);
+
   // Debounce filter params để tránh gọi API quá nhiều
   const [debouncedParams, setDebouncedParams] = useState({
     status: status === "all" ? undefined : status,
     sortedBy: getSortBy(),
     order,
+    category: selectedCategories.length > 0 ? selectedCategories[0] : undefined,
+    startAfter: dateRange.startAfter,
+    endBefore: dateRange.endBefore,
   });
 
   useEffect(() => {
@@ -51,11 +146,15 @@ function OpportunitiesEvent() {
         status: status === "all" ? undefined : status,
         sortedBy: getSortBy(),
         order,
+        category:
+          selectedCategories.length > 0 ? selectedCategories[0] : undefined,
+        startAfter: dateRange.startAfter,
+        endBefore: dateRange.endBefore,
       });
     }, 300); // Debounce 300ms
 
     return () => clearTimeout(timer);
-  }, [status, sortBy, order]);
+  }, [status, sortBy, order, selectedCategories, dateRange]);
 
   // Sử dụng useEventPagination với debounced params
   const { data, isLoading, isFetching, isError, error, isPlaceholderData } =
@@ -68,7 +167,16 @@ function OpportunitiesEvent() {
   // Reset pageNum về 0 khi filter thay đổi
   useEffect(() => {
     setPageNum(0);
-  }, [query, status, sortBy, order, selectedCategories]);
+  }, [
+    query,
+    status,
+    sortBy,
+    order,
+    selectedCategories,
+    timeRange,
+    customStartDate,
+    customEndDate,
+  ]);
 
   if (isError) {
     return (
@@ -101,6 +209,8 @@ function OpportunitiesEvent() {
     setSelectedCategories([]);
     setStatus("APPROVED");
     setTimeRange("all");
+    setCustomStartDate("");
+    setCustomEndDate("");
     setSortBy("Date");
     setOrder("asc");
     setPageNum(0);
@@ -135,6 +245,10 @@ function OpportunitiesEvent() {
         order={order}
         setOrder={setOrder}
         resetFilters={resetFilters}
+        customStartDate={customStartDate}
+        setCustomStartDate={setCustomStartDate}
+        customEndDate={customEndDate}
+        setCustomEndDate={setCustomEndDate}
       />
 
       <div>

@@ -33,11 +33,14 @@ export const useEventPagination = (params) => {
         status,
         sortedBy,
         order,
-        capacity
+        capacity,
+        category,
+        startAfter,
+        endBefore
     } = params || {};
 
     const query = useQuery({
-        queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status, sortedBy, order, capacity],
+        queryKey: [...EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, status, sortedBy, order, capacity, category, startAfter, endBefore],
         queryFn: async () => {
             // Build apiParams, only include defined values
             const apiParams = { pageNum, pageSize };
@@ -45,6 +48,9 @@ export const useEventPagination = (params) => {
             if (sortedBy) apiParams.sortedBy = sortedBy;
             if (order) apiParams.order = order;
             if (capacity) apiParams.capacity = capacity;
+            if (category) apiParams.category = category;
+            if (startAfter) apiParams.startAfter = startAfter;
+            if (endBefore) apiParams.endBefore = endBefore;
 
             console.log("useEventPagination - API params:", apiParams);
             const result = await getEvents(apiParams);
@@ -63,16 +69,19 @@ export const useEventPagination = (params) => {
             if (sortedBy) prefetchParams.sortedBy = sortedBy;
             if (order) prefetchParams.order = order;
             if (capacity) prefetchParams.capacity = capacity;
+            if (category) prefetchParams.category = category;
+            if (startAfter) prefetchParams.startAfter = startAfter;
+            if (endBefore) prefetchParams.endBefore = endBefore;
 
             queryClient.prefetchQuery({
-                queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status, sortedBy, order, capacity],
+                queryKey: [...EVENTS_QUERY_KEY, 'pagination', nextPage, pageSize, status, sortedBy, order, capacity, category, startAfter, endBefore],
                 queryFn: async () => {
                     const result = await getEvents(prefetchParams);
                     return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
                 },
             });
         }
-    }, [query.data, pageNum, pageSize, status, sortedBy, order, queryClient, capacity]);
+    }, [query.data, pageNum, pageSize, status, sortedBy, order, queryClient, capacity, category, startAfter, endBefore]);
 
     return query;
 }

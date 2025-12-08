@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiCalendar } from "react-icons/fi";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 
 export default function FilterHorizontal({
@@ -17,8 +17,23 @@ export default function FilterHorizontal({
   order,
   setOrder,
   resetFilters,
+  // Custom date range props
+  customStartDate,
+  setCustomStartDate,
+  customEndDate,
+  setCustomEndDate,
 }) {
   const [openFilter, setOpenFilter] = useState(false);
+
+  const timeRangeOptions = [
+    { value: "all", label: "Any time" },
+    { value: "today", label: "Today" },
+    { value: "this_week", label: "This week" },
+    { value: "this_month", label: "This month" },
+    { value: "this_year", label: "This year" },
+    { value: "upcoming", label: "Upcoming" },
+    { value: "custom", label: "Custom range" },
+  ];
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md border border-gray-600/20">
@@ -36,7 +51,7 @@ export default function FilterHorizontal({
 
         {/* Controls */}
         <div className="flex justify-between gap-2 max-sm:block flex-row">
-          <div className="flex items-center gap-4 flex-4/5">
+          <div className="flex items-center gap-4 flex-4/5 flex-wrap">
             <DropdownSelect
               value={status}
               onChange={setStatus}
@@ -50,15 +65,45 @@ export default function FilterHorizontal({
 
             <DropdownSelect
               value={timeRange}
-              onChange={setTimeRange}
-              options={[
-                { value: "all", label: "Any time" },
-                { value: "today", label: "Today" },
-                { value: "this_week", label: "This week" },
-                { value: "this_month", label: "This month" },
-              ]}
-              className="flex-1 max-sm:block lg:max-w-32"
+              onChange={(value) => {
+                setTimeRange(value);
+                // Reset custom dates khi chọn preset khác
+                if (value !== "custom") {
+                  setCustomStartDate?.("");
+                  setCustomEndDate?.("");
+                }
+              }}
+              options={timeRangeOptions}
+              className="flex-1 max-sm:block lg:max-w-36"
             />
+
+            {/* Custom Date Range Pickers */}
+            {timeRange === "custom" && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="relative">
+                  <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
+                  <input
+                    type="date"
+                    value={customStartDate || ""}
+                    onChange={(e) => setCustomStartDate?.(e.target.value)}
+                    className="pl-9 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:ring focus:ring-blue-200 text-sm"
+                    placeholder="Start date"
+                  />
+                </div>
+                <span className="text-gray-400">→</span>
+                <div className="relative">
+                  <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-4 h-4" />
+                  <input
+                    type="date"
+                    value={customEndDate || ""}
+                    onChange={(e) => setCustomEndDate?.(e.target.value)}
+                    min={customStartDate || undefined}
+                    className="pl-9 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:ring focus:ring-blue-200 text-sm"
+                    placeholder="End date"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="max-md:justify-end flex">
@@ -71,7 +116,7 @@ export default function FilterHorizontal({
           </div>
         </div>
 
-        {/* Categories */}
+        {/* Categories & Sort */}
         {openFilter && (
           <div className="flex flex-row bg-gray-100 py-4 px-4 rounded-xl">
             <div className="basis-1/2 max-md:basis-3/4 flex-col">
