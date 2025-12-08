@@ -330,3 +330,52 @@ export const useRecentPendingRegistrations = (params = {}) => {
         refetchIntervalInBackground: true,
     });
 };
+
+export const usePendingRegistrationsTop3ByNameAsc = ({ event = "all" } = {}) => {
+    const query = useQuery({
+        queryKey: [...REGISTRAION_QUERY_KEY, "manager", "pendingTop3ByNameAsc", { event }],
+        queryFn: async () => {
+            const response = await listUserAllEventManagement();
+            return Array.isArray(response) ? response : [];
+        },
+        staleTime: 5 * 60 * 1000,
+        placeholderData: keepPreviousData,
+    });
+
+    const computed = useMemo(() => {
+        const source = Array.isArray(query.data) ? query.data : [];
+
+        const filtered = source.filter((registration) => {
+            const matchesStatus = registration.status?.toUpperCase() === "PENDING";
+            const normalizedEvent = event?.toLowerCase() || "all";
+            const matchesEvent =
+                normalizedEvent === "all" ||
+                registration.eventName?.toLowerCase() === normalizedEvent ||
+                String(registration.eventId) === normalizedEvent;
+            return matchesStatus && matchesEvent;
+        });
+
+        const sortKey = (r) =>
+            (r.fullName?.toLowerCase()) ||
+            (r.username?.toLowerCase()) ||
+            (r.eventName?.toLowerCase()) || "";
+        const sorted = filtered.sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+
+        const items = sorted.slice(0, 3).map((item) => ({
+            ...item,
+            userId: item.id || item.userId,
+            registrationId: item.registrationId || item.id,
+            registrationStatus: item.status,
+        }));
+
+        return {
+            items,
+            totalItems: filtered.length,
+            totalPages: 1,
+            page: 1,
+            pageSize: 3,
+        };
+    }, [query.data, event]);
+
+    return { ...query, data: computed, rawData: query.data };
+};

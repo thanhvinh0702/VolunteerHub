@@ -7,7 +7,7 @@ import RegistrationCard from "../../components/EventPages/RegistrationCard";
 import OrganizationCard from "../../components/EventPages/OrganizationCard";
 import FeedPage from "../Post/FeedPage";
 import VolunteerList from "../../components/EventPages/VoluteerList";
-import getUser from "./user";
+
 import { calculateDuration, formatDateTime } from "../../utils/date";
 import {
   useCheckUserParticipation,

@@ -1,41 +1,120 @@
-import React from "react";
-import { UserPlus, ExternalLink, X } from "lucide-react"; // Ví dụ icon từ thư viện
+import React, { useMemo, useState } from "react";
+import { UserPlus, X } from "lucide-react";
+import { useReviewRegistration } from "../../hook/useRegistration";
 
 const RequestCard = ({ data }) => {
-  console.log(data);
+  const reviewMutation = useReviewRegistration();
+  const [note, setNote] = useState("");
+  const isSubmitting = reviewMutation.isPending || reviewMutation.isLoading;
+
+  const shortUserLabel = useMemo(() => {
+    if (typeof data?.userId === "string" && data.userId.length > 6) {
+      return `User ${data.userId.slice(0, 6)}…`;
+    }
+    if (data?.userId) {
+      return `User ${String(data.userId)}`;
+    }
+    return "Unknown User";
+  }, [data?.userId]);
+
+  const displayName =
+    data?.user?.name || data?.fullName || data?.username || shortUserLabel;
+
+  const avatar = data?.avatarUrl || "";
+
+  const eventName = data?.event?.name || data?.eventName || "Sự kiện";
+  const address = useMemo(() => {
+    const addr = data?.event?.address;
+    if (!addr) return null;
+    const { street, district, province } = addr;
+    return [street, district, province].filter(Boolean).join(", ");
+  }, [data?.event?.address]);
+
+  const startTime = data?.event?.startTime;
+  const endTime = data?.event?.endTime;
+  const timeRange = useMemo(() => {
+    if (!startTime) return null;
+    const start = new Date(startTime);
+    const end = endTime ? new Date(endTime) : null;
+    const fmt = (d) => d.toLocaleString(undefined, { hour12: false });
+    return end ? `${fmt(start)} - ${fmt(end)}` : fmt(start);
+  }, [startTime, endTime]);
+
+  const handleApprove = () => {
+    reviewMutation.mutate(
+      {
+        eventId: data?.eventId ?? data?.event?.id,
+        participantId: data?.userId,
+        status: "APPROVED",
+        note: note.trim() || null,
+      },
+      {
+        onSuccess: () => {
+          setNote("");
+        },
+      }
+    );
+  };
+
+  const handleReject = () => {
+    reviewMutation.mutate(
+      {
+        eventId: data?.eventId ?? data?.event?.id,
+        participantId: data?.userId,
+        status: "REJECTED",
+        note: note.trim() || null,
+      },
+      {
+        onSuccess: () => {
+          setNote("");
+        },
+      }
+    );
+  };
+
   return (
     <div className="flex items-center justify-between p-4 bg-white border rounded-xl shadow-sm mb-3">
-      {/* Thông tin User & Event bên trái */}
       <div className="flex items-center gap-3">
         <img
-          src={data.user.avatar}
-          alt={data.user.name}
-          className="w-10 h-10 rounded-full bg-gray-100"
+          src={avatar}
+          alt={displayName}
+          className="w-10 h-10 rounded-full bg-gray-100 object-cover"
         />
         <div>
-          <h4 className="font-semibold text-gray-900">{data.user.name}</h4>
-          <p className="text-sm text-gray-500">{data.eventName}</p>
+          <h4 className="font-semibold text-gray-900">{displayName}</h4>
+          <p className="text-sm text-gray-500">{eventName}</p>
+          {address && <p className="text-xs text-gray-400">{address}</p>}
+          {timeRange && <p className="text-xs text-gray-400">{timeRange}</p>}
+          {data?.status && (
+            <p className="text-xs mt-1">
+              Trạng thái: <span className="font-medium">{data.status}</span>
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Nút hành động bên phải */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-          onClick={() => console.log("Duyệt:", data.id)}
+          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-60"
+          onClick={handleApprove}
+          disabled={
+            isSubmitting || !data?.userId || !(data?.eventId || data?.event?.id)
+          }
         >
           <UserPlus size={16} />
           Approve
         </button>
 
         <button
-          className="px-4 py-2 bg-red-600 text-white border border-gray-200 rounded-lg text-sm font-medium transition-colors hover:scale-105 duration-150"
-          onClick={() => console.log("Xem chi tiết:", data.id)}
+          className="px-4 py-2 bg-red-600 text-white border border-gray-200 rounded-lg text-sm font-medium transition-transform hover:scale-105 duration-150 disabled:opacity-60"
+          onClick={handleReject}
+          disabled={
+            isSubmitting || !data?.userId || !(data?.eventId || data?.event?.id)
+          }
         >
           <span className="flex flex-row items-center gap-2">
             Reject
             <span>
-              {" "}
               <X />
             </span>
           </span>

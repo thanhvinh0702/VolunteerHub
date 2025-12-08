@@ -1,8 +1,39 @@
 import React from "react";
-import { joinRequestsData } from "./joinRequestsData";
 import ModalActivity from "../ModalActivity/ModalActivity";
 import RequestCard from "./RequestCard";
+import { usePendingRegistrationsTop3ByNameAsc } from "../../hook/useRegistration";
+import { Skeleton } from "@mui/material";
+
+const SkeletonRequestCard = () => (
+  <div className="flex items-center justify-between p-4 bg-white border rounded-xl shadow-sm mb-3">
+    <div className="flex items-center gap-3">
+      <Skeleton variant="circular" width={40} height={40} />
+      <div className="flex flex-col gap-1">
+        <Skeleton variant="text" width={160} height={20} />
+        <Skeleton variant="text" width={120} height={16} />
+      </div>
+    </div>
+    <div className="flex items-center gap-2">
+      <Skeleton variant="rectangular" width={90} height={34} />
+      <Skeleton variant="rectangular" width={80} height={34} />
+    </div>
+  </div>
+);
+
 function RequestCardOverview() {
+  const { data, isLoading, isFetching, isError, error } =
+    usePendingRegistrationsTop3ByNameAsc();
+
+  const items = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data?.items)
+    ? data.items
+    : Array.isArray(data)
+    ? data
+    : [];
+
+  const loading = isLoading || isFetching;
+
   return (
     <div>
       <ModalActivity
@@ -11,9 +42,28 @@ function RequestCardOverview() {
         viewMore={true}
         path="/request-event-ad"
       >
-        {joinRequestsData.map((item) => {
-          return <RequestCard key={item.id} data={item} />;
-        })}
+        {loading && [0, 1, 2, 3].map((i) => <SkeletonRequestCard key={i} />)}
+
+        {!loading && isError && (
+          <div className="text-sm text-red-600">
+            Lỗi tải yêu cầu: {error?.message || "Không xác định"}
+          </div>
+        )}
+
+        {!loading && !isError && items.length === 0 && (
+          <div className="text-sm text-gray-500">
+            Không có yêu cầu chờ duyệt.
+          </div>
+        )}
+
+        {!loading &&
+          !isError &&
+          items.map((item, idx) => (
+            <RequestCard
+              key={item.id ?? item.registrationId ?? idx}
+              data={item}
+            />
+          ))}
       </ModalActivity>
     </div>
   );

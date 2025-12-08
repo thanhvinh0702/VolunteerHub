@@ -62,7 +62,7 @@ function AnnouncedEventCard({
             </div>
           </div>
 
-          <div className="flex self-center rounded-xl w-24 max-md:w-20 max-sm:max-w-25 max-sm:max-h-25 bg-red-300">
+          <div className="flex self-center rounded-2xl w-24 max-md:w-20 max-sm:max-w-25 max-sm:max-h-25 bg-red-300">
             <img
               src={urlImg}
               className="object-cover w-full h-full object-center aspect-square rounded-2xl"
