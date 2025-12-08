@@ -9,6 +9,7 @@ import useClickOutside from "../../hook/ClickOutside";
 import {
   useOwnedEventsPagination,
   useSearchEventByName,
+  useSearchEventByNameForManager,
 } from "../../hook/useEvent";
 
 const PAGE_SIZE = 6;
@@ -36,7 +37,7 @@ function EventManager() {
   });
 
   // Hook cho search by name (khi có search query)
-  const searchQuery = useSearchEventByName({
+  const searchQuery = useSearchEventByNameForManager({
     keyword: searchTerm,
     pageNum: page,
     pageSize: PAGE_SIZE,
