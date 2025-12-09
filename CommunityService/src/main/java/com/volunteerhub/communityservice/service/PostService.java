@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.service;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
 import com.volunteerhub.communityservice.dto.PostRequest;
 import com.volunteerhub.communityservice.dto.PostResponse;
@@ -11,6 +12,7 @@ import com.volunteerhub.communityservice.repository.PostRepository;
 import com.volunteerhub.communityservice.repository.ReactionRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -70,18 +72,24 @@ public class PostService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @eventRegistrationService.isParticipant(#eventId)")
-    public List<PostResponse> findByEventId(Long eventId, String sortedBy, String order, Integer pageNum, Integer pageSize) {
+    public PageResponse<PostResponse> findByEventId(Long eventId, String sortedBy, String order, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
         Sort sort = order.equals("desc") ? Sort.by(sortedBy).descending() : Sort.by(sortedBy).ascending();
-        return postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize(), sort))
-                .getContent()
-                .stream()
-                .map(p -> {
-                    int reactionCount = getCachedReactionCount(p.getId());
-                    int commentCount = getCachedCommentCount(p.getId());
-                    return postMapper.toDto(p, reactionCount, commentCount);
-                })
+        Page<Post> page = postRepository.findByEventId(eventId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize(), sort));
+        List<PostResponse> dtoList = page.getContent().stream()
+                .map(post -> postMapper.toDto(
+                        post,
+                        getCachedReactionCount(post.getId()),
+                        getCachedCommentCount(post.getId())
+                ))
                 .toList();
+        return PageResponse.<PostResponse>builder()
+                .content(dtoList)
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .size(page.getSize())
+                .number(page.getNumber())
+                .build();
     }
 
     @PreAuthorize("@eventRegistrationService.isParticipant(#eventId)")

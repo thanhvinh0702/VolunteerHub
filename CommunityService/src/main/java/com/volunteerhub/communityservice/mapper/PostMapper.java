@@ -5,6 +5,8 @@ import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.model.Post;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class PostMapper {
 

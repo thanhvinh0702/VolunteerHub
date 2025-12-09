@@ -1,9 +1,14 @@
 package com.volunteerhub.communityservice.mapper;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.message.comment.CommentCreatedMessage;
 import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.model.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class CommentMapper {
@@ -17,6 +22,19 @@ public class CommentMapper {
                 .parentId(comment.getParentId())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
+                .build();
+    }
+
+    public PageResponse<CommentResponse> toPageDto(Page<Comment> comments) {
+        List<CommentResponse> dtoList = comments.getContent().stream()
+                .map(this::toDto)
+                .toList();
+        return PageResponse.<CommentResponse>builder()
+                .content(dtoList)
+                .totalPages(comments.getTotalPages())
+                .totalElements(comments.getTotalElements())
+                .number(comments.getNumber())
+                .size(comments.getSize())
                 .build();
     }
 

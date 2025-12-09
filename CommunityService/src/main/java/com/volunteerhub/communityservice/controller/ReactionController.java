@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.controller;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.ReactionRequest;
 import com.volunteerhub.communityservice.dto.ReactionResponse;
 import com.volunteerhub.communityservice.service.ReactionService;
@@ -21,9 +22,9 @@ public class ReactionController {
     private final ReactionService reactionService;
 
     @GetMapping
-    public List<ReactionResponse> findAll(@PathVariable Long postId,
-                                          @RequestParam(required = false) Integer pageNum,
-                                          @RequestParam(required = false) Integer pageSize) {
+    public PageResponse<ReactionResponse> findAll(@PathVariable Long postId,
+                                                  @RequestParam(required = false) Integer pageNum,
+                                                  @RequestParam(required = false) Integer pageSize) {
         return reactionService.findByPostId(postId, pageNum, pageSize);
     }
 

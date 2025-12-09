@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.controller;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.PostRequest;
 import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.service.PostService;
@@ -23,11 +24,11 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public List<PostResponse> findAll(@PathVariable Long eventId,
-                                      @RequestParam(defaultValue = "id") String sortedBy,
-                                      @RequestParam(defaultValue = "desc") String order,
-                                      @RequestParam(required = false) Integer pageNum,
-                                      @RequestParam(required = false) Integer pageSize) {
+    public PageResponse<PostResponse> findAll(@PathVariable Long eventId,
+                                              @RequestParam(defaultValue = "id") String sortedBy,
+                                              @RequestParam(defaultValue = "desc") String order,
+                                              @RequestParam(required = false) Integer pageNum,
+                                              @RequestParam(required = false) Integer pageSize) {
         return postService.findByEventId(eventId, sortedBy, order, pageNum, pageSize);
     }
 

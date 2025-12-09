@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.service;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.CommentRequest;
 import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
@@ -10,6 +11,7 @@ import com.volunteerhub.communityservice.publisher.CommentPublisher;
 import com.volunteerhub.communityservice.repository.CommentRepository;
 import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,12 +37,9 @@ public class CommentService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @postService.canAccessPost(authentication.name, #postId)")
-    public List<CommentResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
+    public PageResponse<CommentResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
-        return commentRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize())).getContent()
-                .stream()
-                .map(commentMapper::toDto)
-                .toList();
+        return commentMapper.toPageDto(commentRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize())));
     }
 
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")

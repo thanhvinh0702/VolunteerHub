@@ -1,5 +1,6 @@
 package com.volunteerhub.communityservice.service;
 
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.*;
 import com.volunteerhub.communityservice.mapper.ReactionMapper;
 import com.volunteerhub.communityservice.model.Post;
@@ -33,13 +34,11 @@ public class ReactionService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @postService.canAccessPost(authentication.name, #postId)")
-    public List<ReactionResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
+    public PageResponse<ReactionResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
-        return reactionRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
-                .getContent()
-                .stream()
-                .map(reactionMapper::toDto)
-                .toList();
+        return reactionMapper.toDtoPage(
+                reactionRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
+        );
     }
 
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")
