@@ -24,9 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -192,4 +190,28 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public Map<String, Object> checkMissingProfileFields(String userId) {
+        User user = this.findEntityById(userId);
+
+        List<String> missingFields = new ArrayList<>();
+
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            missingFields.add("fullName");
+        }
+
+        if (user.getDateOfBirth() == null) {
+            missingFields.add("dateOfBirth");
+        }
+
+        if (user.getAddress() == null) {
+            missingFields.add("address");
+        }
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("isComplete", missingFields.isEmpty());
+
+        response.put("missingFields", missingFields);
+
+        return response;
+    }
 }

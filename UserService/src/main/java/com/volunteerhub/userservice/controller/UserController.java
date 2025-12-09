@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -101,4 +102,12 @@ public class UserController {
 //        return ResponseEntity.ok(userService.getAllUsersForExport());
 //    }
 
+    @GetMapping("/me/validate-profile")
+    public ResponseEntity<Map<String, Object>> validateMyProfile() {
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Map<String, Object> result = userService.checkMissingProfileFields(currentUserId);
+
+        return ResponseEntity.ok(result);
+    }
 }
