@@ -1,6 +1,7 @@
 package com.volunteerhub.communityservice.service;
 
 import com.volunteerhub.common.dto.PageResponse;
+import com.volunteerhub.common.dto.ReactionResponse;
 import com.volunteerhub.communityservice.dto.*;
 import com.volunteerhub.communityservice.mapper.ReactionMapper;
 import com.volunteerhub.communityservice.model.Post;
@@ -15,7 +16,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service

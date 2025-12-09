@@ -1,4 +1,4 @@
-package com.volunteerhub.communityservice.dto;
+package com.volunteerhub.common.dto;
 
 import lombok.Builder;
 import lombok.Data;

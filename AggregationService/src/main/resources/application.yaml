@@ -7,6 +7,19 @@ spring:
 server:
   port: ${PORT}
 
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+
+logging:
+  level:
+    feign: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+    com.volunteerhub.AggregationService.client: DEBUG
+
+
 eureka:
   client:
     serviceUrl:

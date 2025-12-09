@@ -1,12 +1,14 @@
 package com.volunteerhub.communityservice.controller;
 
 import com.volunteerhub.common.dto.PageResponse;
+import com.volunteerhub.common.dto.ReactionResponse;
 import com.volunteerhub.communityservice.dto.ReactionRequest;
-import com.volunteerhub.communityservice.dto.ReactionResponse;
 import com.volunteerhub.communityservice.service.ReactionService;
 import com.volunteerhub.communityservice.validation.OnCreate;
 import com.volunteerhub.communityservice.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -22,29 +24,29 @@ public class ReactionController {
     private final ReactionService reactionService;
 
     @GetMapping
-    public PageResponse<ReactionResponse> findAll(@PathVariable Long postId,
-                                                  @RequestParam(required = false) Integer pageNum,
-                                                  @RequestParam(required = false) Integer pageSize) {
-        return reactionService.findByPostId(postId, pageNum, pageSize);
+    public ResponseEntity<PageResponse<ReactionResponse>> findAll(@PathVariable Long postId,
+                                                                  @RequestParam(required = false) Integer pageNum,
+                                                                  @RequestParam(required = false) Integer pageSize) {
+        return ResponseEntity.ok(reactionService.findByPostId(postId, pageNum, pageSize));
     }
 
     @PostMapping
-    public ReactionResponse create(@PathVariable Long postId,
+    public ResponseEntity<ReactionResponse> create(@PathVariable Long postId,
                                    @RequestBody @Validated(OnCreate.class)ReactionRequest reactionRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return reactionService.create(authentication.getName(), postId, reactionRequest);
+        return new ResponseEntity<>(reactionService.create(authentication.getName(), postId, reactionRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{reactionId}")
-    public ReactionResponse update(@PathVariable Long reactionId,
+    public ResponseEntity<ReactionResponse> update(@PathVariable Long reactionId,
                                    @RequestBody @Validated(OnUpdate.class) ReactionRequest reactionRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return reactionService.update(authentication.getName(), reactionId, reactionRequest);
+        return ResponseEntity.ok(reactionService.update(authentication.getName(), reactionId, reactionRequest));
     }
 
     @DeleteMapping("/{reactionId}")
-    public ReactionResponse delete(@PathVariable Long reactionId) {
+    public ResponseEntity<ReactionResponse> delete(@PathVariable Long reactionId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return reactionService.delete(authentication.getName(), reactionId);
+        return ResponseEntity.ok(reactionService.delete(authentication.getName(), reactionId));
     }
 }

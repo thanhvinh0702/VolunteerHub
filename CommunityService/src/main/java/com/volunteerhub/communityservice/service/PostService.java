@@ -1,9 +1,9 @@
 package com.volunteerhub.communityservice.service;
 
 import com.volunteerhub.common.dto.PageResponse;
+import com.volunteerhub.common.dto.PostResponse;
 import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
 import com.volunteerhub.communityservice.dto.PostRequest;
-import com.volunteerhub.communityservice.dto.PostResponse;
 import com.volunteerhub.communityservice.mapper.PostMapper;
 import com.volunteerhub.communityservice.model.Post;
 import com.volunteerhub.communityservice.publisher.PostPublisher;

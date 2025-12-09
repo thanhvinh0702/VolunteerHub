@@ -1,8 +1,8 @@
 package com.volunteerhub.communityservice.controller;
 
+import com.volunteerhub.common.dto.CommentResponse;
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.CommentRequest;
-import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.service.CommentService;
 import com.volunteerhub.communityservice.validation.OnCreate;
 import com.volunteerhub.communityservice.validation.OnUpdate;

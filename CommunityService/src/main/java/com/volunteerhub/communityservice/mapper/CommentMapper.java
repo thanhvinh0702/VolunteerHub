@@ -1,11 +1,10 @@
 package com.volunteerhub.communityservice.mapper;
 
+import com.volunteerhub.common.dto.CommentResponse;
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.message.comment.CommentCreatedMessage;
-import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.model.Comment;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

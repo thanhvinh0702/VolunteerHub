@@ -1,8 +1,8 @@
 package com.volunteerhub.communityservice.service;
 
+import com.volunteerhub.common.dto.CommentResponse;
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.CommentRequest;
-import com.volunteerhub.communityservice.dto.CommentResponse;
 import com.volunteerhub.communityservice.dto.PageNumAndSizeResponse;
 import com.volunteerhub.communityservice.mapper.CommentMapper;
 import com.volunteerhub.communityservice.model.Comment;

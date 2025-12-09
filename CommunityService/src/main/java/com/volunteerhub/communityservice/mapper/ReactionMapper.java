@@ -1,8 +1,8 @@
 package com.volunteerhub.communityservice.mapper;
 
 import com.volunteerhub.common.dto.PageResponse;
+import com.volunteerhub.common.dto.ReactionResponse;
 import com.volunteerhub.common.dto.message.reaction.ReactionCreatedMessage;
-import com.volunteerhub.communityservice.dto.ReactionResponse;
 import com.volunteerhub.communityservice.model.Reaction;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

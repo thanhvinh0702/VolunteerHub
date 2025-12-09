@@ -1,0 +1,35 @@
+package com.volunteerhub.AggregationService.client;
+
+import com.volunteerhub.AggregationService.config.FeignConfig;
+import com.volunteerhub.common.dto.CommentResponse;
+import com.volunteerhub.common.dto.PageResponse;
+import com.volunteerhub.common.dto.PostResponse;
+import com.volunteerhub.common.dto.ReactionResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@FeignClient(name = "COMMUNITYSERVICE", path = "/api/v1/events", configuration = FeignConfig.class)
+public interface CommunityClient {
+
+    @GetMapping("/{eventId}/posts")
+    PageResponse<PostResponse> findAllPosts(@PathVariable Long eventId,
+                                            @RequestParam(defaultValue = "id") String sortedBy,
+                                            @RequestParam(defaultValue = "desc") String order,
+                                            @RequestParam(required = false) Integer pageNum,
+                                            @RequestParam(required = false) Integer pageSize);
+
+    @GetMapping("/{eventId}/posts/{postId}")
+    PostResponse findPostById(@PathVariable Long postId);
+
+    @GetMapping("/{eventId}/posts/{postId}/comments")
+    PageResponse<CommentResponse> findAllComments(@PathVariable Long postId,
+                                          @RequestParam(required = false) Integer pageNum,
+                                          @RequestParam(required = false) Integer pageSize);
+
+    @GetMapping("/{eventId}/posts/{postId}/reactions")
+    PageResponse<ReactionResponse> findAllReactions(@PathVariable Long postId,
+                                                    @RequestParam(required = false) Integer pageNum,
+                                                    @RequestParam(required = false) Integer pageSize);
+}
