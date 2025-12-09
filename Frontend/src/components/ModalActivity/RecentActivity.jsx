@@ -78,7 +78,10 @@ function RecentActivity() {
 
   return (
     <div className="h-full">
-      <ModalActivity title="Recent Activity" subtile="Recent Activity">
+      <ModalActivity
+        title="Awaiting Approval"
+        subtile="Events recently added and pending review"
+      >
         {(isLoading || isFetching) && (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
@@ -92,7 +95,9 @@ function RecentActivity() {
         {!isLoading && !isFetching && !isError && cards.length === 0 && (
           <p className="px-4 py-2 text-gray-500">No pending activities.</p>
         )}
-        {!isLoading && !isFetching && !isError &&
+        {!isLoading &&
+          !isFetching &&
+          !isError &&
           cards.map((item) => <RecentActivityCard key={item.id} {...item} />)}
       </ModalActivity>
     </div>

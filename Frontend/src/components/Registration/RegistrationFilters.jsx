@@ -18,6 +18,7 @@ export default function RegistrationFilters({
     { value: "all", label: "All Status" },
     { value: "pending", label: "Pending" },
     { value: "approved", label: "Approved" },
+    { value: "completed", label: "Completed" },
     { value: "rejected", label: "Rejected" },
   ];
 

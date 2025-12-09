@@ -1,16 +1,35 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Plus, Search } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Ban,
+  Eye,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+} from "lucide-react";
 import Pagination from "@mui/material/Pagination";
 import EventManagerCard from "../../components/Project/eventManagerCard";
-import { EVENT_STATUS } from "./eventManagerData";
+import {
+  EVENT_STATUS,
+  getStatusColor,
+  STATUS_CONFIG,
+  canCancelEvent,
+} from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
 import {
   useOwnedEventsPagination,
-  useSearchEventByName,
   useSearchEventByNameForManager,
 } from "../../hook/useEvent";
+import MobileManageCard from "../../components/Project/MobileManageCard";
+
+// Mobile card component mimicking Admin style
 
 const PAGE_SIZE = 6;
 
@@ -196,7 +215,7 @@ function EventManager() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto relative">
+      <div className="overflow-x-auto relative max-lg:hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
@@ -255,6 +274,32 @@ function EventManager() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Cards - Mobile only */}
+      <div className="lg:hidden">
+        {data?.data && data.data.length > 0 ? (
+          data.data.map((event) => (
+            <MobileManageCard
+              key={event.id}
+              data={event}
+              onCancelEvent={handleCancelEvent}
+              onEdit={handleEdit}
+              onView={handleView}
+              onDelete={handleDelete}
+            />
+          ))
+        ) : (
+          <div className="px-6 py-12 text-center">
+            <p className="text-gray-500">No events found</p>
+            <button
+              onClick={handleCreateNew}
+              className="text-blue-600 hover:underline"
+            >
+              Create your first event
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Pagination & Stats Footer */}

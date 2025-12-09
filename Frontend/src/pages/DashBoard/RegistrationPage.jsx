@@ -9,8 +9,8 @@ const PAGE_SIZE = 6;
 
 export default function RegistrationPage() {
   const [filters, setFilters] = useState({
-    event: "all",
-    status: "all",
+    event: "",
+    status: "",
     search: "",
   });
   const [debouncedSearch, setDebouncedSearch] = useState("");

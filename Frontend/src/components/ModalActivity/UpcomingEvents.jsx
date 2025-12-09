@@ -7,12 +7,20 @@ import Card from "../Card.jsx/Card";
 
 function UpcomingEvents() {
   const queryParams = { pageSize: 3, sortedBy: "date", order: "desc" };
-  const { data, isLoading, isError, isFetching } = useUpcomingApprovedRegistrations(queryParams);
+  const { data, isLoading, isError, isFetching } =
+    useUpcomingApprovedRegistrations(queryParams);
 
   React.useEffect(() => {
     console.log("[UpcomingEvents] query params:", queryParams);
     console.log("[UpcomingEvents] raw data:", data);
-    console.log("[UpcomingEvents] isLoading:", isLoading, "isError:", isError, "isFetching:", isFetching);
+    console.log(
+      "[UpcomingEvents] isLoading:",
+      isLoading,
+      "isError:",
+      isError,
+      "isFetching:",
+      isFetching
+    );
   }, [data, isLoading, isError, isFetching]);
 
   const items = Array.isArray(data)
@@ -66,7 +74,10 @@ function UpcomingEvents() {
 
   return (
     <div className="h-full">
-      <ModalActivity title="Upcoming Events" subtile="Upcoming Events">
+      <ModalActivity
+        title="What’s Coming Up"
+        subtile="Approved and scheduled to happen soon"
+      >
         {(isLoading || isFetching) && (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
@@ -80,7 +91,9 @@ function UpcomingEvents() {
         {!isLoading && !isFetching && !isError && cards.length === 0 && (
           <p className="px-4 py-2 text-gray-500">No upcoming events.</p>
         )}
-        {!isLoading && !isFetching && !isError &&
+        {!isLoading &&
+          !isFetching &&
+          !isError &&
           cards.map((reg) => {
             const ev = reg.event || {};
             const address = [
@@ -94,6 +107,7 @@ function UpcomingEvents() {
             return (
               <UpComingCard
                 key={`${reg.id}-${ev.id}`}
+                eventId={ev.id}
                 title={ev.name}
                 subtile={ev.category?.name || ""}
                 date={ev.startTime}
