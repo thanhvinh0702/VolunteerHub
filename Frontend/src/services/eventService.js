@@ -74,7 +74,7 @@ export const getEventById = async (eventId) => {
     if (!eventId) {
         throw new Error("eventId is required to fetch event details");
     }
-    const response = await axiosClient.get(`${EVENT_BASE_URL}/${eventId}`);
+    const response = await axiosClient.get(`${EVENT_AGGREGATED_BASE_URL}/${eventId}`);
     return response;
 };
 

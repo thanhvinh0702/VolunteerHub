@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import EventHero from "../../components/EventPages/EventHero";
 import EventOverview from "../../components/EventPages/EventOverview";
 import Tabs from "../../components/Tabs.jsx/Tabs";
@@ -14,13 +14,12 @@ import {
   useRegisterForEvent,
   useConstUserApprovedList,
 } from "../../hook/useRegistration";
-import { getEventById } from "../../services/eventService";
+import { useEventDetail } from "../../hook/useEvent";
 import { useAuth } from "../../hook/useAuth";
 
 export default function EventLayout() {
   const { id, tab } = useParams();
-  const location = useLocation();
-  const passedEventData = location.state?.eventData;
+
   const { user } = useAuth();
 
   // Check user's participation status
@@ -44,11 +43,14 @@ export default function EventLayout() {
   const { data } = localStorage.getItem("user");
   console.log("User data in EventLayout:", data);
   console.log(id);
-  console.log("Passed event data:", passedEventData);
 
-  const [eventData, setEventData] = useState(passedEventData || null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const {
+    data: eventData,
+    isLoading: isEventLoading,
+    isError: isEventError,
+    error: eventError,
+    refetch,
+  } = useEventDetail(id);
   const [displayCount, setDisplayCount] = useState(5);
 
   // Fetch approved users for the event
@@ -62,40 +64,57 @@ export default function EventLayout() {
     setDisplayCount((prev) => prev + 5);
   };
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      if (passedEventData) {
-        console.log("Using passed event data, skipping API call");
-        return;
-      }
-
-      if (!id) return;
-
-      try {
-        setLoading(true);
-        const data = await getEventById(id);
-        setEventData(data);
-        setError(null);
-        console.log("Fetched from API:", data);
-      } catch (err) {
-        console.error("Error fetching event:", err);
-        setError("Không thể tải thông tin sự kiện");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id, passedEventData]);
-
-  if (loading) {
+  if (isEventLoading) {
     return <div className="p-5">Loading...</div>;
   }
 
-  if (error || !eventData) {
+  if (isEventError && eventError?.response?.status === 404) {
     return (
-      <div className="p-5 text-red-500">
-        {error || "Không tìm thấy sự kiện"}
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-center px-6 py-10">
+          <div className="text-6xl font-bold text-gray-200">404</div>
+          <h2 className="mt-4 text-xl font-semibold text-gray-900">
+            Event is not available
+          </h2>
+          <p className="mt-2 text-gray-600">
+            This event is not available or does not exist.
+          </p>
+          <div className="mt-6 flex gap-3 justify-center">
+            <Link
+              to="/opportunities"
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Another event
+            </Link>
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Go home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isEventError) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 font-medium">Có lỗi khi tải sự kiện</p>
+          <p className="mt-1 text-gray-600">
+            {eventError?.response?.data?.message ||
+              eventError?.message ||
+              "Vui lòng thử lại sau."}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="mt-4 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Thử lại
+          </button>
+        </div>
       </div>
     );
   }
@@ -398,7 +417,7 @@ export default function EventLayout() {
           isCheckingStatus={isCheckingStatus}
           onAction={() => {}}
         />
-        <OrganizationCard data={passedEventData?.owner} />
+        <OrganizationCard data={eventData?.owner} />
         {/*<ContactCard />
         <RelatedEventsCard />*/}
       </aside>

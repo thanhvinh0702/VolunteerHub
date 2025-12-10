@@ -357,6 +357,7 @@ export const useEventDetail = (eventId, options = {}) => {
     return useQuery({
         queryKey: [...EVENTS_QUERY_KEY, eventId],
         queryFn: () => getEventById(eventId),
+        retry: 2,
         enabled: Boolean(eventId),
         ...options,
     });

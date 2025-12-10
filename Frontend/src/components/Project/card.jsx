@@ -42,24 +42,7 @@ function ProjectCard({
 
   // Handle navigation with event data
   const handleViewDetails = () => {
-    navigate(`/opportunities/overview/${id}`, {
-      state: {
-        eventData: {
-          id,
-          name,
-          description,
-          imageUrl,
-          category,
-          address,
-          startTime,
-          endTime,
-          capacity,
-          registrationCount,
-          status,
-          ...restProps,
-        },
-      },
-    });
+    navigate(`/opportunities/overview/${id}`);
   };
 
   return (
