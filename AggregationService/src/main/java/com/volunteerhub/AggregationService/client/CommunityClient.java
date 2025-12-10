@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @FeignClient(name = "COMMUNITYSERVICE", path = "/api/v1/events", configuration = FeignConfig.class)
 public interface CommunityClient {
 
@@ -21,15 +23,16 @@ public interface CommunityClient {
                                             @RequestParam(required = false) Integer pageSize);
 
     @GetMapping("/{eventId}/posts/{postId}")
-    PostResponse findPostById(@PathVariable Long postId);
+    PostResponse findPostById(@PathVariable Long eventId,
+                              @PathVariable Long postId);
 
     @GetMapping("/{eventId}/posts/{postId}/comments")
-    PageResponse<CommentResponse> findAllComments(@PathVariable Long postId,
-                                          @RequestParam(required = false) Integer pageNum,
-                                          @RequestParam(required = false) Integer pageSize);
+    List<CommentResponse> findAllComments(@PathVariable Long eventId,
+                                          @PathVariable Long postId);
 
     @GetMapping("/{eventId}/posts/{postId}/reactions")
-    PageResponse<ReactionResponse> findAllReactions(@PathVariable Long postId,
+    PageResponse<ReactionResponse> findAllReactions(@PathVariable Long eventId,
+                                                    @PathVariable Long postId,
                                                     @RequestParam(required = false) Integer pageNum,
                                                     @RequestParam(required = false) Integer pageSize);
 }
