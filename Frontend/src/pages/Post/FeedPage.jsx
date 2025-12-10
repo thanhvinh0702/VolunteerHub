@@ -1,6 +1,8 @@
 // src/pages/FeedPage.jsx
 import React, { useState } from "react";
-import CreatePost from "../../components/Post/CreatPost";
+import CreatPost from "../../components/Post/CreatPost";
+import { useInfinitePosts } from "../../hook/useCommunity";
+import { useParams, useSearchParams } from "react-router-dom";
 import PostCard from "../../components/Post/PostCard";
 import PostModal from "../../components/Post/PostModal";
 import { useNavbar } from "../../hook/useNavbar";
@@ -11,6 +13,8 @@ import { useNavbar } from "../../hook/useNavbar";
  */
 
 export default function FeedPage() {
+  const { id } = useParams();
+  console.log(id);
   const currentUser = { name: "Bạn" };
   const { setShowNavbar } = useNavbar();
   const [posts, setPosts] = useState([
@@ -227,14 +231,15 @@ export default function FeedPage() {
 
   // Create new post
   const handleCreate = (newPost) => {
-    const normalized = {
-      ...newPost,
-      images: newPost.images || [],
-      comments: newPost.comments || [],
-      reactions: newPost.reactions || { like: 0, love: 0 },
-      userReaction: newPost.userReaction ?? null,
+    const minimal = {
+      id: newPost.id ?? Date.now(),
+      content: newPost.content ?? "",
+      text: newPost.text ?? newPost.content ?? "",
+      images: Array.isArray(newPost.images) ? newPost.images : [],
+      author: newPost.author ?? { name: currentUser.name },
+      createdAt: newPost.createdAt ?? new Date().toISOString(),
     };
-    setPosts((prev) => [normalized, ...prev]);
+    setPosts((prev) => [minimal, ...prev]);
   };
 
   // Open modal
@@ -256,16 +261,18 @@ export default function FeedPage() {
   // Add comment
   const addComment = (postId, comment) => {
     setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId ? { ...p, comments: [...p.comments, comment] } : p
-      )
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const existing = Array.isArray(p.comments) ? p.comments : [];
+        return { ...p, comments: [...existing, comment] };
+      })
     );
     // if modal open for same post, update activePost too
-    setActivePost((ap) =>
-      ap && ap.id === postId
-        ? { ...ap, comments: [...ap.comments, comment] }
-        : ap
-    );
+    setActivePost((ap) => {
+      if (!ap || ap.id !== postId) return ap;
+      const existing = Array.isArray(ap.comments) ? ap.comments : [];
+      return { ...ap, comments: [...existing, comment] };
+    });
   };
 
   // Edit comment (only basic)
@@ -285,34 +292,30 @@ export default function FeedPage() {
           : p
       )
     );
-    setActivePost((ap) =>
-      ap && ap.id === postId
-        ? {
-            ...ap,
-            comments: ap.comments.map((c) =>
-              c.id === commentId
-                ? { ...c, content: newContent, updatedAt: now }
-                : c
-            ),
-          }
-        : ap
-    );
+    setActivePost((ap) => {
+      if (!ap || ap.id !== postId) return ap;
+      const existing = Array.isArray(ap.comments) ? ap.comments : [];
+      const updated = existing.map((c) =>
+        c.id === commentId ? { ...c, content: newContent, updatedAt: now } : c
+      );
+      return { ...ap, comments: updated };
+    });
   };
 
   // Delete comment
   const deleteComment = (postId, commentId) => {
     setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId
-          ? { ...p, comments: p.comments.filter((c) => c.id !== commentId) }
-          : p
-      )
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const existing = Array.isArray(p.comments) ? p.comments : [];
+        return { ...p, comments: existing.filter((c) => c.id !== commentId) };
+      })
     );
-    setActivePost((ap) =>
-      ap && ap.id === postId
-        ? { ...ap, comments: ap.comments.filter((c) => c.id !== commentId) }
-        : ap
-    );
+    setActivePost((ap) => {
+      if (!ap || ap.id !== postId) return ap;
+      const existing = Array.isArray(ap.comments) ? ap.comments : [];
+      return { ...ap, comments: existing.filter((c) => c.id !== commentId) };
+    });
   };
 
   // React (like/love) with toggle logic
@@ -321,7 +324,7 @@ export default function FeedPage() {
       prev.map((p) => {
         if (p.id !== postId) return p;
         const already = p.userReaction === type;
-        let newReactions = { ...p.reactions };
+        const newReactions = { ...(p.reactions || {}) };
         let newUserReaction = p.userReaction;
         if (already) {
           // remove
@@ -347,7 +350,7 @@ export default function FeedPage() {
       if (!ap || ap.id !== postId) return ap;
       const p = posts.find((x) => x.id === postId) || ap;
       const already = p.userReaction === type;
-      let newReactions = { ...p.reactions };
+      let newReactions = { ...(p.reactions || {}) };
       let newUserReaction = p.userReaction;
       if (already) {
         newReactions[type] = Math.max(0, (newReactions[type] || 0) - 1);
@@ -368,7 +371,7 @@ export default function FeedPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <CreatePost
+        <CreatPost
           onCreate={(p) =>
             handleCreate({
               ...p,
@@ -376,6 +379,7 @@ export default function FeedPage() {
               createdAt: new Date().toISOString(),
             })
           }
+          eventId={id}
         />
 
         <div>

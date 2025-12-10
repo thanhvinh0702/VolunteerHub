@@ -1,123 +1,185 @@
-import React, { useState } from "react";
-import { Camera, Smile, Tag, Heart } from "lucide-react";
+import { useState, useRef } from "react";
+import { Camera, Smile, Tag, Heart, Loader2 } from "lucide-react";
+import { useCreatePost } from "../../hook/useCommunity";
+import toast from "react-hot-toast";
 
-export default function CreatePost({ onCreate }) {
+const CreatPost = ({ user, onCreate, eventId }) => {
   const [text, setText] = useState("");
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState([]); // {file, url}
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
-  function handleImages(e) {
+  const { mutate: createPost, isLoading, isPending } = useCreatePost(eventId);
+  const loading = isLoading || isPending;
+
+  const handleImageChange = (e) => {
+    if (loading) return;
     const files = Array.from(e.target.files || []);
-    const mapped = files.map((f) => ({ file: f, url: URL.createObjectURL(f) }));
-    setImages((prev) => [...prev, ...mapped].slice(0, 6));
-  }
-
-  function removeImage(i) {
+    const newImages = files.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
     setImages((prev) => {
-      URL.revokeObjectURL(prev[i].url);
-      return prev.filter((_, idx) => idx !== i);
+      const merged = [...prev, ...newImages].slice(0, 6);
+      return merged;
     });
-  }
+  };
 
-  function submit(e) {
+  const handleDrop = (e) => {
     e.preventDefault();
-    if (!text.trim() && images.length === 0) return;
-    const newPost = {
-      id: Date.now(),
-      author: { name: "Bạn" },
-      text: text.trim(),
-      images: images.map((i) => i.url),
-      createdAt: new Date().toISOString(),
-      comments: [],
-      reactions: { like: 0, love: 0 },
-      userReaction: null,
-    };
-    onCreate(newPost);
-    images.forEach((i) => URL.revokeObjectURL(i.url));
+    if (loading) return;
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files || []);
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    const newImages = imageFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setImages((prev) => {
+      const merged = [...prev, ...newImages].slice(0, 6);
+      return merged;
+    });
+  };
+
+  const removeImage = (index) => {
+    if (loading) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const removed = next.splice(index, 1)[0];
+      if (removed?.url) URL.revokeObjectURL(removed.url);
+      return next;
+    });
+  };
+
+  const resetForm = () => {
     setText("");
+    images.forEach((img) => img?.url && URL.revokeObjectURL(img.url));
     setImages([]);
-  }
+    if (fileInputRef.current) fileInputRef.current.value = null;
+  };
+
+  const handleSubmit = () => {
+    const content = text.trim();
+    const imageFiles = images.map((i) => i.file).filter(Boolean);
+    if (!content && imageFiles.length === 0) return;
+    if (!eventId) return; // cần eventId để gửi bài viết
+
+    createPost(
+      { content, imageFiles },
+      {
+        onSuccess: (created) => {
+          if (onCreate) {
+            onCreate(
+              created || {
+                id: Date.now(),
+                content,
+                images: images.map((i) => i.url),
+                author: user,
+                createdAt: new Date().toISOString(),
+              }
+            );
+          }
+          resetForm();
+        },
+        onError: () => {
+          // giữ form để thử lại
+          toast.error("Error when create post. Please try again.");
+        },
+      }
+    );
+  };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg mb-6 border border-blue-100">
-      <form onSubmit={submit}>
-        <div className="relative">
+    <div className="w-full bg-white rounded-md p-4 shadow-sm border border-gray-200 relative" aria-busy={loading}>
+      <div className={`flex items-start gap-3 ${loading ? "pointer-events-none" : ""}`}>
+        <div className="flex-1">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Hãy chia sẻ suy nghĩ của bạn về sự kiện này... ✨
-Bạn nghĩ sao về hoạt động tình nguyện? Ai đã truyền cảm hứng cho bạn?"
-            className="w-full resize-none p-4 border-2 border-blue-200 rounded-xl focus:ring-2 focus:border-blue-500 focus:outline-none text-gray-700 placeholder-gray-400 text-base leading-relaxed"
-            rows={4}
+            placeholder="Enter your post content..."
+            className="w-full resize-none rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows={3}
           />
-          <div className="absolute bottom-3 right-3 flex gap-2">
-            <button
-              type="button"
-              className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-              title="Thêm emoji"
-            >
-              <Smile className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-              title="Tag người khác"
-            >
-              <Tag className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
 
-        {images.length > 0 && (
-          <div className="mt-4 grid gap-3 grid-cols-4">
-            {images.map((img, i) => (
-              <div key={i} className="relative group">
-                <img
-                  src={img.url}
-                  alt=""
-                  className="h-32 w-full object-cover rounded-lg cursor-pointer aspect-square border-2 border-blue-100"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+          {images.length > 0 && (
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {images.map((img, idx) => (
+                <div key={idx} className="relative group">
+                  <img
+                    src={img.url}
+                    alt={`preview-${idx}`}
+                    className="h-24 w-full object-cover rounded-md border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="absolute top-1 right-1 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-        <div className="mt-4 flex justify-between items-center">
-          <div className="flex gap-3">
-            <label className="flex items-center gap-2 text-sm text-blue-600 cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors">
-              <Camera className="w-5 h-5" />
-              <span className="font-medium">Ảnh</span>
+          <div className="mt-3 flex items-center justify-between">
+            <div
+              className={`flex items-center gap-2 ${
+                isDragging ? "ring-2 ring-blue-300 rounded-md p-1" : ""
+              }`}
+              onDragEnter={() => setIsDragging(true)}
+              onDragLeave={() => setIsDragging(false)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+            >
+              <button
+                type="button"
+                className="rounded px-2 py-1 text-sm bg-gradient-to-r from-purple-400 to-blue-600 text-white"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <span className="flex items-center">
+                  <Camera className="w-4 h-4 mr-1" />
+                  <span>Image</span>
+                </span>
+              </button>
               <input
+                ref={fileInputRef}
                 type="file"
-                multiple
                 accept="image/*"
-                onChange={handleImages}
+                multiple
+                onChange={handleImageChange}
                 className="hidden"
               />
-            </label>
+              <span className="text-xs text-gray-500">
+                Drag and drop images here or click to select
+              </span>
+            </div>
             <button
               type="button"
-              className="flex items-center gap-2 text-sm text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors"
-              title="Biểu cảm"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+              disabled={
+                loading || (!text.trim() && images.length === 0) || !eventId
+              }
+              className="px-3 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
             >
-              <Heart className="w-5 h-5" />
-              <span className="font-medium">Cảm xúc</span>
+              {loading ? "Đang đăng..." : "Đăng bài"}
             </button>
+            {loading && (
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-sm rounded-md flex items-center justify-center z-10">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Đang đăng...</span>
+                </div>
+              </div>
+            )}
           </div>
-          <button
-            disabled={!text.trim() && !images.length}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-md"
-          >
-            Đăng bài
-          </button>
         </div>
-      </form>
+      </div>
     </div>
   );
-}
+};
+
+export default CreatPost;

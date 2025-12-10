@@ -20,6 +20,7 @@ export const registerEventList = async (params) => {
             }
         };
     } catch (error) {
+        ơ
         console.error("Error fetching registered events:", error);
         throw error;
     }

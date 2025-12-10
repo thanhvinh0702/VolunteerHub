@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import CommunityService from "../services/CommunityService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -10,7 +10,7 @@ export const usePosts = (eventId, params) => {
     const { pageNum = 0, pageSize = 10 } = params || {};
 
     const query = useQuery({
-        queryKey: [...COMMUNITY_QUERY_KEY, "posts", eventId, pageNum, pageSize],
+        queryKey: ["community", "posts", eventId, pageNum, pageSize],
         queryFn: () => CommunityService.getAllPosts(eventId, pageNum, pageSize),
         enabled: !!eventId,
         keepPreviousData: true,
@@ -21,7 +21,7 @@ export const usePosts = (eventId, params) => {
         const nextPage = pageNum + 1;
 
         queryClient.prefetchQuery({
-            queryKey: [...COMMUNITY_QUERY_KEY, "posts", eventId, nextPage, pageSize],
+            queryKey: ["community", "posts", eventId, nextPage, pageSize],
             queryFn: () => CommunityService.getAllPosts(eventId, nextPage, pageSize),
         });
     }, [eventId, pageNum, pageSize, queryClient]);
@@ -39,17 +39,30 @@ export const usePostDetail = (eventId, postId) => {
 
 export const useCreatePost = (eventId) => {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (postData) => CommunityService.createPost(eventId, postData),
+    const mutation = useMutation({
+        mutationFn: ({ content = "", imageFiles = [] } = {}) => {
+            const form = new FormData();
+            form.append(
+                "postRequest",
+                new Blob([JSON.stringify({ content })], { type: "application/json" })
+            );
+            imageFiles.forEach((file) => {
+                if (file) form.append("imageFiles", file);
+            });
+            return CommunityService.createPost(eventId, form);
+        },
         onSuccess: () => {
             toast.success("Post created successfully.");
-            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "posts", eventId]);
+            queryClient.invalidateQueries(["community", "posts", eventId]);
+            queryClient.invalidateQueries(["community", "postsInfinite", eventId]);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to create post";
             toast.error(message);
         },
     });
+    // Normalize loading state across react-query v4/v5
+    return { ...mutation, isLoading: mutation.isLoading ?? mutation.isPending ?? false };
 };
 
 export const useUpdatePost = (eventId, postId) => {
@@ -59,6 +72,7 @@ export const useUpdatePost = (eventId, postId) => {
         onSuccess: () => {
             toast.success("Post updated successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "posts", eventId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "postsInfinite", eventId]);
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "postDetail", eventId, postId]);
         },
         onError: (error) => {
@@ -75,6 +89,7 @@ export const useDeletePost = (eventId, postId) => {
         onSuccess: () => {
             toast.success("Post deleted successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "posts", eventId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "postsInfinite", eventId]);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to delete post";
@@ -83,12 +98,48 @@ export const useDeletePost = (eventId, postId) => {
     });
 };
 
+export const useInfinitePosts = (eventId, options = {}) => {
+    const { pageSize = 10 } = options;
+
+    return useInfiniteQuery({
+        queryKey: [...COMMUNITY_QUERY_KEY, "postsInfinite", eventId, pageSize],
+        queryFn: ({ pageParam = 0 }) => CommunityService.getAllPosts(eventId, pageParam, pageSize),
+        getNextPageParam: (lastPage) => {
+            const current = Number(lastPage?.number ?? 0);
+            const totalPages = Number(lastPage?.totalPages ?? 0);
+            const next = current + 1;
+            return next < totalPages ? next : undefined;
+        },
+        initialPageParam: 0,
+        enabled: !!eventId,
+        keepPreviousData: true,
+    });
+};
+
 export const useComments = (eventId, postId, params) => {
     const { pageNum = 0, pageSize = 10 } = params || {};
 
     return useQuery({
-        queryKey: [...COMMUNITY_QUERY_KEY, "comments", eventId, postId, pageNum, pageSize],
+        queryKey: ["community", "comments", eventId, postId, pageNum, pageSize],
         queryFn: () => CommunityService.getAllComments(eventId, postId, pageNum, pageSize),
+        enabled: !!eventId && !!postId,
+        keepPreviousData: true,
+    });
+};
+
+export const useInfiniteComments = (eventId, postId, options = {}) => {
+    const { pageSize = 10 } = options;
+
+    return useInfiniteQuery({
+        queryKey: [...COMMUNITY_QUERY_KEY, "commentsInfinite", eventId, postId, pageSize],
+        queryFn: ({ pageParam = 0 }) => CommunityService.getAllComments(eventId, postId, pageParam, pageSize),
+        getNextPageParam: (lastPage) => {
+            const current = Number(lastPage?.number ?? 0);
+            const totalPages = Number(lastPage?.totalPages ?? 0);
+            const next = current + 1;
+            return next < totalPages ? next : undefined;
+        },
+        initialPageParam: 0,
         enabled: !!eventId && !!postId,
         keepPreviousData: true,
     });
@@ -101,6 +152,7 @@ export const useCreateComment = (eventId, postId) => {
         onSuccess: () => {
             toast.success("Comment created successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "comments", eventId, postId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "commentsInfinite", eventId, postId]);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to create comment";
@@ -116,6 +168,7 @@ export const useDeleteComment = (eventId, postId, commentId) => {
         onSuccess: () => {
             toast.success("Comment deleted successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "comments", eventId, postId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "commentsInfinite", eventId, postId]);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || error.message || "Failed to delete comment";
@@ -134,7 +187,6 @@ export const useReactions = (eventId, postId, params) => {
         keepPreviousData: true,
     });
 };
-
 
 export const useCreateReaction = (eventId, postId) => {
     const queryClient = useQueryClient();
@@ -164,7 +216,6 @@ export const useUpdateReaction = (eventId, postId, reactionId) => {
         onError: (err) => toast.error(err?.response?.data?.message ?? "Failed to update reaction"),
     });
 };
-
 
 export const useDeleteReaction = (eventId, postId, reactionId) => {
     const queryClient = useQueryClient();

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUserInfo, updateUserInfo } from "../services/userService";
+import { getProfileCompleteness, getUserInfo, updateUserInfo } from "../services/userService";
 
 export const useProfile = () => {
     return useQuery({
@@ -16,5 +16,13 @@ export const useUpdateUserProfile = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(["userProfile"]);
         },
+    });
+};
+
+export const useProfileCompleteness = () => {
+    return useQuery({
+        queryKey: ["profileCompleteness"],
+        queryFn: getProfileCompleteness,
+        refetchOnWindowFocus: false,
     });
 };

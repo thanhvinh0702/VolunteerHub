@@ -47,7 +47,7 @@ const updateUserInfo = async (userData) => {
 
 const getProfileCompleteness = async () => {
     try {
-        const completeness = await axiosClient.get("/v1/users/users/me/profile-completeness");
+        const completeness = await axiosClient.get("/v1/users/users/me/validate-profile");
         return completeness;
     } catch (error) {
         console.error("Error fetching profile completeness:", error);

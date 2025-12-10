@@ -130,19 +130,6 @@ export const useOwnedEvents = (params) => {
     });
 };
 
-// New: fetch top 2 approved events sorted by name desc
-export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED", sortedBy = "name", order = "desc" } = {}) => {
-    return useQuery({
-        queryKey: [...EVENTS_QUERY_KEY, 'approvedTop2ByName', { pageNum: 0, pageSize, status, sortedBy, order }],
-        queryFn: async () => {
-            const result = await getEvents({ pageNum: 0, pageSize, status, sortedBy, order });
-            console.log("useApprovedEventsTop2ByName", result);
-            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
-        },
-        placeholderData: keepPreviousData,
-        staleTime: 1000 * 30,
-    });
-};
 export const useOwnedEventsPagination = (params) => {
     const queryClient = useQueryClient();
     const { pageNum = 0, pageSize = 10, sortedBy = "startTime", order = "desc", status } = params || {};
@@ -686,3 +673,15 @@ export const useRejectEvent = (options = {}) => {
     });
 };
 
+export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED", sortedBy = "name", order = "desc" } = {}) => {
+    return useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'approvedTop2ByName', { pageNum: 0, pageSize, status, sortedBy, order }],
+        queryFn: async () => {
+            const result = await getEvents({ pageNum: 0, pageSize, status, sortedBy, order });
+            console.log("useApprovedEventsTop2ByName", result);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 30,
+    });
+};

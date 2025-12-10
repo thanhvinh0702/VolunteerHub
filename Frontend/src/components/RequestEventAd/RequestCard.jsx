@@ -115,6 +115,7 @@ const RequestCard = ({ data }) => {
           <span className="flex flex-row items-center gap-2">
             Reject
             <span>
+              {" "}
               <X />
             </span>
           </span>
