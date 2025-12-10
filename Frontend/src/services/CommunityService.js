@@ -7,7 +7,7 @@ const CommunityService = {
         if (pageNum !== undefined) params.pageNum = pageNum;
         if (pageSize !== undefined) params.pageSize = pageSize;
 
-        return axiosClient.get(`/api/v1/events/${eventId}/posts`, { params });
+        return axiosClient.get(`/api/v1/aggregated/events/${eventId}/posts`, { params });
     },
 
 

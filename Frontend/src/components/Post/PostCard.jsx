@@ -1,11 +1,11 @@
 import React from "react";
 import ReactionBar from "./ReactionBar";
 
-export default function PostCard({ post, onOpenPost, onReactLocal }) {
+export default function PostCard({ post, onOpenPost, onReactLocal, canEdit }) {
   const INLINE_COUNT = 1;
   // const inlineComments = post.comments.slice(0, INLINE_COUNT);
   // const moreCount = Math.max(0, post.comments.length - INLINE_COUNT);
-
+  console.log("canEdit", canEdit);
   const openModal = (options = {}) => onOpenPost(post, options);
   const imageCount = Array.isArray(post.images) ? post.images.length : 0;
 
@@ -158,23 +158,34 @@ export default function PostCard({ post, onOpenPost, onReactLocal }) {
 
   return (
     <article className="rounded-xl shadow-lg p-6 mb-6 bg-white border border-blue-100">
-      <header className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white text-lg shadow-md">
-          {post.author.name[0]}
-        </div>
-        <div>
-          <div className="font-bold text-gray-900 text-lg leading-tight">
-            {post.author.name}
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white text-lg shadow-md">
+            <img
+              src={post.author.avatarUrl}
+              alt={post.author.name}
+              className="w-full h-full rounded-full"
+            />
           </div>
-          <div className="text-sm text-gray-500 font-medium">
-            {new Date(post.createdAt).toLocaleString("vi-VN", {
-              hour: "2-digit",
-              minute: "2-digit",
-              day: "numeric",
-              month: "short",
-            })}
+          <div>
+            <div className="font-bold text-gray-900 text-lg leading-tight">
+              {post.author.name}
+            </div>
+            <div className="text-sm text-gray-500 font-medium">
+              {new Date(post.createdAt).toLocaleString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                day: "numeric",
+                month: "short",
+              })}
+            </div>
           </div>
         </div>
+        {canEdit && (
+          <div className="text-sm text-gray-500 font-medium cursor-pointer max-sm:text-sm">
+            <button onClick={() => openModal({ openEdit: true })}>Edit</button>
+          </div>
+        )}
       </header>
 
       <p className="mt-6 text-gray-800 text-base leading-relaxed font-medium">

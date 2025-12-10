@@ -99,18 +99,20 @@ export const useDeletePost = (eventId, postId) => {
 };
 
 export const useInfinitePosts = (eventId, options = {}) => {
-    const { pageSize = 10 } = options;
+    const { pageSize = 10, initialPageNum = 0, zeroBased = true } = options;
 
     return useInfiniteQuery({
-        queryKey: [...COMMUNITY_QUERY_KEY, "postsInfinite", eventId, pageSize],
-        queryFn: ({ pageParam = 0 }) => CommunityService.getAllPosts(eventId, pageParam, pageSize),
+        queryKey: [...COMMUNITY_QUERY_KEY, "postsInfinite", eventId, pageSize, initialPageNum, zeroBased],
+        queryFn: ({ pageParam = initialPageNum }) => CommunityService.getAllPosts(eventId, pageParam, pageSize),
         getNextPageParam: (lastPage) => {
-            const current = Number(lastPage?.number ?? 0);
+            const current = Number(lastPage?.number ?? initialPageNum);
             const totalPages = Number(lastPage?.totalPages ?? 0);
             const next = current + 1;
-            return next < totalPages ? next : undefined;
+            // If API uses 0-based indexing, continue while next < totalPages; if 1-based, continue while next <= totalPages
+            const canFetchMore = zeroBased ? next < totalPages : next <= totalPages;
+            return canFetchMore ? next : undefined;
         },
-        initialPageParam: 0,
+        initialPageParam: initialPageNum,
         enabled: !!eventId,
         keepPreviousData: true,
     });
