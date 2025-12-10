@@ -29,20 +29,12 @@ export default function EventLayout() {
   console.log("User registration status:", userRegistrationStatus);
 
   // Check if user is approved OR has MANAGER/ADMIN role
-  const isApproved =
-    userRegistrationStatus === "APPROVED" ||
-    userRegistrationStatus === "COMPLETED" ||
-    user?.role === "MANAGER" ||
-    user?.role === "ADMIN";
 
   const { mutate: registerForEvent, isLoading: isRegistering } =
     useRegisterForEvent();
 
   // Get active tab from URL params, default to overview
   const activeTab = tab || "overview";
-  const { data } = localStorage.getItem("user");
-  console.log("User data in EventLayout:", data);
-  console.log(id);
 
   const {
     data: eventData,
@@ -51,8 +43,14 @@ export default function EventLayout() {
     error: eventError,
     refetch,
   } = useEventDetail(id);
+  console.log("Event data:", eventData);
+  console.log("Is owner:", eventData?.ownerId === user?.id);
   const [displayCount, setDisplayCount] = useState(5);
-
+  const isApproved =
+    userRegistrationStatus === "APPROVED" ||
+    userRegistrationStatus === "COMPLETED" ||
+    (user?.role === "MANAGER" && eventData?.ownerId === user?.id) ||
+    user?.role === "ADMIN";
   // Fetch approved users for the event
   const { data: approvedUsers, isLoading: isLoadingUsers } =
     useConstUserApprovedList(id);
