@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "../../components/Card.jsx/Card";
+import NotificationButton from "../../components/Notification/NotificationButton";
 import {
   Edit2,
   Save,
@@ -16,6 +17,7 @@ import {
   Loader2,
   Plus,
   X,
+  Bell,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile, useUpdateUserProfile } from "../../hook/useUser";
@@ -1078,6 +1080,23 @@ export default function Settingpage() {
                   Last updated {formatDate(formData.updatedAt) || "recently"}
                 </div>
               </Card>
+
+              <Card
+                animate={false}
+                className="border border-slate-200 bg-white px-6 py-6 shadow-lg shadow-slate-200/70"
+              >
+                <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+                  <Bell className="h-4 w-4 text-blue-500" />
+                  Notification Settings
+                </h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  Enable push notifications to receive updates about your upcoming events and activities.
+                </p>
+                <div className="mt-4">
+                  <NotificationButton />
+                </div>
+              </Card>
+
             </div>
           </div>
         </div>
