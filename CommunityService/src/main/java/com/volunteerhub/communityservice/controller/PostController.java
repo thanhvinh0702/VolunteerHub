@@ -41,7 +41,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> create(@PathVariable Long eventId,
                                @RequestPart @Validated(OnCreate.class) PostRequest postRequest,
-                               @RequestPart List<MultipartFile> imageFiles) throws IOException {
+                               @RequestPart(required = false) List<MultipartFile> imageFiles) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(postService.create(authentication.getName(), eventId, postRequest, imageFiles));
     }
@@ -49,7 +49,7 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<PostResponse> update(@PathVariable Long postId,
                                @RequestPart @Validated(OnUpdate.class) PostRequest postRequest,
-                               @RequestPart List<MultipartFile> imageFiles) throws IOException {
+                               @RequestPart(required = false) List<MultipartFile> imageFiles) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(postService.update(authentication.getName(), postId, postRequest, imageFiles));
     }
