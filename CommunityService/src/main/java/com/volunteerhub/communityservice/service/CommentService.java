@@ -37,9 +37,11 @@ public class CommentService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @postService.canAccessPost(authentication.name, #postId)")
-    public PageResponse<CommentResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
-        PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
-        return commentMapper.toPageDto(commentRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize())));
+    public List<CommentResponse> findByPostId(Long postId) {
+        return commentRepository.findByPostId(postId)
+                .stream()
+                .map(commentMapper::toDto)
+                .toList();
     }
 
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")

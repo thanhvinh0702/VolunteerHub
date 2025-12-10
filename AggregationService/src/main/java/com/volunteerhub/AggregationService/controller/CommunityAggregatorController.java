@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/aggregated/events/{eventId}")
 @RequiredArgsConstructor
@@ -26,21 +28,22 @@ public class CommunityAggregatorController {
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<AggregatedPostResponse> getAggregatedPostById(@PathVariable Long postId) {
-        return ResponseEntity.ok(communityAggregatorService.getAggregatedPostById(postId));
+    public ResponseEntity<AggregatedPostResponse> getAggregatedPostById(@PathVariable Long eventId,
+                                                                        @PathVariable Long postId) {
+        return ResponseEntity.ok(communityAggregatorService.getAggregatedPostById(eventId, postId));
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<PageResponse<AggregatedCommentResponse>> getAllAggregatedComments(@PathVariable Long postId,
-                                                                                            @RequestParam(required = false) Integer pageNum,
-                                                                                            @RequestParam(required = false) Integer pageSize) {
-        return ResponseEntity.ok(communityAggregatorService.getAllAggregatedComment(postId, pageNum, pageSize));
+    public ResponseEntity<List<AggregatedCommentResponse>> getAllAggregatedComments(@PathVariable Long eventId,
+                                                                                    @PathVariable Long postId) {
+        return ResponseEntity.ok(communityAggregatorService.getAllAggregatedComment(eventId, postId));
     }
 
     @GetMapping("/posts/{postId}/reactions")
-    public ResponseEntity<PageResponse<AggregatedReactionResponse>> getAllAggregatedReactions(@PathVariable Long postId,
+    public ResponseEntity<PageResponse<AggregatedReactionResponse>> getAllAggregatedReactions(@PathVariable Long eventId,
+                                                                                              @PathVariable Long postId,
                                                                                               @RequestParam(required = false) Integer pageNum,
                                                                                               @RequestParam(required = false) Integer pageSize) {
-        return ResponseEntity.ok(communityAggregatorService.getAllAggregatedReaction(postId, pageNum, pageSize));
+        return ResponseEntity.ok(communityAggregatorService.getAllAggregatedReaction(eventId, postId, pageNum, pageSize));
     }
 }

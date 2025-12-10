@@ -1,7 +1,6 @@
 package com.volunteerhub.communityservice.controller;
 
 import com.volunteerhub.common.dto.CommentResponse;
-import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.communityservice.dto.CommentRequest;
 import com.volunteerhub.communityservice.service.CommentService;
 import com.volunteerhub.communityservice.validation.OnCreate;
@@ -24,10 +23,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<PageResponse<CommentResponse>> findAll(@PathVariable Long postId,
-                                                                 @RequestParam(required = false) Integer pageNum,
-                                                                 @RequestParam(required = false) Integer pageSize) {
-        return ResponseEntity.ok(commentService.findByPostId(postId, pageNum, pageSize));
+    public ResponseEntity<List<CommentResponse>> findAll(@PathVariable Long postId) {
+        return ResponseEntity.ok(commentService.findByPostId(postId));
     }
 
     @PostMapping

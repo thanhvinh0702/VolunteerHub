@@ -9,6 +9,8 @@ import com.volunteerhub.common.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,8 +46,8 @@ public class CommunityAggregatorService {
                 .build();
     }
 
-    public AggregatedPostResponse getAggregatedPostById(Long postId) {
-        PostResponse postResponse = communityClient.findPostById(postId);
+    public AggregatedPostResponse getAggregatedPostById(Long eventId, Long postId) {
+        PostResponse postResponse = communityClient.findPostById(eventId, postId);
         UserResponse userResponse = userClient.findById(postResponse.getOwnerId());
         return AggregatedPostResponse.builder()
                 .post(postResponse)
@@ -53,12 +55,12 @@ public class CommunityAggregatorService {
                 .build();
     }
 
-    public PageResponse<AggregatedCommentResponse> getAllAggregatedComment(Long postId, Integer pageNum, Integer pageSize) {
-        PageResponse<CommentResponse> posts = communityClient.findAllComments(postId, pageNum, pageSize);
-        List<String> userIds = posts.getContent().stream().map(CommentResponse::getOwnerId).toList();
+    public List<AggregatedCommentResponse> getAllAggregatedComment(Long eventId, Long postId) {
+        List<CommentResponse> posts = communityClient.findAllComments(eventId, postId);
+        List<String> userIds = posts.stream().map(CommentResponse::getOwnerId).toList();
         List<UserResponse> users = userClient.findAllByIds(userIds);
         Map<String, UserResponse> usersMap = users.stream().collect(Collectors.toMap(UserResponse::getId, Function.identity()));
-        List<AggregatedCommentResponse> dtoList = posts.getContent().stream()
+        List<AggregatedCommentResponse> dtoList = posts.stream()
                 .map(p -> {
                     UserResponse userResponse = usersMap.getOrDefault(p.getOwnerId(), UserResponse.builder().build());
                     return AggregatedCommentResponse.builder()
@@ -67,17 +69,11 @@ public class CommunityAggregatorService {
                             .build();
                 })
                 .toList();
-        return PageResponse.<AggregatedCommentResponse>builder()
-                .content(dtoList)
-                .totalPages(posts.getTotalPages())
-                .totalElements(posts.getTotalElements())
-                .number(posts.getNumber())
-                .size(posts.getSize())
-                .build();
+        return buildCommentTree(dtoList);
     }
 
-    public PageResponse<AggregatedReactionResponse> getAllAggregatedReaction(Long postId, Integer pageNum, Integer pageSize) {
-        PageResponse<ReactionResponse> posts = communityClient.findAllReactions(postId, pageNum, pageSize);
+    public PageResponse<AggregatedReactionResponse> getAllAggregatedReaction(Long eventId, Long postId, Integer pageNum, Integer pageSize) {
+        PageResponse<ReactionResponse> posts = communityClient.findAllReactions(eventId, postId, pageNum, pageSize);
         List<String> userIds = posts.getContent().stream().map(ReactionResponse::getOwnerId).toList();
         List<UserResponse> users = userClient.findAllByIds(userIds);
         Map<String, UserResponse> usersMap = users.stream().collect(Collectors.toMap(UserResponse::getId, Function.identity()));
@@ -98,4 +94,36 @@ public class CommunityAggregatorService {
                 .size(posts.getSize())
                 .build();
     }
+
+    private List<AggregatedCommentResponse> buildCommentTree(List<AggregatedCommentResponse> flatList) {
+        Map<Long, AggregatedCommentResponse> map = new HashMap<>();
+        List<AggregatedCommentResponse> roots = new ArrayList<>();
+
+        // 1. Put all comments in a map for quick lookup
+        for (AggregatedCommentResponse c : flatList) {
+            map.put(c.getComment().getId(), c);
+            if (c.getReplies() == null) {
+                c.setReplies(new ArrayList<>());
+            }
+        }
+
+        // 2. Build parent->children structure
+        for (AggregatedCommentResponse c : flatList) {
+            Long parentId = c.getComment().getParentId();
+            if (parentId == null) {
+                roots.add(c);
+            } else {
+                AggregatedCommentResponse parent = map.get(parentId);
+                if (parent != null) {
+                    parent.getReplies().add(c);
+                } else {
+                    // orphan case if parent doesn't exist: treat as root
+                    roots.add(c);
+                }
+            }
+        }
+
+        return roots;
+    }
+
 }
