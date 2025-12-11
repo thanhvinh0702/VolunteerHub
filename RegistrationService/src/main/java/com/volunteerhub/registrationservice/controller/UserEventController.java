@@ -89,7 +89,7 @@ public class UserEventController {
     }
 
     @PostMapping("/events/{eventId}")
-        public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
+    public ResponseEntity<UserEventResponse> userEventRegister(@PathVariable Long eventId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(userEventService.registerUserEvent(authentication.getName(), eventId), HttpStatus.CREATED);
     }

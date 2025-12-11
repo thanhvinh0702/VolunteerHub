@@ -211,10 +211,15 @@ public class UserEventService {
             throw new AccessDeniedException(
                     "Insufficient permission to review user's request to event with id " + eventId);
         }
-        boolean validTransition = (userEvent.getStatus() == UserEventStatus.PENDING
-                && (request.getStatus() == UserEventStatus.APPROVED || request.getStatus() == UserEventStatus.REJECTED))
-                || (userEvent.getStatus() == UserEventStatus.APPROVED
-                        && request.getStatus() == UserEventStatus.COMPLETED);
+
+        if (request.getStatus() == null) {
+            userEvent.setNote(request.getNote());
+            return userEventMapper.toResponseDto(userEventRepository.save(userEvent));
+        }
+
+        boolean validTransition =
+                (userEvent.getStatus() == UserEventStatus.PENDING && (request.getStatus() == UserEventStatus.APPROVED || request.getStatus() == UserEventStatus.REJECTED))
+                || (userEvent.getStatus() == UserEventStatus.APPROVED && (request.getStatus() == UserEventStatus.COMPLETED || request.getStatus() == UserEventStatus.ABSENT));
         if (!validTransition) {
             throw new IllegalArgumentException("Invalid status transition");
         }
@@ -222,6 +227,7 @@ public class UserEventService {
             case APPROVED -> approveUserEvent(userEvent, eventSnapshot);
             case REJECTED -> rejectUserEvent(userEvent, request.getNote());
             case COMPLETED -> completeUserEvent(userEvent, request.getNote());
+            case ABSENT -> absentUserEvent(userEvent, request.getNote());
             default -> throw new IllegalArgumentException("Unsupported status: " + request.getStatus());
         }
         UserEvent updatedUserEvent = userEventRepository.save(userEvent);
@@ -253,6 +259,11 @@ public class UserEventService {
         userEvent.setCompletedAt(LocalDateTime.now());
     }
 
+    private void absentUserEvent(UserEvent userEvent, String note) {
+        userEvent.setStatus(UserEventStatus.ABSENT);
+        userEvent.setNote(note);
+    }
+
     public UserEventResponse deleteUserEventRegistrationRequest(String userId, Long eventId) {
         UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
         userEventRepository.delete(userEvent);
@@ -262,7 +273,7 @@ public class UserEventService {
     @PreAuthorize("hasRole('MANAGER')")
     public UserEventResponse managerDeleteUserEventRegistrationRequest(String ownerId, String userId, Long eventId) {
         EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
-        if (eventSnapshot.getOwnerId().equals(ownerId)) {
+        if (!eventSnapshot.getOwnerId().equals(ownerId)) {
             throw new AccessDeniedException("Insufficient permission to delete user's registration");
         }
         UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);

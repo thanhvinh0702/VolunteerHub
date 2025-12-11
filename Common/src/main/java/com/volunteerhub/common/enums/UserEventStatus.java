@@ -4,5 +4,6 @@ public enum UserEventStatus {
     PENDING,
     APPROVED,
     REJECTED,
-    COMPLETED
+    COMPLETED,
+    ABSENT
 }
