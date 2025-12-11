@@ -169,11 +169,18 @@ public class UserEventService {
     }
 
     public Boolean isParticipant(String userId, Long eventId) {
+        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
+        if (userId.equals(eventSnapshot.getOwnerId())) {
+            // handle owner case
+            return true;
+        }
         try {
             UserEvent userEvent = findEntityByUserIdAndEventId(userId, eventId);
             return userEvent.getStatus().equals(UserEventStatus.APPROVED)
-                    || userEvent.getStatus().equals(UserEventStatus.COMPLETED);
-        } catch (Exception e) {
+                    || userEvent.getStatus().equals(UserEventStatus.COMPLETED)
+                    || userId.equals(eventSnapshot.getOwnerId());
+        }
+        catch (NoSuchElementException e) {
             return false;
         }
     }
