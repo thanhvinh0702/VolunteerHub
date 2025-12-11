@@ -3,6 +3,7 @@ import Pagination from "@mui/material/Pagination";
 import RegistrationFilters from "../../components/Registration/RegistrationFilters";
 import RegistrationTable from "../../components/Registration/RegistrationTable";
 import RegistrationDetailModal from "../../components/Registration/RegistrationDetailModal";
+import RegistrationStatusBadge from "../../components/Registration/RegistrationStatusBadge";
 import { useAllRegistrationForManager } from "../../hook/useRegistration";
 
 const PAGE_SIZE = 6;
@@ -53,6 +54,21 @@ export default function RegistrationPage() {
     setPage(value);
   };
 
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    try {
+      return new Date(dateString).toLocaleString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      return "";
+    }
+  };
+
   if (showFullLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -83,12 +99,71 @@ export default function RegistrationPage() {
           />
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <RegistrationTable
             data={data?.items || []}
             isFetching={isFetching}
             onSelect={(reg) => setSelectedReg(reg)}
           />
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {data?.items && data.items.length > 0 ? (
+            data.items.map((reg) => {
+              const user = reg.user || {};
+              return (
+                <div key={reg.id} className="border border-gray-200 rounded-lg p-4 bg-white">
+                  {/* Summary */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {user.avatarUrl ? (
+                        <img
+                          src={user.avatarUrl}
+                          alt={user.fullName || "Volunteer"}
+                          className="h-10 w-10 rounded-full flex-shrink-0 object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.fullName || "volunteer"}`}
+                          alt="avatar"
+                          className="h-10 w-10 rounded-full flex-shrink-0 object-cover"
+                        />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-gray-900 truncate">{user.fullName || ""}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email || ""}</p>
+                        {reg.userId && (
+                          <p className="text-xs text-gray-400">User ID: {String(reg.userId).slice(0, 8)}...</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedReg(reg)}
+                      className="flex-shrink-0 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition"
+                    >
+                      View
+                    </button>
+                  </div>
+
+                  {/* Details */}
+                  <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Registered:</span>
+                      <span className="text-gray-900 font-medium">{formatDateTime(reg.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">Status:</span>
+                      <RegistrationStatusBadge status={reg.status} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-8 text-gray-500 text-sm">No registrations found</div>
+          )}
         </div>
 
         {/* Pagination */}

@@ -678,7 +678,7 @@ export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED",
     return useQuery({
         queryKey: [...EVENTS_QUERY_KEY, 'approvedTop2ByName', { pageNum: 0, pageSize, status, sortedBy, order }],
         queryFn: async () => {
-            const result = await getEvents({ pageNum: 0, pageSize, status, sortedBy, order });
+            const result = await getOwnedEvents({ pageNum: 0, pageSize, status, sortedBy, order });
             console.log("useApprovedEventsTop2ByName", result);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },

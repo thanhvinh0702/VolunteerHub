@@ -11,10 +11,10 @@ function AnnouncedEventCard({
   starttime,
   endtime,
   location,
-  joined = 10,
   capacity = 200,
+  category = "Unknown",
 
-  urlImg = "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=200&fit=crop",
+  urlImg = "https://static.vecteezy.com/ti/vetor-gratis/p1/15779127-maos-de-multidao-voluntaria-colorida-voluntariado-de-rotulacao-de-desenho-de-mao-silhuetas-de-mao-levantada-maquete-de-cartaz-de-educacao-voluntaria-doacao-e-conceito-de-caridade-vetor.jpg",
 }) {
   const dateNorm = formatDateTime(date, {
     separator: "-",
@@ -25,38 +25,40 @@ function AnnouncedEventCard({
     <div className="bg-blue-300/20 rounded-xl">
       <Card className>
         <div className="flex justify-between relative">
-          <div className="text-md max-sm:text-sm flex flex-col gap-1 pl-5">
-            <p className="font-medium mb-1 inline-flex items-center relative">
+          <div className="text-md max-sm:text-sm flex flex-col gap-2 pl-5">
+            <p className="font-medium inline-flex items-center relative">
               {/* Ping indicator */}
-              <span className="absolute -left-8 top-0 flex text-blue-600 animate-spin">
-                <span className="bg-blue-500 text-white text-xs font-medium rounded-md px-1 py-1 flex-shrink-0 max-sm:px-1 m">
+              <span className="absolute -left-9 top-0 flex text-blue-600">
+                <span className="bg-gradient-to-r from-blue-300 to-blue-600 text-white text-xs font-medium rounded-md px-1 py-1 max-sm:py-0 flex-shrink-0 max-sm:px-1 m">
                   New
                 </span>
               </span>
 
               {/* Title text */}
-              <span className="ml-1 mb-2">{title}</span>
+              <span className="ml-1 mb-1">{title}</span>
             </p>
 
-            <div className="flex flex-row gap-5 max-sm:block text-gray-600">
-              <div className="flex flex-1 gap-1 align-middle items-center-safes">
+            <div className="flex flex-row gap-5 text-gray-600">
+              <div className="flex flex-1 gap-2 items-center">
                 <span>
-                  <FiCalendar />
+                  <FiCalendar className="text-green-600" />
                 </span>
                 <span>{dateNorm}</span>
               </div>
               <div className="flex flex-1 flex-row items-center-safe">
-                <p className="inline-flex items-center gap-1 whitespace-nowrap">
+                <p className="inline-flex items-center gap-2 whitespace-nowrap">
                   <span className>
-                    <User className="w-4 h-4" />
+                    <User className="w-4 h-4 text-yellow-600" />
                   </span>
-                  <span>{joined}</span> <span> / </span> <span>{capacity}</span>
+                  <span>
+                    <span>{capacity}</span>
+                  </span>
                 </p>
               </div>
             </div>
             <div className="flex flex-1 gap-1 items-center-safe text-gray-600">
               <span>
-                <TfiLocationPin />
+                <TfiLocationPin className="text-red-400" />
               </span>
               <span>{location}</span>
             </div>

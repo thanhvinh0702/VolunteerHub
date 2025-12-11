@@ -3,14 +3,18 @@ import ManagerDbHero from "../../components/ManageEventDb/ManagerDbHero";
 import Tabs from "../../components/Tabs.jsx/Tabs";
 import { Outlet, useParams } from "react-router-dom";
 import { useEventDetail, useUpdateEvent } from "../../hook/useEvent";
-import { Upload, X } from "lucide-react";
+import { Link, LockKeyhole, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../hook/useAuth";
+import { useNavigate } from "react-router-dom";
 
 function ManagerEventForManager() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [showImageModal, setShowImageModal] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const { user } = useAuth();
 
   // Fetch event data once at parent level
   const { data: eventData, isLoading, error, refetch } = useEventDetail(id);
@@ -71,6 +75,7 @@ function ManagerEventForManager() {
     setPreviewImage(null);
   };
 
+  // Handle save image
   const handleSaveImage = () => {
     if (!imageFile) {
       toast.error("Please select an image");
@@ -79,13 +84,11 @@ function ManagerEventForManager() {
 
     const formData = new FormData();
 
-    // Add empty eventRequest to maintain current event data
     formData.append(
       "eventRequest",
       new Blob([JSON.stringify({})], { type: "application/json" })
     );
 
-    // Add image file
     formData.append("imageFile", imageFile);
 
     updateEventMutation.mutate({ eventId: id, payload: formData });
@@ -114,6 +117,33 @@ function ManagerEventForManager() {
       </div>
     );
   }
+
+  // Access validation: only owner can access
+  const hasAccess = !!user && String(eventData.ownerId) === String(user.id);
+  if (!hasAccess) {
+    return (
+      <div className="flex flex-col items-center justify-center h-80">
+        <div className="bg-red-200 rounded-full p-5 mb-5">
+          <LockKeyhole className="w-12 h-12 text-red-500" />
+        </div>
+        <div className="text-center">
+          <p className="text-red-500 font-medium">Access Denied</p>
+          <p className="text-gray-500">
+            You don't have permission to manage this event.
+            <br />
+            Only the event owner can access this section.
+          </p>
+          <button
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+            onClick={() => navigate("/dashboard")}
+          >
+            Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   console.log("Event Data in ManagerEventForManager:", eventData);
   return (
     <div className="flex flex-col gap-5">

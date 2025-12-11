@@ -301,25 +301,28 @@ function OverviewEventManager() {
                   </dd>
                 </div>
 
-                {/* Capacity */}
+                {/* Registration Deadline */}
                 <div>
                   <dt className="font-semibold text-gray-900 mb-1">
-                    Maximum Capacity *
+                    Registration Deadline *
                   </dt>
                   {isEditMode ? (
                     <input
-                      type="number"
-                      value={editData?.capacity || ""}
+                      type="datetime-local"
+                      value={editData?.registrationDeadline || ""}
                       onChange={(e) =>
-                        handleInputChange("capacity", e.target.value)
+                        handleInputChange(
+                          "registrationDeadline",
+                          e.target.value
+                        )
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Maximum volunteers"
-                      min="1"
                     />
                   ) : (
-                    <dd className="text-gray-600">
-                      {eventData.capacity} volunteers
+                    <dd>
+                      {new Date(
+                        eventData.registrationDeadline
+                      ).toLocaleString()}
                     </dd>
                   )}
                 </div>
@@ -361,29 +364,25 @@ function OverviewEventManager() {
                     )}
                   </div>
                 </div>
-
-                {/* Registration Deadline */}
+                {/* Capacity */}
                 <div>
                   <dt className="font-semibold text-gray-900 mb-1">
-                    Registration Deadline *
+                    Maximum Capacity *
                   </dt>
                   {isEditMode ? (
                     <input
-                      type="datetime-local"
-                      value={editData?.registrationDeadline || ""}
+                      type="number"
+                      value={editData?.capacity || ""}
                       onChange={(e) =>
-                        handleInputChange(
-                          "registrationDeadline",
-                          e.target.value
-                        )
+                        handleInputChange("capacity", e.target.value)
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Maximum volunteers"
+                      min="1"
                     />
                   ) : (
-                    <dd>
-                      {new Date(
-                        eventData.registrationDeadline
-                      ).toLocaleString()}
+                    <dd className="text-gray-600">
+                      {eventData.capacity} volunteers
                     </dd>
                   )}
                 </div>

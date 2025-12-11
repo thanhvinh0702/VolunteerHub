@@ -240,9 +240,9 @@ export const STATUS_CONFIG = {
         description: "Event is active",
     },
     [EVENT_STATUS.CANCELLED]: {
-        label: "Cancelled",
+        label: "Rejected",
         color: "bg-red-100 text-red-700",
-        description: "Event cancelled",
+        description: "Event rejected",
     },
 };
 

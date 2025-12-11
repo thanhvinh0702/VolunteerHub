@@ -2,6 +2,8 @@ import React from "react";
 import ModalActivity from "../../components/ModalActivity/ModalActivity";
 import AnnouncedEventCard from "../../components/Dashboard/AnnouncedEventCard";
 import { useApprovedEventsTop2ByName } from "../../hook/useEvent";
+import { noAnnounce } from "../../assets/dashboard";
+import { BellOff } from "lucide-react";
 
 function NewEventsAnnounced({ className }) {
   const { data, isLoading, isError } = useApprovedEventsTop2ByName();
@@ -40,7 +42,12 @@ function NewEventsAnnounced({ className }) {
 
   return (
     <div className={className}>
-      <ModalActivity title="New Events Announced" subtile="Recently Announced">
+      <ModalActivity
+        title="New Events Announced"
+        subtile="Recently Announced"
+        viewMore={true}
+        path="/dashboard/eventmanager"
+      >
         {isLoading && (
           <>
             <AnnouncedEventCard
@@ -69,7 +76,12 @@ function NewEventsAnnounced({ className }) {
           </div>
         )}
         {!isLoading && !isError && cards.length === 0 && (
-          <div className="text-sm text-gray-500">No new announcements.</div>
+          <div className="text-sm text-gray-500 flex flex-col gap-6 mt-5 items-center">
+            <div className="w-12 h-12 mx-auto">
+              <BellOff className="w-full h-full text-gray-500" />
+            </div>
+            <div>No new announcements.</div>
+          </div>
         )}
         {!isLoading &&
           !isError &&

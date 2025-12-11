@@ -11,6 +11,7 @@ import {
   Clock,
   MapPin,
   Users,
+  X,
 } from "lucide-react";
 import Pagination from "@mui/material/Pagination";
 import EventManagerCard from "../../components/Project/eventManagerCard";
@@ -28,12 +29,12 @@ import {
   useSearchEventByNameForManager,
 } from "../../hook/useEvent";
 import MobileManageCard from "../../components/Project/MobileManageCard";
-
-// Mobile card component mimicking Admin style
+import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 6;
 
 function EventManager() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(0); // API uses 0-based pagination
@@ -125,8 +126,8 @@ function EventManager() {
   };
 
   const handleView = (id) => {
-    console.log(`View event ${id}`);
-    // TODO: Navigate to event detail page
+    // TODO: Navigate to event detail page\
+    navigate(`/dashboard/eventmanager/${id}/overview`);
   };
 
   const handleDelete = (id) => {
@@ -199,7 +200,7 @@ function EventManager() {
               { value: "all", label: "All Status" },
               { value: EVENT_STATUS.PENDING, label: "Pending" },
               { value: EVENT_STATUS.APPROVED, label: "Approved" },
-              { value: EVENT_STATUS.CANCELLED, label: "Cancelled" },
+              { value: EVENT_STATUS.CANCELLED, label: "Rejected" },
             ]}
             className="w-[160px]"
           />
@@ -332,10 +333,12 @@ function EventManager() {
             <div className="relative bg-white rounded-2xl shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
               <button
                 onClick={() => setOpenCreateForm(false)}
-                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition"
+                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 transition hover:text-white hover:bg-red-500"
                 aria-label="Close"
               >
-                <span className="text-xl font-bold leading-none">×</span>
+                <span className="text-xl font-bold leading-none">
+                  <X />
+                </span>
               </button>
               <CreateEvent
                 onSuccess={() => setOpenCreateForm(false)}

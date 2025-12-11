@@ -9,6 +9,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDeleteEvent } from "../../hook/useEvent";
 function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
+  console.log("EventManagerCard data:", data);
+  // Navigation
   const navigate = useNavigate();
 
   // Map API data to component props

@@ -3,6 +3,7 @@ import ModalActivity from "../ModalActivity/ModalActivity";
 import RequestCard from "./RequestCard";
 import { usePendingRegistrationsTop3ByNameAsc } from "../../hook/useRegistration";
 import { Skeleton } from "@mui/material";
+import { BellOff } from "lucide-react";
 
 const SkeletonRequestCard = () => (
   <div className="flex items-center justify-between p-4 bg-white border rounded-xl shadow-sm mb-3">
@@ -40,19 +41,23 @@ function RequestCardOverview() {
         title="Join Requests"
         subtile="Join Requests"
         viewMore={true}
-        path="/request-event-ad"
+        path="/dashboard/approve-registration"
+        className=""
       >
         {loading && [0, 1, 2, 3].map((i) => <SkeletonRequestCard key={i} />)}
 
         {!loading && isError && (
           <div className="text-sm text-red-600">
-            Lỗi tải yêu cầu: {error?.message || "Không xác định"}
+            Error: {error?.message || "Error undefined"}
           </div>
         )}
 
         {!loading && !isError && items.length === 0 && (
-          <div className="text-sm text-gray-500">
-            Không có yêu cầu chờ duyệt.
+          <div className="text-sm text-gray-500 flex flex-col gap-2 mt-5 items-center">
+            <div className="w-12 h-12 mx-auto">
+              <BellOff className="w-full h-full text-gray-500" />
+            </div>
+            <div>No new requests.</div>
           </div>
         )}
 

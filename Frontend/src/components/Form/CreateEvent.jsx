@@ -7,6 +7,8 @@ import DropdownSelect from "../Dropdown/DropdownSelect";
 import { getCoordinates } from "../../utils/getCoordinates";
 import MapPreview from "../Location/MapPreview";
 import { useCreateEvent } from "../../hook/useEvent";
+import { useProvinces, useDistricts } from "../../hook/useVietnamLocations";
+import { Trash2, X } from "lucide-react";
 
 const categoryOptions = [
   { value: "health", label: "Health" },
@@ -70,6 +72,7 @@ function CreateEvent({ onSuccess, onCancel }) {
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(eventSchema),
@@ -141,10 +144,46 @@ function CreateEvent({ onSuccess, onCancel }) {
   const province = watch("province");
   const imageFile = watch("imageFile");
 
+  // use vietnam hook to fetch infommation about province and district
+  const {
+    provinces,
+    getProvinceByName,
+    isLoading: provincesLoading,
+  } = useProvinces();
+  const selectedProvince = useMemo(
+    () => getProvinceByName(province),
+    [getProvinceByName, province]
+  );
+  const provinceCode = selectedProvince?.code;
+  const { districts, isLoading: districtsLoading } = useDistricts(provinceCode);
+
+  const provinceOptions = useMemo(
+    () =>
+      (provinces || []).map((p) => ({
+        value: p.name,
+        label: p.name_with_type || p.name,
+      })),
+    [provinces]
+  );
+
+  const districtOptions = useMemo(
+    () =>
+      (districts || []).map((d) => ({
+        value: d.name,
+        label: d.name_with_type || d.name,
+      })),
+    [districts]
+  );
+
   const addressString = useMemo(
     () => [street, district, province].filter(Boolean).join(", ") || "",
     [street, district, province]
   );
+
+  // Reset district when province changes
+  useEffect(() => {
+    setValue("district", "");
+  }, [province, setValue]);
 
   useEffect(() => {
     if (!addressString) {
@@ -263,7 +302,7 @@ function CreateEvent({ onSuccess, onCancel }) {
         <label htmlFor="imageFile">Event Image (Optional)</label>
         {previewImage ? (
           <div className="flex items-center gap-3">
-            <div 
+            <div
               className="relative w-32 h-32 flex-shrink-0 cursor-pointer group"
               onClick={() => setShowImageModal(true)}
             >
@@ -283,9 +322,9 @@ function CreateEvent({ onSuccess, onCancel }) {
               <button
                 type="button"
                 onClick={handleRemoveImage}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium inline-flex items-center gap-2"
               >
-                Remove Image
+                <Trash2 /> Remove
               </button>
             </div>
           </div>
@@ -366,7 +405,78 @@ function CreateEvent({ onSuccess, onCancel }) {
 
       <div className="flex flex-col gap-2">
         <label>Location *</label>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 z-50">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="province" className="text-sm text-gray-600">
+              Province
+            </label>
+            <Controller
+              name="province"
+              control={control}
+              render={({ field }) => (
+                <DropdownSelect
+                  value={field.value}
+                  onChange={(val) => field.onChange(val)}
+                  options={provinceOptions}
+                  placeholder={
+                    provincesLoading ? "Loading..." : "Select province"
+                  }
+                  className="w-full"
+                />
+              )}
+            />
+            <input
+              type="text"
+              id="province"
+              {...register("province")}
+              placeholder="Da Nang"
+              className="hidden w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled
+            />
+            {errors.province && (
+              <p className="text-sm text-red-500">{errors.province.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="district" className="text-sm text-gray-600">
+              District
+            </label>
+            <Controller
+              name="district"
+              control={control}
+              render={({ field }) => (
+                <DropdownSelect
+                  value={field.value}
+                  onChange={(val) => field.onChange(val)}
+                  options={districtOptions}
+                  placeholder={
+                    !provinceCode
+                      ? "Select a province first"
+                      : districtsLoading
+                      ? "Loading..."
+                      : "Select district"
+                  }
+                  className="w-full"
+                  disabled={
+                    !provinceCode ||
+                    districtsLoading ||
+                    districtOptions.length === 0
+                  }
+                />
+              )}
+            />
+            <input
+              type="text"
+              id="district"
+              {...register("district")}
+              placeholder="Da Nang"
+              className="hidden w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled
+            />
+            {errors.district && (
+              <p className="text-sm text-red-500">{errors.district.message}</p>
+            )}
+          </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="street" className="text-sm text-gray-600">
               Street
@@ -383,40 +493,8 @@ function CreateEvent({ onSuccess, onCancel }) {
               <p className="text-sm text-red-500">{errors.street.message}</p>
             )}
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="district" className="text-sm text-gray-600">
-              District
-            </label>
-            <input
-              type="text"
-              id="district"
-              {...register("district")}
-              placeholder="Da Nang"
-              className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.district && (
-              <p className="text-sm text-red-500">{errors.district.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="province" className="text-sm text-gray-600">
-              Province
-            </label>
-            <input
-              type="text"
-              id="province"
-              {...register("province")}
-              placeholder="Da Nang"
-              className="w-full rounded-2xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.province && (
-              <p className="text-sm text-red-500">{errors.province.message}</p>
-            )}
-          </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 z-20">
           <MapPreview
             lat={coordinates.lat}
             lon={coordinates.lon}
@@ -441,7 +519,7 @@ function CreateEvent({ onSuccess, onCancel }) {
         <button
           type="submit"
           disabled={createEventMutation.isPending}
-          className="flex-1 rounded-2xl bg-red-400 px-5 py-3 text-base font-semibold text-white shadow-lg hover:bg-red-600 transition disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex-1 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 px-5 py-3 text-base font-semibold text-white shadow-lg hover:bg-green-500 transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           {createEventMutation.isPending ? "Creating..." : "Create Event"}
         </button>
@@ -449,17 +527,17 @@ function CreateEvent({ onSuccess, onCancel }) {
 
       {/* Image Preview Modal */}
       {showImageModal && previewImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4"
           onClick={() => setShowImageModal(false)}
         >
           <div className="relative max-w-4xl max-h-[90vh]">
             <button
               onClick={() => setShowImageModal(false)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold"
+              className="absolute -top-10 right-0 text-white hover:text-white hover:bg-red-500 text-2xl font-bold rounded-full"
               aria-label="Close"
             >
-              ✕
+              <X className="h-6 w-6" />
             </button>
             <img
               src={previewImage}

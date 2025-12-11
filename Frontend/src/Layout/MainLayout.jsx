@@ -37,7 +37,7 @@ export default function MainLayout() {
       {/* Nội dung chính */}
       <main className="flex-1 pt-20 px-4 sm:px-6 lg:px-8 pb-20">
         {/* thêm pb-20 để tránh bị che bởi BottomNav */}
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto relative">
           <Outlet />
         </div>
       </main>
