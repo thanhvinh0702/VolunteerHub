@@ -188,7 +188,7 @@ public class EventService {
         return eventMapper.toDto(savedEvent);
     }
 
-    // TODO: publish event an event has been deleted (send notification, delete registration), delete old images
+    // TODO: delete old images
     @PreAuthorize("hasRole('MANAGER')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
@@ -199,6 +199,7 @@ public class EventService {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
         eventRepository.delete(event);
+        eventPublisher.publishEvent(eventMapper.toDeletedMessage(event));
         return eventMapper.toDto(event);
     }
 

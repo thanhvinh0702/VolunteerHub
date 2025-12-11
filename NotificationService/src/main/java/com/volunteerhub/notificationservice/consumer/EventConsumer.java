@@ -27,5 +27,8 @@ public class EventConsumer {
         else if (eventMessage instanceof EventUpdatedMessage) {
             notificationService.handleEventUpdatedNotification((EventUpdatedMessage) eventMessage);
         }
+        else if (eventMessage instanceof EventDeletedMessage) {
+            notificationService.handleEventDeletedNotification((EventDeletedMessage) eventMessage);
+        }
     }
 }

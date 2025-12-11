@@ -1,11 +1,8 @@
 package com.volunteerhub.eventservice.mapper;
 
 import com.volunteerhub.common.dto.EventResponse;
-import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
-import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
-import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
+import com.volunteerhub.common.dto.message.event.*;
 import com.volunteerhub.eventservice.model.Event;
-import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -95,6 +92,14 @@ public class EventMapper {
                 .ownerId(event.getOwnerId())
                 .updatedAt(event.getUpdatedAt())
                 .updatedFields(updatedFields)
+                .build();
+    }
+
+    public EventDeletedMessage toDeletedMessage(Event event) {
+        return EventDeletedMessage.builder()
+                .eventId(event.getId())
+                .name(event.getName())
+                .ownerId(event.getOwnerId())
                 .build();
     }
 }

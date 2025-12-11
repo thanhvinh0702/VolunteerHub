@@ -33,5 +33,5 @@ public class EventSnapshot {
     @Builder.Default
     @OneToMany(mappedBy = "eventSnapshot", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<UserEvent> events = new ArrayList<>();
+    private List<UserEvent> userEvents = new ArrayList<>();
 }

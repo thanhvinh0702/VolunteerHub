@@ -1,9 +1,6 @@
 package com.volunteerhub.notificationservice.service;
 
-import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
-import com.volunteerhub.common.dto.message.event.EventCreatedMessage;
-import com.volunteerhub.common.dto.message.event.EventRejectedMessage;
-import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
+import com.volunteerhub.common.dto.message.event.*;
 import com.volunteerhub.common.dto.message.registration.RegistrationApprovedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCompletedMessage;
 import com.volunteerhub.common.dto.message.registration.RegistrationCreatedMessage;
@@ -156,14 +153,36 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    /**
+     * This method should handle the creation of notifications when an event is updated.
+     * @param eventUpdatedMessage: the message publish by event service when an event updated.
+     */
     public void handleEventUpdatedNotification(EventUpdatedMessage eventUpdatedMessage) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("updated_fields", eventUpdatedMessage.getUpdatedFields());
         List<String> userIds = registrationServiceClient.findAllUserIdsByEventId(eventUpdatedMessage.getId());
         NotificationRequest notificationRequest = NotificationRequest.builder()
-                .type(NotificationType.POST_UPDATED)
+                .type(NotificationType.EVENT_UPDATED)
                 .actorId(eventUpdatedMessage.getOwnerId())
                 .contextId(eventUpdatedMessage.getId())
+                .userIds(userIds)
+                .payload(payload)
+                .build();
+        create(notificationRequest);
+    }
+
+    /**
+     * This method should handle the creation of notifications when an event is deleted.
+     * @param eventDeletedMessage: the message publish by event service when an event deleted.
+     */
+    public void handleEventDeletedNotification(EventDeletedMessage eventDeletedMessage) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("name", eventDeletedMessage.getName());
+        List<String> userIds = registrationServiceClient.findAllUserIdsByEventId(eventDeletedMessage.getEventId());
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .type(NotificationType.EVENT_DELETED)
+                .actorId(eventDeletedMessage.getOwnerId())
+                .contextId(eventDeletedMessage.getEventId())
                 .userIds(userIds)
                 .payload(payload)
                 .build();

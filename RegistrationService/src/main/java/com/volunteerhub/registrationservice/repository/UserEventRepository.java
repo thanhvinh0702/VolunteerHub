@@ -25,6 +25,7 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     Page<UserEvent> findByEventIdAndStatus(Long eventId, UserEventStatus status, PageRequest pageRequest);
     Long countByEventIdAndStatus(Long eventId, UserEventStatus status);
     Long countByEventId(Long eventId);
+    void deleteByEventId(Long eventId);
 
     @Query("SELECT ue.userId FROM UserEvent ue WHERE ue.eventId = :eventId AND ue.status IN ('APPROVED', 'COMPLETED')")
     List<String> findAllUserIdsByEventId(@Param("eventId") Long eventId);

@@ -281,6 +281,10 @@ public class UserEventService {
         return userEventMapper.toResponseDto(userEvent);
     }
 
+    public void deleteAllByEventId(Long eventId) {
+        userEventRepository.deleteByEventId(eventId);
+    }
+
     public List<RegistrationResponse> getRegistrationsByEventIdsInternal(
             String ownerId,
             Long eventId,

@@ -1,6 +1,7 @@
     package com.volunteerhub.eventservice.publisher;
 
     import com.volunteerhub.common.dto.message.event.EventApprovedMessage;
+    import com.volunteerhub.common.dto.message.event.EventDeletedMessage;
     import com.volunteerhub.common.dto.message.event.EventMessage;
     import com.volunteerhub.common.dto.message.event.EventUpdatedMessage;
     import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@
         private String notificationRoutingKey;
 
         public void publishEvent(EventMessage eventMessage) {
-            if (eventMessage instanceof EventApprovedMessage || eventMessage instanceof EventUpdatedMessage) {
+            if (eventMessage instanceof EventApprovedMessage || eventMessage instanceof EventUpdatedMessage || eventMessage instanceof EventDeletedMessage) {
                 // Publish to event exchange
                 rabbitTemplate.convertAndSend(
                         eventExchange,
