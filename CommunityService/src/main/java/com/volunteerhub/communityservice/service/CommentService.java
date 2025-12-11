@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -82,17 +83,28 @@ public class CommentService {
         return commentMapper.toDto(commentRepository.save(comment));
     }
 
+    @Transactional
     public CommentResponse delete(String userId, Long commentId) {
         Comment comment = findEntityById(commentId);
         if (!userId.equals(comment.getOwnerId())) {
             throw new AccessDeniedException("Insufficient permission to delete this record.");
         }
-        commentRepository.delete(comment);
+        int commentDeletedCount = this.recursiveDelete(comment);
         // Store count in cache
         String commentCountKey = "comment_count:" + comment.getPostId();
         if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(commentCountKey))) {
-            stringIntegerRedisTemplate.opsForValue().decrement(commentCountKey);
+            stringIntegerRedisTemplate.opsForValue().decrement(commentCountKey, commentDeletedCount);
         }
         return commentMapper.toDto(comment);
+    }
+
+    private int recursiveDelete(Comment comment) {
+        int totalDeleteCount = 1;
+        List<Comment> replies = commentRepository.findByParentId(comment.getId());
+        for (Comment reply : replies) {
+            totalDeleteCount += recursiveDelete(reply);
+        }
+        commentRepository.delete(comment);
+        return totalDeleteCount;
     }
 }
