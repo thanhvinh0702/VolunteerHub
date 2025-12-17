@@ -1,14 +1,10 @@
 package com.volunteerhub.userservice.service;
 
 import com.volunteerhub.common.enums.UserRole;
-import com.volunteerhub.common.utils.PageNumAndSizeResponse;
-import com.volunteerhub.common.utils.PaginationValidation;
 import com.volunteerhub.userservice.mapper.UserMapper;
-import com.volunteerhub.common.enums.UserRole;
 import com.volunteerhub.common.enums.UserStatus;
 import com.volunteerhub.userservice.dto.request.UserRequest;
 import com.volunteerhub.userservice.dto.response.UserResponse;
-import com.volunteerhub.userservice.mapper.UserMapper;
 import com.volunteerhub.userservice.model.Address;
 import com.volunteerhub.userservice.model.User;
 import com.volunteerhub.userservice.repository.UserRepository;
@@ -19,11 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +29,7 @@ public class UserService {
     private final AddressService addressService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RedisTemplate<String, String> customRedisTemplate;
 
     public User findEntityById(String id) {
         return userRepository.findById(id).orElseThrow(() ->
@@ -214,4 +210,38 @@ public class UserService {
 
         return response;
     }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse banUser(String userId) {
+        User user = this.findEntityById(userId);
+        if (user.getStatus().equals(UserStatus.BANNED)) {
+            throw new IllegalArgumentException("Invalid state transition");
+        }
+        user.setStatus(UserStatus.BANNED);
+        userRepository.save(user);
+        customRedisTemplate.opsForValue().set(userId + "_status", UserStatus.BANNED.toString(), Duration.ofHours(1));
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse unbanUser(String userId) {
+        User user = this.findEntityById(userId);
+        if (user.getStatus().equals(UserStatus.ACTIVE)) {
+            throw new IllegalArgumentException("Invalid state transition");
+        }
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        customRedisTemplate.opsForValue().set(userId + "_status", UserStatus.ACTIVE.toString(), Duration.ofHours(1));
+        return userMapper.toResponse(user);
+    }
+
+    @PreAuthorize("hasRole('SYSTEM')")
+    public UserStatus getUserStatus(String userId) {
+        User user = this.findEntityById(userId);
+        customRedisTemplate.opsForValue().set(userId + "_status", user.getStatus().toString(), Duration.ofHours(1));
+        return user.getStatus();
+    }
+
 }

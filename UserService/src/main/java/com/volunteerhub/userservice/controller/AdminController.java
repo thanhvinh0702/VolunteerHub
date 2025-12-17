@@ -30,4 +30,14 @@ public class AdminController {
         return ResponseEntity.ok(userLoginHistoryService.findByUserId(userId));
     }
 
+    @PutMapping("/{userId}/ban")
+    public ResponseEntity<UserResponse> banUser(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.banUser(userId));
+    }
+
+    @PutMapping("/{userId}/unban")
+    public ResponseEntity<UserResponse> unbanUser(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.unbanUser(userId));
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.volunteerhub.apigateway.config;
 
 import com.volunteerhub.apigateway.filter.AuthenticationHeaderFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -12,7 +13,11 @@ import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouter
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 
 @Configuration
+@RequiredArgsConstructor
 public class RouteConfig {
+
+    private final AuthenticationHeaderFilter authenticationHeaderFilter;
+
     @Bean
     public RouterFunction<ServerResponse> userServiceRoute() {
         return route("userservice")
@@ -23,7 +28,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("USERSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
     }
@@ -38,7 +43,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("COMMUNITYSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
 
@@ -54,7 +59,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("EVENTSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
     }
@@ -69,7 +74,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("NOTIFICATIONSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
     }
@@ -84,7 +89,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("REGISTRATIONSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
     }
@@ -99,7 +104,7 @@ public class RouteConfig {
                                 .PUT(http())
                                 .DELETE(http())
                                 .filter(lb("AGGREGATIONSERVICE"))
-                                .before(AuthenticationHeaderFilter.addAuthenticationHeader())
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
                 )
                 .build();
     }

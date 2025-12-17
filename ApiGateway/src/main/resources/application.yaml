@@ -5,6 +5,14 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  data:
+    redis:
+      database: 0
+      host: ${HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 60000
+
   security:
     oauth2:
       google:
