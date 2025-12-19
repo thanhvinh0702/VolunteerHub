@@ -37,6 +37,20 @@ public class ReactionController {
         return new ResponseEntity<>(reactionService.create(authentication.getName(), postId, reactionRequest), HttpStatus.CREATED);
     }
 
+    @PutMapping
+    public ResponseEntity<ReactionResponse> updateByUserId(@PathVariable Long eventId,
+                                                           @PathVariable Long postId,
+                                                           @RequestBody @Validated(OnUpdate.class) ReactionRequest reactionRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(reactionService.updateByUserId(authentication.getName(), postId, reactionRequest));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ReactionResponse> hasReacted(@PathVariable Long postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(reactionService.getReaction(authentication.getName(), postId));
+    }
+
     @PutMapping("/{reactionId}")
     public ResponseEntity<ReactionResponse> update(@PathVariable Long reactionId,
                                    @RequestBody @Validated(OnUpdate.class) ReactionRequest reactionRequest) {

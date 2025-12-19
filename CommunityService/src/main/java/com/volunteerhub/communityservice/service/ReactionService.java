@@ -73,6 +73,21 @@ public class ReactionService {
         return reactionMapper.toDto(reactionRepository.save(reaction));
     }
 
+    public ReactionResponse updateByUserId(String userId, Long postId, ReactionRequest reactionRequest) {
+        Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
+                new NoSuchElementException("No reaction found!"));
+        if (reactionRequest.getType() != null) {
+            reaction.setType(reactionRequest.getType());
+        }
+        return reactionMapper.toDto(reactionRepository.save(reaction));
+    }
+
+    public ReactionResponse getReaction(String userId, Long postId) {
+        Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
+                new NoSuchElementException("No reaction found!"));;
+        return reactionMapper.toDto(reaction);
+    }
+
     public ReactionResponse delete(String userId, Long reactionId) {
         Reaction reaction = findEntityById(reactionId);
         if (!reaction.getOwnerId().equals(userId)) {
