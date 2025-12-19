@@ -291,7 +291,7 @@ export default function EventLayout() {
           />
 
           {/* Mobile Registration Status */}
-          <div className="sm:hidden bg-white p-4 rounded-lg mb-4 px-5">
+          <div className="sm:hidden bg-white p-4 rounded-lg mb-4 px-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <svg
@@ -387,7 +387,7 @@ export default function EventLayout() {
           </div>
 
           {/* tab links */}
-          <div className="w-full border-b border-gray-300 mb-4">
+          <div className="w-full sm:border-b border-gray-300 mb-0 max-sm:px-4">
             <Tabs
               items={headerItems}
               defaultKey={activeTab}

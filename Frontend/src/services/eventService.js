@@ -39,7 +39,7 @@ export const getEvents = async (params = {}) => {
 };
 
 export const getOwnedEvents = async (params = {}) => {
-    const response = await axiosClient.get(`${EVENT_BASE_URL}/owned`, { params });
+    const response = await axiosClient.get(`${EVENT_AGGREGATED_BASE_URL}/owned`, { params });
     console.log('Owned Events API response:', response);
 
     // Handle paginated response: { content, totalElements, totalPages, number, size }

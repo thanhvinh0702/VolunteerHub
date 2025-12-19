@@ -9,7 +9,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDeleteEvent } from "../../hook/useEvent";
 function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
-  console.log("EventManagerCard data:", data);
   // Navigation
   const navigate = useNavigate();
 
@@ -23,11 +22,11 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
     endTime,
     status,
     capacity,
+    participantCount,
   } = data;
   const deleteEventMutation = useDeleteEvent();
 
-  // Hardcode registered volunteers since not in API
-  const registered = Math.floor(Math.random() * capacity);
+  const registered = Math.floor((participantCount * capacity * 1.0) / 100);
 
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -94,7 +93,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
   };
 
   const getProgressPercentage = () => {
-    return Math.round((registered / capacity) * 100);
+    return Math.round((participantCount / capacity) * 100);
   };
 
   const handleDeleteEvent = async () => {
@@ -164,15 +163,15 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-sm">
             <span className="font-semibold text-gray-700">
-              {registered}/{capacity}
+              {participantCount}/{capacity}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                registered === capacity
+                participantCount === capacity
                   ? "bg-red-500"
-                  : registered >= capacity * 0.8
+                  : participantCount >= capacity * 0.8
                   ? "bg-orange-500"
                   : "bg-blue-500"
               }`}
@@ -252,7 +251,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
             <Edit className="w-4 h-4 text-gray-600" />
           </button>
           <button
-            onClick={() => navigate(`/dashboard/eventmanager/${id}`)}
+            onClick={() => onView?.(id)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             title="View"
           >

@@ -8,8 +8,6 @@ export default function DropdownSelect({
   options = [],
   className = "",
   placeholder = "Select...",
-  disabled = false,
-  emptyText = "No options",
 }) {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => setOpen(false));
@@ -24,9 +22,8 @@ export default function DropdownSelect({
       {/* Trigger */}
       <button
         type="button"
-        disabled={disabled}
-        onClick={() => !disabled && setOpen(!open)}
-        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 max-sm:py-1 text-gray-800 hover:bg-gray-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        onClick={() => setOpen(!open)}
+        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 max-sm:py-1 text-gray-800 hover:bg-gray-200 focus:outline-none"
       >
         <span>{selected ? selected.label : placeholder}</span>
         <FiChevronDown
@@ -35,7 +32,7 @@ export default function DropdownSelect({
       </button>
 
       {open && (
-        <ul className="absolute left-0 mt-2 w-full bg-white rounded-2xl shadow-lg ring-1 ring-black/5 overflow-hidden z-50 max-h-60 overflow-y-auto">
+        <ul className="absolute left-0 mt-2 w-full bg-white rounded-2xl shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
           {options.map((opt) => (
             <li
               key={opt.value}

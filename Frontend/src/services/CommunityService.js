@@ -32,12 +32,8 @@ const CommunityService = {
 
     // ==================== COMMENT APIs ====================
 
-    getAllComments: (eventId, postId, pageNum, pageSize) => {
-        const params = {};
-        if (pageNum !== undefined) params.pageNum = pageNum;
-        if (pageSize !== undefined) params.pageSize = pageSize;
-
-        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/comments`, { params });
+    getAllComments: (eventId, postId) => {
+        return axiosClient.get(`/api/v1/aggregated/events/${eventId}/posts/${postId}/comments`);
     },
 
 
@@ -77,3 +73,18 @@ const CommunityService = {
 };
 
 export default CommunityService;
+
+export const REACTION_TYPE = Object.freeze({
+    LIKE: "LIKE",
+    LOVE: "LOVE",
+    HAHA: "HAHA",
+    WOW: "WOW",
+    SAD: "SAD",
+    ANGRY: "ANGRY",
+});
+
+export const reactionKeyToEnum = (key) => {
+    const k = (key || "").toLowerCase();
+    const map = { like: REACTION_TYPE.LIKE, love: REACTION_TYPE.LOVE, haha: REACTION_TYPE.HAHA, wow: REACTION_TYPE.WOW, sad: REACTION_TYPE.SAD, angry: REACTION_TYPE.ANGRY };
+    return map[k] || REACTION_TYPE.LIKE;
+};

@@ -24,7 +24,8 @@ function NewEventsAnnounced({ className }) {
     return parts.join(", ");
   };
 
-  const cards = items.slice(0, 2).map((event) => ({
+  const cards = items.slice(0, 3).map((event) => ({
+    id: event?.id || "",
     title: event?.name || "Untitled Event",
     date: event?.startTime || null,
     starttime: event?.startTime || null,
@@ -50,6 +51,15 @@ function NewEventsAnnounced({ className }) {
       >
         {isLoading && (
           <>
+            <AnnouncedEventCard
+              title="Loading..."
+              date={null}
+              starttime={null}
+              endtime={null}
+              location=""
+              joined={0}
+              capacity={0}
+            />
             <AnnouncedEventCard
               title="Loading..."
               date={null}

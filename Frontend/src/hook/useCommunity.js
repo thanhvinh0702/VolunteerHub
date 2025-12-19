@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from "@tansta
 import CommunityService from "../services/CommunityService";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { data } from "react-router-dom";
 
 const COMMUNITY_QUERY_KEY = ["community"];
 
@@ -118,14 +119,39 @@ export const useInfinitePosts = (eventId, options = {}) => {
     });
 };
 
-export const useComments = (eventId, postId, params) => {
-    const { pageNum = 0, pageSize = 10 } = params || {};
+// Comments: API trả về toàn bộ danh sách không phân trang, dạng [{ comment, owner, replies: [] }]
+// Chuẩn hóa: chỉ giữ 2 cấp (cha + con). Mọi reply sâu hơn đều gán parentId về id của comment cha cấp 1.
+export const useComments = (eventId, postId) => {
+    const normalizeCommentsOneLevel = (nodes = []) => {
+        console.log(data)
+        const flat = [];
+        nodes.forEach((node) => {
+            if (!node || !node.comment) return;
+            const newNode = { ...node.comment, ownerName: node.owner.fullName || "Anonymous", avatarUrl: node.owner.avatarUrl || "" }
+            const parent = newNode;
+            flat.push(parent);
+            const flattenReplies = (replies = []) => {
+                replies.forEach((r) => {
+                    if (!r || !r.comment) return;
+                    const newChild = { ...r.comment, ownerName: r.owner.fullName || "Anonymous", avatarUrl: r.owner.avatarUrl || "" }
+                    const child = { ...newChild, parentId: parent.id };
+                    flat.push(child);
+                    if (Array.isArray(r.replies) && r.replies.length) {
+                        // ép mọi cấp sâu hơn thành con trực tiếp của cha
+                        flattenReplies(r.replies);
+                    }
+                });
+            };
+            flattenReplies(node.replies || []);
+        });
+        return flat;
+    };
 
     return useQuery({
-        queryKey: ["community", "comments", eventId, postId, pageNum, pageSize],
-        queryFn: () => CommunityService.getAllComments(eventId, postId, pageNum, pageSize),
+        queryKey: ["community", "comments", eventId, postId],
+        queryFn: () => CommunityService.getAllComments(eventId, postId),
         enabled: !!eventId && !!postId,
-        keepPreviousData: true,
+        select: (data) => normalizeCommentsOneLevel(Array.isArray(data) ? data : []),
     });
 };
 
@@ -163,10 +189,27 @@ export const useCreateComment = (eventId, postId) => {
     });
 };
 
-export const useDeleteComment = (eventId, postId, commentId) => {
+export const useUpdateComment = (eventId, postId) => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: () => CommunityService.deleteComment(eventId, postId, commentId),
+        mutationFn: ({ commentId, content, parentId }) =>
+            CommunityService.updateComment(eventId, postId, commentId, { content, parentId }),
+        onSuccess: () => {
+            toast.success("Comment updated successfully.");
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "comments", eventId, postId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "commentsInfinite", eventId, postId]);
+        },
+        onError: (error) => {
+            const message = error?.response?.data?.message || error.message || "Failed to update comment";
+            toast.error(message);
+        },
+    });
+};
+
+export const useDeleteComment = (eventId, postId) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (commentId) => CommunityService.deleteComment(eventId, postId, commentId),
         onSuccess: () => {
             toast.success("Comment deleted successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "comments", eventId, postId]);
@@ -184,7 +227,7 @@ export const useReactions = (eventId, postId, params) => {
 
     return useQuery({
         queryKey: [...COMMUNITY_QUERY_KEY, "reactions", eventId, postId, pageNum, pageSize],
-        queryFn: () => CommunityService.getAllReactions(eventId, postId, pageNum, pageSize),
+        queryFn: () => CommunityService.getAllReactions(eventId, postId),
         enabled: !!eventId && !!postId,
         keepPreviousData: true,
     });
@@ -192,14 +235,31 @@ export const useReactions = (eventId, postId, params) => {
 
 export const useCreateReaction = (eventId, postId) => {
     const queryClient = useQueryClient();
+
+    const toEnumType = (key) => {
+        const map = { like: "LIKE", love: "LOVE", haha: "HAHA", wow: "WOW", sad: "SAD", angry: "ANGRY" };
+        return map[key] || "LIKE";
+    };
+
     return useMutation({
-        mutationFn: (reactionData) => CommunityService.createReaction(eventId, postId, reactionData),
+        // Accept either a full payload or a lowercase key string
+        mutationFn: (input) => {
+            const payload = typeof input === "string" ? { type: toEnumType(input) } : input;
+            return CommunityService.createReaction(eventId, postId, payload);
+        },
+        // Optimistic cache nudge (optional; UI is already optimistic in FeedPage)
+        onMutate: async (input) => {
+            // Cancel any outgoing refetches for reactions/post while we optimistically update
+            await queryClient.cancelQueries({ queryKey: [...COMMUNITY_QUERY_KEY, "reactions", eventId, postId] });
+            await queryClient.cancelQueries({ queryKey: [...COMMUNITY_QUERY_KEY, "post", eventId, postId] });
+            return { input };
+        },
         onSuccess: () => {
             toast.success("Reaction added successfully.");
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "reactions", eventId, postId]);
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "post", eventId, postId]);
         },
-        onError: (error) => {
+        onError: (error, _input, _context) => {
             const message = error?.response?.data?.message || error.message || "Failed to add reaction";
             toast.error(message);
         },

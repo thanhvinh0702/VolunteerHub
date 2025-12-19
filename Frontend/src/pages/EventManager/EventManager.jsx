@@ -27,6 +27,8 @@ import useClickOutside from "../../hook/ClickOutside";
 import {
   useOwnedEventsPagination,
   useSearchEventByNameForManager,
+  useEventDetail,
+  useUpdateEvent,
 } from "../../hook/useEvent";
 import MobileManageCard from "../../components/Project/MobileManageCard";
 import { useNavigate } from "react-router-dom";
@@ -37,9 +39,15 @@ function EventManager() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [page, setPage] = useState(0); // API uses 0-based pagination
+  const [page, setPage] = useState(0);
   const [openCreateForm, setOpenCreateForm] = useState(false);
   const isFirstLoad = useRef(true);
+  // New: Edit modal state
+  const [openEditForm, setOpenEditForm] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [editData, setEditData] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   // Reset page when filter or search changes
   useEffect(() => {
@@ -79,7 +87,7 @@ function EventManager() {
   const showFullLoading = isLoading && isFirstLoad.current;
 
   useEffect(() => {
-    if (openCreateForm) {
+    if (openCreateForm || openEditForm) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -87,13 +95,19 @@ function EventManager() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [openCreateForm]);
+  }, [openCreateForm, openEditForm]);
 
   const handleCreateNew = () => {
     setOpenCreateForm(true);
   };
   const modalRef = useClickOutside(() => {
     setOpenCreateForm(false);
+  });
+  // New: edit modal ref
+  const editModalRef = useClickOutside(() => {
+    setOpenEditForm(false);
+    setImageFile(null);
+    setPreviewImage(null);
   });
 
   const handlePageChange = (event, value) => {
@@ -120,9 +134,10 @@ function EventManager() {
     console.log(`✅ Event cancelled successfully`);
   };
 
+  // Edit handler: open modal and load details
   const handleEdit = (id) => {
-    console.log(`Edit event ${id}`);
-    // TODO: Navigate to edit page or open modal
+    setSelectedEventId(id);
+    setOpenEditForm(true);
   };
 
   const handleView = (id) => {
@@ -133,6 +148,107 @@ function EventManager() {
   const handleDelete = (id) => {
     console.log(`Delete event ${id}`);
     // TODO: Show confirmation modal and delete
+  };
+
+  // Fetch event detail for editing
+  const {
+    data: editEventData,
+    isLoading: isLoadingEdit,
+    error: editError,
+    refetch: refetchEdit,
+  } = useEventDetail(selectedEventId, {
+    enabled: !!selectedEventId && openEditForm,
+  });
+
+  // Initialize edit data when event data loads
+  useEffect(() => {
+    if (editEventData && openEditForm) {
+      setEditData({
+        name: editEventData.name || "",
+        description: editEventData.description || "",
+        categoryName: editEventData.category?.name || "",
+        startTime: editEventData.startTime
+          ? editEventData.startTime.slice(0, 16)
+          : "",
+        endTime: editEventData.endTime
+          ? editEventData.endTime.slice(0, 16)
+          : "",
+        capacity: editEventData.capacity || "",
+        registrationDeadline: editEventData.registrationDeadline
+          ? editEventData.registrationDeadline.slice(0, 16)
+          : "",
+        street: editEventData.address?.street || "",
+        district: editEventData.address?.district || "",
+        province: editEventData.address?.province || "",
+        status: editEventData.status || "",
+      });
+    }
+  }, [editEventData, openEditForm]);
+
+  const updateEventMutation = useUpdateEvent({
+    onSuccess: () => {
+      setOpenEditForm(false);
+      setImageFile(null);
+      setPreviewImage(null);
+      // Refresh lists
+      filterQuery.refetch?.();
+      searchQuery.refetch?.();
+    },
+  });
+
+  const handleInputChange = (field, value) => {
+    setEditData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const categoryOptions = [
+    { value: "health", label: "Health" },
+    { value: "education", label: "Education" },
+    { value: "environment", label: "Environment" },
+    { value: "animals", label: "Animals" },
+    { value: "other", label: "Other" },
+  ];
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setPreviewImage(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setPreviewImage(null);
+  };
+
+  const handleSave = () => {
+    if (!selectedEventId || !editData) return;
+
+    const payload = {
+      name: editData.name,
+      description: editData.description,
+      categoryName: (editData.categoryName || "").toLowerCase(),
+      startTime: editData.startTime,
+      endTime: editData.endTime,
+      capacity: parseInt(editData.capacity),
+      registrationDeadline: editData.registrationDeadline,
+      address: {
+        street: editData.street,
+        district: editData.district,
+        province: editData.province,
+      },
+    };
+
+    const payloadToSend = imageFile
+      ? { eventRequest: payload, imageFile }
+      : { eventRequest: payload };
+
+    updateEventMutation.mutate({
+      eventId: selectedEventId,
+      payload: payloadToSend,
+    });
   };
 
   if (showFullLoading) {
@@ -207,7 +323,7 @@ function EventManager() {
 
           <button
             onClick={() => setOpenCreateForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+            className="flex items-center gap-2 px-4 py-2 max-sm:text-sm bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
           >
             <Plus className="w-5 h-5" />
             <span>New Event</span>
@@ -318,15 +434,14 @@ function EventManager() {
                 "&.Mui-selected": {
                   backgroundColor: "#f87171",
                   color: "white",
-                  "&:hover": {
-                    backgroundColor: "#ef4444",
-                  },
+                  "&:hover": { backgroundColor: "#ef4444" },
                 },
               },
             }}
           />
         </div>
       )}
+
       {openCreateForm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div ref={modalRef} className="w-full max-w-3xl my-8">
@@ -344,6 +459,294 @@ function EventManager() {
                 onSuccess={() => setOpenCreateForm(false)}
                 onCancel={() => setOpenCreateForm(false)}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Event Modal */}
+      {openEditForm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div ref={editModalRef} className="w-full max-w-3xl my-8">
+            <div className="relative bg-white rounded-2xl shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+              <button
+                onClick={() => setOpenEditForm(false)}
+                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 transition hover:text-white hover:bg-red-500"
+                aria-label="Close edit form"
+              >
+                <span className="text-xl font-bold leading-none">
+                  <X />
+                </span>
+              </button>
+
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-xl font-semibold text-gray-900">
+                      Edit Event
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      Update details of your event
+                    </p>
+                  </div>
+                </div>
+
+                {isLoadingEdit && (
+                  <div className="flex items-center justify-center h-32">
+                    <p className="text-gray-500">Loading event details...</p>
+                  </div>
+                )}
+
+                {editError && (
+                  <div className="flex items-center justify-center h-32">
+                    <p className="text-red-500">
+                      Error loading event: {editError.message}
+                    </p>
+                  </div>
+                )}
+
+                {editData && (
+                  <div className="space-y-4">
+                    {/* Event Name */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Event Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={editData.name}
+                        onChange={(e) =>
+                          handleInputChange("name", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Event name"
+                      />
+                    </div>
+
+                    {/* Category */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Category *
+                      </label>
+                      <DropdownSelect
+                        value={editData.categoryName}
+                        onChange={(value) =>
+                          handleInputChange("categoryName", value)
+                        }
+                        options={categoryOptions}
+                        placeholder="Select category"
+                        className="w-full"
+                      />
+                    </div>
+
+                    {/* Status (read-only) */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Status
+                      </label>
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                          editData.status === "APPROVED"
+                            ? "bg-green-100 text-green-800"
+                            : editData.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : editData.status === "REJECTED"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {editData.status}
+                      </span>
+                    </div>
+
+                    {/* Registration Deadline */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Registration Deadline *
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={editData.registrationDeadline}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "registrationDeadline",
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    {/* Time Range */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="font-semibold text-gray-900 mb-1 block">
+                          Start Time *
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={editData.startTime}
+                          onChange={(e) =>
+                            handleInputChange("startTime", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-semibold text-gray-900 mb-1 block">
+                          End Time *
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={editData.endTime}
+                          onChange={(e) =>
+                            handleInputChange("endTime", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Capacity */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Maximum Capacity *
+                      </label>
+                      <input
+                        type="number"
+                        value={editData.capacity}
+                        min="1"
+                        onChange={(e) =>
+                          handleInputChange("capacity", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Maximum volunteers"
+                      />
+                    </div>
+
+                    {/* Location */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-2 block">
+                        Location *
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          value={editData.street}
+                          onChange={(e) =>
+                            handleInputChange("street", e.target.value)
+                          }
+                          placeholder="Street"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="text"
+                          value={editData.district}
+                          onChange={(e) =>
+                            handleInputChange("district", e.target.value)
+                          }
+                          placeholder="District"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="text"
+                          value={editData.province}
+                          onChange={(e) =>
+                            handleInputChange("province", e.target.value)
+                          }
+                          placeholder="Province"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <label className="font-semibold text-gray-900 mb-2 block">
+                        Description *
+                      </label>
+                      <textarea
+                        value={editData.description}
+                        onChange={(e) =>
+                          handleInputChange("description", e.target.value)
+                        }
+                        rows={6}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Event description..."
+                      />
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="space-y-2">
+                      <label className="font-semibold text-gray-900 mb-1 block">
+                        Event Image
+                      </label>
+                      {/* Current Image */}
+                      {!previewImage && editEventData?.imageUrl && (
+                        <img
+                          src={editEventData.imageUrl}
+                          alt="Current event"
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                      )}
+
+                      {/* Preview New Image */}
+                      {previewImage && (
+                        <div className="relative">
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="w-full h-48 object-cover rounded-lg"
+                          />
+                          <button
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
+
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          id="editImageUpload"
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="editImageUpload"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer"
+                        >
+                          <span className="text-gray-600">
+                            {previewImage ? "Change Image" : "Select Image"}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => setOpenEditForm(false)}
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSave}
+                        disabled={updateEventMutation.isPending}
+                        className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {updateEventMutation.isPending
+                          ? "Saving..."
+                          : "Save Changes"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

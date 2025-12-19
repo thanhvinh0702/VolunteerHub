@@ -4,8 +4,10 @@ import { formatDateTime } from "../../utils/date";
 import { FiCalendar } from "react-icons/fi";
 import { User, Users } from "lucide-react";
 import { TfiLocationPin } from "react-icons/tfi";
+import { useNavigate } from "react-router-dom";
 
 function AnnouncedEventCard({
+  id,
   title,
   date,
   starttime,
@@ -20,9 +22,18 @@ function AnnouncedEventCard({
     separator: "-",
     customFormat: "DD{sep}MM{sep}YYYY",
   });
+  const navigate = useNavigate();
+  console.log("ididid", id);
 
   return (
-    <div className="bg-blue-300/20 rounded-xl">
+    <div
+      className="bg-blue-300/20 rounded-xl"
+      onClick={(e) => {
+        e.stopPropagation();
+        console.log("/dashboard/eventmanager/", id);
+        navigate(`/dashboard/eventmanager/${id}`);
+      }}
+    >
       <Card className>
         <div className="flex justify-between relative">
           <div className="text-md max-sm:text-sm flex flex-col gap-2 pl-5">

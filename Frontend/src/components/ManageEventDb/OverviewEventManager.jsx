@@ -36,7 +36,6 @@ function OverviewEventManager() {
   } = useEventDetail(eventId);
   const updateEventMutation = useUpdateEvent({
     onSuccess: () => {
-      toast.success("Event updated successfully");
       setIsEditMode(false);
       refetch();
     },
@@ -209,7 +208,7 @@ function OverviewEventManager() {
     );
   }
   return (
-    <div className="flex flex-col gap-4 font-jost">
+    <div className="flex flex-col gap-4 font-jost max-sm:font-sm">
       {/* <div className="grid grid-cols-4 gap-8 max-lg:grid-cols-2 max-lg:gap-4 auto-rows-fr">
         {cards.map((item) => (
           <EventCard key={item.id} {...item} />

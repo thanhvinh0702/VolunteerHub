@@ -82,7 +82,7 @@ const CreatPost = ({ user, onCreate, eventId }) => {
           resetForm();
         },
         onError: () => {
-          // giữ form để thử lại
+          // Error and try again
           toast.error("Error when create post. Please try again.");
         },
       }
@@ -91,7 +91,7 @@ const CreatPost = ({ user, onCreate, eventId }) => {
 
   return (
     <div
-      className="w-full bg-white rounded-md p-2 shadow-sm relative focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-300"
+      className="w-full bg-white rounded-md p-2 shadow-sm relative focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-300 ring-1 ring-blue-300 duration-150 transition-all"
       aria-busy={loading}
     >
       <div

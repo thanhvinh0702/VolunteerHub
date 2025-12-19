@@ -1,5 +1,6 @@
 import React from "react";
 import CommentItem from "./CommentItem";
+import { useAuth } from "../../hook/useAuth";
 
 export default function CommentList({
   comments,
@@ -7,8 +8,12 @@ export default function CommentList({
   onEditComment,
   onDeleteComment,
   onReplyComment,
+  currentUserId,
+  currentUserName,
 }) {
   // Build nested comment
+  const {user} = useAuth();
+  console.log("user", user)
   const buildCommentTree = (comments) => {
     const commentMap = {};
     const rootComments = [];
@@ -34,7 +39,7 @@ export default function CommentList({
   if (comments.length === 0) {
     return (
       <div className="text-sm text-gray-500 text-center py-8">
-        Chưa có bình luận nào. Hãy là người đầu tiên bình luận!
+        No comments yet. 
       </div>
     );
   }
@@ -50,6 +55,8 @@ export default function CommentList({
           onDelete={onDeleteComment}
           onReply={onReplyComment}
           replies={comment.replies}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
           depth={0}
         />
       ))}

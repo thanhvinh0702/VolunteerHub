@@ -1,7 +1,15 @@
 import React from "react";
 import ReactionBar from "./ReactionBar";
 
-export default function PostCard({ post, onOpenPost, onReactLocal, canEdit }) {
+export default function PostCard({
+  post,
+  onOpenPost,
+  onReactLocal,
+  canEdit,
+  postId,
+  commentLength,
+  hiddenComment,
+}) {
   const INLINE_COUNT = 1;
   // const inlineComments = post.comments.slice(0, INLINE_COUNT);
   // const moreCount = Math.max(0, post.comments.length - INLINE_COUNT);
@@ -198,6 +206,8 @@ export default function PostCard({ post, onOpenPost, onReactLocal, canEdit }) {
           post={post}
           onReact={onReactLocal}
           onCommentClick={() => openModal({ openComments: true })}
+          commentLength={commentLength}
+          hiddenComment={true}
         />
       </footer>
     </article>

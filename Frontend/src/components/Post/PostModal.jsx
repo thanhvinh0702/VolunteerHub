@@ -6,6 +6,14 @@ import ImageLightbox from "./ImageLightbox";
 import ReactionBar from "./ReactionBar";
 import { X } from "lucide-react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import {
+  useComments,
+  useCreateComment,
+  useDeleteComment,
+  useUpdateComment,
+} from "../../hook/useCommunity";
+import { useAuth } from "../../hook/useAuth";
+
 export default function PostModal({
   open,
   post,
@@ -16,6 +24,8 @@ export default function PostModal({
   onDeleteComment,
   onReact,
   startImageIndex,
+  postId,
+  eventId,
 }) {
   const [text, setText] = useState("");
 
@@ -23,6 +33,7 @@ export default function PostModal({
   const inputRef = useRef(null);
   const [lightboxIndex, setLightboxIndex] = useState(startImageIndex ?? 0);
   const [showMore, setShowMore] = useState(false);
+  const { user } = useAuth();
   const toggleShowMore = () => {
     setShowMore(!showMore);
   };
@@ -30,6 +41,15 @@ export default function PostModal({
     commentsRef.current?.scrollIntoView({ behavior: "smooth" });
     inputRef.current?.focus();
   };
+
+  // Fetch comments from API and normalize
+  const { data: comments = [], isLoading: isLoadingComments } = useComments(
+    eventId,
+    postId
+  );
+  const { mutate: createComment } = useCreateComment(eventId, postId);
+  const { mutate: deleteComment } = useDeleteComment(eventId, postId);
+  const { mutate: updateComment } = useUpdateComment(eventId, postId);
 
   useEffect(() => {
     if (open) {
@@ -62,19 +82,31 @@ export default function PostModal({
 
   function submit(e) {
     e.preventDefault();
-    if (!text.trim()) return;
-    const newComment = {
-      id: Date.now(),
-      ownerId: "10", // Current user ID
-      postId: post.id,
-      parentId: null,
-      content: text,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    onAddComment(post.id, newComment);
-    setText("");
+    const content = text.trim();
+    if (!content) return;
+    createComment(
+      { content, parentId: null },
+      {
+        onSuccess: () => setText(""),
+      }
+    );
   }
+
+  const handleAddReply = (pid, newReply) => {
+    createComment({ content: newReply.content, parentId: newReply.parentId });
+  };
+
+  const handleEditComment = (pid, commentId, newContent) => {
+    const content = (newContent || "").trim();
+    if (!content) return;
+    const target = comments.find((c) => c.id === commentId);
+    const parentId = target?.parentId ?? null;
+    updateComment({ commentId, content, parentId });
+  };
+
+  const handleDeleteComment = (pid, commentId) => {
+    deleteComment(commentId);
+  };
 
   return (
     <div className="min-w-[95vw] min-h-[95vh] max-md:min-w-[100vw] max-md:min-h-[100vh] max-sm:flex max-sm:justify-start relative">
@@ -91,10 +123,23 @@ export default function PostModal({
               />
             </div>
           </div>
-          <div className="md:col-span-2 order-2 flex flex-col bg-white md:rounded-r-lg md:overflow-hidden">
-            <div className="md:flex-1 md:overflow-y-auto px-6 py-4 pr-4 max-sm:pr-1 max-md:px-3 max-md:py-0">
+          <div className="md:col-span-2 order-2 flex flex-col bg-white md:rounded-r-lg md:overflow-hidden relative">
+            {/* Close button  */}
+            <button
+              type="button"
+              aria-label="Close"
+              title="Close"
+              onClick={onClose}
+              className="max-sm:hidden absolute top-3 right-3 p-2 rounded-full border border-black bg-white/90 text-gray-700 hover:bg-gray-200 shadow-md transition-colors duration-150"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="md:flex-1 md:overflow-y-auto px-6 py-4 pr-4 max-sm:pr-1 max-md:px-3 max-md:py-0 max-md:pb-24">
               <div className="flex flex-col gap-2 lg:mt-10 max-md:mt-4">
-                <div className="flex justify-start items-center p-0 border-b-1 border-gray-400 pb-2 lg:hidden ">
+                <div
+                  className="flex justify-start items-center p-0 border-b-1 border-gray-400 pb-2 lg:hidden"
+                  onClick={onClose}
+                >
                   <IoMdArrowRoundBack className="text-white bg-black rounded-full p-0 h-5 w-5" />
                 </div>
                 <div className="flex items-center gap-2 flex-row">
@@ -141,23 +186,35 @@ export default function PostModal({
                   post={post}
                   onReact={onReact}
                   onCommentClick={focusComments}
+                  commentLength={comments.length}
+                  eventId={eventId}
                 />
               </div>
 
               <div ref={commentsRef} className="flex-1 flex-col flex px-0 py-4">
                 <h4 className="font-semibold mb-4">
-                  Comments ({post.comments.length})
+                  Comments ({comments.length})
                 </h4>
-                <CommentList
-                  comments={post.comments}
-                  postId={post.id}
-                  onEditComment={onEditComment}
-                  onDeleteComment={onDeleteComment}
-                  onReplyComment={onAddComment}
-                />
+                {isLoadingComments ? (
+                  <div className="text-sm text-gray-500">
+                    Đang tải bình luận...
+                  </div>
+                ) : (
+                  <CommentList
+                    comments={comments}
+                    postId={post.id}
+                    onEditComment={handleEditComment}
+                    onDeleteComment={handleDeleteComment}
+                    onReplyComment={handleAddReply}
+                    currentUserId={user?.id}
+                    currentUserName={
+                      user?.name || user?.fullName || user?.username || "You"
+                    }
+                  />
+                )}
               </div>
             </div>
-            <div className="bg-blue-500 border-t md:sticky md:-bottom-4 px-4 md:px-0">
+            <div className="border-t bg-white md:sticky md:-bottom-4 md:px-0 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:z-50">
               <CommentInput
                 value={text}
                 onChange={(e) => setText(e.target.value)}

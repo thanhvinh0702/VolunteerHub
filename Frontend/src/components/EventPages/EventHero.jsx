@@ -19,7 +19,7 @@ function EventHero({ id, imgURL, organizerName, eventName }) {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full ">
       <div className="w-full aspect-[16/5] max-h-[380px] overflow-hidden rounded-xl bg-gray-100 mb-4">
         <img
           src={imgURL}
@@ -28,9 +28,9 @@ function EventHero({ id, imgURL, organizerName, eventName }) {
         />
       </div>
       <div className="text-black mb-4">
-        <p className="text-2xl font-bold mb-1">{eventName}</p>
+        <p className="text-2xl font-bold mb-1 max-sm:px-3">{eventName}</p>
 
-        <p className="max-md:text-sm inline-flex items-center gap-2 text-gray-600/80 mb-3">
+        <p className="max-md:text-sm max-sm:px-3 inline-flex items-center gap-2 text-gray-600/80 mb-3">
           <span>
             <FaEarthAfrica />
           </span>
@@ -39,7 +39,7 @@ function EventHero({ id, imgURL, organizerName, eventName }) {
         {isLoading ? (
           <div className="text-sm text-gray-500">Loading volunteers...</div>
         ) : userList.length > 0 ? (
-          <div>
+          <div className="max-sm:px-3">
             <VolunteerHero
               userList={displayedUsers}
               totalCount={userList.length}

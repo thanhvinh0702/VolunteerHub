@@ -10,9 +10,9 @@ import { useNavbar } from "../../hook/useNavbar";
 import { useAuth } from "../../hook/useAuth";
 
 /**
- * FeedPage: danh sách bài viết với infinite scroll bằng react-virtuoso
+ * FeedPage: danh sách bài viết với infinite scroll 
  * - Bài viết mới tạo sẽ hiển thị ở đầu danh sách
- * - Dữ liệu phân trang lấy từ API qua useInfinitePosts (pageNum=1, pageSize=2)
+ ư
  */
 export default function FeedPage() {
   const { user } = useAuth();
@@ -26,6 +26,7 @@ export default function FeedPage() {
     startImageIndex: 0,
     openComments: false,
   });
+  const [hiddenComment, setHiddenComment] = useState(false);
 
   // Infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
@@ -85,6 +86,7 @@ export default function FeedPage() {
       startImageIndex: options.startImageIndex ?? 0,
       openComments: Boolean(options.openComments),
     });
+    setHiddenComment(true);
   };
   const closePost = () => {
     setShowNavbar(true);
@@ -218,8 +220,8 @@ export default function FeedPage() {
   console.log("post", posts);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen py-4">
+      <div className="max-w-3xl mx-auto mb-6 px-2 sm:px-0 mt-2 sm:mt-4 space-y-4">
         <CreatePost
           onCreate={(p) =>
             handleCreate({
@@ -249,6 +251,8 @@ export default function FeedPage() {
               onOpenPost={openPost}
               onReactLocal={reactTo}
               canEdit={post?.ownerId === user?.id}
+              postId={post.id}
+              hiddenComment={hiddenComment}
             />
           )}
           components={{ Footer }}
@@ -266,6 +270,8 @@ export default function FeedPage() {
         onEditComment={editComment}
         onDeleteComment={deleteComment}
         onReact={reactTo}
+        postId={activePost?.id}
+        eventId={id}
       />
     </div>
   );

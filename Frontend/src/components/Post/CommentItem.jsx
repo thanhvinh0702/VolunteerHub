@@ -9,8 +9,10 @@ export default function CommentItem({
   onReply,
   replies = [],
   currentUserId = "10",
+  currentUserName = "You",
   depth = 0,
 }) {
+  console.log(comment);
   // Thêm vào đầu component (sau line 15)
   const [showAllReplies, setShowAllReplies] = useState(false);
 
@@ -19,8 +21,11 @@ export default function CommentItem({
   const [replyText, setReplyText] = useState("");
   const [replyToUser, setReplyToUser] = useState(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.content || "");
+
   // Check if this comment belongs to current user
-  const isOwnComment = comment.ownerId === currentUserId;
+  const isOwnComment = String(comment.ownerId) === String(currentUserId);
   const hasReplies = replies.length > 0;
   const isReply = depth > 0; // If depth > 0, this is a reply
 
@@ -31,11 +36,21 @@ export default function CommentItem({
   const hiddenRepliesCount = replies.length;
   const hasHiddenReplies = hiddenRepliesCount > 0;
 
-  const handleEdit = () => {
-    const newContent = prompt("Sửa bình luận:", comment.content);
-    if (newContent !== null && newContent.trim()) {
-      onEdit(postId, comment.id, newContent);
-    }
+  const handleEditStart = () => {
+    setIsEditing(true);
+    setEditText(comment.content || "");
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    if (!editText.trim()) return;
+    onEdit(postId, comment.id, editText.trim());
+    setIsEditing(false);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setEditText(comment.content || "");
   };
 
   const handleDelete = () => {
@@ -48,7 +63,7 @@ export default function CommentItem({
     setShowReplyInput(true);
     setReplyToUser({
       id: targetComment.ownerId,
-      name: getUserName(targetComment.ownerId),
+      name: targetComment.ownerName || String(targetComment.ownerId),
     });
   };
 
@@ -56,13 +71,13 @@ export default function CommentItem({
     e.preventDefault();
     if (!replyText.trim()) return;
 
-    // Facebook style: Always use the root comment's ID as parentId
+    // Always use the root comment's ID as parentId
     // If this is already a reply (depth > 0), find the root parent
     const rootParentId = isReply ? comment.parentId || comment.id : comment.id;
 
     // Add mention if replying to a reply
     const content =
-      replyToUser && isReply ? `@${replyToUser.name} ${replyText}` : replyText;
+      replyToUser ? `@${replyToUser.name} ${replyText}` : replyText;
 
     const newReply = {
       id: Date.now(),
@@ -73,27 +88,13 @@ export default function CommentItem({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       replyToUserId: replyToUser ? replyToUser.id : null,
+      
     };
 
     onReply(postId, newReply);
     setReplyText("");
     setShowReplyInput(false);
     setReplyToUser(null);
-  };
-
-  const getUserName = (ownerId) => {
-    const userMap = {
-      10: "Bạn",
-      1: "Nguyễn Văn A",
-      2: "Trần Thị B",
-      3: "Lê Văn C",
-      4: "Phạm Thị D",
-      5: "Hoàng Văn E",
-      6: "Vũ Thị F",
-      7: "Đặng Văn G",
-      8: "Bùi Thị H",
-    };
-    return userMap[ownerId] || `User ${ownerId}`;
   };
 
   const formatDate = (dateString) => {
@@ -118,35 +119,62 @@ export default function CommentItem({
           {/* Avatar */}
           <div className="flex-shrink-0">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
-              {getUserName(comment.ownerId)[0]}
+              {(comment.ownerName && comment.ownerName[0]) || "?"}
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
             {/* Comment content */}
             <div className="bg-gray-100 rounded-2xl px-3 py-2">
-              <div className="font-semibold text-sm">
-                {getUserName(comment.ownerId)}
-              </div>
-              <div className="text-sm text-gray-800 break-words">
-                {comment.content}
-              </div>
+              <div className="font-semibold text-sm">{comment.ownerName || "Unknown"}</div>
+              {!isEditing ? (
+                <div className="text-sm text-gray-800 break-words">
+                  {comment.content}
+                </div>
+              ) : (
+                <form onSubmit={handleEditSubmit} className="mt-1">
+                  <textarea
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    className="w-full bg-white rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-300"
+                    rows={3}
+                  />
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="submit"
+                      className="px-3 py-1 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                      disabled={!editText.trim()}
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="px-3 py-1 text-sm rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      onClick={handleEditCancel}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
 
             <div className="mt-1 px-3 flex items-center gap-4 text-xs">
-              <button
-                onClick={() => handleReplyClick(comment)}
-                className="text-gray-600 hover:underline font-semibold"
-              >
-                Reply
-              </button>
+              {!isEditing && (
+                <button
+                  onClick={() => handleReplyClick(comment)}
+                  className="text-gray-600 hover:underline font-semibold"
+                >
+                  Reply
+                </button>
+              )}
               <span className="text-gray-500">
                 {formatDate(comment.createdAt)}
               </span>
-              {isOwnComment && (
+              {isOwnComment && !isEditing && (
                 <>
                   <button
-                    onClick={handleEdit}
+                    onClick={handleEditStart}
                     className="text-gray-600 hover:underline"
                   >
                     Edit
@@ -167,7 +195,7 @@ export default function CommentItem({
                 className="lg:mt-5 mt-2 flex gap-2 items-center relative py-0"
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 absolute -left-0 top-2">
-                  {getUserName(currentUserId)[0]}
+                  {(currentUserName && currentUserName[0]) || "?"}
                 </div>
                 <div className="flex-1 flex gap-2 bg-gray-200 rounded-xl px-2 py-2 pl-8 pr-5 pb-5">
                   <textarea
@@ -180,7 +208,7 @@ export default function CommentItem({
                       el.style.height = el.scrollHeight + "px";
                     }}
                     placeholder={
-                      replyToUser && isReply
+                      replyToUser
                         ? `Reply to ${replyToUser.name}...`
                         : "Write a reply..."
                     }

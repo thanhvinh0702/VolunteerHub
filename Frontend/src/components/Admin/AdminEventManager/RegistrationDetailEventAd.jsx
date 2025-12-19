@@ -11,6 +11,7 @@ function EventManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [openCreateForm, setOpenCreateForm] = useState(false);
+
   const {
     data: events,
     isLoading,
@@ -65,7 +66,7 @@ function EventManager() {
     // TODO: Replace with real API call
     // await cancelEvent(id);
 
-    console.log(`✅ Event cancelled successfully`);
+    console.log(`Event cancelled successfully`);
   };
 
   const handleEdit = (id) => {
