@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "../../components/Card.jsx/Card";
-import NotificationButton from "../../components/Notification/NotificationButton";
+// import NotificationButton from "../../components/Notification/NotificationButton";
 import {
   Edit2,
   Save,
@@ -235,24 +235,32 @@ export default function Settingpage() {
   }, [profile]);
 
   useEffect(() => {
-    if (formData?.provinceName && !formData?.provinceCode && provinces?.length > 0) {
-      const matched = provinces.find(p => p.name === formData.provinceName);
+    if (
+      formData?.provinceName &&
+      !formData?.provinceCode &&
+      provinces?.length > 0
+    ) {
+      const matched = provinces.find((p) => p.name === formData.provinceName);
       if (matched) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          provinceCode: String(matched.code)
+          provinceCode: String(matched.code),
         }));
       }
     }
   }, [formData?.provinceName, formData?.provinceCode, provinces]);
 
   useEffect(() => {
-    if (formData?.districtName && !formData?.districtCode && districts?.length > 0) {
-      const matched = districts.find(d => d.name === formData.districtName);
+    if (
+      formData?.districtName &&
+      !formData?.districtCode &&
+      districts?.length > 0
+    ) {
+      const matched = districts.find((d) => d.name === formData.districtName);
       if (matched) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          districtCode: String(matched.code)
+          districtCode: String(matched.code),
         }));
       }
     }
@@ -1090,13 +1098,13 @@ export default function Settingpage() {
                   Notification Settings
                 </h3>
                 <p className="mt-2 text-sm text-slate-500">
-                  Enable push notifications to receive updates about your upcoming events and activities.
+                  Enable push notifications to receive updates about your
+                  upcoming events and activities.
                 </p>
                 <div className="mt-4">
                   <NotificationButton />
                 </div>
               </Card>
-
             </div>
           </div>
         </div>
