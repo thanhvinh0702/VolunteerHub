@@ -52,6 +52,6 @@ public interface CommunityClient {
     @GetMapping("/trending_calculation/{eventId}/all-stats")
     EventCommunityStats getEventAllStats(
             @PathVariable("eventId") Long eventId,
-            @RequestParam("days") int days
+            @RequestParam(value="days", defaultValue = "3650") int days
     );
 }
