@@ -87,6 +87,10 @@ public class ReactionService {
         Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
                 new NoSuchElementException("No reaction found!"));
         reactionRepository.delete(reaction);
+        String reactionCountKey = "reaction_count:" + reaction.getPostId();
+        if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(reactionCountKey))) {
+            stringIntegerRedisTemplate.opsForValue().decrement(reactionCountKey);
+        }
         return reactionMapper.toDto(reaction);
     }
 
