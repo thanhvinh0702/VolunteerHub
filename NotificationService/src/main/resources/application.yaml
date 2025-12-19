@@ -1,15 +1,12 @@
 spring:
   application:
     name: NotificationService
-
   config:
     import: optional:file:.env[.properties]
-
   datasource:
     url: jdbc:postgresql://${HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,7 +15,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
   rabbitmq:
     host: ${HOST}
     port: ${RABBITMQ_PORT}
@@ -32,3 +28,10 @@ eureka:
 
 server:
   port: ${PORT}
+
+vapid:
+  public:
+    key: ${VAPID_PUBLIC_KEY:YOUR_PUBLIC_KEY_HERE}
+  private:
+    key: ${VAPID_PRIVATE_KEY:YOUR_PRIVATE_KEY_HERE}
+  subject: ${VAPID_SUBJECT:mailto:admin@yourcompany.com}
