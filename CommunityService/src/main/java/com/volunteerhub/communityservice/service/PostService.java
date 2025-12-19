@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -135,5 +136,16 @@ public class PostService {
     public boolean canAccessPost(String userId, Long postId) {
         Post post = findEntityById(postId);
         return eventRegistrationService.isParticipant(post.getEventId());
+    }
+
+    public long countPostsByEventLastDays(Long eventId, int days) {
+        if (days < 0) {
+            throw new IllegalArgumentException("Days parameter cannot be negative");
+        }
+
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(days);
+
+        return postRepository.countByEventIdAndCreatedAtBetween(eventId, startDate, endDate);
     }
 }

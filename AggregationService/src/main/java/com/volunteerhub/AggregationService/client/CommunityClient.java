@@ -1,6 +1,7 @@
 package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
+import com.volunteerhub.AggregationService.dto.EventCommunityStats;
 import com.volunteerhub.common.dto.CommentResponse;
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.PostResponse;
@@ -35,4 +36,22 @@ public interface CommunityClient {
                                                     @PathVariable Long postId,
                                                     @RequestParam(required = false) Integer pageNum,
                                                     @RequestParam(required = false) Integer pageSize);
+
+    @GetMapping("/trending_calculation/{eventId}/comments")
+    Long getCommentCountInLastDays(@PathVariable("eventId") Long eventId,
+                                   @RequestParam(defaultValue = "7") int days);
+
+    @GetMapping("/trending_calculation/{eventId}/reactions")
+    Long getReactionCountInLastDays(@PathVariable("eventId") Long eventId,
+                                    @RequestParam(defaultValue = "7") int days);
+
+    @GetMapping("/trending_calculation/{eventId}/posts")
+    Long getPostCountInLastDays(@PathVariable("eventId") Long eventId,
+                                @RequestParam(defaultValue = "7") int days);
+
+    @GetMapping("/trending_calculation/{eventId}/all-stats")
+    EventCommunityStats getEventAllStats(
+            @PathVariable("eventId") Long eventId,
+            @RequestParam("days") int days
+    );
 }

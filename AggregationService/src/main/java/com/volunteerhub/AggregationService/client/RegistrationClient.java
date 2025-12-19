@@ -22,7 +22,7 @@ public interface RegistrationClient {
                                                     @RequestParam(required = false) Integer pageSize);
 
     @GetMapping("/events/registration-count")
-    List<EventRegistrationCount> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
+    PageResponse<EventRegistrationCount> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
                                                             @RequestParam(required = false) Integer pageNum,
                                                             @RequestParam(required = false) Integer pageSize,
                                                             @RequestParam(required = false) Integer days);

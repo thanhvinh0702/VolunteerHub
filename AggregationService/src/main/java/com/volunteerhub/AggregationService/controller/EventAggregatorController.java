@@ -74,10 +74,14 @@ public class EventAggregatorController {
 
     // TODO: pagination metadata, total comments, posts, reaction, maybe need standalone service for trending computing
     @GetMapping("/trending")
-    public ResponseEntity<List<TrendingEventResponse>> getAllTrendingEvents(@RequestParam(required = false) Integer pageNum,
-                                                                            @RequestParam(required = false) Integer pageSize,
-                                                                            @RequestParam(defaultValue = "7") int days) {
-        return ResponseEntity.ok(eventAggregatorService.getTrendingEvents(pageNum, pageSize, days));
+    public ResponseEntity<PageResponse<TrendingEventResponse>> getAllTrendingEvents(
+            @RequestParam(defaultValue = "0") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "7") int days) {
+
+        PageResponse<TrendingEventResponse> response = eventAggregatorService.getTrendingEvents(pageNum, pageSize, days);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/search")

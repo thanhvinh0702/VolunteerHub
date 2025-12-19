@@ -17,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 @Service
@@ -122,5 +123,16 @@ public class ReactionService {
             stringIntegerRedisTemplate.opsForValue().decrement(reactionCountKey);
         }
         return reactionMapper.toDto(reaction);
+    }
+
+    public long countReactionsByEventLastDays(Long eventId, int days) {
+        if (days < 0) {
+            throw new IllegalArgumentException("Days parameter cannot be negative");
+        }
+
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(days);
+
+        return reactionRepository.countByEventIdAndDateRange(eventId, startDate, endDate);
     }
 }

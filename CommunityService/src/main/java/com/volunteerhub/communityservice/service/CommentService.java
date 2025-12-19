@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -106,5 +107,16 @@ public class CommentService {
         }
         commentRepository.delete(comment);
         return totalDeleteCount;
+    }
+
+    public long countCommentsByEventLastDays(Long eventId, int days) {
+        if (days < 0) {
+            throw new IllegalArgumentException("Days parameter cannot be negative");
+        }
+
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(days);
+
+        return commentRepository.countByEventIdAndDateRange(eventId, startDate, endDate);
     }
 }

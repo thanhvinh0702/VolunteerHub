@@ -40,16 +40,18 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     List<Object[]> getEventRegistrationCount(@Param("eventIds") List<Long> eventIds,
                                              @Param("status") List<UserEventStatus> status);
 
-    @Query("SELECT ue.eventId AS eventId, COUNT(ue) AS statusCount " +
+    @Query("SELECT ue.eventId, " +
+            "SUM(CASE WHEN ue.status IN :participantStatuses THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN ue.status = 'PENDING' THEN 1 ELSE 0 END) " +
             "FROM UserEvent ue " +
-            "WHERE ue.status in :statuses " +
-            "AND ue.createdAt >= COALESCE(:from, ue.createdAt) " +
-            "AND ue.createdAt <= COALESCE(:to, ue.createdAt) " +
+            "WHERE (CAST(:from AS timestamp) IS NULL OR ue.createdAt >= :from) " +
+            "AND (CAST(:to AS timestamp) IS NULL OR ue.createdAt <= :to) " +
             "GROUP BY ue.eventId")
-    List<Object[]> getAllEventRegistrationCount(@Param("statuses") List<UserEventStatus> statuses,
-                                                @Param("from") LocalDateTime from,
-                                                @Param("to") LocalDateTime to,
-                                                PageRequest pageRequest);
+    Page<Object[]> getAllEventCountsWithPagination(
+            @Param("participantStatuses") List<UserEventStatus> participantStatuses,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable);
 
     Page<UserEvent> findByEventIdInAndStatus(List<Long> eventIds, UserEventStatus status, Pageable pageable);
 

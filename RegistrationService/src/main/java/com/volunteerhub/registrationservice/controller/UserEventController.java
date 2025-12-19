@@ -1,8 +1,6 @@
 package com.volunteerhub.registrationservice.controller;
 
-import com.volunteerhub.common.dto.EventRegistrationCount;
-import com.volunteerhub.common.dto.RegistrationResponse;
-import com.volunteerhub.common.dto.UserEventResponse;
+import com.volunteerhub.common.dto.*;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
@@ -76,15 +74,28 @@ public class UserEventController {
     }
 
     @GetMapping("/events/registration-count")
-    public ResponseEntity<List<EventRegistrationCount>> getEventsParticipantCounts(@RequestParam(required = false) List<Long> eventIds,
-                                                                                   @RequestParam(required = false) Integer pageNum,
-                                                                                   @RequestParam(required = false) Integer pageSize,
-                                                                                   @RequestParam(required = false) Integer days) {
+    public ResponseEntity<PageResponse<EventRegistrationCount>> getEventsParticipantCounts(
+            @RequestParam(required = false) List<Long> eventIds,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer days) {
+
         if (eventIds != null && !eventIds.isEmpty()) {
-            return ResponseEntity.ok(userEventService.getEventsParticipantCount(eventIds));
+            List<EventRegistrationCount> list = userEventService.getEventsParticipantCount(eventIds);
+
+            PageResponse<EventRegistrationCount> response = PageResponse.<EventRegistrationCount>builder()
+                    .content(list)
+                    .totalElements((long) list.size())
+                    .totalPages(1)
+                    .number(0)
+                    .size(list.size())
+                    .build();
+            return ResponseEntity.ok(response);
         }
+
         LocalDateTime to = days == null ? null : LocalDateTime.now();
         LocalDateTime from = days == null ? null : to.minusDays(days);
+
         return ResponseEntity.ok(userEventService.getAllEventsParticipantCount(pageNum, pageSize, from, to));
     }
 
