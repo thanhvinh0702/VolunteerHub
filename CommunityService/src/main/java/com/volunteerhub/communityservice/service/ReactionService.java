@@ -77,7 +77,14 @@ public class ReactionService {
     public ReactionResponse updateByUserId(String userId, Long postId, ReactionRequest reactionRequest) {
         Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
                 new NoSuchElementException("No reaction found!"));
+        if (!reaction.getOwnerId().equals(userId)) {
+            throw new AccessDeniedException("Insufficient permission to update this record.");
+        }
         if (reactionRequest.getType() != null) {
+            if (reactionRequest.getType().equals(reaction.getType())) {
+                this.deleteByUserId(userId, postId);
+                return reactionMapper.toDto(reaction);
+            }
             reaction.setType(reactionRequest.getType());
         }
         return reactionMapper.toDto(reactionRepository.save(reaction));
@@ -86,6 +93,9 @@ public class ReactionService {
     public ReactionResponse deleteByUserId(String userId, Long postId) {
         Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
                 new NoSuchElementException("No reaction found!"));
+        if (!reaction.getOwnerId().equals(userId)) {
+            throw new AccessDeniedException("Insufficient permission to delete this record.");
+        }
         reactionRepository.delete(reaction);
         String reactionCountKey = "reaction_count:" + reaction.getPostId();
         if (Boolean.TRUE.equals(stringIntegerRedisTemplate.hasKey(reactionCountKey))) {
