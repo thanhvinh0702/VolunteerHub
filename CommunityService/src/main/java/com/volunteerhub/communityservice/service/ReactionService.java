@@ -12,6 +12,7 @@ import com.volunteerhub.communityservice.utils.PaginationValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,13 @@ public class ReactionService {
             reaction.setType(reactionRequest.getType());
         }
         return reactionMapper.toDto(reactionRepository.save(reaction));
+    }
+
+    public ReactionResponse deleteByUserId(String userId, Long postId) {
+        Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
+                new NoSuchElementException("No reaction found!"));
+        reactionRepository.delete(reaction);
+        return reactionMapper.toDto(reaction);
     }
 
     public ReactionResponse getReaction(String userId, Long postId) {

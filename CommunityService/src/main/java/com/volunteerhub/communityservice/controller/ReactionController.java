@@ -45,6 +45,12 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.updateByUserId(authentication.getName(), postId, reactionRequest));
     }
 
+    @DeleteMapping
+    public ResponseEntity<ReactionResponse> deleteByUserId(@PathVariable Long postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(reactionService.deleteByUserId(authentication.getName(), postId));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<ReactionResponse> hasReacted(@PathVariable Long postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
