@@ -79,4 +79,8 @@ public class AnalyticController {
         return ResponseEntity.ok(analyticService.countEventsPerUser());
     }
 
+    @GetMapping("/my-stats/count-reqs")
+    public ResponseEntity<Map<String, Long>> countStatsUserId() {
+        return ResponseEntity.ok(analyticService.countStatsUserId());
+    }
 }

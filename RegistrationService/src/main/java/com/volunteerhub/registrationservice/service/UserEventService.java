@@ -336,4 +336,15 @@ public class UserEventService {
         return userEventRepository.countUserEventsByStatuses(userId, activeStatuses);
     }
 
+    public Map<String, Long> countStatsUserId(String userId) {
+        Object result = userEventRepository.countStatsUserId(userId);
+
+        Object[] row = (Object[]) result;
+
+        return Map.of(
+                "pending", row[0] != null ? ((Number) row[0]).longValue() : 0L,
+                "approved", row[1] != null ? ((Number) row[1]).longValue() : 0L,
+                "completed", row[2] != null ? ((Number) row[2]).longValue() : 0L
+        );
+    }
 }

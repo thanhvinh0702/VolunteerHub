@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/registrations")
@@ -175,5 +176,11 @@ public class UserEventController {
     public ResponseEntity<Long> getMyTotalParticipatedEvents() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(userEventService.countParticipatedEvents(authentication.getName()));
+    }
+
+    @GetMapping("/my-stats/status-events")
+    public ResponseEntity<Map<String, Long>> countStatsUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(userEventService.countStatsUserId(authentication.getName()));
     }
 }

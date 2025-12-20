@@ -2,12 +2,14 @@ package com.volunteerhub.analyticservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @Service
@@ -21,7 +23,7 @@ public class AnalyticService {
     private final RestClient userClient;
     private final String templateAnalytic = "analytic:";
 
-    private Long getCached(String ownerId, String suffix, Supplier<Long> calculator) {
+    private <T> T getCached(String ownerId, String suffix, Supplier<T> calculator) {
         String key = templateAnalytic + (ownerId == null ? "global" : ownerId) + suffix;
 
         RedisTemplate<String, Object> genericTemplate = (RedisTemplate) stringLongRedisTemplate;
@@ -29,20 +31,18 @@ public class AnalyticService {
         Object cachedObject = genericTemplate.opsForValue().get(key);
 
         if (cachedObject != null) {
-            if (cachedObject instanceof Number) {
-                return ((Number) cachedObject).longValue();
-            }
+            return (T) cachedObject;
         }
 
         try {
-            Long realVal = calculator.get();
-            if (realVal == null) realVal = 0L;
-
-            stringLongRedisTemplate.opsForValue().set(key, realVal, Duration.ofHours(1));
+            T realVal = calculator.get();
+            if (realVal != null) {
+                genericTemplate.opsForValue().set(key, realVal, Duration.ofHours(1));
+            }
             return realVal;
         } catch (Exception e) {
             log.error("Error fetching analytic data for key: {}. Error: {}", key, e.getMessage());
-            return 0L;
+            return null;
         }
     }
 
@@ -64,6 +64,15 @@ public class AnalyticService {
                         .retrieve()
                         .body(Long.class)
         );
+    }
+
+    public Map<String, Long> countStatsUserId() {
+        return getCached(SecurityContextHolder.getContext().getAuthentication().getName(),
+                ":countStats", () ->
+                registrationClient.get()
+                        .uri("/my-stats/status-events")
+                        .retrieve()
+                        .body(new ParameterizedTypeReference<Map<String, Long>>() {}));
     }
 
     public Long countMyEvents() {

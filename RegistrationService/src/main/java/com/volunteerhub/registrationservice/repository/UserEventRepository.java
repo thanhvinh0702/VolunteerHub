@@ -102,4 +102,13 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     @Query("SELECT COUNT(u) FROM UserEvent u WHERE u.userId = :userId AND u.status IN :statuses")
     Long countUserEventsByStatuses(@Param("userId") String userId, @Param("statuses") Collection<UserEventStatus> statuses);
 
+    @Query("""
+    SELECT 
+        SUM(CASE WHEN ue.status = 'PENDING' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN ue.status = 'APPROVED' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN ue.status = 'COMPLETED' THEN 1 ELSE 0 END)
+    FROM UserEvent ue
+    WHERE ue.userId= :userId
+""")
+    Object[] countStatsUserId(@Param("userId") String userId);
 }
