@@ -227,7 +227,7 @@ public class EventService {
         return eventMapper.toDto(eventRepository.save(event));
     }
 
-    public Page<EventResponse> searchByKeyword(String keyword, String ownerId, Integer pageNum, Integer pageSize) {
+    public Page<EventResponse> searchByKeyword(String keyword, String ownerId, EventStatus status, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
@@ -236,7 +236,12 @@ public class EventService {
             return eventMapper.toDtoPage(events);
         }
 
-        Page<Event> events = eventRepository.searchEventsByRegexAndOwnerId(keyword.trim(), ownerId, PageRequest.of(page, size));
+        if (status == null) {
+            Page<Event> events = eventRepository.searchEventsByRegexAndOwnerId(keyword.trim(), ownerId, PageRequest.of(page, size));
+            return eventMapper.toDtoPage(events);
+        }
+
+        Page<Event> events = eventRepository.searchEventsByRegexAndOwnerIdAndStatus(keyword.trim(), ownerId, status, PageRequest.of(page, size));
         return eventMapper.toDtoPage(events);
     }
 
