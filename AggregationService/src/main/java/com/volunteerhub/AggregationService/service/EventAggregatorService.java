@@ -9,6 +9,7 @@ import com.volunteerhub.AggregationService.dto.EventCommunityStats;
 import com.volunteerhub.AggregationService.dto.TrendingEventResponse;
 import com.volunteerhub.common.dto.*;
 import com.volunteerhub.common.enums.EventStatus;
+import com.volunteerhub.common.utils.ExportUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -279,5 +281,47 @@ public class EventAggregatorService {
                 .registrationCount(0L)
                 .participantCount(0L)
                 .build();
+    }
+
+    public byte[] exportAllEvents(String format) {
+        PageResponse<EventResponse> eventsPage = eventClient.getAllEvents(
+                0, 1000, null, null, null, null, null, null, null, null, null
+        );
+        List<AggregatedEventResponse> aggregatedData = enrichEventsPage(eventsPage).getContent();
+
+        if ("json".equalsIgnoreCase(format)) {
+            return ExportUtils.toJson(aggregatedData);
+        }
+
+        String[] headers = {
+                "Event ID", "Tên Sự Kiện", "Danh Mục", "Trạng Thái", "Chủ Sở Hữu",
+                "Email Chủ Sở Hữu", "Bắt Đầu", "Kết Thúc", "Sức Chứa", "Đăng Ký", "Tham Gia"
+        };
+
+        return ExportUtils.toCsv(headers, aggregatedData, item -> {
+            var e = item.getEventResponse();
+            var owner = item.getOwner();
+            return new Object[] {
+                    e.getId(), e.getName(),
+                    e.getCategory() != null ? e.getCategory().getName() : "N/A",
+                    e.getStatus(),
+                    owner != null ? owner.getFullName() : "N/A",
+                    owner != null ? owner.getEmail() : "N/A",
+                    e.getStartTime(), e.getEndTime(),
+                    e.getCapacity(),
+                    formatAddress(e.getAddress()),
+                    item.getRegistrationCount(),
+                    item.getParticipantCount()
+            };
+        });
+    }
+    private String formatAddress(AddressResponse addr) {
+        if (addr == null) return "N/A";
+
+        String formatted = Stream.of(addr.getStreet(), addr.getDistrict(), addr.getProvince())
+                .filter(s -> s != null && !s.isBlank())
+                .collect(Collectors.joining(", "));
+
+        return formatted.isEmpty() ? "N/A" : formatted;
     }
 }

@@ -108,4 +108,19 @@ public class RouteConfig {
                 )
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> analyticServiceRoute() {
+        return route("analyticservice")
+                .nest(RequestPredicates.path("/api/v1/analytics/**"), builder ->
+                        builder
+                                .GET(http())
+                                .POST(http())
+                                .PUT(http())
+                                .DELETE(http())
+                                .filter(lb("ANALYTICSERVICE"))
+                                .before(authenticationHeaderFilter.addAuthenticationHeader())
+                )
+                .build();
+    }
 }
