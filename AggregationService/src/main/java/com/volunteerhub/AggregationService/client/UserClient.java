@@ -1,6 +1,7 @@
 package com.volunteerhub.AggregationService.client;
 
 import com.volunteerhub.AggregationService.config.FeignConfig;
+import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,10 @@ import java.util.List;
 
 @FeignClient(name = "USERSERVICE", path = "/api/v1/users/users", configuration = FeignConfig.class)
 public interface UserClient {
+
+    @GetMapping("/all-users")
+    List<UserResponse> findAll(@RequestParam(defaultValue = "0") int pageNum,
+                               @RequestParam(defaultValue = "10") int pageSize);
 
     @GetMapping("/{userId}")
     UserResponse findById(@PathVariable String userId);
