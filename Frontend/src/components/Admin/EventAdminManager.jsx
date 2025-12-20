@@ -56,28 +56,6 @@ function EventAdminManager() {
     setPage(value - 1);
   };
 
-  const handleBanEvent = async (id) => {
-    console.log(`Cancelling event ${id}...`);
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() > 0.1) {
-          resolve();
-        } else {
-          reject(new Error("Network error"));
-        }
-      }, 1000);
-    });
-    console.log(`Event cancelled successfully`);
-  };
-
-  const handleView = (id) => {
-    console.log(`View event ${id}`);
-  };
-
-  const handleDelete = (id) => {
-    console.log(`Delete event ${id}`);
-  };
-
   if (showFullLoading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -140,7 +118,7 @@ function EventAdminManager() {
             { value: "all", label: "All Status" },
             { value: "pending", label: "Pending" },
             { value: "approved", label: "Approved" },
-            { value: "cancelled", label: "Cancelled" },
+            { value: "rejected", label: "Rejected" },
           ]}
         />
         <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium max-sm:py-1 max-sm:px-1">
@@ -181,14 +159,7 @@ function EventAdminManager() {
           >
             {data?.data && data.data.length > 0 ? (
               data.data.map((event) => (
-                <EventManagerCardAd
-                  key={event.id}
-                  data={event}
-                  onCancelEvent={handleBanEvent}
-                  onView={handleView}
-                  onDelete={handleDelete}
-                  onEdit={handleView}
-                />
+                <EventManagerCardAd key={event.id} data={event} />
               ))
             ) : (
               <tr>

@@ -6,6 +6,7 @@
 }
 @theme {
     --font-lobster: "Lobster", cursive;
+    --font-ibm-plex-sans: "IBM Plex Sans", sans-serif;
     --font-jost: "Jost", sans-serif;
     --font-roboto: "Roboto", sans-serif;
     /* Define animation */

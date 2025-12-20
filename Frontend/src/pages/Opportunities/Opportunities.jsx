@@ -172,6 +172,7 @@ function OpportunitiesEvent() {
     pageNum,
     pageSize,
     enabled: isSearchMode,
+    status: "REJECTED",
   });
 
   // Chọn data source dựa trên mode search hay không

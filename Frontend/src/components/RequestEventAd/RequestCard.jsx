@@ -73,29 +73,29 @@ const RequestCard = ({ data }) => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white border rounded-xl shadow-sm mb-3">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-white border border-gray-600/20 rounded-xl shadow-sm mb-3 gap-4">
       <div className="flex items-center gap-3">
         <img
           src={avatar}
           alt={displayName}
           className="w-10 h-10 rounded-full bg-gray-100 object-cover"
         />
-        <div>
+        <div className="flex gap-2 flex-col">
           <h4 className="font-semibold text-gray-900">{displayName}</h4>
-          <p className="text-sm text-gray-500">{eventName}</p>
+          <p className="text-sm text-gray-500">Event: {eventName}</p>
           {address && <p className="text-xs text-gray-400">{address}</p>}
           {timeRange && <p className="text-xs text-gray-400">{timeRange}</p>}
           {data?.status && (
             <p className="text-xs mt-1">
-              Trạng thái: <span className="font-medium">{data.status}</span>
+              Status: <span className="font-medium">{data.status}</span>
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-row sm:flex-row items-stretch sm:items-center gap-5 sm:gap-3">
         <button
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-60"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-60"
           onClick={handleApprove}
           disabled={
             isSubmitting || !data?.userId || !(data?.eventId || data?.event?.id)
@@ -106,19 +106,13 @@ const RequestCard = ({ data }) => {
         </button>
 
         <button
-          className="px-4 py-2 bg-red-600 text-white border border-gray-200 rounded-lg text-sm font-medium transition-transform hover:scale-105 duration-150 disabled:opacity-60"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white border border-gray-200 rounded-lg text-sm font-medium transition-transform hover:scale-105 duration-150 disabled:opacity-60"
           onClick={handleReject}
           disabled={
             isSubmitting || !data?.userId || !(data?.eventId || data?.event?.id)
           }
         >
-          <span className="flex flex-row items-center gap-2">
-            Reject
-            <span>
-              {" "}
-              <X />
-            </span>
-          </span>
+          Reject
         </button>
       </div>
     </div>

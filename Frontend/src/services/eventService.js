@@ -139,18 +139,20 @@ export const approveEvent = async (eventId) => {
     return response;
 };
 
-export const rejectEvent = async (eventId) => {
+export const rejectEvent = async (eventId, reason) => {
     if (!eventId) {
         throw new Error("eventId is required to reject an event");
     }
-    const response = await axiosClient.post(`${EVENT_BASE_URL}/${eventId}/ban`);
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}/reject`, {
+        reason: reason || "No reason provided"
+    });
     return response;
 }
 
 export const searchEventByName = async (params = {}) => {
-    const { keyword, pageNum = 0, pageSize = 6 } = params;
+    const { keyword, pageNum = 0, pageSize = 6, status } = params;
     const response = await axiosClient.get(`${EVENT_BASE_URL}/search`, {
-        params: { keyword, pageNum, pageSize }
+        params: { keyword, pageNum, pageSize, status }
     });
     console.log('Search API response:', response);
 
@@ -198,5 +200,74 @@ export const searchEventByNameForManager = async (params = {}) => {
     return {
         data: [],
         meta: { totalPages: 0, totalElements: 0, currentPage: 0, pageSize }
+    };
+};
+
+export const cancelEventRegistration = async (eventId) => {
+    if (!eventId) {
+        throw new Error("eventId is required to cancel event registration");
+    }
+
+    // Set registration deadline to 1 minute before current time
+    // Format as LocalDateTime (yyyy-MM-ddTHH:mm) without timezone and seconds
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+
+    // Format to yyyy-MM-ddTHH:mm (LocalDateTime format for Java - no seconds)
+    const year = oneMinuteAgo.getFullYear();
+    const month = String(oneMinuteAgo.getMonth() + 1).padStart(2, '0');
+    const day = String(oneMinuteAgo.getDate()).padStart(2, '0');
+    const hours = String(oneMinuteAgo.getHours()).padStart(2, '0');
+    const minutes = String(oneMinuteAgo.getMinutes()).padStart(2, '0');
+
+    const registrationDeadline = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    const payload = {
+        registrationDeadline
+    };
+
+    const formData = new FormData();
+    formData.append(
+        "eventRequest",
+        new Blob([JSON.stringify(payload)], { type: "application/json" })
+    );
+
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response;
+};
+
+export const getTrendingEvents = async (params = {}) => {
+    const { days = 30, pageNum = 0, pageSize = 10 } = params;
+    const response = await axiosClient.get(`${EVENT_AGGREGATED_BASE_URL}/trending`, {
+        params: { days, pageNum, pageSize }
+    });
+    console.log('Trending Events API response:', response);
+
+    // Handle paginated response structure
+    if (response.content !== undefined) {
+        return {
+            data: response.content,
+            meta: {
+                totalPages: response.totalPages || 0,
+                totalElements: response.totalElements || 0,
+                currentPage: response.number || 0,
+                pageSize: response.size || pageSize
+            }
+        };
+    }
+
+    // Fallback for simple array response
+    const data = Array.isArray(response) ? response : (response.data || []);
+
+    return {
+        data: data,
+        meta: {
+            totalPages: 1,
+            totalElements: data.length,
+            currentPage: 0,
+            pageSize: data.length
+        }
     };
 };

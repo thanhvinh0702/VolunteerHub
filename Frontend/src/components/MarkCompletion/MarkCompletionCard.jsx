@@ -10,7 +10,7 @@ function MarkCompletionCard({
   onMarkCompleted,
   onUndo,
 }) {
-  const { name, email, status, hoursLogged, rating, feedback, avatar, eventName, eventId } =
+  const { name, email, status, hoursLogged, feedback, avatar, eventName, eventId } =
     volunteer;
 
   // Card cho người đã Registered - hiển thị nút Mark Attended/Absent
@@ -171,8 +171,6 @@ function MarkCompletionCard({
               </p>
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 mb-2 flex-wrap">
                 <span className="font-medium">{hoursLogged} hours logged</span>
-                <span className="text-yellow-500">⭐</span>
-                <span className="font-medium">{rating}/5</span>
               </div>
               {feedback && (
                 <p className="text-xs sm:text-sm text-gray-600 italic line-clamp-2">

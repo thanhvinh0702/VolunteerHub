@@ -6,12 +6,8 @@ import {
   EVENT_STATUS,
   canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
-import { useNavigate } from "react-router-dom";
 import { useDeleteEvent } from "../../hook/useEvent";
-function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
-  // Navigation
-  const navigate = useNavigate();
-
+function EventManagerCard({ data, onCancelEvent, onEdit, onView }) {
   // Map API data to component props
   const {
     id,
@@ -108,14 +104,6 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView, onDelete }) {
     } catch (error) {
       console.error("Failed to delete event:", error);
     }
-  };
-
-  const handleViewEvent = () => {
-    navigate(`/dashboard/eventmanager/${id}/overview`);
-  };
-
-  const handleEditEvent = () => {
-    navigate(`/dashboard/eventmanager/${id}/overview`);
   };
 
   return (

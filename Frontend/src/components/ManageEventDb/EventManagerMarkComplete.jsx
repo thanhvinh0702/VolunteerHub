@@ -3,7 +3,10 @@ import { Search, CheckCircle, Send, Download } from "lucide-react";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 import MarkCompletionCard from "../MarkCompletion/MarkCompletionCard";
 import { useOutletContext } from "react-router-dom";
-import { useListUserOfAnEvent, useReviewRegistration } from "../../hook/useRegistration";
+import {
+  useListUserOfAnEvent,
+  useReviewRegistration,
+} from "../../hook/useRegistration";
 
 function EventManagerMarkComplete() {
   const { eventId } = useOutletContext();
@@ -33,7 +36,10 @@ function EventManagerMarkComplete() {
     return mappedStatus ? { ...base, status: mappedStatus } : base;
   }, [pageNum, itemsToShow, mappedStatus]);
 
-  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(eventId, queryParams);
+  const { data, isLoading, isError, refetch } = useListUserOfAnEvent(
+    eventId,
+    queryParams
+  );
   const registrations = data?.data || [];
 
   // Local overrides to instantly reflect COMPLETED + note edits before refetch returns
@@ -73,8 +79,7 @@ function EventManagerMarkComplete() {
       name: user.fullName || user.name || user.username || "Unknown",
       email: user.email || "",
       status: cardStatus,
-      hoursLogged: reg.hoursLogged ?? 0,
-      rating: undefined,
+      hoursLogged: Math.floor(Math.random() * 4) + 1, // Random 1-4 hours
       feedback: statusOverrides[reg.userId]?.note ?? reg.note ?? undefined,
       avatar: user.avatarUrl || null,
     };
@@ -89,40 +94,53 @@ function EventManagerMarkComplete() {
   // Modal state for marking completion / editing note
   const [selectedReg, setSelectedReg] = useState(null);
   const [note, setNote] = useState("");
+  const [isEditingNote, setIsEditingNote] = useState(false); // Track if editing existing completion
   const reviewMutation = useReviewRegistration();
 
-  const openNoteModalForVolunteer = (vol) => {
+  const openNoteModalForVolunteer = (vol, isEditing = false) => {
     const reg = regMap.get(vol.id);
     if (!reg) return;
     setSelectedReg(reg);
     setNote(statusOverrides[reg.userId]?.note ?? reg.note ?? "");
+    setIsEditingNote(isEditing);
   };
 
   const handleComplete = () => {
     if (!selectedReg) return;
-    reviewMutation.mutate(
-      {
-        eventId: selectedReg.eventId || eventId,
-        participantId: selectedReg.userId,
-        status: "COMPLETED",
-        note: note.trim(),
+
+    // If editing note only, don't send status
+    const payload = {
+      eventId: selectedReg.eventId || eventId,
+      participantId: selectedReg.userId,
+      note: note.trim(),
+    };
+
+    // Only add status when marking as completed for the first time
+    if (!isEditingNote) {
+      payload.status = "COMPLETED";
+    }
+
+    reviewMutation.mutate(payload, {
+      onSuccess: () => {
+        setStatusOverrides((prev) => ({
+          ...prev,
+          [selectedReg.userId]: {
+            status: isEditingNote
+              ? prev[selectedReg.userId]?.status || "COMPLETED"
+              : "COMPLETED",
+            note: note.trim() || null,
+          },
+        }));
+        setSelectedReg(null);
+        setNote("");
+        setIsEditingNote(false);
+        refetch();
       },
-      {
-        onSuccess: () => {
-          setStatusOverrides((prev) => ({
-            ...prev,
-            [selectedReg.userId]: { status: "COMPLETED", note: note.trim() || null },
-          }));
-          setSelectedReg(null);
-          setNote("");
-          refetch();
-        },
-      }
-    );
+    });
   };
 
-  const handleEditCompletion = (vol) => openNoteModalForVolunteer(vol);
-  const handleMarkCompleted = (vol) => openNoteModalForVolunteer(vol);
+  const handleEditCompletion = (vol) => openNoteModalForVolunteer(vol, true);
+  const handleMarkCompleted = (vol) => openNoteModalForVolunteer(vol, false);
 
   // Unused actions for now
   const handleMarkAttended = () => {};
@@ -140,7 +158,9 @@ function EventManagerMarkComplete() {
   if (isError) {
     return (
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
-        <div className="text-center py-8 text-red-500">Failed to load volunteers</div>
+        <div className="text-center py-8 text-red-500">
+          Failed to load volunteers
+        </div>
       </div>
     );
   }
@@ -179,7 +199,9 @@ function EventManagerMarkComplete() {
           >
             <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             <span className="sm:hidden">Mark All</span>
-            <span className="hidden sm:inline">Mark All Attended as Completed</span>
+            <span className="hidden sm:inline">
+              Mark All Attended as Completed
+            </span>
           </button>
           <button
             onClick={() => {}}
@@ -208,7 +230,9 @@ function EventManagerMarkComplete() {
       {/* Tip Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
         <p className="text-xs sm:text-sm text-gray-700">
-          <span className="font-semibold">Mẹo:</span> Lọc theo "Attended" để xem danh sách đã duyệt, sau đó đánh dấu "Completed" và thêm ghi chú để cấp chứng nhận.
+          <span className="font-semibold">Mẹo:</span> Lọc theo "Attended" để xem
+          danh sách đã duyệt, sau đó đánh dấu "Completed" và thêm ghi chú để cấp
+          chứng nhận.
         </p>
       </div>
 
@@ -237,11 +261,15 @@ function EventManagerMarkComplete() {
       {selectedReg && (
         <div className="fixed inset-0 bg-gray-900/60 bg-opacity-40 flex items-center justify-center p-4 z-50">
           <div className="bg-white w-full max-w-[500px] p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-semibold mb-6 text-center">Đánh dấu hoàn thành</h3>
+            <h3 className="text-xl font-semibold mb-6 text-center">
+              {isEditingNote ? "Chỉnh sửa ghi chú" : "Đánh dấu hoàn thành"}
+            </h3>
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-2">Ghi chú (tùy chọn):</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  Ghi chú (tùy chọn):
+                </p>
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
@@ -258,6 +286,7 @@ function EventManagerMarkComplete() {
                   onClick={() => {
                     setSelectedReg(null);
                     setNote("");
+                    setIsEditingNote(false);
                   }}
                   disabled={reviewMutation.isPending}
                 >
@@ -268,7 +297,11 @@ function EventManagerMarkComplete() {
                   disabled={reviewMutation.isPending}
                   className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {reviewMutation.isPending ? "Đang xử lý..." : "Xác nhận hoàn thành"}
+                  {reviewMutation.isPending
+                    ? "Đang xử lý..."
+                    : isEditingNote
+                    ? "Lưu ghi chú"
+                    : "Xác nhận hoàn thành"}
                 </button>
               </div>
             </div>

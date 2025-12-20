@@ -15,24 +15,25 @@ export default function DropdownSelect({
   const selected = options.find((opt) => opt.value === value);
 
   return (
-    <div
-      ref={ref}
-      className={`relative inline-block ${className} max-sm:text-sm min-w-[160px] max-sm:min-w-[90px]`}
-    >
+    <div ref={ref} className={`relative inline-block ${className}`}>
       {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-gray-100 px-3 py-2 max-sm:py-1 text-gray-800 hover:bg-gray-200 focus:outline-none"
+        className="flex justify-between items-center w-full rounded-2xl border border-gray-300 bg-white px-3 py-2 text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <span>{selected ? selected.label : placeholder}</span>
+        <span className="truncate">
+          {selected ? selected.label : placeholder}
+        </span>
         <FiChevronDown
-          className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 ml-2 shrink-0 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </button>
 
       {open && (
-        <ul className="absolute left-0 mt-2 w-full bg-white rounded-2xl shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
+        <ul className="absolute left-0 mt-2 w-full bg-white rounded-2xl shadow-lg ring-1 ring-black/5 overflow-y-auto max-h-60 z-50">
           {options.map((opt) => (
             <li
               key={opt.value}

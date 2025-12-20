@@ -6,7 +6,7 @@ import { Skeleton } from "@mui/material";
 import { BellOff } from "lucide-react";
 
 const SkeletonRequestCard = () => (
-  <div className="flex items-center justify-between p-4 bg-white border rounded-xl shadow-sm mb-3">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-white border rounded-xl shadow-sm mb-3 gap-4">
     <div className="flex items-center gap-3">
       <Skeleton variant="circular" width={40} height={40} />
       <div className="flex flex-col gap-1">
@@ -14,7 +14,7 @@ const SkeletonRequestCard = () => (
         <Skeleton variant="text" width={120} height={16} />
       </div>
     </div>
-    <div className="flex items-center gap-2">
+    <div className="flex flex-row items-center gap-2">
       <Skeleton variant="rectangular" width={90} height={34} />
       <Skeleton variant="rectangular" width={80} height={34} />
     </div>
@@ -42,7 +42,7 @@ function RequestCardOverview() {
         subtile="Join Requests"
         viewMore={true}
         path="/dashboard/approve-registration"
-        className=""
+        className="flex flex-col justify-start"
       >
         {loading && [0, 1, 2, 3].map((i) => <SkeletonRequestCard key={i} />)}
 
@@ -53,7 +53,7 @@ function RequestCardOverview() {
         )}
 
         {!loading && !isError && items.length === 0 && (
-          <div className="text-sm text-gray-500 flex flex-col gap-2 mt-5 items-center">
+          <div className="text-sm text-gray-500 flex flex-col gap-2 mt-5 items-center justify-center flex-1">
             <div className="w-12 h-12 mx-auto">
               <BellOff className="w-full h-full text-gray-500" />
             </div>

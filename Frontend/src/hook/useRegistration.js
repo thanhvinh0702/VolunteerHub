@@ -109,14 +109,64 @@ export const useUnregisterFromEvent = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (eventId) => unregisterFromEvent(eventId),
-        onSuccess: (_, eventId) => {
-            toast.success("Unregistered successfully.");
-            queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
-            queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "participation", eventId]);
+        onMutate: async (eventId) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: REGISTRAION_QUERY_KEY });
+
+            // Snapshot the previous value
+            const previousData = queryClient.getQueriesData({ queryKey: REGISTRAION_QUERY_KEY });
+
+            // Optimistically update - remove the registration from all queries
+            queryClient.setQueriesData({ queryKey: REGISTRAION_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                // Handle paginated data structure
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.filter((item) => {
+                            const itemEventId = item.event?.id || item.eventId;
+                            return itemEventId !== eventId;
+                        }),
+                        meta: {
+                            ...old.meta,
+                            totalElements: Math.max(0, (old.meta?.totalElements || 0) - 1),
+                        },
+                    };
+                }
+
+                // Handle simple array structure
+                if (Array.isArray(old)) {
+                    return old.filter((item) => {
+                        const itemEventId = item.event?.id || item.eventId;
+                        return itemEventId !== eventId;
+                    });
+                }
+
+                return old;
+            });
+
+            return { previousData };
         },
-        onError: (error) => {
-            const message = error?.response?.data?.message || error.message || "Failed to unregister";
+        onSuccess: (_, eventId) => {
+            toast.success("Registration cancelled successfully.");
+            // Invalidate to ensure fresh data
+            queryClient.invalidateQueries({ queryKey: REGISTRAION_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: [...REGISTRAION_QUERY_KEY, "participation", eventId] });
+        },
+        onError: (error, eventId, context) => {
+            // Rollback on error
+            if (context?.previousData) {
+                context.previousData.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            const message = error?.response?.data?.message || error.message || "Failed to cancel registration";
             toast.error(message);
+        },
+        onSettled: () => {
+            // Always refetch after mutation
+            queryClient.invalidateQueries({ queryKey: REGISTRAION_QUERY_KEY });
         },
     });
 };
@@ -189,10 +239,13 @@ export const useReviewRegistration = () => {
         mutationFn: ({ eventId, participantId, status, note }) =>
             reviewRegistration(eventId, participantId, status, note),
         onSuccess: (data, variables) => {
-            const statusText =
-                variables.status === "APPROVED" ? "approved" :
+            // If status is provided, show status-specific message
+            // Otherwise, show generic update message (for note-only updates)
+            const statusText = variables.status
+                ? variables.status === "APPROVED" ? "approved" :
                     variables.status === "REJECTED" ? "rejected" :
-                        variables.status === "COMPLETED" ? "completed" : "updated";
+                        variables.status === "COMPLETED" ? "completed" : "updated"
+                : "note updated";
             toast.success(`Registration ${statusText} successfully.`);
             queryClient.invalidateQueries(REGISTRAION_QUERY_KEY);
             queryClient.invalidateQueries([...REGISTRAION_QUERY_KEY, "manager"]);
@@ -340,6 +393,9 @@ export const usePendingRegistrationsTop3ByNameAsc = ({ event = "all" } = {}) => 
         },
         staleTime: 5 * 60 * 1000,
         placeholderData: keepPreviousData,
+        refetchInterval: 1000 * 60 * 5,
+        retry: false,
+        refetchIntervalInBackground: true,
     });
 
     const computed = useMemo(() => {

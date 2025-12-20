@@ -7,6 +7,8 @@ import {
   useRegisterForEvent,
   useCheckUserParticipation,
 } from "../../hook/useRegistration";
+import { useProfileGuard } from "../../hook/useProfileGuard";
+import ProfileRequiredModal from "../Modal/ProfileRequiredModal";
 
 function RegistrationCard({
   id,
@@ -24,6 +26,7 @@ function RegistrationCard({
   const { user, hasRole } = useAuth();
 
   const registerMutation = useRegisterForEvent();
+  const { checkProfile, showModal, closeModal, missingFields } = useProfileGuard();
 
   const width = (registedVolunteer / totalSpots) * 100;
 
@@ -32,7 +35,10 @@ function RegistrationCard({
     registrationDeadline && new Date(registrationDeadline) < new Date();
 
   const handleRegister = () => {
-    registerMutation.mutate(id);
+    // Check profile before registering
+    checkProfile(() => {
+      registerMutation.mutate(id);
+    });
   };
 
   // Determine button text and state based on registration status
@@ -166,6 +172,14 @@ function RegistrationCard({
           </button>
         )}
       </div>
+
+      {/* Profile Required Modal */}
+      <ProfileRequiredModal
+        isOpen={showModal}
+        onClose={closeModal}
+        missingFields={missingFields}
+        redirectTo={window.location.pathname}
+      />
     </Card>
   );
 }

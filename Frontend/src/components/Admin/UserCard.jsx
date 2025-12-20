@@ -3,33 +3,38 @@ import {
   Ban,
   CircleCheckBig,
   Eye,
-  Trash2,
   ChevronDown,
   ChevronUp,
   Calendar,
-  Clock,
-  Users,
+  Phone,
 } from "lucide-react";
 import { getStatusColor, STATUS_CONFIG, USER_STATUS, canBan } from "./dumpData";
 import { Mail, User } from "lucide-react";
 
-function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
+function UserCard({ data, onBanUser, onUnbanUser, onEdit, onView }) {
   const {
     id,
-    name,
+    fullName,
     email,
-    avatar,
-    type,
+    avatarUrl,
+    role,
     status,
-    joinDate,
-    lastActive,
-    activity,
+    phoneNumber,
+    dateOfBirth,
   } = data;
-  const [currentStatus, setCurrentStatus] = useState(status);
-  const [isBan, setBan] = useState(false);
+
+  // Map API data to component props
+  const name = fullName;
+  const avatar =
+    avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+  const type = role?.toLowerCase() || "user";
+
+  // Use status directly from props (optimistic updates handled by parent)
+  const currentStatus = status?.toLowerCase() || "active";
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     const d = new Date(dateString);
     return d.toLocaleDateString("en-US", {
       month: "short",
@@ -38,13 +43,9 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
     });
   };
 
-  const formatTime = (dateString) => {
-    const d = new Date(dateString);
-    return d.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+  const formatPhoneNumber = (phone) => {
+    if (!phone) return "N/A";
+    return phone;
   };
 
   const BanUser = async () => {
@@ -59,20 +60,17 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
 
     if (!confirmed) return;
 
-    const previousStatus = currentStatus;
-    setCurrentStatus(USER_STATUS.BAN);
-    setBan(true);
+    await onBanUser?.(id);
+  };
 
-    try {
-      await onBanUser?.(id);
-      console.log(`✅ User banned successfully`);
-    } catch (error) {
-      console.error("Failed to ban user:", error);
-      setCurrentStatus(previousStatus);
-      alert(`Failed to ban user: ${error.message || "Unknown error"}`);
-    } finally {
-      setBan(false);
-    }
+  const UnbanUser = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to unban "${name}"?\n\nThis user will be able to access the platform again.`
+    );
+
+    if (!confirmed) return;
+
+    await onUnbanUser?.(id);
   };
 
   return (
@@ -80,7 +78,9 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
       {/* Desktop View - Table Row */}
       <tr className="hidden lg:table-row border-b border-gray-200 hover:bg-gray-50 transition-colors">
         <td className="px-6 py-4">
-          <span className="font-semibold text-gray-900">{id}</span>
+          <span className="font-mono text-xs text-gray-600" title={id}>
+            {id?.slice(0, 8)}...
+          </span>
         </td>
         <td className="px-6 py-4">
           <img
@@ -111,30 +111,14 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
           </span>
         </td>
         <td className="px-6 py-4">
-          <div className="flex flex-col text-sm">
-            <div className="flex items-center gap-1 text-gray-700">
-              <Calendar className="w-4 h-4" />
-              <span>{formatDate(joinDate)}</span>
-            </div>
-            <div className="flex items-center gap-1 text-gray-500">
-              <Clock className="w-4 h-4" />
-              <span>{formatTime(lastActive)}</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <span>{formatPhoneNumber(phoneNumber)}</span>
           </div>
         </td>
         <td className="px-6 py-4">
-          <div className="flex flex-col gap-1 text-sm">
-            {activity?.hours && (
-              <span className="text-gray-700">{activity.hours} hours</span>
-            )}
-            {activity?.events !== null && (
-              <span className="text-gray-500">{activity.events} events</span>
-            )}
-            {activity?.volunteers !== null && (
-              <span className="text-gray-500">
-                {activity.volunteers} volunteers
-              </span>
-            )}
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <Calendar className="w-4 h-4 text-gray-400" />
+            <span>{formatDate(dateOfBirth)}</span>
           </div>
         </td>
 
@@ -143,11 +127,20 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
             {currentStatus === USER_STATUS.ACTIVE && (
               <button
                 onClick={BanUser}
-                disabled={isBan}
-                className="p-2 bg-red-500/90 text-white hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 bg-red-500/90 text-white hover:bg-red-600 rounded-lg transition-colors"
                 title="Ban user"
               >
                 <Ban className="w-4 h-4" />
+              </button>
+            )}
+            {(currentStatus === USER_STATUS.BAN ||
+              currentStatus === USER_STATUS.BANNED) && (
+              <button
+                onClick={UnbanUser}
+                className="p-2 bg-green-500/90 text-white hover:bg-green-600 rounded-lg transition-colors"
+                title="Unban user"
+              >
+                <CircleCheckBig className="w-4 h-4" />
               </button>
             )}
             {currentStatus === USER_STATUS.PENDING && (
@@ -165,13 +158,6 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
               title="View Details"
             >
               <Eye className="w-4 h-4 text-gray-600" />
-            </button>
-            <button
-              onClick={() => onDelete?.(id)}
-              className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors"
-              title="Delete User"
-            >
-              <Trash2 className="w-4 h-4 text-white" />
             </button>
           </div>
         </td>
@@ -228,15 +214,13 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
               {!isExpanded && (
                 <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{formatDate(joinDate)}</span>
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>{formatPhoneNumber(phoneNumber)}</span>
                   </div>
-                  {activity?.hours && (
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{activity.hours} hours</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>{formatDate(dateOfBirth)}</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -244,18 +228,8 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
             {/* Expanded Content */}
             {isExpanded && (
               <div className="px-4 pb-4 space-y-3 rounded-xl">
-                {/* Date & Time */}
-                <div className="flex items-center gap-2 text-sm pt-3">
-                  <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-gray-700">{formatDate(joinDate)}</span>
-                  <Clock className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
-                  <span className="text-gray-600">
-                    {formatTime(lastActive)}
-                  </span>
-                </div>
-
                 {/* Email & Type */}
-                <div className="flex items-start gap-2 text-sm">
+                <div className="flex items-start gap-2 text-sm pt-3">
                   <Mail className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-gray-700 break-words">{email}</span>
                 </div>
@@ -266,50 +240,60 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
                   </span>
                 </div>
 
-                {/* Activity */}
+                {/* Phone & Date of Birth */}
                 <div className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between text-sm mb-2">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-500" />
+                      <Phone className="w-4 h-4 text-gray-500" />
                       <span className="text-gray-600 font-medium">
-                        Activity
+                        Contact Info
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 text-sm">
-                    {activity?.hours && (
+                  <div className="flex flex-col gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-gray-400" />
                       <span className="text-gray-700">
-                        {activity.hours} hours volunteered
+                        {formatPhoneNumber(phoneNumber)}
                       </span>
-                    )}
-                    {activity?.events !== null && (
-                      <span className="text-gray-500">
-                        {activity.events} events{" "}
-                        {type === "organization" ? "created" : "joined"}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="text-gray-700">
+                        {formatDate(dateOfBirth)}
                       </span>
-                    )}
-                    {activity?.volunteers !== null && (
-                      <span className="text-gray-500">
-                        {activity.volunteers} volunteers
-                      </span>
-                    )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-4 gap-2 pt-2">
+                <div className="grid grid-cols-2 gap-2 pt-2">
                   {currentStatus === USER_STATUS.ACTIVE && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         BanUser();
                       }}
-                      disabled={isBan}
-                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="col-span-2 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
                       <Ban className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
                         Ban User
+                      </span>
+                    </button>
+                  )}
+                  {(currentStatus === USER_STATUS.BAN ||
+                    currentStatus === USER_STATUS.BANNED) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        UnbanUser();
+                      }}
+                      className="col-span-2 py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <CircleCheckBig className="w-4 h-4 text-white" />
+                      <span className="text-white text-sm font-medium">
+                        Unban User
                       </span>
                     </button>
                   )}
@@ -319,7 +303,7 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
                         e.stopPropagation();
                         onEdit?.(id);
                       }}
-                      className="col-span-4 py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      className="col-span-2 py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
                       <CircleCheckBig className="w-4 h-4 text-white" />
                       <span className="text-white text-sm font-medium">
@@ -336,15 +320,6 @@ function UserCard({ data, onBanUser, onEdit, onView, onDelete }) {
                   >
                     <Eye className="w-4 h-4 text-white" />
                     <span className="text-white text-sm font-medium">View</span>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete?.(id);
-                    }}
-                    className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center"
-                  >
-                    <Trash2 className="w-4 h-4 text-white" />
                   </button>
                 </div>
               </div>

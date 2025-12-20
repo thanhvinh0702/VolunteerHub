@@ -10,6 +10,8 @@ import {
     rejectEvent,
     searchEventByName,
     searchEventByNameForManager,
+    getTrendingEvents,
+    cancelEventRegistration,
 } from "../services/eventService";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -141,7 +143,9 @@ export const useOwnedEventsPagination = (params) => {
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,
-        staleTime: 1000 * 30,
+        staleTime: 1000 * 30, // 30 seconds
+        refetchInterval: 1000 * 60 * 3, // Auto-refetch every 3 minutes
+        refetchIntervalInBackground: false, // Only refetch when tab is active
     });
 
     // Prefetch the next page
@@ -252,6 +256,7 @@ export const useSearchEventByName = ({
     pageNum = 0,
     pageSize = 6,
     debounceDelay = 400,
+    status,
     enabled = true,
 }) => {
     const queryClient = useQueryClient();
@@ -267,12 +272,12 @@ export const useSearchEventByName = ({
     }, [keyword, debounceDelay]);
 
     const query = useQuery({
-        queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, pageNum, pageSize],
+        queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, pageNum, pageSize, status],
         queryFn: async () => {
             if (!debouncedKeyword.trim()) {
                 return { data: [], meta: { totalPages: 0, totalElements: 0 } };
             }
-            const result = await searchEventByName({ keyword: debouncedKeyword, pageNum, pageSize });
+            const result = await searchEventByName({ keyword: debouncedKeyword, pageNum, pageSize, status });
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         enabled: enabled && Boolean(debouncedKeyword.trim()),
@@ -285,14 +290,14 @@ export const useSearchEventByName = ({
         const nextPage = pageNum + 1;
         if (debouncedKeyword.trim() && query.data?.meta?.totalPages > nextPage) {
             queryClient.prefetchQuery({
-                queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, nextPage, pageSize],
+                queryKey: [...EVENTS_QUERY_KEY, 'searchByName', debouncedKeyword, nextPage, pageSize, status],
                 queryFn: async () => {
-                    const result = await searchEventByName({ keyword: debouncedKeyword, pageNum: nextPage, pageSize });
+                    const result = await searchEventByName({ keyword: debouncedKeyword, pageNum: nextPage, pageSize, status });
                     return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
                 },
             });
         }
-    }, [query.data, debouncedKeyword, pageNum, pageSize, queryClient]);
+    }, [query.data, debouncedKeyword, pageNum, pageSize, status, queryClient]);
 
     return {
         ...query,
@@ -416,11 +421,13 @@ export const useDeleteEvent = (options = {}) => {
         onMutate: async (eventId) => {
             // Cancel any outgoing refetches to avoid overwriting optimistic update
             await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
+            await queryClient.cancelQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
 
             // Snapshot the previous value
             const previousEvents = queryClient.getQueriesData({ queryKey: EVENTS_QUERY_KEY });
+            const previousOwnedEvents = queryClient.getQueriesData({ queryKey: OWNED_EVENTS_QUERY_KEY });
 
-            // Optimistically update to show loading state
+            // Optimistically update to show loading state for EVENTS_QUERY_KEY
             queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, (old) => {
                 if (!old) return old;
 
@@ -448,11 +455,41 @@ export const useDeleteEvent = (options = {}) => {
                 return old;
             });
 
-            return { previousEvents };
+            // Optimistically update to show loading state for OWNED_EVENTS_QUERY_KEY
+            queryClient.setQueriesData({ queryKey: OWNED_EVENTS_QUERY_KEY }, (old) => {
+                if (!old) return old;
+
+                // Handle pagination data structure
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map((event) =>
+                            event.id === eventId
+                                ? { ...event, _isDeleting: true }
+                                : event
+                        ),
+                    };
+                }
+
+                // Handle simple array structure
+                if (Array.isArray(old)) {
+                    return old.map((event) =>
+                        event.id === eventId
+                            ? { ...event, _isDeleting: true }
+                            : event
+                    );
+                }
+
+                return old;
+            });
+
+            return { previousEvents, previousOwnedEvents };
         },
         onSuccess: (data, variables, context) => {
             toast.success("Event deleted successfully.");
+            // Invalidate both events and owned events queries
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
             if (variables) {
                 queryClient.removeQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
             }
@@ -465,6 +502,11 @@ export const useDeleteEvent = (options = {}) => {
                     queryClient.setQueryData(queryKey, data);
                 });
             }
+            if (context?.previousOwnedEvents) {
+                context.previousOwnedEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
             const message =
                 error?.response?.data?.message || error?.message || "Failed to delete event.";
             toast.error(message);
@@ -473,6 +515,7 @@ export const useDeleteEvent = (options = {}) => {
         onSettled: (data, error, variables, context) => {
             // Always refetch after error or success to ensure server state
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
             options.onSettled?.(data, error, variables, context);
         },
     });
@@ -580,8 +623,8 @@ export const useRejectEvent = (options = {}) => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (eventId) => rejectEvent(eventId),
-        onMutate: async (eventId) => {
+        mutationFn: ({ eventId, reason }) => rejectEvent(eventId, reason),
+        onMutate: async ({ eventId }) => {
             // Cancel any outgoing refetches to avoid overwriting optimistic update
             await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
 
@@ -623,7 +666,7 @@ export const useRejectEvent = (options = {}) => {
                 if (!old) return old;
 
                 const applyUpdate = (event) =>
-                    event.id === variables
+                    event.id === variables.eventId
                         ? {
                             ...event,
                             ...(data || {}),
@@ -649,8 +692,8 @@ export const useRejectEvent = (options = {}) => {
             toast.success("Event rejected successfully.");
             queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
             queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
-            if (variables) {
-                queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
+            if (variables?.eventId) {
+                queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables.eventId] });
             }
             options.onSuccess?.(data, variables, context);
         },
@@ -674,6 +717,86 @@ export const useRejectEvent = (options = {}) => {
     });
 };
 
+export const useCancelEventRegistration = (options = {}) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (eventId) => cancelEventRegistration(eventId),
+        onMutate: async (eventId) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: EVENTS_QUERY_KEY });
+            await queryClient.cancelQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
+
+            // Snapshot the previous value
+            const previousEvents = queryClient.getQueriesData({ queryKey: EVENTS_QUERY_KEY });
+            const previousOwnedEvents = queryClient.getQueriesData({ queryKey: OWNED_EVENTS_QUERY_KEY });
+
+            // Optimistically update to show loading state
+            const updateFn = (old) => {
+                if (!old) return old;
+
+                if (old.data && Array.isArray(old.data)) {
+                    return {
+                        ...old,
+                        data: old.data.map((event) =>
+                            event.id === eventId
+                                ? { ...event, _isUpdating: true }
+                                : event
+                        ),
+                    };
+                }
+
+                if (Array.isArray(old)) {
+                    return old.map((event) =>
+                        event.id === eventId
+                            ? { ...event, _isUpdating: true }
+                            : event
+                    );
+                }
+
+                return old;
+            };
+
+            queryClient.setQueriesData({ queryKey: EVENTS_QUERY_KEY }, updateFn);
+            queryClient.setQueriesData({ queryKey: OWNED_EVENTS_QUERY_KEY }, updateFn);
+
+            return { previousEvents, previousOwnedEvents };
+        },
+        onSuccess: (data, variables, context) => {
+            toast.success("Event registration closed successfully.");
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
+            if (variables) {
+                queryClient.invalidateQueries({ queryKey: [...EVENTS_QUERY_KEY, variables] });
+            }
+            options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            // Rollback to previous state on error
+            if (context?.previousEvents) {
+                context.previousEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            if (context?.previousOwnedEvents) {
+                context.previousOwnedEvents.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            const message =
+                error?.response?.data?.message || error?.message || "Failed to close event registration.";
+            toast.error(message);
+            options.onError?.(error, variables, context);
+        },
+        onSettled: (data, error, variables, context) => {
+            // Always refetch after error or success
+            queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: OWNED_EVENTS_QUERY_KEY });
+            options.onSettled?.(data, error, variables, context);
+        },
+    });
+};
+
 export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED", sortedBy = "name", order = "desc" } = {}) => {
     return useQuery({
         queryKey: [...EVENTS_QUERY_KEY, 'approvedTop2ByName', { pageNum: 0, pageSize, status, sortedBy, order }],
@@ -685,4 +808,130 @@ export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED",
         placeholderData: keepPreviousData,
         staleTime: 1000 * 30,
     });
+};
+
+export const useTrendingEvents = (params = {}) => {
+    const queryClient = useQueryClient();
+    const { days = 30, pageNum = 0, pageSize = 10 } = params;
+
+    const query = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'trending', days, pageNum, pageSize],
+        queryFn: async () => {
+            const result = await getTrendingEvents({ days, pageNum, pageSize });
+            console.log("useTrendingEvents result:", result);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Prefetch the next page
+    useEffect(() => {
+        const nextPage = pageNum + 1;
+        if (query.data?.meta?.totalPages > nextPage) {
+            queryClient.prefetchQuery({
+                queryKey: [...EVENTS_QUERY_KEY, 'trending', days, nextPage, pageSize],
+                queryFn: async () => {
+                    const result = await getTrendingEvents({ days, pageNum: nextPage, pageSize });
+                    return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+                },
+            });
+        }
+    }, [query.data, days, pageNum, pageSize, queryClient]);
+
+    return query;
+};
+
+// Hook for top 5 trending events (for horizontal scroll list)
+export const useTopTrendingEvents = ({ days = 30, pageSize = 5 } = {}) => {
+    return useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'trending-top', days, pageSize],
+        queryFn: async () => {
+            const result = await getTrendingEvents({ days, pageNum: 0, pageSize });
+            console.log("useTopTrendingEvents result:", result);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        refetchOnWindowFocus: false,
+    });
+};
+
+// Hook for infinite scroll trending events
+export const useInfiniteTrendingEvents = ({ days = 30, pageSize = 10 } = {}) => {
+    const [allEvents, setAllEvents] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+
+    // Reset state when days changes
+    useEffect(() => {
+        console.log("Days changed to:", days, "- Resetting state");
+        setAllEvents([]);
+        setCurrentPage(0);
+        setHasMore(true);
+    }, [days]);
+
+    const { data, isLoading, isFetching, isError, error } = useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'trending', days, currentPage, pageSize],
+        queryFn: async () => {
+            try {
+                const result = await getTrendingEvents({ days, pageNum: currentPage, pageSize });
+                console.log(`Trending events fetched for ${days} days, page ${currentPage}:`, result);
+                return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+            } catch (err) {
+                console.error("Error fetching trending events:", err);
+                throw err;
+            }
+        },
+        staleTime: 1000 * 60 * 5,
+        retry: 2,
+        retryDelay: 1000,
+    });
+
+    useEffect(() => {
+        if (data?.data) {
+            setAllEvents((prev) => {
+                // If it's the first page (after reset), replace all events
+                if (currentPage === 0) {
+                    console.log("First page - replacing all events");
+                    return data.data;
+                }
+
+                // Otherwise, append new events and avoid duplicates
+                const existingIds = new Set(prev.map(e => e?.id).filter(Boolean));
+                const newEvents = data.data.filter(e => e?.id && !existingIds.has(e.id));
+                console.log(`Appending ${newEvents.length} new events`);
+                return [...prev, ...newEvents];
+            });
+
+            // Check if there are more pages
+            const totalPages = data.meta?.totalPages || 0;
+            setHasMore(currentPage + 1 < totalPages);
+        }
+    }, [data, currentPage]);
+
+    const loadMore = () => {
+        if (!isFetching && hasMore) {
+            console.log("Loading more trending events, page:", currentPage + 1);
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const reset = () => {
+        console.log("Manual reset trending events");
+        setAllEvents([]);
+        setCurrentPage(0);
+        setHasMore(true);
+    };
+
+    return {
+        events: allEvents,
+        isLoading: isLoading && currentPage === 0,
+        isFetching,
+        isError,
+        error,
+        hasMore,
+        loadMore,
+        reset,
+        totalElements: data?.meta?.totalElements || 0,
+    };
 };

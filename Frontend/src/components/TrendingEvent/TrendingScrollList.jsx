@@ -2,83 +2,16 @@ import React from "react";
 import TrendingCardHorizontal from "./TrendingCardHorizontal";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, FlameKindling } from "lucide-react";
+import { useTopTrendingEvents } from "../../hook/useEvent";
+import { useNavigate } from "react-router-dom";
+import { formatDateTime } from "../../utils/date";
 
-const dumpData = [
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-  {
-    name: "Event 1",
-    date: "2024-07-01",
-    location: "Location A",
-    thumbnail: "",
-    post: "50",
-    comment: "10",
-  },
-];
-
-export default function TrendingCardList({ data }) {
+export default function TrendingCardList() {
+  const navigate = useNavigate();
+  const { data, isLoading } = useTopTrendingEvents({
+    days: 30,
+    pageSize: 5,
+  });
   const scrollRef = useRef(null);
   const cardRef = useRef(null);
 
@@ -92,7 +25,7 @@ export default function TrendingCardList({ data }) {
 
       setCardWidth(cardRef.current.offsetWidth + marginRight);
     }
-  }, []);
+  }, [data]);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
@@ -108,6 +41,17 @@ export default function TrendingCardList({ data }) {
     });
   };
 
+  const trendingEvents = data?.data || [];
+
+  const handleShowMore = () => {
+    navigate("/trending");
+  };
+
+  // Don't render if loading or no data
+  if (isLoading || trendingEvents.length === 0) {
+    return null;
+  }
+
   return (
     <div className="w-full shadow-sm mt-5 mb-5 rounded-2xl px-4 pt-3 pb-4">
       <div className="font-jost flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 text-2xl font-bold text-gray-800 mb-6">
@@ -117,7 +61,10 @@ export default function TrendingCardList({ data }) {
             <FlameKindling className="animate-pulse" />
           </div>
         </div>
-        <div className="text-xs sm:text-sm cursor-pointer bg-gradient-to-r from-purple-500 to-blue-400 text-white px-3 py-1.5 rounded-2xl hover:scale-105 active:scale-95 duration-200 transition-all whitespace-nowrap">
+        <div
+          onClick={handleShowMore}
+          className="text-xs sm:text-sm cursor-pointer bg-gradient-to-r from-purple-500 to-blue-400 text-white px-3 py-1.5 rounded-2xl hover:scale-105 active:scale-95 duration-200 transition-all whitespace-nowrap"
+        >
           Show more
         </div>
       </div>
@@ -136,11 +83,21 @@ export default function TrendingCardList({ data }) {
           ref={scrollRef}
           className="flex overflow-x-auto no-scrollbar scroll-smooth gap-3 md:gap-5 snap-x flex-1"
         >
-          {dumpData.map((item, index) => (
+          {trendingEvents.map((event, index) => (
             <TrendingCardHorizontal
-              key={index}
+              key={event.id}
               ref={index === 0 ? cardRef : null}
-              {...item}
+              id={event.id}
+              name={event.name}
+              location={
+                event.address
+                  ? `${event.address.district}, ${event.address.province}`
+                  : "N/A"
+              }
+              date={formatDateTime(event.startTime, { withTime: false })}
+              thumbnail={event.imageUrl}
+              post={event.postGrowth || 0}
+              comment={event.commentGrowth || 0}
             />
           ))}
         </div>

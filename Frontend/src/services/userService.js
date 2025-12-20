@@ -47,12 +47,50 @@ const updateUserInfo = async (userData) => {
 
 const getProfileCompleteness = async () => {
     try {
-        const completeness = await axiosClient.get("/v1/users/users/me/validate-profile");
+        const completeness = await axiosClient.get("/api/v1/users/users/me/validate-profile");
         return completeness;
     } catch (error) {
         console.error("Error fetching profile completeness:", error);
+        // If user profile doesn't exist yet (404), return incomplete status
+        if (error.response?.status === 404) {
+            return {
+                isComplete: false,
+                missingFields: ["fullName", "phoneNumber", "dateOfBirth", "address"],
+                message: "Profile not found"
+            };
+        }
         throw error;
     }
 };
 
-export { createUserProfile, getUserInfo, updateUserInfo, getProfileCompleteness };
+const getAllUsers = async () => {
+    try {
+        const users = await axiosClient.get("/api/v1/users/admin/all-users");
+        return users;
+    } catch (error) {
+        console.error("Error fetching all users:", error);
+        throw error;
+    }
+};
+
+const banUser = async (userId) => {
+    try {
+        const response = await axiosClient.put(`/api/v1/users/admin/${userId}/ban`);
+        return response;
+    } catch (error) {
+        console.error("Error banning user:", error);
+        throw error;
+    }
+};
+
+const unbanUser = async (userId) => {
+    try {
+        const response = await axiosClient.put(`/api/v1/users/admin/${userId}/unban`);
+        return response;
+    } catch (error) {
+        console.error("Error unbanning user:", error);
+        throw error;
+    }
+};
+
+export { createUserProfile, getUserInfo, updateUserInfo, getProfileCompleteness, getAllUsers, banUser, unbanUser };

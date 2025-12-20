@@ -18,11 +18,7 @@ function ModalActivity({
     >
       <div className="text-2xl font-bold">{title}</div>
       <div className="text-sm text-gray-500">{subtile}</div>
-      <div
-        className={`flex flex-col gap-5 flex-1 ${
-          !loading && !isError ? "justify-center" : ""
-        }`}
-      >
+      <div className="flex flex-col gap-5 flex-1 justify-start">
         {children}
       </div>
       {viewMore && path && (

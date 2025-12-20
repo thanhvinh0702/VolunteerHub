@@ -252,6 +252,7 @@ export const USER_STATUS = {
   PENDING: "pending",
   ACTIVE: "active",
   BAN: "ban",
+  BANNED: "banned", // API might return "BANNED" instead of "BAN"
 };
 
 export const STATUS_CONFIG = {
@@ -266,17 +267,24 @@ export const STATUS_CONFIG = {
     description: "User is active",
   },
   [USER_STATUS.BAN]: {
-    label: "Ban",
+    label: "Banned",
+    color: "bg-red-100 text-red-700",
+    description: "User is banned",
+  },
+  [USER_STATUS.BANNED]: {
+    label: "Banned",
     color: "bg-red-100 text-red-700",
     description: "User is banned",
   },
 };
 
 export const getStatusColor = (status) => {
-  return STATUS_CONFIG[status]?.color || "bg-gray-100 text-gray-700";
+  const normalizedStatus = status?.toLowerCase();
+  return STATUS_CONFIG[normalizedStatus]?.color || "bg-gray-100 text-gray-700";
 };
 
-// Check if event can be cancelled
+// Check if user can be banned
 export const canBan = (status) => {
-  return status === USER_STATUS.ACTIVE;
+  const normalizedStatus = status?.toLowerCase();
+  return normalizedStatus === USER_STATUS.ACTIVE;
 };

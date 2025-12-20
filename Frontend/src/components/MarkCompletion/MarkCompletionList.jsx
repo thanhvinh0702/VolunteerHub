@@ -78,7 +78,8 @@ function MarkCompletionList() {
   const displayedRegistrations =
     filter === "all"
       ? registrations.filter(
-          (reg) => (reg.registrationStatus ?? reg.status)?.toUpperCase() !== "PENDING"
+          (reg) =>
+            (reg.registrationStatus ?? reg.status)?.toUpperCase() !== "PENDING"
         )
       : registrations;
 
@@ -99,8 +100,7 @@ function MarkCompletionList() {
       name: reg.fullName || reg.username || "Unknown",
       email: reg.email || "",
       status: cardStatus,
-      hoursLogged: reg.hoursLogged ?? 0,
-      rating: undefined,
+      hoursLogged: Math.floor(Math.random() * 4) + 1, // Random 1-4 hours
       feedback: statusOverrides[regKey]?.note ?? reg.note ?? undefined,
       avatar: reg.avatarUrl || null,
       eventName: reg.eventName,
@@ -120,48 +120,58 @@ function MarkCompletionList() {
   // Completion note modal state
   const [selectedReg, setSelectedReg] = useState(null);
   const [note, setNote] = useState("");
+  const [isEditingNote, setIsEditingNote] = useState(false); // Track if editing existing completion
   const reviewMutation = useReviewRegistration();
 
-  const openNoteModalForVolunteer = (vol) => {
+  const openNoteModalForVolunteer = (vol, isEditing = false) => {
     const reg = regMap.get(vol.id);
     if (!reg) return;
     setSelectedReg(reg);
     const regKey = reg.registrationId ?? `${reg.eventId}-${reg.userId}`;
     setNote(statusOverrides[regKey]?.note ?? reg.note ?? "");
+    setIsEditingNote(isEditing);
   };
 
   const handleComplete = () => {
     if (!selectedReg) return;
-    reviewMutation.mutate(
-      {
-        eventId: selectedReg.eventId,
-        participantId: selectedReg.userId,
-        status: "COMPLETED",
-        note: note.trim(),
+
+    // If editing note only, don't send status
+    const payload = {
+      eventId: selectedReg.eventId,
+      participantId: selectedReg.userId,
+      note: note.trim(),
+    };
+
+    // Only add status when marking as completed for the first time
+    if (!isEditingNote) {
+      payload.status = "COMPLETED";
+    }
+
+    reviewMutation.mutate(payload, {
+      onSuccess: (resp) => {
+        console.log("[MarkCompletionList] reviewRegistration response:", resp);
+        const regKey =
+          selectedReg.registrationId ??
+          `${selectedReg.eventId}-${selectedReg.userId}`;
+        setStatusOverrides((prev) => ({
+          ...prev,
+          [regKey]: {
+            status: isEditingNote
+              ? prev[regKey]?.status || "COMPLETED"
+              : "COMPLETED",
+            note: note.trim() || null,
+          },
+        }));
+        setSelectedReg(null);
+        setNote("");
+        setIsEditingNote(false);
+        refetch();
       },
-      {
-        onSuccess: (resp) => {
-          console.log(
-            "[MarkCompletionList] reviewRegistration response:",
-            resp
-          );
-          const regKey =
-            selectedReg.registrationId ??
-            `${selectedReg.eventId}-${selectedReg.userId}`;
-          setStatusOverrides((prev) => ({
-            ...prev,
-            [regKey]: { status: "COMPLETED", note: note.trim() || null },
-          }));
-          setSelectedReg(null);
-          setNote("");
-          refetch();
-        },
-      }
-    );
+    });
   };
 
-  const handleEditCompletion = (vol) => openNoteModalForVolunteer(vol);
-  const handleMarkCompleted = (vol) => openNoteModalForVolunteer(vol);
+  const handleEditCompletion = (vol) => openNoteModalForVolunteer(vol, true);
+  const handleMarkCompleted = (vol) => openNoteModalForVolunteer(vol, false);
 
   // Unused actions for now
   const handleMarkAttended = () => {};
@@ -289,7 +299,7 @@ function MarkCompletionList() {
         <div className="fixed inset-0 bg-gray-900/60 bg-opacity-40 flex items-center justify-center p-4 z-50">
           <div className="bg-white w-full max-w-[500px] p-6 rounded-xl shadow-lg">
             <h3 className="text-xl font-semibold mb-3 text-center">
-              Mark Completion
+              {isEditingNote ? "Edit Completion Note" : "Mark Completion"}
             </h3>
             <p className="text-sm text-gray-600 text-center mb-3">
               Event: {selectedReg?.eventName ?? "—"} • ID:{" "}
@@ -317,6 +327,7 @@ function MarkCompletionList() {
                   onClick={() => {
                     setSelectedReg(null);
                     setNote("");
+                    setIsEditingNote(false);
                   }}
                   disabled={reviewMutation.isPending}
                 >
@@ -329,6 +340,8 @@ function MarkCompletionList() {
                 >
                   {reviewMutation.isPending
                     ? "Processing..."
+                    : isEditingNote
+                    ? "Save Note"
                     : "Confirm Completion"}
                 </button>
               </div>

@@ -15,12 +15,7 @@ import {
 } from "lucide-react";
 import Pagination from "@mui/material/Pagination";
 import EventManagerCard from "../../components/Project/eventManagerCard";
-import {
-  EVENT_STATUS,
-  getStatusColor,
-  STATUS_CONFIG,
-  canCancelEvent,
-} from "./eventManagerData";
+import { EVENT_STATUS, STATUS_CONFIG } from "./eventManagerData";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
@@ -145,17 +140,11 @@ function EventManager() {
     navigate(`/dashboard/eventmanager/${id}/overview`);
   };
 
-  const handleDelete = (id) => {
-    console.log(`Delete event ${id}`);
-    // TODO: Show confirmation modal and delete
-  };
-
   // Fetch event detail for editing
   const {
     data: editEventData,
     isLoading: isLoadingEdit,
     error: editError,
-    refetch: refetchEdit,
   } = useEventDetail(selectedEventId, {
     enabled: !!selectedEventId && openEditForm,
   });
@@ -288,9 +277,9 @@ function EventManager() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative w-full sm:flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
@@ -308,7 +297,7 @@ function EventManager() {
         </div>
 
         {/* Filter & Create */}
-        <div className="flex gap-3 items-center">
+        <div className="flex justify-between sm:justify-start items-center gap-3">
           <DropdownSelect
             value={filterStatus}
             onChange={setFilterStatus}
@@ -371,7 +360,6 @@ function EventManager() {
                   onCancelEvent={handleCancelEvent}
                   onEdit={handleEdit}
                   onView={handleView}
-                  onDelete={handleDelete}
                 />
               ))
             ) : (
@@ -403,7 +391,6 @@ function EventManager() {
               onCancelEvent={handleCancelEvent}
               onEdit={handleEdit}
               onView={handleView}
-              onDelete={handleDelete}
             />
           ))
         ) : (
@@ -443,9 +430,12 @@ function EventManager() {
       )}
 
       {openCreateForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div ref={modalRef} className="w-full max-w-3xl my-8">
-            <div className="relative bg-white rounded-2xl shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div
+            ref={modalRef}
+            className="w-full max-w-3xl max-h-[calc(100vh-2rem)] flex flex-col"
+          >
+            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full">
               <button
                 onClick={() => setOpenCreateForm(false)}
                 className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 transition hover:text-white hover:bg-red-500"
@@ -455,10 +445,12 @@ function EventManager() {
                   <X />
                 </span>
               </button>
-              <CreateEvent
-                onSuccess={() => setOpenCreateForm(false)}
-                onCancel={() => setOpenCreateForm(false)}
-              />
+              <div className="overflow-y-auto">
+                <CreateEvent
+                  onSuccess={() => setOpenCreateForm(false)}
+                  onCancel={() => setOpenCreateForm(false)}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -466,9 +458,12 @@ function EventManager() {
 
       {/* Edit Event Modal */}
       {openEditForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div ref={editModalRef} className="w-full max-w-3xl my-8">
-            <div className="relative bg-white rounded-2xl shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div
+            ref={editModalRef}
+            className="w-full max-w-3xl max-h-[calc(100vh-2rem)] flex flex-col"
+          >
+            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full">
               <button
                 onClick={() => setOpenEditForm(false)}
                 className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 transition hover:text-white hover:bg-red-500"
@@ -479,7 +474,7 @@ function EventManager() {
                 </span>
               </button>
 
-              <div className="p-6">
+              <div className="p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <p className="text-xl font-semibold text-gray-900">
@@ -506,82 +501,83 @@ function EventManager() {
                 )}
 
                 {editData && (
-                  <div className="space-y-4">
-                    {/* Event Name */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-1 block">
-                        Event Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={editData.name}
-                        onChange={(e) =>
-                          handleInputChange("name", e.target.value)
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Event name"
-                      />
+                  <div className="space-y-5">
+                    {/* Event Name and Category */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          Event Title <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={editData.name}
+                          onChange={(e) =>
+                            handleInputChange("name", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter event title"
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          Category <span className="text-red-500">*</span>
+                        </label>
+                        <DropdownSelect
+                          value={editData.categoryName}
+                          onChange={(value) =>
+                            handleInputChange("categoryName", value)
+                          }
+                          options={categoryOptions}
+                          placeholder="Select category"
+                          className="w-full"
+                        />
+                      </div>
                     </div>
 
-                    {/* Category */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-1 block">
-                        Category *
-                      </label>
-                      <DropdownSelect
-                        value={editData.categoryName}
-                        onChange={(value) =>
-                          handleInputChange("categoryName", value)
-                        }
-                        options={categoryOptions}
-                        placeholder="Select category"
-                        className="w-full"
-                      />
-                    </div>
-
-                    {/* Status (read-only) */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-1 block">
+                    {/* Status */}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold text-gray-900">
                         Status
                       </label>
-                      <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                          editData.status === "APPROVED"
-                            ? "bg-green-100 text-green-800"
-                            : editData.status === "PENDING"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : editData.status === "REJECTED"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {editData.status}
-                      </span>
+                      <div>
+                        <span
+                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                            editData.status === "APPROVED"
+                              ? "bg-green-100 text-green-800"
+                              : editData.status === "PENDING"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : editData.status === "REJECTED"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {editData.status}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Registration Deadline */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-1 block">
-                        Registration Deadline *
+                    {/* Description */}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold text-gray-900">
+                        Description <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="datetime-local"
-                        value={editData.registrationDeadline}
+                      <textarea
+                        value={editData.description}
                         onChange={(e) =>
-                          handleInputChange(
-                            "registrationDeadline",
-                            e.target.value
-                          )
+                          handleInputChange("description", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows={4}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        placeholder="Describe your volunteer opportunity..."
                       />
                     </div>
 
-                    {/* Time Range */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="font-semibold text-gray-900 mb-1 block">
-                          Start Time *
+                    {/* Start Time and End Time */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          Start Time <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="datetime-local"
@@ -592,9 +588,10 @@ function EventManager() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
-                      <div>
-                        <label className="font-semibold text-gray-900 mb-1 block">
-                          End Time *
+
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          End Time <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="datetime-local"
@@ -607,37 +604,57 @@ function EventManager() {
                       </div>
                     </div>
 
-                    {/* Capacity */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-1 block">
-                        Maximum Capacity *
-                      </label>
-                      <input
-                        type="number"
-                        value={editData.capacity}
-                        min="1"
-                        onChange={(e) =>
-                          handleInputChange("capacity", e.target.value)
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Maximum volunteers"
-                      />
+                    {/* Max Volunteers and Registration Deadline */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          Max Volunteers <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          value={editData.capacity}
+                          min="1"
+                          onChange={(e) =>
+                            handleInputChange("capacity", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Maximum volunteers"
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold text-gray-900">
+                          Registration Deadline{" "}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={editData.registrationDeadline}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "registrationDeadline",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
                     </div>
 
                     {/* Location */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-2 block">
-                        Location *
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold text-gray-900">
+                        Location <span className="text-red-500">*</span>
                       </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input
                           type="text"
-                          value={editData.street}
+                          value={editData.province}
                           onChange={(e) =>
-                            handleInputChange("street", e.target.value)
+                            handleInputChange("province", e.target.value)
                           }
-                          placeholder="Street"
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Province"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <input
                           type="text"
@@ -646,40 +663,24 @@ function EventManager() {
                             handleInputChange("district", e.target.value)
                           }
                           placeholder="District"
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <input
                           type="text"
-                          value={editData.province}
+                          value={editData.street}
                           onChange={(e) =>
-                            handleInputChange("province", e.target.value)
+                            handleInputChange("street", e.target.value)
                           }
-                          placeholder="Province"
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Street"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
 
-                    {/* Description */}
-                    <div>
-                      <label className="font-semibold text-gray-900 mb-2 block">
-                        Description *
-                      </label>
-                      <textarea
-                        value={editData.description}
-                        onChange={(e) =>
-                          handleInputChange("description", e.target.value)
-                        }
-                        rows={6}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Event description..."
-                      />
-                    </div>
-
-                    {/* Image Upload */}
-                    <div className="space-y-2">
-                      <label className="font-semibold text-gray-900 mb-1 block">
-                        Event Image
+                    {/* Event Image */}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold text-gray-900">
+                        Event Image (Optional)
                       </label>
                       {/* Current Image */}
                       {!previewImage && editEventData?.imageUrl && (
@@ -700,6 +701,7 @@ function EventManager() {
                           />
                           <button
                             onClick={handleRemoveImage}
+                            type="button"
                             className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
                           >
                             <X size={16} />
@@ -729,15 +731,17 @@ function EventManager() {
                     {/* Action Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-gray-200">
                       <button
+                        type="button"
                         onClick={() => setOpenEditForm(false)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium"
                       >
                         Cancel
                       </button>
                       <button
+                        type="button"
                         onClick={handleSave}
                         disabled={updateEventMutation.isPending}
-                        className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                       >
                         {updateEventMutation.isPending
                           ? "Saving..."

@@ -4,7 +4,11 @@ import { useAuthStore } from "../../store/authStore";
 import { LOGIN_LINK } from "../../constant/constNavigate";
 import { ROLES } from "../../constant/role";
 import storage from "../../utils/storage";
-import { createUserProfile, getUserInfo } from "../../services/userService";
+import {
+  createUserProfile,
+  getUserInfo,
+  getProfileCompleteness,
+} from "../../services/userService";
 
 export default function OAuth2Callback() {
   const [searchParams] = useSearchParams();
@@ -161,7 +165,38 @@ export default function OAuth2Callback() {
           console.log("Checking if user profile exists...");
           const existingProfile = await getUserInfo();
           console.log("User profile already exists:", existingProfile);
+
+          // Check if user is banned
+          if (
+            existingProfile?.status === "BANNED" ||
+            existingProfile?.status === "banned"
+          ) {
+            console.log("User is banned, redirecting to banned page");
+            setError(
+              "Your account has been suspended. Please contact support."
+            );
+            setLoading(false);
+            setTimeout(() => {
+              window.location.href = "/banned";
+            }, 2000);
+            return;
+          }
         } catch (error) {
+          // Check if user is banned (403 Forbidden)
+          if (error.response?.status === 403) {
+            console.log(
+              "User is banned (403 Forbidden), redirecting to banned page"
+            );
+            setError(
+              "Your account has been suspended. Please contact support."
+            );
+            setLoading(false);
+            setTimeout(() => {
+              window.location.href = "/banned";
+            }, 2000);
+            return;
+          }
+
           // If user profile doesn't exist (404 or 500), try to create it
           if (
             error.response?.status === 404 ||
@@ -197,6 +232,21 @@ export default function OAuth2Callback() {
               const newProfile = await createUserProfile(profileData);
               console.log("User profile created successfully:", newProfile);
             } catch (createError) {
+              // Check if create user also returns 403 (banned)
+              if (createError.response?.status === 403) {
+                console.log(
+                  "User is banned during creation (403), redirecting to banned page"
+                );
+                setError(
+                  "Your account has been suspended. Please contact support."
+                );
+                setLoading(false);
+                setTimeout(() => {
+                  window.location.href = "/banned";
+                }, 2000);
+                return;
+              }
+
               console.error("Failed to create user profile:", createError);
               console.warn(
                 "Continuing login without user profile - you may need to complete your profile later"
@@ -227,6 +277,33 @@ export default function OAuth2Callback() {
         setUser(user);
 
         console.log("User logged in:", user);
+
+        // Wait a bit for profile creation to complete before checking
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Check profile completeness before redirecting
+        try {
+          const profileValidation = await getProfileCompleteness();
+          console.log("Profile validation:", profileValidation);
+
+          // If profile is incomplete, redirect to complete profile page
+          if (
+            !profileValidation.isComplete &&
+            profileValidation.missingFields?.length > 0
+          ) {
+            console.log("Profile incomplete, redirecting to complete profile");
+            setTimeout(() => {
+              navigate("/complete-profile");
+            }, 500);
+            return;
+          }
+        } catch (validationError) {
+          console.warn(
+            "Could not validate profile completeness:",
+            validationError
+          );
+          // Continue to dashboard even if validation fails
+        }
 
         // Redirect to dashboard
         setTimeout(() => {

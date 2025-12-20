@@ -15,7 +15,6 @@ import {
   getStatusColor,
   STATUS_CONFIG,
   EVENT_STATUS,
-  canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,8 +22,9 @@ import {
   useRejectEvent,
   useDeleteEvent,
 } from "../../hook/useEvent";
+import RejectReasonModal from "../Modal/RejectReasonModal";
 
-function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
+function EventManagerCardAd({ data }) {
   const navigate = useNavigate();
   const approveEventMutation = useApproveEvent();
   const rejectEventMutation = useRejectEvent();
@@ -35,19 +35,18 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
   const title = data.name;
   const category = data.category?.name || "Unknown";
   const date = data.startTime;
-  const endTime = data.endTime;
   const location = `${data.address?.street || ""}, ${
     data.address?.district || ""
   }, ${data.address?.province || ""}`.trim();
   const status = data.status;
-  const registered = data.currentRegistrations || 0; // Hardcode tạm
+  const registered = data.currentRegistrations || 0;
   const capacity = data.capacity;
   const isUpdating = data._isUpdating || false; // Optimistic update flag
   const isDeleting = data._isDeleting || false; // Optimistic delete flag
 
   const [currentStatus, setCurrentStatus] = useState(status);
-  const [isCancelling, setIsCancelling] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -71,34 +70,6 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
     });
   };
 
-  const handleCancelEvent = async () => {
-    if (!canCancelEvent(currentStatus)) {
-      alert("Only approved events can be cancelled");
-      return;
-    }
-
-    const confirmed = window.confirm(
-      `Are you sure you want to cancel "${title}"?\n\nThis will notify all ${registered} registered volunteers.`
-    );
-
-    if (!confirmed) return;
-
-    const previousStatus = currentStatus;
-    setCurrentStatus(EVENT_STATUS.CANCELLED);
-    setIsCancelling(true);
-
-    try {
-      await onCancelEvent?.(id);
-      console.log(`✅ Event cancelled successfully`);
-    } catch (error) {
-      console.error("Failed to cancel event:", error);
-      setCurrentStatus(previousStatus);
-      alert(`Failed to cancel event: ${error.message || "Unknown error"}`);
-    } finally {
-      setIsCancelling(false);
-    }
-  };
-
   const getProgressPercentage = () => {
     return Math.round((registered / capacity) * 100);
   };
@@ -118,18 +89,18 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
     }
   };
 
-  const handleRejectEvent = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to reject "${title}"?`
-    );
+  const handleRejectEvent = () => {
+    setShowRejectModal(true);
+  };
 
-    if (!confirmed) return;
-
+  const handleConfirmReject = async (reason) => {
     try {
-      await rejectEventMutation.mutateAsync(id);
+      await rejectEventMutation.mutateAsync({ eventId: id, reason });
       setCurrentStatus(EVENT_STATUS.REJECTED);
+      setShowRejectModal(false);
     } catch (error) {
       console.error("Failed to reject event:", error);
+      // Modal will stay open on error so user can try again
     }
   };
 
@@ -227,16 +198,7 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
 
         <td className="px-6 py-4">
           <div className="flex items-center gap-2">
-            {currentStatus === EVENT_STATUS.APPROVED && (
-              <button
-                onClick={() => onEdit?.(id)}
-                disabled={isUpdating || isDeleting}
-                className="p-2 hover:bg-red-500 rounded-lg transition-colors bg-red-800/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Cancel Event"
-              >
-                <Ban className="w-4 h-4 text-white" />
-              </button>
-            )}
+            {/* Approve button - only for PENDING */}
             {currentStatus === EVENT_STATUS.PENDING && (
               <button
                 onClick={handleApproveEvent}
@@ -249,6 +211,8 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                 <CircleCheckBig className="w-4 h-4" />
               </button>
             )}
+
+            {/* View button - always visible */}
             <button
               onClick={() => navigate(`/dashboard/eventmanager/${id}`)}
               disabled={isUpdating || isDeleting}
@@ -257,16 +221,34 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
             >
               <Eye className="w-4 h-4 text-gray-600" />
             </button>
-            <button
-              onClick={handleDeleteEvent}
-              disabled={
-                deleteEventMutation.isPending || isUpdating || isDeleting
-              }
-              className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Delete Event"
-            >
-              <Trash2 className="w-4 h-4 text-white" />
-            </button>
+
+            {/* Reject button - only for PENDING */}
+            {currentStatus === EVENT_STATUS.PENDING && (
+              <button
+                onClick={handleRejectEvent}
+                disabled={
+                  rejectEventMutation.isPending || isUpdating || isDeleting
+                }
+                className="p-2 bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Reject Event"
+              >
+                <Ban className="w-4 h-4 text-white" />
+              </button>
+            )}
+
+            {/* Delete button - only for APPROVED */}
+            {currentStatus === EVENT_STATUS.APPROVED && (
+              <button
+                onClick={handleDeleteEvent}
+                disabled={
+                  deleteEventMutation.isPending || isUpdating || isDeleting
+                }
+                className="p-2 bg-red-400 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Delete Event"
+              >
+                <Trash2 className="w-4 h-4 text-white" />
+              </button>
+            )}
           </div>
         </td>
       </tr>
@@ -390,21 +372,7 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-4 gap-2 pt-2">
-                  {currentStatus === EVENT_STATUS.APPROVED && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCancelEvent();
-                      }}
-                      disabled={isUpdating || isDeleting}
-                      className="col-span-4 py-2.5 bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Ban className="w-4 h-4 text-white" />
-                      <span className="text-white text-sm font-medium">
-                        Cancel Event
-                      </span>
-                    </button>
-                  )}
+                  {/* Approve button - only for PENDING, full width */}
                   {currentStatus === EVENT_STATUS.PENDING && (
                     <button
                       onClick={(e) => {
@@ -426,6 +394,8 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                       </span>
                     </button>
                   )}
+
+                  {/* View button - always visible */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -437,24 +407,65 @@ function EventManagerCardAd({ data, onCancelEvent, onEdit, onView, onDelete }) {
                     <Eye className="w-4 h-4 text-white" />
                     <span className="text-white text-sm font-medium">View</span>
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteEvent();
-                    }}
-                    disabled={
-                      deleteEventMutation.isPending || isUpdating || isDeleting
-                    }
-                    className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Trash2 className="w-4 h-4 text-white" />
-                  </button>
+
+                  {/* Reject button - only for PENDING */}
+                  {currentStatus === EVENT_STATUS.PENDING && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRejectEvent();
+                      }}
+                      disabled={
+                        rejectEventMutation.isPending ||
+                        isUpdating ||
+                        isDeleting
+                      }
+                      className="col-span-2 py-2.5 bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Ban className="w-4 h-4 text-white" />
+                      <span className="text-white text-sm font-medium">
+                        {rejectEventMutation.isPending
+                          ? "Rejecting..."
+                          : "Reject"}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Delete button - only for APPROVED */}
+                  {currentStatus === EVENT_STATUS.APPROVED && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteEvent();
+                      }}
+                      disabled={
+                        deleteEventMutation.isPending ||
+                        isUpdating ||
+                        isDeleting
+                      }
+                      className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 className="w-4 h-4 text-white" />
+                      <span className="text-white text-sm font-medium">
+                        Delete
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}
           </div>
         </td>
       </tr>
+
+      {/* Reject Reason Modal */}
+      <RejectReasonModal
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        onConfirm={handleConfirmReject}
+        eventTitle={title}
+        isLoading={rejectEventMutation.isPending}
+      />
     </>
   );
 }

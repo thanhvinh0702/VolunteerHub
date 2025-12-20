@@ -1,10 +1,9 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import React, { useState, useEffect, useRef } from "react";
-import { mockUserData } from "./dumpData";
 import DropdownSelect from "../Dropdown/DropdownSelect";
 import { Download, Search } from "lucide-react";
 import UserCard from "./UserCard";
 import Pagination from "@mui/material/Pagination";
+import { useAllUsers, useBanUser, useUnbanUser } from "../../hook/useUser";
 
 const PAGE_SIZE = 6;
 
@@ -29,18 +28,11 @@ function UserManager() {
     setPage(1);
   }, [filterStatus]);
 
-  const { data, isLoading, isFetching, isError, error } = useQuery({
-    queryKey: ["user-manager", page, debouncedSearch, filterStatus],
-    queryFn: () =>
-      mockUserData({
-        page,
-        pageSize: PAGE_SIZE,
-        search: debouncedSearch,
-        status: filterStatus,
-      }),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
+  const { data, isLoading, isFetching, isError, error } = useAllUsers({
+    page,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch,
+    status: filterStatus,
   });
 
   // Track first successful load
@@ -52,30 +44,23 @@ function UserManager() {
 
   const showFullLoading = isLoading && isFirstLoad.current;
 
+  const banUserMutation = useBanUser();
+  const unbanUserMutation = useUnbanUser();
+
   const handlePageChange = (event, value) => {
     setPage(value);
   };
 
   const handleBanUser = async (id) => {
-    console.log(`Banning user ${id}...`);
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (Math.random() > 0.1) {
-          resolve();
-        } else {
-          reject(new Error("Network error"));
-        }
-      }, 1000);
-    });
-    console.log(`✅ User banned successfully`);
+    banUserMutation.mutate(id);
+  };
+
+  const handleUnbanUser = async (id) => {
+    unbanUserMutation.mutate(id);
   };
 
   const handleView = (id) => {
     console.log(`View user ${id}`);
-  };
-
-  const handleDelete = (id) => {
-    console.log(`Delete user ${id}`);
   };
 
   if (showFullLoading) {
@@ -127,12 +112,12 @@ function UserManager() {
             { value: "all", label: "All Status" },
             { value: "pending", label: "Pending" },
             { value: "active", label: "Active" },
-            { value: "ban", label: "Ban" },
+            { value: "banned", label: "Banned" },
           ]}
         />
         <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium max-sm:py-1 max-sm:px-1">
           <Download className="w-5 h-5" />
-          <span>DownLoad Report</span>
+          <span>Download Report</span>
         </button>
       </div>
       <div className="overflow-x-auto">
@@ -140,10 +125,10 @@ function UserManager() {
           <thead className="max-lg:hidden">
             <tr className="border-b border-gray-200 bg-gray-50">
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                id
+                ID
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                icon
+                Avatar
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                 Name
@@ -155,13 +140,13 @@ function UserManager() {
                 Status
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                Join date
+                Phone Number
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                Activity
+                Date of Birth
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                Action
+                Actions
               </th>
             </tr>
           </thead>
@@ -178,8 +163,8 @@ function UserManager() {
                   key={user.id}
                   data={user}
                   onBanUser={handleBanUser}
+                  onUnbanUser={handleUnbanUser}
                   onView={handleView}
-                  onDelete={handleDelete}
                 />
               ))
             ) : (

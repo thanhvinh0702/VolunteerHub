@@ -228,6 +228,7 @@ export default function Settingpage() {
   useEffect(() => {
     if (profile) {
       const mappedData = mapProfileToFormData(profile);
+
       setFormData(mappedData);
       setSkillInput("");
       setErrors({});
@@ -1101,9 +1102,9 @@ export default function Settingpage() {
                   Enable push notifications to receive updates about your
                   upcoming events and activities.
                 </p>
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <NotificationButton />
-                </div>
+                </div> */}
               </Card>
             </div>
           </div>

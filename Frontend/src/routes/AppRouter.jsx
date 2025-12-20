@@ -17,6 +17,7 @@ import Badges from "../pages/DashBoard/Badges";
 import OpportunitiesEvent from "../pages/Opportunities/Opportunities";
 import OpportunitiePageDetail from "../pages/EventPage/EventLayout";
 import EventLayout from "../pages/EventPage/EventLayout";
+import TrendingPage from "../pages/TrendingPages/TrendingPage";
 import EventManager from "../pages/EventManager/EventManager";
 import MarkCompletionList from "../components/MarkCompletion/MarkCompletionList";
 import ManagerEventForManager from "../pages/ManageEventForManager/ManagerEventForManager";
@@ -34,6 +35,10 @@ import LandingPage from "../pages/Landing";
 import SignUpForm from "../pages/Home/SignUp";
 import OAuth2Callback from "../pages/Auth/OAuth2Callback";
 import Settingpage from "../pages/Setting/Settingpage";
+import BanUser from "../pages/Auth/BanUser";
+import Analytics from "../pages/Analysis/Analytics";
+import AdminAnalytics from "../pages/Analysis/AdminAnalytics";
+import CompleteProfile from "../pages/Profile/CompleteProfile";
 
 function AppRouter() {
   return (
@@ -47,6 +52,8 @@ function AppRouter() {
       {/* <Route path="/login/*" element={<LoginPage />} /> */}
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/banned" element={<BanUser />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/" element={<LandingPage />} />
       <Route path="/setting" element={<Settingpage />} />
       {/* Protected routes */}
@@ -72,6 +79,9 @@ function AppRouter() {
           {/* opportunities */}
           <Route path="/opportunities" element={<OpportunitiesEvent />} />
           <Route path="/opportunities/:tab/:id" element={<EventLayout />} />
+
+          {/* trending events */}
+          <Route path="/trending" element={<TrendingPage />} />
         </Route>
 
         {/* Admin-only route */}
@@ -81,6 +91,7 @@ function AppRouter() {
             <Route path="eventAdminManager" element={<EventAdminManager />} />
             <Route path="userAdminManager" element={<UserManager />} />
             <Route path="exportData" element={<ReportAdmin />} />
+            <Route path="admin-analytics" element={<AdminAnalytics />} />
           </Route>
         </Route>
 
@@ -97,6 +108,7 @@ function AppRouter() {
             <Route path="markcompletion" element={<MarkCompletionList />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="eventmanager" element={<EventManager />} />
+            <Route path="manager-analytics" element={<Analytics />} />
           </Route>
 
           <Route

@@ -28,6 +28,11 @@ const roleSpecificItems = {
       label: "Export Data",
       to: "/dashboard/exportData",
     },
+    {
+      key: "analytics",
+      label: "Analytics",
+      to: "/dashboard/admin-analytics",
+    },
   ],
   [ROLES.MANAGER]: [
     // Organization có thể có thêm tab quản lý sự kiện
@@ -46,6 +51,11 @@ const roleSpecificItems = {
       key: "mark_completion",
       label: "Mark Completion",
       to: "/dashboard/markcompletion",
+    },
+    {
+      key: "analytics",
+      label: "Analytics",
+      to: "/dashboard/manager-analytics",
     },
   ],
   [ROLES.USER]: [

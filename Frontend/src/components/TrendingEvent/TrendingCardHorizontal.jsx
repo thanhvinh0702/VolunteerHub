@@ -9,7 +9,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { futureVolunteer } from "../../assets/img";
+import { useNavigate } from "react-router-dom";
+
 function TrendingCardHorizontal({
+  id,
   name,
   location,
   date,
@@ -18,14 +21,22 @@ function TrendingCardHorizontal({
   comment,
   ref,
 }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (id) {
+      navigate(`/opportunities/overview/${id}`);
+    }
+  };
   return (
     <div
-      className="flex flex-col sm:flex-row bg-gradient-to-br from-pink-100 to-blue-200 transition-all duration-300 shadow-md hover:shadow-xl min-w-[280px] sm:min-w-[400px] md:min-w-[450px] p-4 sm:space-x-5 space-y-3 sm:space-y-0 rounded-2xl border border-green-200/50 snap-start"
+      onClick={handleClick}
+      className="flex flex-col sm:flex-row bg-gradient-to-br from-pink-100 to-blue-200 transition-all duration-300 shadow-md hover:shadow-xl min-w-[280px] sm:min-w-[400px] md:min-w-[450px] p-4 sm:space-x-5 space-y-3 sm:space-y-0 rounded-2xl border border-green-200/50 snap-start cursor-pointer"
       ref={ref}
     >
       <div className="w-full sm:w-32 sm:h-32 h-48 rounded-xl overflow-hidden shadow-sm flex-shrink-0 items-center justify-center flex">
         <img
-          src={futureVolunteer}
+          src={thumbnail || futureVolunteer}
           alt={name}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
@@ -56,7 +67,7 @@ function TrendingCardHorizontal({
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 text-center">Posts</span>
               <span className="text-sm font-semibold text-gray-800">
-                {post}
+                +{post}
               </span>
             </div>
           </div>
@@ -69,7 +80,7 @@ function TrendingCardHorizontal({
                 Comments
               </span>
               <span className="text-sm font-semibold text-gray-800">
-                {comment}
+                +{comment}
               </span>
             </div>
           </div>

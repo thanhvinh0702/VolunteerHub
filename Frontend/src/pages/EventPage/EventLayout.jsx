@@ -16,6 +16,8 @@ import {
 } from "../../hook/useRegistration";
 import { useEventDetail } from "../../hook/useEvent";
 import { useAuth } from "../../hook/useAuth";
+import { useProfileGuard } from "../../hook/useProfileGuard";
+import ProfileRequiredModal from "../../components/Modal/ProfileRequiredModal";
 
 export default function EventLayout() {
   const { id, tab } = useParams();
@@ -32,6 +34,8 @@ export default function EventLayout() {
 
   const { mutate: registerForEvent, isLoading: isRegistering } =
     useRegisterForEvent();
+
+  const { checkProfile, showModal, closeModal, missingFields } = useProfileGuard();
 
   // Get active tab from URL params, default to overview
   const activeTab = tab || "overview";
@@ -128,7 +132,10 @@ export default function EventLayout() {
   ];
 
   const handleRegistration = () => {
-    registerForEvent(id);
+    // Check profile before registering
+    checkProfile(() => {
+      registerForEvent(id);
+    });
   };
 
   const getButtonConfig = () => {
@@ -419,6 +426,14 @@ export default function EventLayout() {
         {/*<ContactCard />
         <RelatedEventsCard />*/}
       </aside>
+
+      {/* Profile Required Modal */}
+      <ProfileRequiredModal
+        isOpen={showModal}
+        onClose={closeModal}
+        missingFields={missingFields}
+        redirectTo={`/opportunities/overview/${id}`}
+      />
     </div>
   );
 }
