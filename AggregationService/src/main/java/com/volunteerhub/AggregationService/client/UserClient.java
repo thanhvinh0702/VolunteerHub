@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "USERSERVICE", path = "/api/v1/users/users", configuration = FeignConfig.class)
+@FeignClient(name = "USERSERVICE", path = "/api/v1/users", configuration = FeignConfig.class)
 public interface UserClient {
 
-    @GetMapping("/users/all")
+    @GetMapping("/admin/users/all")
     List<UserResponse> findAll(@RequestParam(defaultValue = "0") int pageNum,
                                @RequestParam(defaultValue = "10") int pageSize);
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     UserResponse findById(@PathVariable String userId);
 
-    @GetMapping("/by-ids")
+    @GetMapping("/users/by-ids")
     List<UserResponse> findAllByIds(@RequestParam List<String> userIds);
 }
