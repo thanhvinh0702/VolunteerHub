@@ -76,8 +76,10 @@ public class ReactionService {
     }
 
     public ReactionResponse updateByUserId(String userId, Long postId, ReactionRequest reactionRequest) {
-        Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElseThrow(() ->
-                new NoSuchElementException("No reaction found!"));
+        Reaction reaction = reactionRepository.findByOwnerIdAndPostId(userId, postId).orElse(null);
+        if (reaction == null) {
+            return create(userId, postId, reactionRequest);
+        }
         if (!reaction.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Insufficient permission to update this record.");
         }
