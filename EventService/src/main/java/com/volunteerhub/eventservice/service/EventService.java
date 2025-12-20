@@ -189,7 +189,7 @@ public class EventService {
     }
 
     // TODO: delete old images
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER', 'ADMIN')")
     public EventResponse deleteEvent(String userId, Long eventId) {
         Event event = findEntityById(eventId);
         boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
