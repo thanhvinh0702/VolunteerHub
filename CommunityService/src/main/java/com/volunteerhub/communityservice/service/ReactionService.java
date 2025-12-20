@@ -2,6 +2,7 @@ package com.volunteerhub.communityservice.service;
 
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.ReactionResponse;
+import com.volunteerhub.common.enums.ReactionType;
 import com.volunteerhub.communityservice.dto.*;
 import com.volunteerhub.communityservice.mapper.ReactionMapper;
 import com.volunteerhub.communityservice.model.Post;
@@ -18,7 +19,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +40,26 @@ public class ReactionService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @postService.canAccessPost(authentication.name, #postId)")
-    public PageResponse<ReactionResponse> findByPostId(Long postId, Integer pageNum, Integer pageSize) {
+    public PageResponse<ReactionResponse> findByPostId(Long postId, ReactionType type, Integer pageNum, Integer pageSize) {
         PageNumAndSizeResponse pageNumAndSize = PaginationValidation.validate(pageNum, pageSize);
+        if (type == null) {
+            return reactionMapper.toDtoPage(
+                    reactionRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
+            );
+        }
         return reactionMapper.toDtoPage(
-                reactionRepository.findByPostId(postId, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
+                reactionRepository.findByPostIdAndType(postId, type, PageRequest.of(pageNumAndSize.getPageNum(), pageNumAndSize.getPageSize()))
         );
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or @postService.canAccessPost(authentication.name, #postId)")
+    public Map<String, Long> getReactionCountByType(Long postId) {
+        List<ReactionCountByType> counts = reactionRepository.countReactionsByType(postId);
+        return counts.stream()
+                .collect(Collectors.toMap(
+                        ReactionCountByType::getType,
+                        ReactionCountByType::getCount
+                ));
     }
 
     @PreAuthorize("@postService.canAccessPost(authentication.name, #postId)")

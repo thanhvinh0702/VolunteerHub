@@ -2,6 +2,7 @@ package com.volunteerhub.communityservice.controller;
 
 import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.ReactionResponse;
+import com.volunteerhub.common.enums.ReactionType;
 import com.volunteerhub.communityservice.dto.ReactionRequest;
 import com.volunteerhub.communityservice.service.ReactionService;
 import com.volunteerhub.communityservice.validation.OnCreate;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/events/{eventId}/posts/{postId}/reactions")
@@ -25,9 +27,15 @@ public class ReactionController {
 
     @GetMapping
     public ResponseEntity<PageResponse<ReactionResponse>> findAll(@PathVariable Long postId,
+                                                                  @RequestParam(required = false) ReactionType type,
                                                                   @RequestParam(required = false) Integer pageNum,
                                                                   @RequestParam(required = false) Integer pageSize) {
-        return ResponseEntity.ok(reactionService.findByPostId(postId, pageNum, pageSize));
+        return ResponseEntity.ok(reactionService.findByPostId(postId, type, pageNum, pageSize));
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> getReactionCountByType(@PathVariable Long postId) {
+        return ResponseEntity.ok(reactionService.getReactionCountByType(postId));
     }
 
     @PostMapping
