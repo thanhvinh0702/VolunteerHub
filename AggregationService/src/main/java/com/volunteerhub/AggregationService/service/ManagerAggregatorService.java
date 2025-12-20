@@ -4,10 +4,12 @@ import com.volunteerhub.AggregationService.client.EventClient;
 import com.volunteerhub.AggregationService.client.RegistrationClient;
 import com.volunteerhub.AggregationService.client.UserClient;
 import com.volunteerhub.AggregationService.dto.ManagerRegistrationResponse;
+import com.volunteerhub.common.dto.AddressResponse;
 import com.volunteerhub.common.dto.EventResponse;
 import com.volunteerhub.common.dto.RegistrationResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
+import com.volunteerhub.common.utils.ExportUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,5 +67,41 @@ public class ManagerAggregatorService {
                             .build();
                 })
                 .toList();
+    }
+
+    public byte[] exportAllUsers(String format) {
+        List<UserResponse> users = userClient.findAllByIds(null);
+
+        if (users == null || users.isEmpty()) return new byte[0];
+
+        if ("json".equalsIgnoreCase(format)) {
+            return ExportUtils.toJson(users);
+        }
+
+        String[] headers = {
+                "User ID", "Họ Tên", "Username", "Email", "Số Điện Thoại",
+                "Vai Trò", "Trạng Thái", "Ngày Tham Gia", "Địa Chỉ", "Kỹ Năng"
+        };
+
+        return ExportUtils.toCsv(headers, users, u -> new Object[] {
+                u.getId(),
+                u.getFullName(),
+                u.getUsername(),
+                u.getEmail(),
+                u.getPhoneNumber() != null ? u.getPhoneNumber() : "",
+                u.getRole(),
+                u.getStatus(),
+                u.getCreatedAt(),
+                formatAddress(u.getAddress()),
+                u.getSkills() != null ? String.join("; ", u.getSkills()) : ""
+        });
+    }
+
+    private String formatAddress(AddressResponse addr) {
+        if (addr == null) return "N/A";
+        return String.format("%s, %s, %s",
+                addr.getStreet() != null ? addr.getStreet() : "",
+                addr.getDistrict() != null ? addr.getDistrict() : "",
+                addr.getProvince() != null ? addr.getProvince() : "");
     }
 }

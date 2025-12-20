@@ -9,6 +9,7 @@ import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.UserEventStatus;
+import com.volunteerhub.common.utils.ExportUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -95,5 +96,60 @@ public class RegistrationAggregatorService {
                 .totalPages(userEventResponsePageResponses.getTotalPages())
                 .totalElements(userEventResponsePageResponses.getTotalElements())
                 .build();
+    }
+
+    public byte[] exportAggregatedData(List<AggregatedUserEventResponse> data, String format) {
+
+        if ("json".equalsIgnoreCase(format)) {
+            return ExportUtils.toJson(data);
+        }
+
+        String[] headers = {
+                "Reg ID", "Participant Name", "Email", "Event Name", "Status", "Applied Date"
+        };
+
+        return ExportUtils.toCsv(headers, data, item -> {
+            var reg = item.getUserEventResponse();
+            var user = item.getUser();
+            var event = item.getEvent();
+
+            return new Object[] {
+                    reg != null ? reg.getId() : "",
+                    user != null ? user.getFullName() : "N/A",
+                    user != null ? user.getEmail() : "N/A",
+                    event != null ? event.getName() : "N/A",
+                    reg != null ? reg.getStatus() : "",
+                    reg != null && reg.getCreatedAt() != null ? reg.getCreatedAt().toString() : ""
+            };
+        });
+    }
+
+    public List<AggregatedUserEventResponse> getDetailParticipantsForExport(Long eventId) {
+        PageResponse<UserEventResponse> registrationPage = registrationClient.findAllParticipants(eventId, 0, 1000);
+        List<UserEventResponse> registrations = registrationPage.getContent();
+
+        if (registrations.isEmpty()) return List.of();
+
+        EventResponse event = eventClient.getEventById(eventId);
+
+        List<String> userIds = registrations.stream()
+                .map(UserEventResponse::getUserId)
+                .distinct()
+                .toList();
+
+        List<UserResponse> userResponses = userClient.findAllByIds(userIds);
+        Map<String, UserResponse> userMap = userResponses.stream()
+                .collect(Collectors.toMap(UserResponse::getId, Function.identity()));
+
+        return registrations.stream()
+                .map(ue -> {
+                    UserResponse user = userMap.getOrDefault(ue.getUserId(), UserResponse.builder().build());
+                    return AggregatedUserEventResponse.builder()
+                            .userEventResponse(ue)
+                            .user(user)
+                            .event(event)
+                            .build();
+                })
+                .toList();
     }
 }

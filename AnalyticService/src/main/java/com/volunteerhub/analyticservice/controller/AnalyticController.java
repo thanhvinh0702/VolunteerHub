@@ -36,13 +36,13 @@ public class AnalyticController {
     }
 
     @GetMapping("/application-rate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Long> getApplicationRate() {
         return ResponseEntity.ok(analyticService.getApplicationRate());
     }
 
     @GetMapping("/approval-rate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Long> getApprovalRate() {
         return ResponseEntity.ok(analyticService.getApprovedRate());
     }

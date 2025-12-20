@@ -7,10 +7,13 @@ import com.volunteerhub.common.dto.PageResponse;
 import com.volunteerhub.common.dto.UserResponse;
 import com.volunteerhub.common.enums.EventStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -98,5 +101,23 @@ public class EventAggregatorController {
                                                           @RequestParam(required = false) Integer pageNum,
                                                           @RequestParam(required = false) Integer pageSize) {
         return ResponseEntity.ok(eventAggregatorService.getEventUsers(eventId, pageNum, pageSize));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportEvents(@RequestParam(defaultValue = "csv") String format) {
+        byte[] data = eventAggregatorService.exportAllEvents(format);
+
+        String extension = "json".equalsIgnoreCase(format) ? ".json" : ".csv";
+        MediaType mediaType = "json".equalsIgnoreCase(format)
+                ? MediaType.APPLICATION_JSON
+                : MediaType.parseMediaType("text/csv");
+
+        String fileName = "all_events_report_" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + extension;
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(mediaType)
+                .body(data);
     }
 }

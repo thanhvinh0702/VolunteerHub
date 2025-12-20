@@ -1,6 +1,7 @@
 package com.volunteerhub.registrationservice.controller;
 
 import com.volunteerhub.common.dto.*;
+import com.volunteerhub.common.utils.ExportUtils;
 import com.volunteerhub.common.enums.UserEventStatus;
 import com.volunteerhub.registrationservice.dto.UserEventExport;
 import com.volunteerhub.registrationservice.dto.UserEventRequest;
@@ -8,7 +9,9 @@ import com.volunteerhub.common.dto.UserEventResponse;
 import com.volunteerhub.registrationservice.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -145,7 +148,7 @@ public class UserEventController {
     }
 
     @GetMapping("/application_rate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Long> getApplicationRate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
@@ -154,7 +157,7 @@ public class UserEventController {
     }
 
     @GetMapping("/approved_rate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Long> getApprovedRate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
@@ -168,8 +171,39 @@ public class UserEventController {
     }
 
     @GetMapping("/event/{eventId}/export")
-    public ResponseEntity<List<UserEventExport>> exportByEvent(@PathVariable Long eventId) {
-        return ResponseEntity.ok(userEventService.getByEventForExport(eventId));
+    public ResponseEntity<byte[]> exportParticipants(
+            @PathVariable Long eventId,
+            @RequestParam(defaultValue = "csv") String format) {
+
+        List<UserEventExport> data = userEventService.getByEventForExport(eventId);
+
+        byte[] content;
+        String fileName = "participants_event_" + eventId;
+        MediaType contentType;
+
+        if ("json".equalsIgnoreCase(format)) {
+            content = ExportUtils.toJson(data);
+            fileName += ".json";
+            contentType = MediaType.APPLICATION_JSON;
+        } else {
+            String[] headers = {"ID", "Event ID", "User ID", "Status", "Note", "Registered At"};
+
+            content = ExportUtils.toCsv(headers, data, item -> new Object[] {
+                    item.getId(),
+                    item.getEventId(),
+                    item.getUserId(),
+                    item.getStatus(),
+                    item.getNote() != null ? item.getNote() : "",
+                    item.getRegisteredAt()
+            });
+            fileName += ".csv";
+            contentType = MediaType.parseMediaType("text/csv");
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(contentType)
+                .body(content);
     }
 
     @GetMapping("/my-stats/participated-events")
