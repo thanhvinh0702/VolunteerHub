@@ -53,6 +53,7 @@ export default function FeedPage() {
 
   const mapApiPost = (p) => ({
     id: p?.id,
+    eventId: id, // Add eventId from URL params
     author: {
       name: p?.owner?.fullName ?? "Unknown",
       avatarUrl: p?.owner?.avatarUrl,
@@ -78,9 +79,9 @@ export default function FeedPage() {
     });
   }, [data]);
 
-  // Tạo bài viết mới -> đẩy lên đầu danh sách
+  // Tạo bài viết mới
   const handleCreate = (newPost) => {
-    const minimal = {
+    const _minimal = {
       id: newPost.id ?? Date.now(),
       content: newPost.content ?? "",
       text: newPost.text ?? newPost.content ?? "",
@@ -88,7 +89,6 @@ export default function FeedPage() {
       author: newPost.author ?? { name: currentUser.name },
       createdAt: newPost.createdAt ?? new Date().toISOString(),
     };
-    //setPosts((prev) => [{ ...minimal, _localCreated: true }, ...prev]);
   };
 
   // Modal handlers

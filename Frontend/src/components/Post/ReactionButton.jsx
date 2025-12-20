@@ -1,13 +1,14 @@
 // ReactionButton.jsx
 import React, { useEffect, useRef, useState } from "react";
+import { ThumbsUp } from "lucide-react";
 
 const REACTIONS = [
-  { key: "like", label: "👍" },
-  { key: "love", label: "❤️" },
-  { key: "haha", label: "😂" },
-  { key: "wow", label: "😮" },
-  { key: "sad", label: "😢" },
-  { key: "angry", label: "😡" },
+  { key: "like", label: "👍", text: "Like" },
+  { key: "love", label: "❤️", text: "Love" },
+  { key: "haha", label: "😂", text: "Haha" },
+  { key: "wow", label: "😮", text: "Wow" },
+  { key: "sad", label: "😢", text: "Sad" },
+  { key: "angry", label: "😡", text: "Angry" },
 ];
 
 export default function ReactionButton({
@@ -72,10 +73,13 @@ export default function ReactionButton({
 
   // toggle on quick click
   const handleClick = () => {
-    // if bar was open (due to hover), don't treat as toggle
+    // if bar was open (due to hover)
     if (showBar) return;
-    if (current === "like") clear();
-    else choose("like");
+    if (current) {
+      clear(); 
+    } else {
+      choose("like"); // Add like reaction
+    }
   };
 
   // pointer (long-press) logic
@@ -161,18 +165,18 @@ export default function ReactionButton({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block z-10">
       {/* Reaction popup */}
       {showBar && (
         <div
           ref={barRef}
-          className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 select-none z-90"
+          className="absolute bottom-full mb-3 left-0 select-none z-100"
           onPointerEnter={onBarPointerEnter}
           onPointerMove={onBarPointerMove}
           onPointerLeave={onBarPointerLeave}
           onPointerUp={onBarPointerUp}
         >
-          <div className="bg-white rounded-3xl px-2 py-3 shadow-xl border border-blue-200 flex items-center gap-3">
+          <div className="bg-white rounded-3xl px-2 py-3 shadow-2xl border border-blue-200 flex items-center gap-3">
             {REACTIONS.map((r, i) => {
               const isHover = i === hoverIndex;
               return (
@@ -211,11 +215,23 @@ export default function ReactionButton({
         onMouseLeave={onMouseLeave}
       >
         <div className={`w-7 h-7 flex items-center justify-center text-xl`}>
-          {current
-            ? REACTIONS.find((r) => r.key === current)?.label || "👍"
-            : "👍"}
+          {current ? (
+            // Show emoji for current reaction
+            <span>
+              {REACTIONS.find((r) => r.key === current)?.label || "👍"}
+            </span>
+          ) : (
+            // Show ThumbsUp icon when no reaction
+            <ThumbsUp className="w-5 h-5" />
+          )}
         </div>
-        <span>{small ? "" : "Thích"}</span>
+        <span>
+          {small
+            ? ""
+            : current
+            ? REACTIONS.find((r) => r.key === current)?.text || "Like"
+            : "Like"}
+        </span>
       </div>
     </div>
   );

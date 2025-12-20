@@ -2,7 +2,11 @@
 import React from "react";
 import ReactionButton from "./ReactionButton";
 import { FaCommentAlt, FaShare } from "react-icons/fa";
-import { useCreateReaction } from "../../hook/useCommunity";
+import {
+  useCreateReaction,
+  useMyReaction,
+  useReactions,
+} from "../../hook/useCommunity";
 
 const REACTION_ICONS = {
   like: "👍",
@@ -23,9 +27,26 @@ export default function ReactionBar({
   hiddenComment = false,
   eventId,
 }) {
-  // Hook for background API call
-  const { mutate: createReaction } = useCreateReaction(eventId, post?.id);
-  // Map UI keys to backend enum
+  // Fetch current user's reaction
+
+  const { data: myReaction } = useMyReaction(eventId, post?.id);
+
+  // Fetch reaction counts from API
+  const { data: reactionCounts } = useReactions(eventId, post?.id);
+
+  // Map ENUM
+  const toKeyType = (enumType) => {
+    const map = {
+      LIKE: "like",
+      LOVE: "love",
+      HAHA: "haha",
+      WOW: "wow",
+      SAD: "sad",
+      ANGRY: "angry",
+    };
+    return map[enumType] || null;
+  };
+
   const toEnumType = (key) => {
     const map = {
       like: "LIKE",
@@ -38,22 +59,71 @@ export default function ReactionBar({
     return map[key] || "LIKE";
   };
 
+  const currentReactionKey = myReaction?.type
+    ? toKeyType(myReaction.type)
+    : null;
+
+  // Hook for background API call
+  const { mutate: createReaction, isPending } = useCreateReaction(
+    eventId,
+    post?.id,
+    myReaction
+  );
+
   if (!post) return null;
 
-  const reactionEntries = Object.entries(post.reactions ?? {}).filter(
-    ([, count]) => typeof count === "number"
-  );
+  // Convert ENUM keys to lowercase for display
+  const reactionEntries = reactionCounts
+    ? Object.entries(reactionCounts)
+        .map(([enumKey, count]) => [toKeyType(enumKey), count])
+        .filter(([, count]) => count > 0) // Only show reactions with count > 0
+    : [];
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-gray-700">
       <div className="flex flex-row gap-2 items-stretch">
         <ReactionButton
-          initialReaction={post.userReaction ?? null}
+          initialReaction={currentReactionKey}
           onReact={(r) => {
             onReact?.(post.id, r);
-            if (r && eventId && post?.id) {
-              // Call API in background with payload { type: "..." }
-              createReaction(toEnumType(r));
+
+            
+            // Skip if mutation is already pending to avoid race condition
+            if (isPending) {
+              console.log("=== MUTATION PENDING ===");
+              console.log(
+                "Skipping API call - previous request still in progress"
+              );
+              console.log("=======================");
+              return;
+            }
+
+            if (eventId && post?.id) {
+              if (r === null) {
+                // User wants to remove reaction 
+                
+                if (currentReactionKey) {
+                  const enumType = toEnumType(currentReactionKey);
+                  
+                  createReaction(enumType);
+                } 
+              } else {
+                // User selected a reaction → create/update
+                const enumType = toEnumType(r);
+                
+                if (currentReactionKey && currentReactionKey !== r) {
+                  console.log(
+                    "Expected: BE will UPDATE from",
+                    currentReactionKey.toUpperCase(),
+                    "to",
+                    enumType
+                  );
+                } else if (currentReactionKey === r) {
+                  console.log("Expected: BE will TOGGLE OFF (same reaction)");
+                }
+                
+                createReaction(enumType);
+              }
             }
           }}
           small={compact}

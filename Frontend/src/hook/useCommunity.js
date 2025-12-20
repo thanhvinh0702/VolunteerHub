@@ -222,18 +222,73 @@ export const useDeleteComment = (eventId, postId) => {
     });
 };
 
+// Normalize reaction counts - ensure all 6 reactions have a count (0 if not present)
+const normalizeReactionCounts = (apiResponse) => {
+    const allReactions = {
+        LIKE: 0,
+        LOVE: 0,
+        HAHA: 0,
+        WOW: 0,
+        SAD: 0,
+        ANGRY: 0,
+    };
+
+    // Merge API response with default values
+    if (apiResponse && typeof apiResponse === 'object') {
+        Object.keys(allReactions).forEach(key => {
+            if (apiResponse[key] !== undefined && typeof apiResponse[key] === 'number') {
+                allReactions[key] = apiResponse[key];
+            }
+        });
+    }
+
+
+
+    return allReactions;
+};
+
 export const useReactions = (eventId, postId, params) => {
     const { pageNum = 0, pageSize = 10 } = params || {};
 
     return useQuery({
         queryKey: [...COMMUNITY_QUERY_KEY, "reactions", eventId, postId, pageNum, pageSize],
-        queryFn: () => CommunityService.getAllReactions(eventId, postId),
+        queryFn: async () => {
+            const result = await CommunityService.getAllReactions(eventId, postId);
+
+            return normalizeReactionCounts(result);
+        },
         enabled: !!eventId && !!postId,
         keepPreviousData: true,
     });
 };
 
-export const useCreateReaction = (eventId, postId) => {
+// Hook to get current user's reaction for a post
+// API already returns only current user's reaction
+export const useMyReaction = (eventId, postId) => {
+    return useQuery({
+        queryKey: [...COMMUNITY_QUERY_KEY, "myReaction", eventId, postId],
+        queryFn: async () => {
+            const result = await CommunityService.getMyReaction(eventId, postId);
+            console.log("=== GET My Reaction ===");
+            console.log("Event ID:", eventId);
+            console.log("Post ID:", postId);
+            console.log("API Response:", result);
+
+            // API returns { content: [reaction], ... }
+            // If user has reacted, content[0] will have the reaction
+            // If user hasn't reacted, content will be empty
+            const myReaction = result?.content?.[0] || null;
+            console.log("My Reaction:", myReaction);
+            console.log("======================");
+
+            return myReaction;
+        },
+        enabled: !!eventId && !!postId,
+        staleTime: 1000 * 30, // 30 seconds
+    });
+};
+
+export const useCreateReaction = (eventId, postId, currentUserReaction = null) => {
     const queryClient = useQueryClient();
 
     const toEnumType = (key) => {
@@ -242,25 +297,61 @@ export const useCreateReaction = (eventId, postId) => {
     };
 
     return useMutation({
-        // Accept either a full payload or a lowercase key string
-        mutationFn: (input) => {
-            const payload = typeof input === "string" ? { type: toEnumType(input) } : input;
-            return CommunityService.createReaction(eventId, postId, payload);
+        // Accept either ENUM string (LIKE, SAD) or lowercase key (like, sad)
+        mutationFn: async (input) => {
+            console.log("=== useCreateReaction mutationFn ===");
+            console.log("Input:", input);
+            console.log("Input type:", typeof input);
+            console.log("Current User Reaction:", currentUserReaction);
+
+            let reactionEnum;
+
+            if (typeof input === "string") {
+                if (input === input.toUpperCase() && ["LIKE", "LOVE", "HAHA", "WOW", "SAD", "ANGRY"].includes(input)) {
+                    reactionEnum = input;
+                } else {
+
+                    reactionEnum = toEnumType(input);
+                }
+            } else if (input?.type) {
+                reactionEnum = input.type;
+            } else {
+                reactionEnum = "LIKE";
+            }
+
+            console.log("Final Reaction ENUM:", reactionEnum);
+
+            // If clicking same reaction -> delte
+            const payload = { type: reactionEnum };
+
+            console.log("Payload:", payload);
+            const result = await CommunityService.createReaction(eventId, postId, payload);
+            console.log("Result:", result);
+            console.log("===================================");
+            return result;
         },
-        // Optimistic cache nudge (optional; UI is already optimistic in FeedPage)
+
         onMutate: async (input) => {
             // Cancel any outgoing refetches for reactions/post while we optimistically update
             await queryClient.cancelQueries({ queryKey: [...COMMUNITY_QUERY_KEY, "reactions", eventId, postId] });
+            await queryClient.cancelQueries({ queryKey: [...COMMUNITY_QUERY_KEY, "myReaction", eventId, postId] });
             await queryClient.cancelQueries({ queryKey: [...COMMUNITY_QUERY_KEY, "post", eventId, postId] });
             return { input };
         },
         onSuccess: () => {
-            toast.success("Reaction added successfully.");
+
+
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "reactions", eventId, postId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "myReaction", eventId, postId]);
             queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "post", eventId, postId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "posts", eventId]);
+            queryClient.invalidateQueries([...COMMUNITY_QUERY_KEY, "postsInfinite", eventId]);
         },
-        onError: (error, _input, _context) => {
-            const message = error?.response?.data?.message || error.message || "Failed to add reaction";
+        onError: (error) => {
+            console.log("=== Reaction Error ===");
+            console.log("Error:", error);
+            console.log("Error response:", error?.response);
+            const message = error?.response?.data?.message || error.message || "Failed to update reaction";
             toast.error(message);
         },
     });

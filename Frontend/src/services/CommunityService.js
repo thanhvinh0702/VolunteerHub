@@ -51,16 +51,23 @@ const CommunityService = {
     },
 
     // ==================== REACTION APIs ====================
-    getAllReactions: (eventId, postId, pageNum, pageSize) => {
-        const params = {};
-        if (pageNum !== undefined) params.pageNum = pageNum;
-        if (pageSize !== undefined) params.pageSize = pageSize;
-
-        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/reactions`, { params });
+    // Get reaction counts for a post
+    getAllReactions: (eventId, postId) => {
+        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/reactions/count`);
     },
 
+    // Get current user's reaction for a post
+    getMyReaction: (eventId, postId) => {
+        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/reactions`);
+    },
+
+    // PUT to create/update reaction (upsert)
     createReaction: (eventId, postId, reactionData) => {
-        return axiosClient.post(`/api/v1/events/${eventId}/posts/${postId}/reactions`, reactionData);
+        console.log("=== Creating/Updating Reaction ===");
+        console.log("Event ID:", eventId);
+        console.log("Post ID:", postId);
+        console.log("Reaction Data:", reactionData);
+        return axiosClient.put(`/api/v1/events/${eventId}/posts/${postId}/reactions`, reactionData);
     },
 
     updateReaction: (eventId, postId, reactionId, reactionData) => {
@@ -88,3 +95,4 @@ export const reactionKeyToEnum = (key) => {
     const map = { like: REACTION_TYPE.LIKE, love: REACTION_TYPE.LOVE, haha: REACTION_TYPE.HAHA, wow: REACTION_TYPE.WOW, sad: REACTION_TYPE.SAD, angry: REACTION_TYPE.ANGRY };
     return map[k] || REACTION_TYPE.LIKE;
 };
+
