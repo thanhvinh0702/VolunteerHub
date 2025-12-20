@@ -17,7 +17,7 @@ const MOCK_API_RESPONSES = {
     "/api/v1/users/users/me/pending-applications": { value: 7 },
 
     // ADMIN
-    "/api/v1/users/admin/all-users": { value: 1024 },
+    "/api/v1/users/admin/users/all": { value: 1024 },
     "/api/v1/users/admin/active-organizations": { value: 45 },
     "/api/v1/users/admin/active-events": { value: 12 },
 };

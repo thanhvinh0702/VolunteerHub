@@ -19,7 +19,7 @@ public class AdminController {
     private final UserService userService;
     private final UserLoginHistoryService userLoginHistoryService;
 
-    @GetMapping("/all-users")
+    @GetMapping("/users/all")
     public ResponseEntity<List<UserResponse>> findAll(@RequestParam(required = false) Integer page,
                                                       @RequestParam(required = false) Integer pageSize) {
         return ResponseEntity.ok(userService.findAll(page, pageSize));

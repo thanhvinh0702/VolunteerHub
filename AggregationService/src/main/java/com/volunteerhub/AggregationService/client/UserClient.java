@@ -13,7 +13,7 @@ import java.util.List;
 @FeignClient(name = "USERSERVICE", path = "/api/v1/users/users", configuration = FeignConfig.class)
 public interface UserClient {
 
-    @GetMapping("/all-users")
+    @GetMapping("/users/all")
     List<UserResponse> findAll(@RequestParam(defaultValue = "0") int pageNum,
                                @RequestParam(defaultValue = "10") int pageSize);
 

@@ -65,7 +65,7 @@ const getProfileCompleteness = async () => {
 
 const getAllUsers = async () => {
     try {
-        const users = await axiosClient.get("/api/v1/users/admin/all-users");
+        const users = await axiosClient.get("/api/v1/users/admin/users/all");
         return users;
     } catch (error) {
         console.error("Error fetching all users:", error);

@@ -68,7 +68,7 @@ export const dashboardConfig = {
       label: "Total Users",
       value: "256",
       icon: <FiUsers className="text-blue-500" />,
-      endpoint: "/api/v1/users/admin/all-users",
+      endpoint: "/api/v1/users/admin/users/all",
     },
     {
       label: "Active Organizations",
