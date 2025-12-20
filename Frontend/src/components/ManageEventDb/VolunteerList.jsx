@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Eye,
-  Edit3,
   Search,
   ChevronDown,
   ChevronUp,
-  Delete,
   Trash,
+  Download,
 } from "lucide-react";
 import Pagination from "@mui/material/Pagination";
 import {
@@ -14,6 +13,7 @@ import {
   useRemoveParticipant,
 } from "../../hook/useRegistration";
 import { useOutletContext } from "react-router-dom";
+import AnalysisService from "../../services/analysisService";
 
 const PAGE_SIZE = 10; // giống cách đặt PAGE_SIZE trong EventManager
 
@@ -21,7 +21,9 @@ function VolunteerList() {
   const { eventId } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState(new Set());
-  const [page, setPage] = useState(0); // API dùng 0-based
+  const [page, setPage] = useState(0);
+  const [exportFormat, setExportFormat] = useState("csv");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Reset page khi thay đổi search
   useEffect(() => {
@@ -63,6 +65,16 @@ function VolunteerList() {
       .slice(0, 2);
   };
 
+  const formatAddress = (address) => {
+    if (!address) return "";
+    if (typeof address === "string") return address;
+    if (typeof address === "object") {
+      const { street, district, province } = address;
+      return [street, district, province].filter(Boolean).join(", ");
+    }
+    return "";
+  };
+
   const filteredVolunteers = registrations.filter((registration) => {
     const searchLower = searchQuery.toLowerCase();
     const user = registration.user || {};
@@ -71,7 +83,7 @@ function VolunteerList() {
       user.email?.toLowerCase().includes(searchLower) ||
       user.username?.toLowerCase().includes(searchLower) ||
       user.phoneNumber?.toLowerCase().includes(searchLower) ||
-      user.address?.toLowerCase().includes(searchLower)
+      formatAddress(user.address)?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -89,10 +101,6 @@ function VolunteerList() {
 
   const handleView = (registration) => {
     console.log("View registration:", registration);
-  };
-
-  const handleEdit = (registration) => {
-    console.log("Edit registration:", registration);
   };
 
   const handleDelete = (registration) => {
@@ -116,6 +124,71 @@ function VolunteerList() {
 
   const handlePageChange = (event, value) => {
     setPage(value - 1); // từ 1-based (UI) sang 0-based (API)
+  };
+
+  const handleExportData = async () => {
+    if (!eventId) {
+      alert("Event ID is missing");
+      return;
+    }
+
+    setIsExporting(true);
+
+    try {
+      if (exportFormat === "csv") {
+        // Export CSV từ backend
+        const response = await AnalysisService.getEventParticipantsCsv(eventId);
+
+        // Create blob and download
+        const blob = new Blob([response], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute(
+          "download",
+          `volunteers_event_${eventId}_${
+            new Date().toISOString().split("T")[0]
+          }.csv`
+        );
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        // Export JSON từ backend
+        const response = await AnalysisService.getEventParticipantsJson(
+          eventId
+        );
+
+        // Convert JSON to string and download
+        const jsonString = JSON.stringify(response, null, 2);
+        const blob = new Blob([jsonString], {
+          type: "application/json;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute(
+          "download",
+          `volunteers_event_${eventId}_${
+            new Date().toISOString().split("T")[0]
+          }.json`
+        );
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      alert(`Failed to export data: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (isLoading) {
@@ -148,16 +221,38 @@ function VolunteerList() {
         </p>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
-        <input
-          type="text"
-          placeholder="Search by name, email, username, phone, or address..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 sm:pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      {/* Search Bar & Export Controls */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search volunteers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex gap-2">
+          <select
+            value={exportFormat}
+            onChange={(e) => setExportFormat(e.target.value)}
+            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+          </select>
+          <button
+            onClick={handleExportData}
+            disabled={isExporting || !eventId}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="h-4 w-4" />
+            {isExporting
+              ? "Exporting..."
+              : `Export ${exportFormat.toUpperCase()}`}
+          </button>
+        </div>
       </div>
 
       {/* Desktop Table View */}
@@ -209,7 +304,7 @@ function VolunteerList() {
                       {user.phoneNumber || ""}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
-                      {user.address || ""}
+                      {formatAddress(user.address)}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
                       {formatDate(registration.reviewedAt)}
@@ -308,7 +403,7 @@ function VolunteerList() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Address:</span>
                       <span className="text-gray-900 font-medium text-right flex-1 ml-2">
-                        {user.address || ""}
+                        {formatAddress(user.address)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">

@@ -167,3 +167,18 @@ export const useTotalActiveEvents = () => {
     });
 };
 
+// ==================== EXPORT PARTICIPANTS HOOKS ====================
+
+/**
+ * Hook để lấy danh sách participants của một event (JSON format)
+ */
+export const useEventParticipantsJson = (eventId, options = {}) => {
+    return useQuery({
+        queryKey: [...ANALYTICS_QUERY_KEY, "eventParticipants", eventId, "json"],
+        queryFn: () => AnalysisService.getEventParticipantsJson(eventId),
+        enabled: !!eventId && (options.enabled !== false),
+        staleTime: 2 * 60 * 1000, // 2 minutes
+        ...options,
+    });
+};
+

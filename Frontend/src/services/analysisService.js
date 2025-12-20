@@ -81,6 +81,37 @@ const AnalysisService = {
             throw error;
         }
     },
+
+    // ==================== EXPORT PARTICIPANTS ====================
+
+    // Export participants của một event (JSON format)
+    getEventParticipantsJson: async (eventId) => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/registrations/export/participants?eventId=${eventId}&format=json`
+            );
+            return response;
+        } catch (error) {
+            console.error("Error fetching event participants (JSON):", error);
+            throw error;
+        }
+    },
+
+    // Export participants của một event (CSV format)
+    getEventParticipantsCsv: async (eventId) => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/registrations/export/participants?eventId=${eventId}`,
+                {
+                    responseType: 'blob',
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error("Error fetching event participants (CSV):", error);
+            throw error;
+        }
+    },
 };
 
 export default AnalysisService;
