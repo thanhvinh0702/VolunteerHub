@@ -240,7 +240,6 @@ public class EventService {
         return eventMapper.toDtoPage(events);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public Long countEvents() {
         return eventRepository.countEvents();
     }
