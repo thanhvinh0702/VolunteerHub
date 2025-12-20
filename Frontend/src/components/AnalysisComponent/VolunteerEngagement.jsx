@@ -1,17 +1,73 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-
-const data = [
-  { label: "Application Rate", value: "78%", trend: "up", change: "+5%" },
-  { label: "Approval Rate", value: "85%", trend: "up", change: "+3%" },
-  { label: "Retention Rate", value: "92%", trend: "up", change: "+8%" },
-  { label: "Avg. Response Time", value: "2.3 days", trend: "down", change: "-0.5d" },
-];
+import { useManagerAnalytics } from "../../hook/useAnalysis";
 
 function VolunteerEngagement() {
+  // Fetch analytics data from API
+  const { applicationRate, approvalRate, participatedEvents, isLoading } =
+    useManagerAnalytics();
+
+  // Log API responses
+  console.log("=== VolunteerEngagement API Data ===");
+  console.log("Application Rate:", applicationRate);
+  console.log("Approval Rate:", approvalRate);
+  console.log("Participated Events:", participatedEvents);
+  console.log("Is Loading:", isLoading);
+  console.log("====================================");
+
+  // Process data with fallback to hardcoded values
+  const data = useMemo(() => {
+    return [
+      {
+        label: "Application Rate",
+        value: applicationRate.data
+          ? `${Math.round(applicationRate.data)}%`
+          : "78%",
+        trend: "up",
+        change: "+5%",
+        isFromAPI: !!applicationRate.data,
+      },
+      {
+        label: "Approval Rate",
+        value: approvalRate.data ? `${Math.round(approvalRate.data)}%` : "85%",
+        trend: "up",
+        change: "+3%",
+        isFromAPI: !!approvalRate.data,
+      },
+      {
+        label: "Participated Events",
+        value: participatedEvents.data ? `${participatedEvents.data}` : "12",
+        trend: "up",
+        change: "+2",
+        isFromAPI: !!participatedEvents.data,
+      },
+      {
+        label: "Avg. Response Time",
+        value: "2.3 days",
+        trend: "down",
+        change: "-0.5d",
+        isFromAPI: false, // Hardcoded - no API
+      },
+    ];
+  }, [applicationRate.data, approvalRate.data, participatedEvents.data]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Volunteer Engagement
+        </h3>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading analytics...</div>
+        </div>
+      </div>
+    );
+  }
   const getTrendIcon = (trend) => {
-    if (trend === "up") return <TrendingUp className="w-4 h-4 text-green-600" />;
-    if (trend === "down") return <TrendingDown className="w-4 h-4 text-red-600" />;
+    if (trend === "up")
+      return <TrendingUp className="w-4 h-4 text-green-600" />;
+    if (trend === "down")
+      return <TrendingDown className="w-4 h-4 text-red-600" />;
     return <Minus className="w-4 h-4 text-gray-400" />;
   };
 
@@ -23,20 +79,33 @@ function VolunteerEngagement() {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">Volunteer Engagement</h3>
-      
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        Volunteer Engagement
+      </h3>
+
       <div className="space-y-6">
         {data.map((item, index) => (
           <div key={index} className="space-y-2">
             <div className="flex justify-between items-start">
-              <p className="text-sm text-gray-600">{item.label}</p>
-              <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getTrendColor(item.trend)}`}>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-600">{item.label}</p>
+                {item.isFromAPI && (
+                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-green-100 text-green-700 rounded">
+                    Live
+                  </span>
+                )}
+              </div>
+              <div
+                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getTrendColor(
+                  item.trend
+                )}`}
+              >
                 {getTrendIcon(item.trend)}
                 <span>{item.change}</span>
               </div>
             </div>
             <p className="text-2xl font-bold text-gray-900">{item.value}</p>
-            
+
             {/* Progress bar for percentage values */}
             {item.value.includes("%") && (
               <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -67,5 +136,3 @@ function VolunteerEngagement() {
 }
 
 export default VolunteerEngagement;
-
-

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+import { MoreVertical, Edit2, Trash2 } from "lucide-react";
 import ReactionBar from "./ReactionBar";
+import useClickOutside from "../../hook/ClickOutside";
 
 export default function PostCard({
   post,
@@ -9,13 +11,23 @@ export default function PostCard({
   postId,
   commentLength,
   hiddenComment,
+  onEdit,
+  onDelete,
 }) {
-  const INLINE_COUNT = 1;
-  // const inlineComments = post.comments.slice(0, INLINE_COUNT);
-  // const moreCount = Math.max(0, post.comments.length - INLINE_COUNT);
-  console.log("canEdit", canEdit);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useClickOutside(() => setShowMenu(false));
   const openModal = (options = {}) => onOpenPost(post, options);
   const imageCount = Array.isArray(post.images) ? post.images.length : 0;
+
+  const handleEdit = () => {
+    setShowMenu(false);
+    if (onEdit) onEdit(post);
+  };
+
+  const handleDelete = () => {
+    setShowMenu(false);
+    if (onDelete) onDelete(post);
+  };
 
   const renderImageGrid = () => {
     if (!imageCount) return null;
@@ -190,8 +202,32 @@ export default function PostCard({
           </div>
         </div>
         {canEdit && (
-          <div className="text-sm text-gray-500 font-medium cursor-pointer max-sm:text-sm">
-            <button onClick={() => openModal({ openEdit: true })}>Edit</button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Post options"
+            >
+              <MoreVertical className="w-5 h-5 text-gray-600" />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                <button
+                  onClick={handleEdit}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Edit Post
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Post
+                </button>
+              </div>
+            )}
           </div>
         )}
       </header>
@@ -201,13 +237,14 @@ export default function PostCard({
       </p>
       {renderImageGrid()}
 
-      <footer className="mt-6 pt-4 border-t border-blue-100">
+      <footer className="mt-6 pt-4 border-t border-blue-100 relative">
         <ReactionBar
           post={post}
           onReact={onReactLocal}
           onCommentClick={() => openModal({ openComments: true })}
           commentLength={commentLength}
           hiddenComment={true}
+          eventId={post?.eventId}
         />
       </footer>
     </article>

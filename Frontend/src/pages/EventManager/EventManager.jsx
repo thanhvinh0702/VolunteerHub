@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   Plus,
   Search,
@@ -27,6 +27,7 @@ import {
 } from "../../hook/useEvent";
 import MobileManageCard from "../../components/Project/MobileManageCard";
 import { useNavigate } from "react-router-dom";
+import { useProvinces, useDistricts } from "../../hook/useVietnamLocations";
 
 const PAGE_SIZE = 6;
 
@@ -43,6 +44,39 @@ function EventManager() {
   const [editData, setEditData] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+
+  // Vietnam locations hooks
+  const {
+    provinces,
+    getProvinceByName,
+    isLoading: provincesLoading,
+  } = useProvinces();
+
+  const selectedProvince = useMemo(
+    () => (editData?.province ? getProvinceByName(editData.province) : null),
+    [getProvinceByName, editData?.province]
+  );
+
+  const provinceCode = selectedProvince?.code;
+  const { districts, isLoading: districtsLoading } = useDistricts(provinceCode);
+
+  const provinceOptions = useMemo(
+    () =>
+      (provinces || []).map((p) => ({
+        value: p.name,
+        label: p.name_with_type || p.name,
+      })),
+    [provinces]
+  );
+
+  const districtOptions = useMemo(
+    () =>
+      (districts || []).map((d) => ({
+        value: d.name,
+        label: d.name_with_type || d.name,
+      })),
+    [districts]
+  );
 
   // Reset page when filter or search changes
   useEffect(() => {
@@ -188,6 +222,13 @@ function EventManager() {
   const handleInputChange = (field, value) => {
     setEditData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Reset district when province changes
+  useEffect(() => {
+    if (editData?.province && openEditForm) {
+      setEditData((prev) => ({ ...prev, district: "" }));
+    }
+  }, [editData?.province, openEditForm]);
 
   const categoryOptions = [
     { value: "health", label: "Health" },
@@ -647,33 +688,63 @@ function EventManager() {
                         Location <span className="text-red-500">*</span>
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input
-                          type="text"
-                          value={editData.province}
-                          onChange={(e) =>
-                            handleInputChange("province", e.target.value)
-                          }
-                          placeholder="Province"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                          type="text"
-                          value={editData.district}
-                          onChange={(e) =>
-                            handleInputChange("district", e.target.value)
-                          }
-                          placeholder="District"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                          type="text"
-                          value={editData.street}
-                          onChange={(e) =>
-                            handleInputChange("street", e.target.value)
-                          }
-                          placeholder="Street"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm text-gray-600">
+                            Province
+                          </label>
+                          <DropdownSelect
+                            value={editData.province}
+                            onChange={(value) =>
+                              handleInputChange("province", value)
+                            }
+                            options={provinceOptions}
+                            placeholder={
+                              provincesLoading
+                                ? "Loading..."
+                                : "Select province"
+                            }
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm text-gray-600">
+                            District
+                          </label>
+                          <DropdownSelect
+                            value={editData.district}
+                            onChange={(value) =>
+                              handleInputChange("district", value)
+                            }
+                            options={districtOptions}
+                            placeholder={
+                              !provinceCode
+                                ? "Select a province first"
+                                : districtsLoading
+                                ? "Loading..."
+                                : "Select district"
+                            }
+                            className="w-full"
+                            disabled={
+                              !provinceCode ||
+                              districtsLoading ||
+                              districtOptions.length === 0
+                            }
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm text-gray-600">
+                            Street
+                          </label>
+                          <input
+                            type="text"
+                            value={editData.street}
+                            onChange={(e) =>
+                              handleInputChange("street", e.target.value)
+                            }
+                            placeholder="123 Beach St"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
                       </div>
                     </div>
 

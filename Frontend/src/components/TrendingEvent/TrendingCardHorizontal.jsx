@@ -34,7 +34,7 @@ function TrendingCardHorizontal({
       className="flex flex-col sm:flex-row bg-gradient-to-br from-pink-100 to-blue-200 transition-all duration-300 shadow-md hover:shadow-xl min-w-[280px] sm:min-w-[400px] md:min-w-[450px] p-4 sm:space-x-5 space-y-3 sm:space-y-0 rounded-2xl border border-green-200/50 snap-start cursor-pointer"
       ref={ref}
     >
-      <div className="w-full sm:w-32 sm:h-32 h-48 rounded-xl overflow-hidden shadow-sm flex-shrink-0 items-center justify-center flex">
+      <div className="w-full sm:w-32 sm:h-32 h-48 rounded-xl overflow-hidden shadow-sm flex-shrink-0 items-center justify-center flex self-center">
         <img
           src={thumbnail || futureVolunteer}
           alt={name}
@@ -42,11 +42,11 @@ function TrendingCardHorizontal({
         />
       </div>
       <div className="flex flex-col justify-between flex-1 py-1">
-        <div className="space-y-2">
+        <div className="space-y-1">
           <p className="text-lg font-semibold text-gray-800 line-clamp-1 text-center sm:text-left">
             {name}
           </p>
-          <div className="flex flex-row gap-2 sm:gap-4 text-sm text-gray-600 items-center justify-between sm:justify-start">
+          <div className="flex flex-col sm:gap-4 text-sm text-gray-600 justify-start">
             <p className="flex items-center justify-center sm:justify-start gap-1">
               <span className="text-green-600 w-4">
                 <MapPin className="w-full" />

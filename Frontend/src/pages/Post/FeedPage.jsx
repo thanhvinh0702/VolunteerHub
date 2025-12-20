@@ -4,10 +4,12 @@ import { Virtuoso } from "react-virtuoso";
 import CreatePost from "../../components/Post/CreatPost";
 import PostCard from "../../components/Post/PostCard";
 import PostModal from "../../components/Post/PostModal";
+import EditPostModal from "../../components/Post/EditPostModal";
 import "../../index.css";
-import { useInfinitePosts } from "../../hook/useCommunity";
+import { useInfinitePosts, useDeletePost } from "../../hook/useCommunity";
 import { useNavbar } from "../../hook/useNavbar";
 import { useAuth } from "../../hook/useAuth";
+import toast from "react-hot-toast";
 
 /**
  * FeedPage: danh sách bài viết với infinite scroll 
@@ -27,14 +29,25 @@ export default function FeedPage() {
     openComments: false,
   });
   const [hiddenComment, setHiddenComment] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
   // Infinite query
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfinitePosts(id, {
-      pageSize: 3,
-      initialPageNum: 0,
-      zeroBased: false,
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    refetch,
+  } = useInfinitePosts(id, {
+    pageSize: 3,
+    initialPageNum: 0,
+    zeroBased: false,
+  });
+
+  // Delete mutation
+  const { mutate: deletePost } = useDeletePost(id, showDeleteConfirm?.id);
 
   // Map dữ liệu API
 
@@ -92,6 +105,30 @@ export default function FeedPage() {
     setShowNavbar(true);
     setActivePost(null);
     setModalOptions({ startImageIndex: 0, openComments: false });
+  };
+
+  // Edit handler
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+  };
+
+  // Delete handler
+  const handleDeletePost = (post) => {
+    setShowDeleteConfirm(post);
+  };
+
+  const confirmDelete = () => {
+    if (!showDeleteConfirm) return;
+    deletePost(undefined, {
+      onSuccess: () => {
+        toast.success("Post deleted successfully");
+        setShowDeleteConfirm(null);
+        refetch();
+      },
+      onError: () => {
+        toast.error("Failed to delete post");
+      },
+    });
   };
 
   // Local comment ops (UI-only)
@@ -253,6 +290,8 @@ export default function FeedPage() {
               canEdit={post?.ownerId === user?.id}
               postId={post.id}
               hiddenComment={hiddenComment}
+              onEdit={handleEditPost}
+              onDelete={handleDeletePost}
             />
           )}
           components={{ Footer }}
@@ -273,6 +312,46 @@ export default function FeedPage() {
         postId={activePost?.id}
         eventId={id}
       />
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          eventId={id}
+          onClose={() => setEditingPost(null)}
+          onSuccess={() => {
+            refetch();
+            setEditingPost(null);
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Delete Post</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this post? This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

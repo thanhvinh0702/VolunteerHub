@@ -1,7 +1,6 @@
 import RegistrationRow from "./RegistrationRow";
 
 export default function RegistrationTable({ data = [], isFetching, onSelect }) {
-  console.log("hhh" + data);
   return (
     <div className="bg-white rounded-xl">
       <table className="w-full">

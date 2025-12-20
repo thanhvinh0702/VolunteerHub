@@ -112,57 +112,107 @@ export default function RegistrationPage() {
         <div className="md:hidden space-y-3">
           {data?.items && data.items.length > 0 ? (
             data.items.map((reg) => {
-              const user = reg.user || {};
               return (
-                <div key={reg.id} className="border border-gray-200 rounded-lg p-4 bg-white">
-                  {/* Summary */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {user.avatarUrl ? (
+                <div
+                  key={reg.registrationId}
+                  className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+                >
+                  {/* Header: Avatar, Name and Status */}
+                  <div className="flex items-start gap-3 mb-3">
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      {reg.avatarUrl ? (
                         <img
-                          src={user.avatarUrl}
-                          alt={user.fullName || "Volunteer"}
-                          className="h-10 w-10 rounded-full flex-shrink-0 object-cover"
+                          src={reg.avatarUrl}
+                          alt={reg.fullName || "Volunteer"}
+                          className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
                         />
                       ) : (
                         <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.fullName || "volunteer"}`}
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${
+                            reg.fullName || "volunteer"
+                          }`}
                           alt="avatar"
-                          className="h-10 w-10 rounded-full flex-shrink-0 object-cover"
+                          className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
                         />
                       )}
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-gray-900 truncate">{user.fullName || ""}</p>
-                        <p className="text-xs text-gray-500 truncate">{user.email || ""}</p>
-                        {reg.userId && (
-                          <p className="text-xs text-gray-400">User ID: {String(reg.userId).slice(0, 8)}...</p>
-                        )}
-                      </div>
                     </div>
-                    <button
-                      onClick={() => setSelectedReg(reg)}
-                      className="flex-shrink-0 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition"
-                    >
-                      View
-                    </button>
+
+                    {/* Name and Event */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-base truncate">
+                        {reg.fullName || "Unknown"}
+                      </h4>
+                      <p className="text-sm text-gray-600 truncate mt-0.5">
+                        {reg.eventName || "No event"}
+                      </p>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="flex-shrink-0">
+                      <RegistrationStatusBadge
+                        status={reg.registrationStatus || reg.status}
+                      />
+                    </div>
                   </div>
 
-                  {/* Details */}
-                  <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Registered:</span>
-                      <span className="text-gray-900 font-medium">{formatDateTime(reg.createdAt)}</span>
+                  {/* Info Grid */}
+                  <div className="space-y-2 mb-3">
+                    {/* Registration Date */}
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <svg
+                        className="w-4 h-4 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <span className="truncate">
+                        {formatDateTime(reg.registeredAt)}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Status:</span>
-                      <RegistrationStatusBadge status={reg.status} />
-                    </div>
+
+                    {/* Phone Number */}
+                    {reg.phoneNumber && (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <svg
+                          className="w-4 h-4 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
+                        </svg>
+                        <span className="truncate">{reg.phoneNumber}</span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* View Details Button */}
+                  <button
+                    onClick={() => setSelectedReg(reg)}
+                    className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+                  >
+                    View details
+                  </button>
                 </div>
               );
             })
           ) : (
-            <div className="text-center py-8 text-gray-500 text-sm">No registrations found</div>
+            <div className="text-center py-8 text-gray-500 text-sm">
+              No registrations found
+            </div>
           )}
         </div>
 

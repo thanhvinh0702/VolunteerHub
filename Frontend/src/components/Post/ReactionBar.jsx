@@ -43,6 +43,7 @@ export default function ReactionBar({
   const reactionEntries = Object.entries(post.reactions ?? {}).filter(
     ([, count]) => typeof count === "number"
   );
+
   return (
     <div className="flex flex-wrap items-center gap-3 text-gray-700">
       <div className="flex flex-row gap-2 items-stretch">
@@ -58,13 +59,15 @@ export default function ReactionBar({
           small={compact}
         />
         {!compact && reactionEntries.length > 0 && (
-          <div className="flex flex-wrap items-center gap-3 px-3 py-2 bg-blue-50 rounded-lg">
+          <div className="flex flex-wrap items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
             {reactionEntries.map(([key, count]) => (
               <span
                 key={key}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700"
               >
-                <span className="text-lg">{REACTION_ICONS[key] ?? "👍"}</span>
+                <span className="text-lg leading-none">
+                  {REACTION_ICONS[key] ?? "👍"}
+                </span>
                 <span>{count}</span>
               </span>
             ))}
