@@ -7,6 +7,7 @@ import {
   useEventPaginationAdmin,
   useSearchEventByName,
 } from "../../hook/useEvent";
+import AnalysisService from "../../services/analysisService";
 
 const PAGE_SIZE = 5;
 
@@ -14,6 +15,8 @@ function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(0);
+  const [exportFormat, setExportFormat] = useState("csv");
+  const [isExporting, setIsExporting] = useState(false);
   const isFirstLoad = useRef(true);
 
   // Reset page when filter or search changes
@@ -54,6 +57,48 @@ function EventAdminManager() {
 
   const handlePageChange = (event, value) => {
     setPage(value - 1);
+  };
+
+  const handleExportEvents = async () => {
+    setIsExporting(true);
+
+    try {
+      let response;
+      let filename;
+      let mimeType;
+
+      if (exportFormat === "csv") {
+        response = await AnalysisService.exportAllEventsCsv();
+        filename = `events_export_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        mimeType = "text/csv;charset=utf-8;";
+      } else {
+        response = await AnalysisService.exportAllEventsJson();
+        filename = `events_export_${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        mimeType = "application/json;charset=utf-8;";
+        response = JSON.stringify(response, null, 2);
+      }
+
+      // Create blob and download
+      const blob = new Blob([response], { type: mimeType });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Error exporting events:`, error);
+      alert(`Failed to export events: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (showFullLoading) {
@@ -109,8 +154,8 @@ function EventAdminManager() {
           </div>
         )}
       </div>
-      {/* Filter & Create */}
-      <div className="flex gap-3 items-center">
+      {/* Filter & Export */}
+      <div className="flex gap-3 items-center flex-wrap">
         <DropdownSelect
           value={filterStatus}
           onChange={setFilterStatus}
@@ -121,10 +166,28 @@ function EventAdminManager() {
             { value: "rejected", label: "Rejected" },
           ]}
         />
-        <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium max-sm:py-1 max-sm:px-1">
-          <Download className="w-5 h-5" />
-          <span>DownLoad Report</span>
-        </button>
+        <div className="flex gap-2 items-center">
+          <select
+            value={exportFormat}
+            onChange={(e) => setExportFormat(e.target.value)}
+            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+          >
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+          </select>
+          <button
+            onClick={handleExportEvents}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-5 h-5" />
+            <span>
+              {isExporting
+                ? "Exporting..."
+                : `Export ${exportFormat.toUpperCase()}`}
+            </span>
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">

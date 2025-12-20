@@ -112,6 +112,68 @@ const AnalysisService = {
             throw error;
         }
     },
+
+
+
+    // Export all events (JSON format)
+    exportAllEventsJson: async () => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/events/export?format=json`
+            );
+            return response;
+        } catch (error) {
+            console.error("Error exporting all events (JSON):", error);
+            throw error;
+        }
+    },
+
+    // Export all events (CSV format)
+    exportAllEventsCsv: async () => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/events/export`,
+                {
+                    responseType: 'blob',
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error("Error exporting all events (CSV):", error);
+            throw error;
+        }
+    },
+
+    // ==================== EXPORT ALL USERS ====================
+
+    // Export all users (JSON format)
+    exportAllUsersJson: async () => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/export/users?format=json`
+            );
+            return response;
+        } catch (error) {
+            console.error("Error exporting all users (JSON):", error);
+            throw error;
+        }
+    },
+
+    // Export all users (CSV format)
+    exportAllUsersCsv: async () => {
+        try {
+            const response = await axiosClient.get(
+                `/api/v1/aggregated/export/users`,
+                {
+                    responseType: 'blob',
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error("Error exporting all users (CSV):", error);
+            throw error;
+        }
+    },
 };
 
 export default AnalysisService;
