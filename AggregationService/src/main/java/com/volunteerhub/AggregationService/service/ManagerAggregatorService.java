@@ -69,19 +69,19 @@ public class ManagerAggregatorService {
                 .toList();
     }
 
-    public byte[] exportAllUsers(String format) {
-        List<UserResponse> users = userClient.findAllByIds(null);
+        public byte[] exportAllUsers(String format) {
+            List<UserResponse> users = userClient.findAll(0,1000);
 
-        if (users == null || users.isEmpty()) return new byte[0];
+            if (users == null || users.isEmpty()) return new byte[0];
 
-        if ("json".equalsIgnoreCase(format)) {
-            return ExportUtils.toJson(users);
-        }
+            if ("json".equalsIgnoreCase(format)) {
+                return ExportUtils.toJson(users);
+            }
 
-        String[] headers = {
-                "User ID", "Họ Tên", "Username", "Email", "Số Điện Thoại",
-                "Vai Trò", "Trạng Thái", "Ngày Tham Gia", "Địa Chỉ", "Kỹ Năng"
-        };
+            String[] headers = {
+                    "User ID", "Họ Tên", "Username", "Email", "Số Điện Thoại",
+                    "Vai Trò", "Trạng Thái", "Ngày Tham Gia", "Địa Chỉ", "Kỹ Năng"
+            };
 
         return ExportUtils.toCsv(headers, users, u -> new Object[] {
                 u.getId(),
