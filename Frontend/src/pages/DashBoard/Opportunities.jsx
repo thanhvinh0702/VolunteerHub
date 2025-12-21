@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Tabs from "../../components/Tabs.jsx/Tabs";
 import UpcomingCard from "../../components/Dashboard/UpcomingCard";
 import AppliedCard from "../../components/Dashboard/AppliedCard";
@@ -22,6 +23,7 @@ const ComponentMap = {
 };
 
 export default function Opportunities() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState("applied");
   const [appliedPageNum, setAppliedPageNum] = React.useState(0);
   const [upcomingPageNum, setUpcomingPageNum] = React.useState(0);
@@ -74,6 +76,10 @@ export default function Opportunities() {
 
   const handlePageChange = (event, value) => {
     setPageNumMap[activeTab](value - 1); // Convert to 0-based
+  };
+
+  const handleCardClick = (eventId) => {
+    navigate(`/opportunities/overview/${eventId}`);
   };
 
   const formatCardData = (item) => {
@@ -134,10 +140,7 @@ export default function Opportunities() {
   const completedCount = completedQuery.data?.meta?.totalElements ?? 0;
 
   // Calculate showing range
-  const currentPageNum = pageNumMap[activeTab];
   const totalElements = data?.meta?.totalElements ?? 0;
-  const currentPageSize = data?.meta?.size ?? PAGE_SIZE;
-  const currentPageNumber = data?.meta?.number ?? 0;
 
   // Calculate actual items showing on current page
   const itemsOnCurrentPage = data?.data?.length ?? 0;
@@ -169,12 +172,25 @@ export default function Opportunities() {
           ) : data?.data && data.data.length > 0 ? (
             <>
               <div key={activeTab} className="flex gap-5 flex-col">
-                {data.data.map((item) => (
-                  <CardComponent
-                    key={`${activeTab}-${item.id}`}
-                    {...formatCardData(item)}
-                  />
-                ))}
+                {data.data.map((item) => {
+                  const cardData = formatCardData(item);
+                  return (
+                    <div
+                      key={`${activeTab}-${item.id}`}
+                      onClick={(e) => {
+                        // Only navigate if clicking on cursor-pointer elements
+                        if (
+                          e.target.classList?.contains("cursor-pointer") ||
+                          e.target.closest(".cursor-pointer")
+                        ) {
+                          handleCardClick(cardData.event.id);
+                        }
+                      }}
+                    >
+                      <CardComponent {...cardData} />
+                    </div>
+                  );
+                })}
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-4">
                 <p className="text-sm text-gray-500">

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getStatusColor, STATUS_CONFIG, USER_STATUS, canBan } from "./dumpData";
 import { Mail, User } from "lucide-react";
+import { showConfirmDialog, showError } from "../../utils/confirmDialog";
 
 function UserCard({ data, onBanUser, onUnbanUser, onEdit, onView }) {
   const {
@@ -50,13 +51,18 @@ function UserCard({ data, onBanUser, onUnbanUser, onEdit, onView }) {
 
   const BanUser = async () => {
     if (!canBan(currentStatus)) {
-      alert("Only active users can be banned");
+      await showError("Cannot Ban User", "Only active users can be banned");
       return;
     }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ban "${name}"?\n\nThis user will no longer be able to access the platform.`
-    );
+    const confirmed = await showConfirmDialog({
+      title: "Ban User",
+      text: `Are you sure you want to ban "${name}"? This user will no longer be able to access the platform.`,
+      icon: "warning",
+      confirmButtonText: "Yes, ban user",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#ef4444",
+    });
 
     if (!confirmed) return;
 
@@ -64,9 +70,14 @@ function UserCard({ data, onBanUser, onUnbanUser, onEdit, onView }) {
   };
 
   const UnbanUser = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to unban "${name}"?\n\nThis user will be able to access the platform again.`
-    );
+    const confirmed = await showConfirmDialog({
+      title: "Unban User",
+      text: `Are you sure you want to unban "${name}"? This user will be able to access the platform again.`,
+      icon: "question",
+      confirmButtonText: "Yes, unban user",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#22c55e",
+    });
 
     if (!confirmed) return;
 

@@ -12,7 +12,7 @@ export default function CommentItem({
   currentUserName = "You",
   depth = 0,
 }) {
-  console.log(comment);
+  console.log("CommentItem comment:", comment);
   // Thêm vào đầu component (sau line 15)
   const [showAllReplies, setShowAllReplies] = useState(false);
 
@@ -76,8 +76,9 @@ export default function CommentItem({
     const rootParentId = isReply ? comment.parentId || comment.id : comment.id;
 
     // Add mention if replying to a reply
-    const content =
-      replyToUser ? `@${replyToUser.name} ${replyText}` : replyText;
+    const content = replyToUser
+      ? `@${replyToUser.name} ${replyText}`
+      : replyText;
 
     const newReply = {
       id: Date.now(),
@@ -88,7 +89,6 @@ export default function CommentItem({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       replyToUserId: replyToUser ? replyToUser.id : null,
-      
     };
 
     onReply(postId, newReply);
@@ -118,15 +118,21 @@ export default function CommentItem({
         <div className="flex gap-2">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
-              {(comment.ownerName && comment.ownerName[0]) || "?"}
+            <div className="w-8 h-8 rounded-full bg-yellow-400/50 flex items-center justify-center text-white text-xs font-semibold">
+              <img
+                src={comment.avatarUrl}
+                alt={comment.ownerName}
+                className="w-full h-full rounded-full object-cover"
+              />
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
             {/* Comment content */}
             <div className="bg-gray-100 rounded-2xl px-3 py-2">
-              <div className="font-semibold text-sm">{comment.ownerName || "Unknown"}</div>
+              <div className="font-semibold text-sm">
+                {comment.ownerName || "Unknown"}
+              </div>
               {!isEditing ? (
                 <div className="text-sm text-gray-800 break-words">
                   {comment.content}

@@ -77,12 +77,17 @@ export const useAggregatedRegistrations = (params) => {
     return query;
 };
 
-export const useCheckUserParticipation = (eventId) => {
+export const useCheckUserParticipation = (eventId, options = {}) => {
     return useQuery({
         queryKey: [...REGISTRAION_QUERY_KEY, "participation", eventId],
         queryFn: () => checkUserParticipation(eventId),
-        staleTime: 5 * 60 * 1000,
+
         enabled: !!eventId,
+        refetchOnMount: false, // Don't refetch on component mount if data exists
+        refetchOnWindowFocus: false, // Don't refetch on window focus
+        refetchOnReconnect: false, // Don't refetch on reconnect
+        retry: 1, // Only retry once on failure
+        ...options, // Allow overriding options
     });
 };
 

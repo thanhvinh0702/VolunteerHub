@@ -46,18 +46,15 @@ function AppliedCard({
       <Card>
         <div className="flex flex-row justify-between px-3 py-2 max-sm:flex-col max-sm:gap-2">
           {/* HEADER */}
-          <div
-            onClick={() => setOpen(!open)}
-            className="flex flex-row gap-4 flex-1 cursor-pointer"
-          >
+          <div className="flex flex-row gap-4 flex-1">
             <img
               src={thumbnail}
-              className="w-24 h-24 object-cover rounded-xl sm:w-24 sm:h-24 flex-shrink-0"
+              className="w-24 h-24 object-cover rounded-xl sm:w-24 sm:h-24 flex-shrink-0 cursor-pointer"
               alt="thumbnail"
             />
 
             {/* DESKTOP CONTENT */}
-            <div className="hidden sm:flex flex-col flex-1 gap-1">
+            <div className="hidden sm:flex flex-col flex-1 gap-1 cursor-pointer">
               <div className="font-semibold text-[18px]">{title}</div>
               <div className="flex items-center gap-2 text-gray-600 text-[15px]">
                 <Building2 size={16} className="flex-shrink-0" />
@@ -75,17 +72,23 @@ function AppliedCard({
 
             {/* MOBILE TITLE + ARROW */}
             <div className="flex flex-col flex-1 sm:hidden">
-              <div className="flex justify-between items-start w-full">
-                <p className="font-semibold text-[16px] leading-tight break-words pr-2 flex-1">
+              <div className="flex justify-between items-start w-full gap-2">
+                <p className="font-semibold text-[16px] leading-tight break-words pr-2 flex-1 cursor-pointer">
                   {title}
                 </p>
-                <span className="text-gray-500 flex-shrink-0 mt-0.5">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(!open);
+                  }}
+                  className="text-gray-500 flex-shrink-0 p-2 -m-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
                   {open ? (
                     <FiChevronUp size={20} />
                   ) : (
                     <FiChevronDown size={20} />
                   )}
-                </span>
+                </button>
               </div>
             </div>
           </div>
@@ -139,8 +142,14 @@ function AppliedCard({
 
       {/* Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold text-gray-900">
                 Cancel Registration

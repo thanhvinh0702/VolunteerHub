@@ -21,12 +21,13 @@ function RegistrationCard({
   registedVolunteer = 10,
   totalSpots = 10,
   userRegistrationStatus, // Received from parent
-  isCheckingStatus, // Received from parent
+  isCheckingStatus, /// Received from parent
 }) {
   const { user, hasRole } = useAuth();
 
   const registerMutation = useRegisterForEvent();
-  const { checkProfile, showModal, closeModal, missingFields } = useProfileGuard();
+  const { checkProfile, showModal, closeModal, missingFields } =
+    useProfileGuard();
 
   const width = (registedVolunteer / totalSpots) * 100;
 
@@ -128,7 +129,7 @@ function RegistrationCard({
           <div className="flex flex-row items-center gap-5">
             <div className="bg-gray-600/20 h-2 w-full relative rounded-full">
               <div
-                className="bg-gradient-to-r from-purple-400 to-pink-400 h-2 absolute top-0 left-0 rounded-full transition-all duration-300"
+                className="bg-red-400 h-2 absolute top-0 left-0 rounded-full transition-all duration-300"
                 style={{ width: `${width}%` }}
               ></div>
             </div>

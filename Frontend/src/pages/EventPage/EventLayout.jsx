@@ -28,14 +28,14 @@ export default function EventLayout() {
   const { data: participationData, isLoading: isCheckingStatus } =
     useCheckUserParticipation(id);
   const userRegistrationStatus = participationData;
-  console.log("User registration status:", userRegistrationStatus);
 
   // Check if user is approved OR has MANAGER/ADMIN role
 
   const { mutate: registerForEvent, isLoading: isRegistering } =
     useRegisterForEvent();
 
-  const { checkProfile, showModal, closeModal, missingFields } = useProfileGuard();
+  const { checkProfile, showModal, closeModal, missingFields } =
+    useProfileGuard();
 
   // Get active tab from URL params, default to overview
   const activeTab = tab || "overview";
@@ -201,7 +201,7 @@ export default function EventLayout() {
             startTime={eventData.startTime}
             endTime={eventData.endTime}
             capacity={eventData.capacity}
-            registered={eventData.registrationCount}
+            registered={eventData.participantCount}
             availableSlots={eventData.capacity - eventData.registrationCount}
           />
         );
@@ -293,7 +293,7 @@ export default function EventLayout() {
           <EventHero
             id={id}
             imgURL={eventData?.imageUrl}
-            organizerName={eventData.owner?.username || "Unknown Organizer"}
+            organizerName={eventData.owner.fullName || "Unknown Organizer"}
             eventName={eventData.name}
           />
 
@@ -333,8 +333,7 @@ export default function EventLayout() {
                   />
                 </svg>
                 <span className="text-sm font-medium text-gray-700">
-                  {eventData?.registrationCount || 0}/
-                  {eventData?.capacity || 10}
+                  {eventData?.participantCount || 0}/{eventData?.capacity || 10}
                 </span>
               </div>
             </div>
@@ -416,7 +415,7 @@ export default function EventLayout() {
           registrationDeadline={eventData?.registrationDeadline || ""}
           registrationStatus={eventData?.status || ""}
           durationCancel={eventData?.durationCancel || ""}
-          registedVolunteer={eventData?.registrationCount || 0}
+          registedVolunteer={eventData?.participantCount || 0}
           totalSpots={eventData?.capacity || 10}
           userRegistrationStatus={userRegistrationStatus}
           isCheckingStatus={isCheckingStatus}

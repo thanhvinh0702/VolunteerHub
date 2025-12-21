@@ -145,9 +145,9 @@ export default function PostModal({
                 <div className="flex items-center gap-2 flex-row">
                   <div className="flex items-center gap-2 flex-row">
                     <img
-                      src={"https://api.dicebear.com/7.x/avataaars/svg?seed=b"}
+                      src={post.author.avatarUrl}
                       alt=""
-                      className="object-cover w-12 h-12 rounded-full bg-red-400"
+                      className="object-cover w-12 h-12 rounded-full bg-yellow-400/50"
                     />
                   </div>
                   <div className="text-lg text-black">
@@ -197,7 +197,7 @@ export default function PostModal({
                 </h4>
                 {isLoadingComments ? (
                   <div className="text-sm text-gray-500">
-                    Đang tải bình luận...
+                    ...Loading comments
                   </div>
                 ) : (
                   <CommentList

@@ -180,7 +180,7 @@ export default function PostCard({
     <article className="rounded-xl shadow-lg p-6 mb-6 bg-white border border-blue-100">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white text-lg shadow-md">
+          <div className="w-14 h-14 rounded-full bg-yellow-400/50 flex items-center justify-center font-bold text-white text-lg shadow-md">
             <img
               src={post.author.avatarUrl}
               alt={post.author.name}
