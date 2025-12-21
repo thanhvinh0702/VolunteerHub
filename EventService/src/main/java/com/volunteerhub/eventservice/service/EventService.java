@@ -231,8 +231,13 @@ public class EventService {
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         int page = pageNumAndSizeResponse.getPageNum();
         int size = pageNumAndSizeResponse.getPageSize();
-        if (ownerId == null || ownerId.isBlank()) {
+        if (ownerId == null && status == null) {
             Page<Event> events = eventRepository.searchEventsByRegex(keyword.trim(), PageRequest.of(page, size));
+            return eventMapper.toDtoPage(events);
+        }
+
+        if (status != null && ownerId == null) {
+            Page<Event> events = eventRepository.searchEventsByRegexAndStatus(keyword.trim(), status, PageRequest.of(page, size));
             return eventMapper.toDtoPage(events);
         }
 

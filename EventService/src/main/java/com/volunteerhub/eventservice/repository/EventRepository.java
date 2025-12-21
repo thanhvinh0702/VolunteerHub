@@ -25,6 +25,13 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     Page<Event> searchEventsByRegex(@Param("keyword") String keyword, Pageable pageable);
 
     @Query(
+            value = "SELECT * FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.status = :status",
+            countQuery = "SELECT COUNT(*) FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.status = :status",
+            nativeQuery = true
+    )
+    Page<Event> searchEventsByRegexAndStatus(@Param("keyword") String keyword, @Param("status") EventStatus status, Pageable pageable);
+
+    @Query(
             value = "SELECT * FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.owner_id = :ownerId AND e.status = :status",
             countQuery = "SELECT COUNT(*) FROM event e WHERE (e.name ~* :keyword OR e.description ~* :keyword) AND e.owner_id = :ownerId AND e.status = :status",
             nativeQuery = true
