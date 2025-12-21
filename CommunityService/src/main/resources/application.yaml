@@ -2,6 +2,12 @@ spring:
   application:
     name: CommunityService
 
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 500MB
+      location: /tmp
+
   config:
     import: optional:file:.env[.properties]
 
