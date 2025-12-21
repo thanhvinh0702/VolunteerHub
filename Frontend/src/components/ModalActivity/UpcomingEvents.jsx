@@ -48,25 +48,28 @@ function UpcomingEvents() {
   const SkeletonUpcomingCard = () => (
     <div>
       <Card>
-        <div className="flex items-start gap-4 p-4">
-          <div className="flex flex-col justify-between gap-2 flex-1">
-            <Skeleton width="100%" height={28} />
-            <Skeleton width={100} height={24} />
-            <div className="flex flex-row gap-4">
-              <Skeleton width={120} height={20} />
-              <Skeleton width={80} height={20} />
+        <div className="flex items-start gap-3 p-3">
+          <div className="flex flex-col justify-between gap-1.5 flex-1">
+            {/* Title */}
+            <Skeleton width="80%" height={20} />
+            {/* Category */}
+            <Skeleton width={80} height={16} />
+            {/* Date & Time */}
+            <div className="flex flex-row gap-3">
+              <Skeleton width={100} height={16} />
+              <Skeleton width={70} height={16} />
             </div>
-            <Skeleton width="90%" height={20} />
-            <div className="flex gap-2 items-center">
-              <Skeleton width={80} height={28} />
-              <Skeleton width={20} height={20} />
-            </div>
+            {/* Location */}
+            <Skeleton width="70%" height={16} />
+            {/* Status badge */}
+            <Skeleton width={70} height={24} className="rounded-full" />
           </div>
+          {/* Image */}
           <Skeleton
             variant="rectangular"
-            width={128}
-            height={128}
-            className="rounded-xl"
+            width={96}
+            height={96}
+            className="rounded-lg"
           />
         </div>
       </Card>

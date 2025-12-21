@@ -1,5 +1,5 @@
 // src/components/BottomNav/BottomNav.jsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Home,
   MessageSquare,
@@ -10,28 +10,39 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hook/useAuth";
+import CreateEventModal from "../Modal/CreateEventModal";
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const navItems = [
-    { key: "opps", label: "Opportunities", icon: Home, to: "/opportunities" },
     {
-      key: "DashBoard",
-      label: "DashBoard",
+      key: "dashboard",
+      label: "Dashboard",
       icon: LayoutDashboard,
-      to: "/home",
+      to: "/dashboard",
     },
-
+    {
+      key: "events",
+      label: "Events",
+      icon: Home,
+      to: "/opportunities",
+    },
     {
       key: "leaderboard",
       label: "Leaderboard",
       icon: Trophy,
       to: "/leaderboard",
     },
-    { key: "profile", label: "Profile", icon: User, to: "/profile" },
+    {
+      key: "profile",
+      label: "Profile",
+      icon: User,
+      to: "/Setting",
+    },
   ];
 
   const isActive = (path) => location.pathname.startsWith(path);
@@ -63,17 +74,24 @@ export default function BottomNav() {
           );
         })}
 
-        {/* Floating action button (center overlay) */}
-        {user && (user.role === "ORG" || user.role === "ADMIN") && (
+        {/* Floating action button for Manager only - Create Event */}
+        {user && user.role === "MANAGER" && (
           <button
-            onClick={() => navigate("/events/create")}
-            className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
-            aria-label="Create"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-red-500 hover:bg-red-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-200 active:scale-95"
+            aria-label="Create Event"
+            title="Create Event"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-6 h-6" />
           </button>
         )}
       </div>
+
+      {/* Create Event Modal */}
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </nav>
   );
 }

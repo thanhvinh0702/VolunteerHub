@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import DropdownSelect from "../Dropdown/DropdownSelect";
-import { Download, Search } from "lucide-react";
+import { Download, Search, ChevronDown } from "lucide-react";
 import EventManagerCardAd from "./EventManagerCardAd";
 import Pagination from "@mui/material/Pagination";
 import {
@@ -15,14 +15,26 @@ function EventAdminManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(0);
-  const [exportFormat, setExportFormat] = useState("csv");
   const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const isFirstLoad = useRef(true);
 
   // Reset page when filter or search changes
   useEffect(() => {
     setPage(0);
   }, [filterStatus, searchTerm]);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExportMenu && !event.target.closest(".relative")) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
 
   // Check if in search mode
   const isSearchMode = searchTerm.trim().length > 0;
@@ -59,15 +71,16 @@ function EventAdminManager() {
     setPage(value - 1);
   };
 
-  const handleExportEvents = async () => {
+  const handleExport = async (format) => {
     setIsExporting(true);
+    setShowExportMenu(false);
 
     try {
       let response;
       let filename;
       let mimeType;
 
-      if (exportFormat === "csv") {
+      if (format === "csv") {
         response = await AnalysisService.exportAllEventsCsv();
         filename = `events_export_${
           new Date().toISOString().split("T")[0]
@@ -94,7 +107,7 @@ function EventAdminManager() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error(`Error exporting events:`, error);
+      console.error(`Error exporting events as ${format}:`, error);
       alert(`Failed to export events: ${error.message || "Unknown error"}`);
     } finally {
       setIsExporting(false);
@@ -166,27 +179,40 @@ function EventAdminManager() {
             { value: "rejected", label: "Rejected" },
           ]}
         />
-        <div className="flex gap-2 items-center">
-          <select
-            value={exportFormat}
-            onChange={(e) => setExportFormat(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
-          >
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-          </select>
+
+        {/* Export Dropdown */}
+        <div className="relative">
           <button
-            onClick={handleExportEvents}
+            onClick={() => setShowExportMenu(!showExportMenu)}
             disabled={isExporting}
             className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-5 h-5" />
-            <span>
-              {isExporting
-                ? "Exporting..."
-                : `Export ${exportFormat.toUpperCase()}`}
+            <span className="max-sm:hidden">
+              {isExporting ? "Exporting..." : "Export Events"}
             </span>
+            <ChevronDown className="w-4 h-4" />
           </button>
+
+          {/* Dropdown Menu */}
+          {showExportMenu && !isExporting && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <button
+                onClick={() => handleExport("csv")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-t-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as CSV</span>
+              </button>
+              <button
+                onClick={() => handleExport("json")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-b-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as JSON</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <div className="overflow-x-auto">

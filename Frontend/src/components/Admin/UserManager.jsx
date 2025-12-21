@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import DropdownSelect from "../Dropdown/DropdownSelect";
-import { Download, Search } from "lucide-react";
+import { Download, Search, ChevronDown } from "lucide-react";
 import UserCard from "./UserCard";
 import Pagination from "@mui/material/Pagination";
 import { useAllUsers, useBanUser, useUnbanUser } from "../../hook/useUser";
+import AnalysisService from "../../services/analysisService";
 
 const PAGE_SIZE = 6;
 
@@ -12,6 +13,8 @@ function UserManager() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const isFirstLoad = useRef(true);
 
   // Debounce search input
@@ -27,6 +30,18 @@ function UserManager() {
   useEffect(() => {
     setPage(1);
   }, [filterStatus]);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExportMenu && !event.target.closest(".relative")) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
 
   const { data, isLoading, isFetching, isError, error } = useAllUsers({
     page,
@@ -61,6 +76,47 @@ function UserManager() {
 
   const handleView = (id) => {
     console.log(`View user ${id}`);
+  };
+
+  const handleExport = async (format) => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+
+    try {
+      let response;
+      let filename;
+      let mimeType;
+
+      if (format === "csv") {
+        response = await AnalysisService.exportAllUsersCsv();
+        filename = `users_export_${new Date().toISOString().split("T")[0]}.csv`;
+        mimeType = "text/csv;charset=utf-8;";
+      } else {
+        response = await AnalysisService.exportAllUsersJson();
+        filename = `users_export_${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        mimeType = "application/json;charset=utf-8;";
+        response = JSON.stringify(response, null, 2);
+      }
+
+      // Create blob and download
+      const blob = new Blob([response], { type: mimeType });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Error exporting users as ${format}:`, error);
+      alert(`Failed to export users: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (showFullLoading) {
@@ -103,7 +159,7 @@ function UserManager() {
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      {/* Filter & Create */}
+      {/* Filter & Export */}
       <div className="flex gap-3 items-center">
         <DropdownSelect
           value={filterStatus}
@@ -115,10 +171,41 @@ function UserManager() {
             { value: "banned", label: "Banned" },
           ]}
         />
-        <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-600 transition-colors font-medium max-sm:py-1 max-sm:px-1">
-          <Download className="w-5 h-5" />
-          <span>Download Report</span>
-        </button>
+
+        {/* Export Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-5 h-5" />
+            <span className="max-sm:hidden">
+              {isExporting ? "Exporting..." : "Export Users"}
+            </span>
+            <ChevronDown className="w-4 h-4" />
+          </button>
+
+          {/* Dropdown Menu */}
+          {showExportMenu && !isExporting && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <button
+                onClick={() => handleExport("csv")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-t-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as CSV</span>
+              </button>
+              <button
+                onClick={() => handleExport("json")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-b-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as JSON</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">

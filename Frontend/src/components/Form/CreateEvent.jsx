@@ -371,7 +371,7 @@ function CreateEvent({ onSuccess, onCancel }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <label htmlFor="capacity">Max Volunteers *</label>
           <input

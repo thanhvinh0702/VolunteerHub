@@ -239,7 +239,7 @@ function OpportunitiesEvent() {
   };
 
   return (
-    <div className="flex flex-col gap-2 p-5">
+    <div className="flex flex-col gap-2 p-5 sm:mb-20">
       <div className="flex flex-col gap-2">
         <p className="text-3xl font-bold text-md">Volunteer Opportunities</p>
         <p className="text-sm text-gray-600 mb-4">
