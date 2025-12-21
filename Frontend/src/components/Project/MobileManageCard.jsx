@@ -17,6 +17,11 @@ import {
   Eye,
 } from "lucide-react";
 import { useDeleteEvent } from "../../hook/useEvent";
+import {
+  confirmCancel,
+  confirmDelete,
+  showError,
+} from "../../utils/confirmDialog";
 
 function MobileManageCard({ data, onCancelEvent, onEdit, onView }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -65,11 +70,14 @@ function MobileManageCard({ data, onCancelEvent, onEdit, onView }) {
 
   const handleCancelEventLocal = async () => {
     if (!canCancelEvent(currentStatus)) {
-      alert("Chỉ có sự kiện đã duyệt mới có thể hủy");
+      await showError(
+        "Không thể hủy sự kiện",
+        "Chỉ có sự kiện đã duyệt mới có thể hủy"
+      );
       return;
     }
 
-    const confirmed = window.confirm(`Bạn có chắc muốn hủy "${title}"?`);
+    const confirmed = await confirmCancel(title);
     if (!confirmed) return;
 
     const previousStatus = currentStatus;
@@ -87,10 +95,7 @@ function MobileManageCard({ data, onCancelEvent, onEdit, onView }) {
   };
 
   const handleDeleteEvent = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`
-    );
-
+    const confirmed = await confirmDelete(title);
     if (!confirmed) return;
 
     try {

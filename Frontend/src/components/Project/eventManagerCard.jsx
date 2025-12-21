@@ -7,6 +7,11 @@ import {
   canCancelEvent,
 } from "../../pages/EventManager/eventManagerData";
 import { useDeleteEvent } from "../../hook/useEvent";
+import {
+  confirmCancel,
+  confirmDelete,
+  showError,
+} from "../../utils/confirmDialog";
 function EventManagerCard({ data, onCancelEvent, onEdit, onView }) {
   // Map API data to component props
   const {
@@ -54,13 +59,17 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView }) {
 
   const handleCancelEvent = async () => {
     if (!canCancelEvent(currentStatus)) {
-      alert("Only approved events can be cancelled");
+      await showError(
+        "Cannot Cancel Event",
+        "Only approved events can be cancelled"
+      );
       return;
     }
 
     // Confirmation
-    const confirmed = window.confirm(
-      `Are you sure you want to cancel "${title}"?\n\nThis will notify all ${registered} registered volunteers.`
+    const confirmed = await confirmCancel(
+      title,
+      `This will notify all ${registered} registered volunteers.`
     );
 
     if (!confirmed) return;
@@ -82,7 +91,10 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView }) {
       // Error - rollback
       console.error("Failed to cancel event:", error);
       setCurrentStatus(previousStatus);
-      alert(`Failed to cancel event: ${error.message || "Unknown error"}`);
+      await showError(
+        "Failed to Cancel Event",
+        error.message || "Unknown error occurred. Please try again."
+      );
     } finally {
       setIsCancelling(false);
     }
@@ -93,10 +105,7 @@ function EventManagerCard({ data, onCancelEvent, onEdit, onView }) {
   };
 
   const handleDeleteEvent = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`
-    );
-
+    const confirmed = await confirmDelete(title);
     if (!confirmed) return;
 
     try {

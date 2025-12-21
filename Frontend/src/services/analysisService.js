@@ -121,6 +121,7 @@ const AnalysisService = {
 
     // Export participants của một event (CSV format)
     getEventParticipantsCsv: async (eventId) => {
+        console.log("eventId", eventId);
         try {
             const response = await axiosClient.get(
                 `/api/v1/aggregated/registrations/export/participants?eventId=${eventId}`,

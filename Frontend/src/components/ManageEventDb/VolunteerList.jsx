@@ -14,6 +14,7 @@ import {
 } from "../../hook/useRegistration";
 import { useOutletContext } from "react-router-dom";
 import AnalysisService from "../../services/analysisService";
+import { confirmDelete } from "../../utils/confirmDialog";
 
 const PAGE_SIZE = 10; // giống cách đặt PAGE_SIZE trong EventManager
 
@@ -22,13 +23,25 @@ function VolunteerList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [page, setPage] = useState(0);
-  const [exportFormat, setExportFormat] = useState("csv");
   const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   // Reset page khi thay đổi search
   useEffect(() => {
     setPage(0);
   }, [searchQuery]);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExportMenu && !event.target.closest(".export-dropdown")) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
 
   let { data, isLoading, isError, refetch } =
     useListUserOfAnEventApproveAndCompleted(eventId, {
@@ -103,88 +116,70 @@ function VolunteerList() {
     console.log("View registration:", registration);
   };
 
-  const handleDelete = (registration) => {
-    if (
-      window.confirm(
-        `Are you sure you want to remove ${
-          registration.user?.fullName || "this volunteer"
-        } from the event?`
-      )
-    ) {
-      removeParticipant(
-        { eventId, participantId: registration.userId },
-        {
-          onSuccess: () => {
-            refetch();
-          },
-        }
-      );
-    }
+  const handleDelete = async (registration) => {
+    const confirmed = await confirmDelete(
+      registration.user?.fullName || "this volunteer"
+    );
+    if (!confirmed) return;
+
+    removeParticipant(
+      { eventId, participantId: registration.userId },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
   };
 
   const handlePageChange = (event, value) => {
     setPage(value - 1); // từ 1-based (UI) sang 0-based (API)
   };
 
-  const handleExportData = async () => {
+  const handleExport = async (format) => {
     if (!eventId) {
       alert("Event ID is missing");
       return;
     }
 
     setIsExporting(true);
+    setShowExportMenu(false);
 
     try {
-      if (exportFormat === "csv") {
-        // Export CSV từ backend
-        const response = await AnalysisService.getEventParticipantsCsv(eventId);
+      let response;
+      let filename;
+      let mimeType;
 
-        // Create blob and download
-        const blob = new Blob([response], {
-          type: "text/csv;charset=utf-8;",
-        });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute(
-          "download",
-          `volunteers_event_${eventId}_${
-            new Date().toISOString().split("T")[0]
-          }.csv`
-        );
-        link.style.visibility = "hidden";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      if (format === "csv") {
+        // Export CSV từ backend
+        response = await AnalysisService.getEventParticipantsCsv(eventId);
+        filename = `volunteers_event_${eventId}_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        mimeType = "text/csv;charset=utf-8;";
       } else {
         // Export JSON từ backend
-        const response = await AnalysisService.getEventParticipantsJson(
-          eventId
-        );
-
-        // Convert JSON to string and download
-        const jsonString = JSON.stringify(response, null, 2);
-        const blob = new Blob([jsonString], {
-          type: "application/json;charset=utf-8;",
-        });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute(
-          "download",
-          `volunteers_event_${eventId}_${
-            new Date().toISOString().split("T")[0]
-          }.json`
-        );
-        link.style.visibility = "hidden";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        response = await AnalysisService.getEventParticipantsJson(eventId);
+        filename = `volunteers_event_${eventId}_${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        mimeType = "application/json;charset=utf-8;";
+        response = JSON.stringify(response, null, 2);
       }
+
+      // Create blob and download
+      const blob = new Blob([response], { type: mimeType });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error exporting data:", error);
+      console.error(`Error exporting data as ${format}:`, error);
       alert(`Failed to export data: ${error.message || "Unknown error"}`);
     } finally {
       setIsExporting(false);
@@ -233,25 +228,40 @@ function VolunteerList() {
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="flex gap-2">
-          <select
-            value={exportFormat}
-            onChange={(e) => setExportFormat(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-          </select>
+
+        {/* Export Dropdown */}
+        <div className="relative export-dropdown">
           <button
-            onClick={handleExportData}
+            onClick={() => setShowExportMenu(!showExportMenu)}
             disabled={isExporting || !eventId}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="h-4 w-4" />
-            {isExporting
-              ? "Exporting..."
-              : `Export ${exportFormat.toUpperCase()}`}
+            <span className="max-sm:hidden">
+              {isExporting ? "Exporting..." : "Export Volunteers"}
+            </span>
+            <ChevronDown className="w-4 h-4" />
           </button>
+
+          {/* Dropdown Menu */}
+          {showExportMenu && !isExporting && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <button
+                onClick={() => handleExport("csv")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-t-lg text-sm"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as CSV</span>
+              </button>
+              <button
+                onClick={() => handleExport("json")}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-b-lg text-sm"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export as JSON</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import {
   Clock,
   MapPin,
   Users,
+  Download,
 } from "lucide-react";
 import {
   getStatusColor,
@@ -23,6 +24,8 @@ import {
   useDeleteEvent,
 } from "../../hook/useEvent";
 import RejectReasonModal from "../Modal/RejectReasonModal";
+import AnalysisService from "../../services/analysisService";
+import { confirmApprove, confirmDelete } from "../../utils/confirmDialog";
 
 function EventManagerCardAd({ data }) {
   const navigate = useNavigate();
@@ -47,6 +50,8 @@ function EventManagerCardAd({ data }) {
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -75,10 +80,7 @@ function EventManagerCardAd({ data }) {
   };
 
   const handleApproveEvent = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to approve "${title}"?`
-    );
-
+    const confirmed = await confirmApprove(title);
     if (!confirmed) return;
 
     try {
@@ -105,16 +107,58 @@ function EventManagerCardAd({ data }) {
   };
 
   const handleDeleteEvent = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`
-    );
-
+    const confirmed = await confirmDelete(title);
     if (!confirmed) return;
 
     try {
       await deleteEventMutation.mutateAsync(id);
     } catch (error) {
       console.error("Failed to delete event:", error);
+    }
+  };
+
+  const handleExport = async (format) => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+
+    try {
+      let response;
+      let filename;
+      let mimeType;
+
+      if (format === "csv") {
+        response = await AnalysisService.getEventParticipantsCsv(id);
+        filename = `event_${id}_participants_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        mimeType = "text/csv;charset=utf-8;";
+      } else {
+        response = await AnalysisService.getEventParticipantsJson(id);
+        filename = `event_${id}_participants_${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        mimeType = "application/json;charset=utf-8;";
+        response = JSON.stringify(response, null, 2);
+      }
+
+      // Create blob and download
+      const blob = new Blob([response], { type: mimeType });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Error exporting participants as ${format}:`, error);
+      alert(
+        `Failed to export participants: ${error.message || "Unknown error"}`
+      );
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -221,6 +265,40 @@ function EventManagerCardAd({ data }) {
             >
               <Eye className="w-4 h-4 text-gray-600" />
             </button>
+
+            {/* Export button - only for APPROVED */}
+            {currentStatus === EVENT_STATUS.APPROVED && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  disabled={isExporting || isUpdating || isDeleting}
+                  className="p-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Export Participants"
+                >
+                  <Download className="w-4 h-4 text-white" />
+                </button>
+
+                {/* Export Dropdown Menu */}
+                {showExportMenu && !isExporting && (
+                  <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <button
+                      onClick={() => handleExport("csv")}
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-t-lg text-xs"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span>CSV</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport("json")}
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-b-lg text-xs"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span>JSON</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Reject button - only for PENDING */}
             {currentStatus === EVENT_STATUS.PENDING && (
@@ -402,11 +480,57 @@ function EventManagerCardAd({ data }) {
                       navigate(`/dashboard/eventmanager/${id}`);
                     }}
                     disabled={isUpdating || isDeleting}
-                    className="col-span-2 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`${
+                      currentStatus === EVENT_STATUS.APPROVED
+                        ? "col-span-2"
+                        : "col-span-2"
+                    } py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <Eye className="w-4 h-4 text-white" />
                     <span className="text-white text-sm font-medium">View</span>
                   </button>
+
+                  {/* Export dropdown - only for APPROVED */}
+                  {currentStatus === EVENT_STATUS.APPROVED && (
+                    <div className="col-span-1 relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowExportMenu(!showExportMenu);
+                        }}
+                        disabled={isExporting || isUpdating || isDeleting}
+                        className="w-full py-2.5 bg-green-500 hover:bg-green-600 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Download className="w-4 h-4 text-white" />
+                      </button>
+
+                      {/* Export Dropdown Menu */}
+                      {showExportMenu && !isExporting && (
+                        <div className="absolute right-0 bottom-full mb-1 w-28 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleExport("csv");
+                            }}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-t-lg text-xs"
+                          >
+                            <Download className="w-3 h-3" />
+                            <span>CSV</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleExport("json");
+                            }}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 rounded-b-lg text-xs"
+                          >
+                            <Download className="w-3 h-3" />
+                            <span>JSON</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Reject button - only for PENDING */}
                   {currentStatus === EVENT_STATUS.PENDING && (
@@ -443,12 +567,9 @@ function EventManagerCardAd({ data }) {
                         isUpdating ||
                         isDeleting
                       }
-                      className="col-span-2 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="col-span-1 py-2.5 bg-red-400 hover:bg-red-500 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 className="w-4 h-4 text-white" />
-                      <span className="text-white text-sm font-medium">
-                        Delete
-                      </span>
                     </button>
                   )}
                 </div>

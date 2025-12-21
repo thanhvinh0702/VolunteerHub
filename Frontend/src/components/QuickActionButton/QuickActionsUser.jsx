@@ -1,38 +1,13 @@
 import React from "react";
 import QuickActionButton from "./QuickActionButton";
-import { Search, Download, MessageSquare, User } from "lucide-react";
+import { useAuth } from "../../hook/useAuth";
+import { quickActionsConfig } from "../../constant/quickActionsConfig";
 
 export default function QuickActionsUser() {
-  const actions = [
-    {
-      id: "find",
-      label: "Find Events",
-      icon: Search,
-      onClick: () => console.log("Tìm kiếm sự kiện..."),
-      active: true,
-    },
-    {
-      id: "download",
-      label: "Download Report",
-      icon: Download,
-      onClick: () => console.log("Đang tải báo cáo..."),
-      active: false,
-    },
-    {
-      id: "message",
-      label: "Messages",
-      icon: MessageSquare,
-      onClick: () => console.log("Mở tin nhắn..."),
-      active: false,
-    },
-    {
-      id: "profile",
-      label: "Edit Profile",
-      icon: User,
-      onClick: () => console.log("Chỉnh sửa hồ sơ..."),
-      active: false,
-    },
-  ];
+  const { user } = useAuth();
+
+  // Get actions based on user role
+  const actions = quickActionsConfig[user?.role] || quickActionsConfig.USER;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">

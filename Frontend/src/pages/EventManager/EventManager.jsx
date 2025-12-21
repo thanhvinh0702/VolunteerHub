@@ -28,6 +28,7 @@ import {
 import MobileManageCard from "../../components/Project/MobileManageCard";
 import { useNavigate } from "react-router-dom";
 import { useProvinces, useDistricts } from "../../hook/useVietnamLocations";
+import { showSuccess } from "../../utils/confirmDialog";
 
 const PAGE_SIZE = 6;
 
@@ -212,7 +213,7 @@ function EventManager() {
   }, [editEventData, openEditForm]);
 
   const updateEventMutation = useUpdateEvent({
-    onSuccess: () => {
+    onSuccess: async () => {
       setOpenEditForm(false);
       setImageFile(null);
       setPreviewImage(null);
@@ -220,6 +221,11 @@ function EventManager() {
       // Refresh lists
       filterQuery.refetch?.();
       searchQuery.refetch?.();
+      // Show success message
+      await showSuccess(
+        "Event Updated!",
+        "Your event has been updated successfully."
+      );
     },
   });
 

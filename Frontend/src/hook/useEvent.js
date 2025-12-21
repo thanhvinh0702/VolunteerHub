@@ -101,7 +101,7 @@ export const useEventPaginationAdmin = (params) => {
         },
         placeholderData: keepPreviousData,
         staleTime: 1000 * 6,
-        refetchInterval: 1000 * 5,
+        refetchInterval: 1000 * 60 * 3,
         refetchIntervalInBackground: true,
     });
 

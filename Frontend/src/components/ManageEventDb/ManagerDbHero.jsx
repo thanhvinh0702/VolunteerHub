@@ -1,5 +1,6 @@
-import { CircleCheckBig, ClockFading, Pencil } from "lucide-react";
+import { CircleCheckBig, ClockFading, Pencil, ArrowLeft } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function ManagerDbHero({
   thumbnail,
@@ -8,6 +9,7 @@ function ManagerDbHero({
   status = "pending",
   onEditImage,
 }) {
+  const navigate = useNavigate();
   const icon =
     status === "PENDING" ? (
       <ClockFading className="w-full h-full" />
@@ -26,6 +28,14 @@ function ManagerDbHero({
           alt={title}
           className="w-full h-full object-cover object-top"
         />
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 p-3 rounded-full shadow-lg hover:bg-white transition-all flex items-center gap-2"
+          title="Go back"
+        >
+          <ArrowLeft size={20} />
+        </button>
         {/* Edit Button Overlay */}
         <button
           onClick={onEditImage}

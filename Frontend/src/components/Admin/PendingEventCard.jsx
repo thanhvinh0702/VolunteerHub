@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Calendar, Clock, MapPin, Users, UserPlus, Ban } from "lucide-react";
 import { useApproveEvent, useRejectEvent } from "../../hook/useEvent";
 import RejectReasonModal from "../Modal/RejectReasonModal";
+import { confirmApprove } from "../../utils/confirmDialog";
 
 function PendingEventCard({
   id,
@@ -46,9 +47,7 @@ function PendingEventCard({
 
   const handleApprove = async (e) => {
     e.stopPropagation();
-    const confirmed = window.confirm(
-      `Are you sure you want to approve "${title}"?`
-    );
+    const confirmed = await confirmApprove(title);
     if (!confirmed) return;
 
     try {
