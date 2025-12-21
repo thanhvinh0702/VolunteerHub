@@ -13,6 +13,11 @@ import {
   useMarkAsRead,
   useDeleteNotification,
 } from "../../hook/useNotification";
+import {
+  confirmDelete,
+  showSuccess,
+  showError,
+} from "../../utils/confirmDialog";
 
 function NotificationCard({ noti }) {
   console.log("Rendering NotificationCard for:", noti);
@@ -44,12 +49,17 @@ function NotificationCard({ noti }) {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this notification?")) {
+    const result = await confirmDelete(
+      "this notification",
+      "This action cannot be undone."
+    );
+
+    if (result.isConfirmed) {
       try {
         await deleteNotificationMutation.mutateAsync(id);
-        toast.success("Notification deleted");
+        showSuccess("Deleted!", "Notification has been deleted successfully.");
       } catch (error) {
-        toast.error("Failed to delete notification");
+        showError("Error!", "Failed to delete notification. Please try again.");
         console.error("Error deleting notification:", error);
       }
     }

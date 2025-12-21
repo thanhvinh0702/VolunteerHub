@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { useInfiniteTrendingEvents } from "../../hook/useEvent";
 import TrendingEventCard from "../../components/TrendingEvent/TrendingEventCard";
-import { TrendingUp, Flame, Calendar, Sparkles } from "lucide-react";
+import { TrendingUp, Flame, Calendar, Sparkles, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function TrendingPage() {
+  const navigate = useNavigate();
   const [days, setDays] = useState(30);
   const [isChangingFilter, setIsChangingFilter] = useState(false);
   const {
@@ -16,7 +18,6 @@ function TrendingPage() {
     error,
     hasMore,
     loadMore,
-    reset,
     totalElements,
   } = useInfiniteTrendingEvents({ days, pageSize: 12 });
 
@@ -124,8 +125,17 @@ function TrendingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-pink-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-red-600 via-orange-500 to-pink-500 text-white">
+      <div className="bg-gradient-to-r from-red-600 via-orange-500 to-pink-500 text-white relative">
         <div className="max-w-7xl mx-auto px-6 py-12">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 p-2 bg-black/50 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 group"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
+          </button>
+
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
               <Flame className="w-10 h-10 animate-pulse" />

@@ -8,6 +8,7 @@ import { LOGIN_LINK } from "../constant/constNavigate";
 import { getUserInfo } from "../services/userService";
 import { useProfileCompleteness } from "../hook/useUser";
 import ProfileCompletionBanner from "../components/Banner/ProfileCompletionBanner";
+import { ArrowUp } from "lucide-react";
 
 export default function MainLayout() {
   const { showNavbar } = useNavbar();
@@ -16,6 +17,7 @@ export default function MainLayout() {
   const location = useLocation();
   const [isCheckingBan, setIsCheckingBan] = useState(true);
   const [showBanner, setShowBanner] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Check profile completeness (only fetch once user is loaded and not banned)
   const { data: profileValidation, isLoading: isLoadingProfile } =
@@ -66,6 +68,27 @@ export default function MainLayout() {
   const handleDismissBanner = () => {
     localStorage.setItem("profileBannerDismissed", "true");
     setShowBanner(false);
+  };
+
+  // Handle scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   // Don't show banner on complete-profile page or banned page
@@ -124,6 +147,17 @@ export default function MainLayout() {
 
       {/* Bottom Navigation (mobile only) */}
       {showNavbar && <BottomNav />}
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600 text-white flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 animate-bounce"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 }
