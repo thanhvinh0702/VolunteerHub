@@ -31,7 +31,20 @@ public class AuthenticationHeaderFilter {
             String userStatus = redisTemplate.opsForValue().get(userId + "_status");
             if (userStatus == null) {
                 logger.info("CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP");
-                userStatus = userClient.findUserStatus(userId);
+                try {
+                    userStatus = userClient.findUserStatus(userId);
+                } catch (feign.FeignException.NotFound e) {
+                    logger.info("USER NOT FOUND");
+                    String role = authentication.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .findFirst()
+                            .orElse("");
+                    logger.info("VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE");
+                    return ServerRequest.from(request)
+                            .header("X-USER-ID", userId)
+                            .header("X-USER-ROLE", role)
+                            .build();
+                }
             }
             if (userStatus.equals("BANNED")) {
                 logger.info("INVALID REQUEST - USER BANNED, ABORT");
