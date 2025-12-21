@@ -250,7 +250,7 @@ export const useSearchEvents = ({
     return query;
 }
 
-// Hook riêng cho search by name có debounce
+// Hook cho search by name 
 export const useSearchEventByName = ({
     keyword = "",
     pageNum = 0,
@@ -311,6 +311,7 @@ export const useSearchEventByName = ({
         debouncedKeyword, // check xem search chưa
     };
 };
+
 
 export const useSearchEventByNameForManager = ({
     keyword = "",

@@ -44,6 +44,7 @@ function EventManager() {
   const [editData, setEditData] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Vietnam locations hooks
   const {
@@ -137,6 +138,7 @@ function EventManager() {
     setOpenEditForm(false);
     setImageFile(null);
     setPreviewImage(null);
+    setIsInitialLoad(true);
   });
 
   const handlePageChange = (event, value) => {
@@ -205,6 +207,7 @@ function EventManager() {
         province: editEventData.address?.province || "",
         status: editEventData.status || "",
       });
+      setIsInitialLoad(true); // Mark as initial load
     }
   }, [editEventData, openEditForm]);
 
@@ -213,6 +216,7 @@ function EventManager() {
       setOpenEditForm(false);
       setImageFile(null);
       setPreviewImage(null);
+      setIsInitialLoad(true);
       // Refresh lists
       filterQuery.refetch?.();
       searchQuery.refetch?.();
@@ -223,12 +227,18 @@ function EventManager() {
     setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Reset district when province changes
+  // Reset district when province changes (but not on initial load)
   useEffect(() => {
     if (editData?.province && openEditForm) {
-      setEditData((prev) => ({ ...prev, district: "" }));
+      if (isInitialLoad) {
+        // Skip reset on initial load, just mark as no longer initial
+        setIsInitialLoad(false);
+      } else {
+        // User manually changed province, reset district
+        setEditData((prev) => ({ ...prev, district: "" }));
+      }
     }
-  }, [editData?.province, openEditForm]);
+  }, [editData?.province, openEditForm, isInitialLoad]);
 
   const categoryOptions = [
     { value: "health", label: "Health" },
@@ -506,7 +516,10 @@ function EventManager() {
           >
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full">
               <button
-                onClick={() => setOpenEditForm(false)}
+                onClick={() => {
+                  setOpenEditForm(false);
+                  setIsInitialLoad(true);
+                }}
                 className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-600 transition hover:text-white hover:bg-red-500"
                 aria-label="Close edit form"
               >
@@ -803,7 +816,10 @@ function EventManager() {
                     <div className="flex gap-3 pt-4 border-t border-gray-200">
                       <button
                         type="button"
-                        onClick={() => setOpenEditForm(false)}
+                        onClick={() => {
+                          setOpenEditForm(false);
+                          setIsInitialLoad(true);
+                        }}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium"
                       >
                         Cancel

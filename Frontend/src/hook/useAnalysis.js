@@ -135,6 +135,14 @@ export const useMyParticipatedEvents = () => {
     });
 };
 
+export const useMyStatusEvents = () => {
+    return useQuery({
+        queryKey: [...ANALYTICS_QUERY_KEY, "myStatusEvents"],
+        queryFn: AnalysisService.getMyStatusEvents,
+        staleTime: 5 * 60 * 1000,
+    });
+};
+
 export const useTotalUsers = () => {
     return useQuery({
         queryKey: [...ANALYTICS_QUERY_KEY, "totalUsers"],

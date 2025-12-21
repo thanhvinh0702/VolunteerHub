@@ -7,7 +7,8 @@ import {
     useTotalActiveEvents,
     useTotalUsers,
     useTotalManagers,
-    useEventStatsCount
+    useEventStatsCount,
+    useMyStatusEvents
 } from "./useAnalysis";
 // --- 1. ĐỊNH NGHĨA DỮ LIỆU GIẢ ---
 const MOCK_API_RESPONSES = {
@@ -61,6 +62,9 @@ export const useDashboardStats = (role) => {
     const roleConfig = dashboardConfig[role?.toUpperCase()] || [];
 
     // Fetch analytics data - LUÔN GỌI để tránh lỗi Rules of Hooks
+    // USER hooks
+    const myStatusEventsQuery = useMyStatusEvents();
+
     // MANAGER hooks
     const totalEventsQuery = useTotalEvents();
     const totalActiveEventsQuery = useTotalActiveEvents();
@@ -95,6 +99,24 @@ export const useDashboardStats = (role) => {
             let error = null;
 
             switch (cardConfig.useAnalytics) {
+                // USER analytics
+                case "myStatusEvents": {
+                    const statusData = myStatusEventsQuery.data || {};
+                    isLoading = myStatusEventsQuery.isLoading;
+                    isError = myStatusEventsQuery.isError;
+                    error = myStatusEventsQuery.error;
+
+                    // Xử lý dataKey để lấy đúng giá trị
+                    if (cardConfig.dataKey === "total") {
+                        // Tính tổng: approved + completed + pending
+                        analyticsData = (statusData.approved || 0) + (statusData.completed || 0) + (statusData.pending || 0);
+                    } else {
+                        // Lấy giá trị theo dataKey (approved, completed, pending)
+                        analyticsData = statusData[cardConfig.dataKey] || 0;
+                    }
+                    break;
+                }
+
                 // MANAGER analytics
                 case "totalEvents":
                     analyticsData = totalEventsQuery.data;
@@ -159,6 +181,9 @@ export const useDashboardStats = (role) => {
                 isError,
                 error,
                 refetch: () => {
+                    // USER refetch
+                    if (cardConfig.useAnalytics === "myStatusEvents") myStatusEventsQuery.refetch();
+
                     // MANAGER refetch
                     if (cardConfig.useAnalytics === "totalEvents") totalEventsQuery.refetch();
                     if (cardConfig.useAnalytics === "totalActiveEvents") totalActiveEventsQuery.refetch();

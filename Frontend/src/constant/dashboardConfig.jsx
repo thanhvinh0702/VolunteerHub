@@ -1,4 +1,3 @@
-// src/config/dashboardConfig.js
 import {
   FiClock,
   FiCheckCircle,
@@ -12,27 +11,31 @@ export const dashboardConfig = {
   USER: [
     {
       label: "Total Hours",
-      value: "124",
+      value: "150",
       icon: <FiClock className="text-blue-500" />,
-      endpoint: "/api/v1/users/users/me",
+      useAnalytics: "myStatusEvents", // Sử dụng hook useMyStatusEvents
+      dataKey: "approved", // Lấy giá trị approved
     },
     {
       label: "Events Completed",
-      value: "18",
+      value: "25",
       icon: <FiCheckCircle className="text-green-500" />,
-      endpoint: "/api/v1/users/users/me/events-completed",
+      useAnalytics: "myStatusEvents", // Sử dụng hook useMyStatusEvents
+      dataKey: "completed", // Lấy giá trị completed
     },
     {
-      label: "Badges Earned",
-      value: "3",
-      icon: <FiAward className="text-yellow-400" />,
-      endpoint: "/api/v1/users/users/me/badges-earned",
+      label: "Pending",
+      value: "0",
+      icon: <FiClock className="text-orange-500" />,
+      useAnalytics: "myStatusEvents", // Sử dụng hook useMyStatusEvents
+      dataKey: "pending", // Lấy giá trị pending
     },
     {
       label: "This Month",
-      value: "12hrs",
+      value: "12",
       icon: <FiTrendingUp className="text-purple-500" />,
-      endpoint: "/api/v1/users/users/me/this-month",
+      useAnalytics: "myStatusEvents", // Sử dụng hook useMyStatusEvents
+      dataKey: "total", // Tính tổng: approved + completed + pending
     },
   ],
 

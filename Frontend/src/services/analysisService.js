@@ -36,6 +36,17 @@ const AnalysisService = {
         }
     },
 
+    // Lấy thống kê status events của user (approved, completed, pending)
+    getMyStatusEvents: async () => {
+        try {
+            const response = await axiosClient.get("/api/v1/registrations/my-stats/status-events");
+            return response;
+        } catch (error) {
+            console.error("Error fetching my status events:", error);
+            throw error;
+        }
+    },
+
     // ==================== ADMIN ANALYTICS ====================
 
     // Số users (admin ms dc xem)

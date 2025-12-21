@@ -1,13 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProfileCompleteness, useUpdateUserProfile, useProfile } from "../../hook/useUser";
-import { User, Mail, Phone, Calendar, MapPin, FileText, Loader2 } from "lucide-react";
+import {
+  useProfileCompleteness,
+  useUpdateUserProfile,
+  useProfile,
+} from "../../hook/useUser";
+import {
+  useProvinces,
+  useDistricts,
+  findProvinceByName,
+  findDistrictByNameOrCode,
+} from "../../hook/useVietnamLocations";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+  FileText,
+  Loader2,
+  Home,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 function CompleteProfile() {
   const navigate = useNavigate();
   const { data: profileData, isLoading: isLoadingProfile } = useProfile();
-  const { data: validation, isLoading: isValidating } = useProfileCompleteness();
+  const { data: validation, isLoading: isValidating } =
+    useProfileCompleteness();
   const updateProfileMutation = useUpdateUserProfile();
 
   const [formData, setFormData] = useState({
@@ -15,21 +35,153 @@ function CompleteProfile() {
     email: "",
     phoneNumber: "",
     dateOfBirth: "",
-    address: "",
+    address: {
+      province: "",
+      district: "",
+      street: "",
+    },
     bio: "",
+    provinceCode: "",
+    districtCode: "",
+    provinceName: "",
+    districtName: "",
   });
 
-  const [canSkip, setCanSkip] = useState(false);
+  // Callback khi provinces được fetch xong
+  const handleProvincesLoaded = useCallback((provincesData) => {
+    if (!provincesData?.length) return;
+
+    setFormData((prev) => {
+      if (!prev || prev.provinceCode) return prev;
+      if (!prev.provinceName) return prev;
+
+      const matchedProvince = findProvinceByName(
+        provincesData,
+        prev.provinceName
+      );
+      if (!matchedProvince) return prev;
+
+      return {
+        ...prev,
+        provinceCode: String(matchedProvince.code),
+        provinceName: matchedProvince.name,
+        address: {
+          ...prev.address,
+          province: matchedProvince.name,
+        },
+      };
+    });
+  }, []);
+
+  // Callback khi districts được fetch xong
+  const handleDistrictsLoaded = useCallback(
+    (districtsData, currentProvinceCode) => {
+      if (!districtsData?.length) return;
+
+      setFormData((prev) => {
+        if (!prev) return prev;
+        if (String(prev.provinceCode || "") !== currentProvinceCode)
+          return prev;
+
+        const codeCandidate = prev.districtCode
+          ? String(prev.districtCode)
+          : "";
+        let matchedDistrict = codeCandidate
+          ? findDistrictByNameOrCode(districtsData, codeCandidate)
+          : null;
+
+        const nameCandidate = prev.districtName || "";
+        if (!matchedDistrict && nameCandidate) {
+          matchedDistrict = findDistrictByNameOrCode(
+            districtsData,
+            nameCandidate
+          );
+        }
+
+        const nextDistrictCode = matchedDistrict
+          ? String(matchedDistrict.code)
+          : "";
+        const nextDistrictName = matchedDistrict ? matchedDistrict.name : "";
+
+        if (
+          nextDistrictCode === prev.districtCode &&
+          nextDistrictName === prev.districtName
+        ) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          districtCode: nextDistrictCode,
+          districtName: nextDistrictName,
+          address: {
+            ...prev.address,
+            district: nextDistrictName,
+          },
+        };
+      });
+    },
+    []
+  );
+
+  // Sử dụng hooks với onFetched callback
+  const {
+    provinces,
+    isLoading: isProvincesLoading,
+    isFetching: isProvincesFetching,
+    getProvinceByCode,
+  } = useProvinces({
+    onFetched: handleProvincesLoaded,
+  });
+
+  const provinceCode = formData?.provinceCode
+    ? String(formData.provinceCode)
+    : "";
+  const districtCode = formData?.districtCode
+    ? String(formData.districtCode)
+    : "";
+
+  const {
+    districts,
+    isLoading: isDistrictsLoading,
+    isFetching: isDistrictsFetching,
+    getDistrictByCode,
+  } = useDistricts(provinceCode, {
+    onFetched: handleDistrictsLoaded,
+  });
 
   useEffect(() => {
     if (profileData) {
+      const preferences = profileData.preferences || {};
+      const rawAddress = preferences.address || profileData.address;
+
+      let provinceName = "";
+      let districtName = "";
+      let street = "";
+
+      if (rawAddress && typeof rawAddress === "object") {
+        provinceName = rawAddress.province || "";
+        districtName = rawAddress.district || "";
+        street = rawAddress.street || "";
+      } else if (typeof rawAddress === "string") {
+        street = rawAddress;
+      }
+
       setFormData({
-        fullName: profileData.fullName || "",
+        fullName: profileData.fullName || preferences.fullName || "",
         email: profileData.email || "",
-        phoneNumber: profileData.phoneNumber || "",
-        dateOfBirth: profileData.dateOfBirth || "",
-        address: profileData.address || "",
+        phoneNumber: profileData.phoneNumber || preferences.phoneNumber || "",
+        dateOfBirth: profileData.dateOfBirth || preferences.dateOfBirth || "",
+        address: {
+          province: provinceName,
+          district: districtName,
+          street: street,
+        },
         bio: profileData.bio || "",
+        provinceCode: "",
+        districtCode: "",
+        provinceName: provinceName,
+        districtName: districtName,
       });
     }
   }, [profileData]);
@@ -41,11 +193,92 @@ function CompleteProfile() {
     }
   }, [validation, isValidating, navigate]);
 
+  // Sync provinceCode when provinceName exists and provinces are loaded
+  useEffect(() => {
+    if (
+      formData?.provinceName &&
+      !formData?.provinceCode &&
+      provinces?.length > 0
+    ) {
+      const matched = provinces.find((p) => p.name === formData.provinceName);
+      if (matched) {
+        setFormData((prev) => ({
+          ...prev,
+          provinceCode: String(matched.code),
+        }));
+      }
+    }
+  }, [formData?.provinceName, formData?.provinceCode, provinces]);
+
+  // Sync districtCode when districtName exists and districts are loaded
+  useEffect(() => {
+    if (
+      formData?.districtName &&
+      !formData?.districtCode &&
+      districts?.length > 0
+    ) {
+      const matched = districts.find((d) => d.name === formData.districtName);
+      if (matched) {
+        setFormData((prev) => ({
+          ...prev,
+          districtCode: String(matched.code),
+        }));
+      }
+    }
+  }, [formData?.districtName, formData?.districtCode, districts]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "street") {
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          street: value,
+        },
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleProvinceChange = (event) => {
+    const selectedCode = event.target.value;
+    const matchedProvince = getProvinceByCode(selectedCode);
+    const nextProvinceName = matchedProvince?.name || "";
+
+    setFormData((prev) => ({
+      ...prev,
+      provinceCode: selectedCode,
+      provinceName: nextProvinceName,
+      districtCode: "",
+      districtName: "",
+      address: {
+        ...prev.address,
+        province: nextProvinceName,
+        district: "",
+      },
+    }));
+  };
+
+  const handleDistrictChange = (event) => {
+    const selectedCode = event.target.value;
+    const matchedDistrict = getDistrictByCode(selectedCode);
+    const nextDistrictName = matchedDistrict?.name || "";
+
+    setFormData((prev) => ({
+      ...prev,
+      districtCode: selectedCode,
+      districtName: nextDistrictName,
+      address: {
+        ...prev.address,
+        district: nextDistrictName,
+      },
     }));
   };
 
@@ -55,6 +288,13 @@ function CompleteProfile() {
     // Validate required fields
     const missingFields = validation?.missingFields || [];
     const hasAllRequired = missingFields.every((field) => {
+      if (field === "address") {
+        return (
+          formData.address?.province ||
+          formData.address?.district ||
+          formData.address?.street
+        );
+      }
       return formData[field] && formData[field].trim() !== "";
     });
 
@@ -63,13 +303,37 @@ function CompleteProfile() {
       return;
     }
 
-    updateProfileMutation.mutate(formData, {
+    // Prepare payload with address object
+    const addressPayload = {
+      province: formData.provinceName || formData.address?.province || "",
+      district: formData.districtName || formData.address?.district || "",
+      street: formData.address?.street || "",
+    };
+
+    const payload = {
+      fullName: formData.fullName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      dateOfBirth: formData.dateOfBirth,
+      address: addressPayload,
+      bio: formData.bio,
+      preferences: {
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        dateOfBirth: formData.dateOfBirth,
+        address: addressPayload,
+        provinceCode: formData.provinceCode || "",
+        districtCode: formData.districtCode || "",
+      },
+    };
+
+    updateProfileMutation.mutate(payload, {
       onSuccess: () => {
         toast.success("Profile completed successfully!");
         // Clear skip/dismiss flags
         localStorage.removeItem("profileSkipped");
         localStorage.removeItem("profileBannerDismissed");
-        
+
         // Check if there's a redirect URL from event registration
         const redirectUrl = sessionStorage.getItem("redirectAfterProfile");
         if (redirectUrl) {
@@ -131,116 +395,196 @@ function CompleteProfile() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name {isFieldRequired("fullName") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your full name"
-                required={isFieldRequired("fullName")}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Full Name */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name{" "}
+                {isFieldRequired("fullName") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your full name"
+                  required={isFieldRequired("fullName")}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email {isFieldRequired("email") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
-                placeholder="Enter your email"
-                disabled
-              />
+            {/* Email */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email{" "}
+                {isFieldRequired("email") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                  placeholder="Enter your email"
+                  disabled
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number {isFieldRequired("phoneNumber") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your phone number"
-                required={isFieldRequired("phoneNumber")}
-              />
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number{" "}
+                {isFieldRequired("phoneNumber") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your phone number"
+                  required={isFieldRequired("phoneNumber")}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Date of Birth */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date of Birth {isFieldRequired("dateOfBirth") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required={isFieldRequired("dateOfBirth")}
-              />
+            {/* Date of Birth */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Date of Birth{" "}
+                {isFieldRequired("dateOfBirth") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required={isFieldRequired("dateOfBirth")}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Address */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Address {isFieldRequired("address") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your address"
-                required={isFieldRequired("address")}
-              />
+            {/* Address */}
+            <div className="md:col-span-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <Home className="w-4 h-4" />
+                Location{" "}
+                {isFieldRequired("address") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+
+              {/* Province/City */}
+              <div className="mb-3">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Province / City
+                </label>
+                <select
+                  name="provinceCode"
+                  value={provinceCode || ""}
+                  onChange={handleProvinceChange}
+                  disabled={isProvincesLoading || isProvincesFetching}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  required={isFieldRequired("address")}
+                >
+                  <option value="">
+                    {isProvincesLoading || isProvincesFetching
+                      ? "Loading provinces..."
+                      : "Select province / city"}
+                  </option>
+                  {provinces.map((province) => (
+                    <option key={province.code} value={province.code}>
+                      {province.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* District */}
+              <div className="mb-3">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  District
+                </label>
+                <select
+                  name="districtCode"
+                  value={districtCode || ""}
+                  onChange={handleDistrictChange}
+                  disabled={
+                    !provinceCode || isDistrictsLoading || isDistrictsFetching
+                  }
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">
+                    {isDistrictsLoading || isDistrictsFetching
+                      ? "Loading districts..."
+                      : "Select district"}
+                  </option>
+                  {districts.map((district) => (
+                    <option key={district.code} value={district.code}>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Street */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Street / Address Line
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="street"
+                    value={formData.address?.street || ""}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="House number, street, ward"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Bio */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Bio {isFieldRequired("bio") && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <FileText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-              <textarea
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                rows={4}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Tell us about yourself..."
-                required={isFieldRequired("bio")}
-              />
+            {/* Bio */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bio{" "}
+                {isFieldRequired("bio") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <div className="relative">
+                <FileText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Tell us about yourself..."
+                  required={isFieldRequired("bio")}
+                />
+              </div>
             </div>
           </div>
 
@@ -282,5 +626,3 @@ function CompleteProfile() {
 }
 
 export default CompleteProfile;
-
-

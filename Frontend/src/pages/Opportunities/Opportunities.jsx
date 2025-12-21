@@ -176,13 +176,7 @@ function OpportunitiesEvent() {
     status: "APPROVED",
   });
 
-  console.log("🎯 [Opportunities] Search mode:", isSearchMode, "Query:", query);
-  console.log(
-    "🎯 [Opportunities] Active query type:",
-    isSearchMode ? "SEARCH" : "FILTER"
-  );
-
-  // Chọn data source dựa trên mode search hay không
+  //  mode search hay không
   const activeQuery = isSearchMode ? searchQuery : filterQuery;
   const { data, isLoading, isFetching, isError, error, isPlaceholderData } =
     activeQuery;
@@ -274,9 +268,12 @@ function OpportunitiesEvent() {
         setCustomEndDate={setCustomEndDate}
       />
 
-      <div>
-        <TrendingScrollList />
-      </div>
+      {/* Chỉ hiển thị Trending khi không ở chế độ search */}
+      {!isSearchMode && (
+        <div>
+          <TrendingScrollList />
+        </div>
+      )}
 
       <div className="flex justify-between items-center px-4 mb-4">
         <div className="text-xl font-bold">

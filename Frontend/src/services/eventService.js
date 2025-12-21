@@ -151,12 +151,10 @@ export const rejectEvent = async (eventId, reason) => {
 
 export const searchEventByName = async (params = {}) => {
     const { keyword, pageNum = 0, pageSize = 6, status } = params;
-    console.log('🔍 [searchEventByName] Full path:', `${EVENT_BASE_URL}/search`);
-    console.log('🔍 [searchEventByName] Params being sent:', { keyword, pageNum, pageSize, status });
-    const response = await axiosClient.get(`${EVENT_BASE_URL}/search`, {
+    const response = await axiosClient.get(`${EVENT_AGGREGATED_BASE_URL}/search`, {
         params: { keyword, pageNum, pageSize, status }
     });
-    console.log('🔍 [searchEventByName] API response:', response);
+    console.log('Search API response:', response);
 
     // API trả về: { content, totalElements, totalPages, number, size }
     // Transform thành format thống nhất với getEvents
