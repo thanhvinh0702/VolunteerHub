@@ -39,7 +39,7 @@ function EventManagerCardAd({ data }) {
     data.address?.district || ""
   }, ${data.address?.province || ""}`.trim();
   const status = data.status;
-  const registered = data.currentRegistrations || 0;
+  const registered = data.participantCount || 0;
   const capacity = data.capacity;
   const isUpdating = data._isUpdating || false; // Optimistic update flag
   const isDeleting = data._isDeleting || false; // Optimistic delete flag

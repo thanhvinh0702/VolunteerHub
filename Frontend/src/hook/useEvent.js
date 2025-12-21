@@ -277,7 +277,14 @@ export const useSearchEventByName = ({
             if (!debouncedKeyword.trim()) {
                 return { data: [], meta: { totalPages: 0, totalElements: 0 } };
             }
+            console.log('🔎 [useSearchEventByName] Calling searchEventByName with:', {
+                keyword: debouncedKeyword,
+                pageNum,
+                pageSize,
+                status
+            });
             const result = await searchEventByName({ keyword: debouncedKeyword, pageNum, pageSize, status });
+            console.log('🔎 [useSearchEventByName] Result:', result);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         enabled: enabled && Boolean(debouncedKeyword.trim()),
@@ -803,6 +810,19 @@ export const useApprovedEventsTop2ByName = ({ pageSize = 2, status = "APPROVED",
         queryFn: async () => {
             const result = await getOwnedEvents({ pageNum: 0, pageSize, status, sortedBy, order });
             console.log("useApprovedEventsTop2ByName", result);
+            return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
+        },
+        placeholderData: keepPreviousData,
+        staleTime: 1000 * 30,
+    });
+};
+
+export const usePendingEventsTop3 = ({ pageSize = 3, status = "PENDING", sortedBy = "createdAt", order = "desc" } = {}) => {
+    return useQuery({
+        queryKey: [...EVENTS_QUERY_KEY, 'pendingTop3', { pageNum: 0, pageSize, status, sortedBy, order }],
+        queryFn: async () => {
+            const result = await getEvents({ pageNum: 0, pageSize, status, sortedBy, order });
+            console.log("usePendingEventsTop3", result);
             return result || { data: [], meta: { totalPages: 0, totalElements: 0 } };
         },
         placeholderData: keepPreviousData,

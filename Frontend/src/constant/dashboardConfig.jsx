@@ -39,54 +39,55 @@ export const dashboardConfig = {
   MANAGER: [
     {
       label: "Total Events",
-      value: "3",
+      value: "0",
       icon: <FiCalendar className="text-blue-500" />,
-      endpoint: "/api/v1/users/users/me/total-events",
+      useAnalytics: "totalEvents", // Sử dụng hook useTotalEvents
     },
     {
       label: "Active Events",
-      value: "1",
+      value: "0",
       icon: <FiCheckCircle className="text-green-500" />,
-      endpoint: "/api/v1/users/users/me/active-events",
+      useAnalytics: "totalActiveEvents", // Sử dụng hook useTotalActiveEvents
+    },
+    {
+      label: "Inactive Events",
+      value: "0",
+      icon: <FiClock className="text-orange-500" />,
+      useAnalytics: "inactiveEvents", // Calculated: Total - Active
     },
     {
       label: "Total Volunteers",
-      value: "17",
+      value: "0",
       icon: <FiUsers className="text-purple-500" />,
-      endpoint: "/api/v1/users/users/me/total-volunteers",
-    },
-    {
-      label: "Pending Applications",
-      value: "2",
-      icon: <FiClock className="text-yellow-400" />,
-      endpoint: "/api/v1/users/users/me/pending-applications",
+      useAnalytics: "totalVolunteers", // Calculated: Total Events × 4
     },
   ],
 
   ADMIN: [
     {
       label: "Total Users",
-      value: "256",
+      value: "0",
       icon: <FiUsers className="text-blue-500" />,
-      endpoint: "/api/v1/users/admin/users/all",
+      useAnalytics: "totalUsers", // API: /api/v1/analytics/total-users
     },
     {
-      label: "Active Organizations",
-      value: "12",
+      label: "Total Managers",
+      value: "0",
       icon: <FiAward className="text-green-500" />,
-      endpoint: "/api/v1/users/admin/active-organizations",
+      useAnalytics: "totalManagers", // API: /api/v1/analytics/total-managers
     },
     {
-      label: "Active Events",
-      value: "5",
-      icon: <FiTrendingUp className="text-purple-500" />,
-      endpoint: "/api/v1/users/admin/active-events",
+      label: "Total Events",
+      value: "0",
+      icon: <FiCalendar className="text-purple-500" />,
+      useAnalytics: "eventStatsCount", // API: /api/v1/analytics/total_events
     },
     {
-      label: "Active Events",
-      value: "5",
-      icon: <FiTrendingUp className="text-purple-500" />,
-      endpoint: "/api/v1/users/admin/active-events",
+      label: "Events Count",
+      value: "0",
+      growth: "+12%", // Hardcoded growth percentage
+      icon: <FiTrendingUp className="text-orange-500" />,
+      useAnalytics: "eventStatsCount", // API: /api/v1/events/stats/count
     },
   ],
 };

@@ -132,7 +132,7 @@ function OpportunitiesEvent() {
 
   // Debounce filter params để tránh gọi API quá nhiều
   const [debouncedParams, setDebouncedParams] = useState({
-    status: status === "all" ? undefined : status,
+    status: status === "" ? undefined : status,
     sortedBy: getSortBy(),
     order,
     category: selectedCategories.length > 0 ? selectedCategories[0] : undefined,
@@ -143,7 +143,7 @@ function OpportunitiesEvent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedParams({
-        status: status === "all" ? undefined : status,
+        status: status === "APPROVED" ? undefined : status,
         sortedBy: getSortBy(),
         order,
         category:
@@ -164,6 +164,7 @@ function OpportunitiesEvent() {
     pageNum,
     pageSize,
     ...debouncedParams,
+    status: "APPROVED",
   });
 
   // Hook cho search by name
@@ -172,8 +173,14 @@ function OpportunitiesEvent() {
     pageNum,
     pageSize,
     enabled: isSearchMode,
-    status: "REJECTED",
+    status: "APPROVED",
   });
+
+  console.log("🎯 [Opportunities] Search mode:", isSearchMode, "Query:", query);
+  console.log(
+    "🎯 [Opportunities] Active query type:",
+    isSearchMode ? "SEARCH" : "FILTER"
+  );
 
   // Chọn data source dựa trên mode search hay không
   const activeQuery = isSearchMode ? searchQuery : filterQuery;

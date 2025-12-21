@@ -167,6 +167,14 @@ export const useTotalActiveEvents = () => {
     });
 };
 
+export const useEventStatsCount = () => {
+    return useQuery({
+        queryKey: [...ANALYTICS_QUERY_KEY, "eventStatsCount"],
+        queryFn: AnalysisService.getEventStatsCount,
+        staleTime: 5 * 60 * 1000,
+    });
+};
+
 // ==================== EXPORT PARTICIPANTS HOOKS ====================
 
 /**

@@ -1,9 +1,10 @@
 import React from "react";
-import RecentActivityCard from "./RecentActivityCard";
+import UpComingCard from "./UpComingCard";
 import ModalActivity from "./ModalActivity";
 import { useRecentPendingRegistrations } from "../../hook/useRegistration";
 import Skeleton from "@mui/material/Skeleton";
 import Card from "../Card.jsx/Card";
+import { BellOff } from "lucide-react";
 
 function RecentActivity() {
   const queryParams = {
@@ -37,22 +38,26 @@ function RecentActivity() {
     .slice(0, 3)
     .map((reg, idx) => {
       const ev = reg.event || {};
-      const start = ev.startTime ? new Date(ev.startTime) : null;
-      const end = ev.endTime ? new Date(ev.endTime) : null;
-      let durationText = "";
-      if (start && end && end > start) {
-        const diffMs = end.getTime() - start.getTime();
-        const diffHours = Math.max(1, Math.round(diffMs / (1000 * 60 * 60)));
-        durationText = `${diffHours}h`;
-      }
-      const dateText = ev.startTime ? ev.startTime.slice(0, 10) : "";
+
+      // Format location
+      const address = ev.address || {};
+      const locationParts = [
+        address.street,
+        address.district,
+        address.province,
+      ].filter(Boolean);
+      const locationText = locationParts.join(", ");
 
       return {
-        id: reg.id ?? ev.id ?? idx,
+        id: reg.eventId ?? idx,
         title: ev.name || "Untitled",
-        date: dateText,
-        duration: durationText,
+        subtile: ev.category?.name,
+        date: ev.startTime,
+        starttime: ev.startTime,
+        endtime: ev.endTime,
+        location: locationText,
         status: (reg.status || "PENDING").toUpperCase(),
+        urlImg: ev.imageUrl,
       };
     });
 
@@ -61,16 +66,26 @@ function RecentActivity() {
   const SkeletonRecentActivityCard = () => (
     <div className="text-gray-600 max-md:text-sm">
       <Card>
-        <div className="flex flex-col justify-between relative px-4 py-0 gap-2">
-          <Skeleton width={200} height={24} />
-          <div className="flex flex-row gap-5">
-            <Skeleton width={120} height={20} />
-            <Skeleton width={80} height={20} />
+        <div className="flex items-start gap-4 p-4">
+          <div className="flex flex-col justify-between gap-2 flex-1">
+            <Skeleton width="100%" height={28} />
+            <Skeleton width={100} height={24} />
+            <div className="flex flex-row gap-4">
+              <Skeleton width={120} height={20} />
+              <Skeleton width={80} height={20} />
+            </div>
+            <Skeleton width="90%" height={20} />
+            <div className="flex gap-2 items-center">
+              <Skeleton width={80} height={28} />
+              <Skeleton width={20} height={20} />
+            </div>
           </div>
-          <div className="flex gap-3 items-center">
-            <Skeleton width={80} height={24} />
-            <Skeleton width={20} height={20} />
-          </div>
+          <Skeleton
+            variant="rectangular"
+            width={128}
+            height={128}
+            className="rounded-xl"
+          />
         </div>
       </Card>
     </div>
@@ -81,6 +96,8 @@ function RecentActivity() {
       <ModalActivity
         title="Awaiting Approval"
         subtile="Events recently added and pending review"
+        viewMore={true}
+        path="/dashboard/opportunities"
       >
         {(isLoading || isFetching) && (
           <>
@@ -90,15 +107,27 @@ function RecentActivity() {
           </>
         )}
         {isError && (
-          <p className="px-4 py-2 text-red-500">No recent activity.</p>
+          <div className="text-center py-8 flex flex-col gap-4 items-center">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+              <BellOff className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">
+              Failed to load recent activities.
+            </p>
+          </div>
         )}
         {!isLoading && !isFetching && !isError && cards.length === 0 && (
-          <p className="px-4 py-2 text-gray-500">No pending activities.</p>
+          <div className="text-center py-8 flex flex-col gap-4 items-center">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+              <BellOff className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">No pending activities.</p>
+          </div>
         )}
         {!isLoading &&
           !isFetching &&
           !isError &&
-          cards.map((item) => <RecentActivityCard key={item.id} {...item} />)}
+          cards.map((item) => <UpComingCard key={item.id} {...item} />)}
       </ModalActivity>
     </div>
   );

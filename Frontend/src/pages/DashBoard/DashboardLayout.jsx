@@ -40,16 +40,19 @@ const roleSpecificItems = {
     {
       key: "manage_events",
       label: "Event Management",
+      shortLabel: "Events",
       to: "/dashboard/eventmanager",
     },
     {
       key: "approve_registration",
       label: "Approve Registration",
+      shortLabel: "Approve",
       to: "/dashboard/approve-registration",
     },
     {
       key: "mark_completion",
       label: "Mark Completion",
+      shortLabel: "Complete",
       to: "/dashboard/markcompletion",
     },
     {
@@ -62,7 +65,7 @@ const roleSpecificItems = {
     // User có thể có thêm tab cá nhân
     // { key: "my-profile", label: "My Profile", to: "/dashboard/profile" },
     { key: "opps", label: "Opportunities", to: "/dashboard/opportunities" },
-    { key: "activity", label: "Activity Log", to: "/dashboard/activity" },
+
     { key: "badges", label: "Badges", to: "/dashboard/badges" },
   ],
 };

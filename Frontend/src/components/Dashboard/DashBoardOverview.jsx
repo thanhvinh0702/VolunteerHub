@@ -20,7 +20,7 @@ function DashBoardOverview() {
   return (
     <div className="space-y-4 text-black w-full">
       {/* Grid Layout: Mobile 1 cột, Tablet 2 cột, PC 4 cột */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full justify-between gap-3 md:gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 w-full justify-between gap-3 md:gap-8">
         {cardDataList.map((card, index) => {
           if (card.isLoading) {
             return <EventCardSkeleton key={`skeleton-${index}`} />;

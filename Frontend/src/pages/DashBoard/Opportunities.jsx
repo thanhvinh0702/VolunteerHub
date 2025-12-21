@@ -127,6 +127,22 @@ export default function Opportunities() {
   };
 
   console.log("Opportunities data:", data);
+
+  // Get counts for each tab
+  const appliedCount = appliedQuery.data?.meta?.totalElements ?? 0;
+  const upcomingCount = upcomingQuery.data?.meta?.totalElements ?? 0;
+  const completedCount = completedQuery.data?.meta?.totalElements ?? 0;
+
+  // Calculate showing range
+  const currentPageNum = pageNumMap[activeTab];
+  const totalElements = data?.meta?.totalElements ?? 0;
+  const currentPageSize = data?.meta?.size ?? PAGE_SIZE;
+  const currentPageNumber = data?.meta?.number ?? 0;
+
+  // Calculate actual items showing on current page
+  const itemsOnCurrentPage = data?.data?.length ?? 0;
+  const showingCount = totalElements > 0 ? itemsOnCurrentPage : 0;
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm gap-4 flex flex-col">
       <div>
@@ -138,9 +154,9 @@ export default function Opportunities() {
       <div>
         <Tabs
           items={[
-            { key: "applied", label: "Applied" },
-            { key: "upcoming", label: "Upcoming" },
-            { key: "completed", label: "Completed" },
+            { key: "applied", label: `Applied (${appliedCount})` },
+            { key: "upcoming", label: `Upcoming (${upcomingCount})` },
+            { key: "completed", label: `Completed (${completedCount})` },
           ]}
           activeKey={activeTab}
           onChange={handleTabChange}
@@ -160,7 +176,10 @@ export default function Opportunities() {
                   />
                 ))}
               </div>
-              <div className="flex justify-center pt-2">
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-4">
+                <p className="text-sm text-gray-500">
+                  Showing {showingCount} of {totalElements} events
+                </p>
                 <Pagination
                   count={data?.meta?.totalPages ?? 1}
                   page={pageNumMap[activeTab] + 1}

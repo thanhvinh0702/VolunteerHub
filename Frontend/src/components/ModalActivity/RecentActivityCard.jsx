@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "../Card.jsx/Card";
-import { FiCalendar, FiClock } from "react-icons/fi";
-import { ClockArrowDown, Verified, CircleCheckBig } from "lucide-react";
+import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import { ClockArrowDown, CircleCheckBig } from "lucide-react";
 
 function RecentActivityCard({
   id,
@@ -9,7 +9,9 @@ function RecentActivityCard({
   date,
   duration,
   status,
-
+  imageUrl,
+  category,
+  location,
   icon,
 }) {
   const statusIcon =
@@ -21,34 +23,87 @@ function RecentActivityCard({
   const colorStatus =
     status.toLowerCase() === "pending"
       ? "bg-gray-200 text-black"
-      : "bg-gray-900 text-white";
+      : "bg-green-500 text-white";
+
+  // Category badge styling
+  const categoryColors = {
+    environment: "bg-green-100 text-green-700",
+    education: "bg-blue-100 text-blue-700",
+    health: "bg-red-100 text-red-700",
+    community: "bg-purple-100 text-purple-700",
+    default: "bg-gray-100 text-gray-700",
+  };
+
+  const categoryColor =
+    categoryColors[category?.toLowerCase()] || categoryColors.default;
+
   return (
-    <div className="text-gray-600 max-md:text-sm">
+    <div>
       <Card>
-        <div className="flex flex-col justify-between relative px-4 py-0 gap-1 max-sm:gap-2">
-          <div className="text-black font-semibold">{title}</div>
-          <div className="flex flex-row gap-5">
-            <p className="inline-flex gap-1 mb-1">
-              <span className="text-gray-600 items-center-safe flex">
-                <FiCalendar size={16} />
+        <div className="flex items-start gap-4 p-4">
+          {/* Content */}
+          <div className="flex-1 min-w-0 space-y-2">
+             
+            <h3 className="font-semibold text-gray-900 text-lg line-clamp-2">
+              {title}
+            </h3>
+
+            {/* Category Badge */}
+            {category && (
+              <span
+                className={`inline-block px-3 py-1 rounded-md text-xs font-medium ${categoryColor}`}
+              >
+                {category}
               </span>
-              {date}
-            </p>
-            <p className="flex flex-row gap-1">
-              <span className="text-gray-600 items-center-safe flex">
-                <FiClock />
+            )}
+
+            {/* Date and Duration */}
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1.5">
+                <FiCalendar className="w-4 h-4 flex-shrink-0" />
+                <span>{date}</span>
+              </div>
+              {duration && (
+                <div className="flex items-center gap-1.5">
+                  <FiClock className="w-4 h-4 flex-shrink-0" />
+                  <span>{duration}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Location */}
+            {location && (
+              <div className="flex items-start gap-1.5 text-sm text-gray-600">
+                <FiMapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="line-clamp-1">{location}</span>
+              </div>
+            )}
+
+            {/* Status */}
+            <div className="flex items-center gap-2">
+              <span
+                className={`${colorStatus} px-3 py-1.5 rounded-md text-xs font-semibold uppercase`}
+              >
+                {status}
               </span>
-              <span>{duration}</span>
-            </p>
+              {statusIcon}
+            </div>
           </div>
-          <div className="flex gap-3">
-            <span
-              className={`${colorStatus} px-2 py-1 rounded-full max-sm:py-0`}
-            >
-              {status}
-            </span>
-            <span className="flex flex-col justify-center">{statusIcon}</span>
-          </div>
+
+          {/* Image */}
+          {imageUrl && (
+            <div className="flex-shrink-0">
+              <img
+                src={imageUrl}
+                alt={title}
+                className="w-32 h-32 object-cover rounded-xl"
+                onError={(e) => {
+                  e.target.src =
+                    "https://via.placeholder.com/150?text=No+Image";
+                }}
+              />
+            </div>
+          )}
         </div>
       </Card>
     </div>

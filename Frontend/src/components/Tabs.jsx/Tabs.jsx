@@ -36,6 +36,15 @@ export default function Tabs({
   return (
     <div className={baseClass} role="tablist" aria-label="Tabs">
       {items.map((it) => {
+        const displayLabel = it.shortLabel ? (
+          <>
+            <span className="hidden md:inline">{it.label}</span>
+            <span className="md:hidden">{it.shortLabel}</span>
+          </>
+        ) : (
+          it.label
+        );
+
         if (asLink && it.to) {
           return (
             <NavLink
@@ -44,7 +53,7 @@ export default function Tabs({
               className={({ isActive }) => tabClass(isActive)}
               end
             >
-              <div className="px-[0px]">{it.label}</div>
+              <div className="px-[0px]">{displayLabel}</div>
             </NavLink>
           );
         }
@@ -58,7 +67,7 @@ export default function Tabs({
             className={tabClass(isActive)}
             onClick={() => handleSelect(it.key)}
           >
-            {it.label}
+            {displayLabel}
           </button>
         );
       })}

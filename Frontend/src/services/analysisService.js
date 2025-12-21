@@ -82,6 +82,17 @@ const AnalysisService = {
         }
     },
 
+    // Thống kê tổng số events (cho admin)
+    getEventStatsCount: async () => {
+        try {
+            const response = await axiosClient.get("/api/v1/events/stats/count");
+            return response;
+        } catch (error) {
+            console.error("Error fetching event stats count:", error);
+            throw error;
+        }
+    },
+
     // ==================== EXPORT PARTICIPANTS ====================
 
     // Export participants của một event (JSON format)

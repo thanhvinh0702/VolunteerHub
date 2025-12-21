@@ -4,6 +4,7 @@ import UpComingCard from "./UpComingCard";
 import { useUpcomingApprovedRegistrations } from "../../hook/useRegistration";
 import Skeleton from "@mui/material/Skeleton";
 import Card from "../Card.jsx/Card";
+import { BellOff } from "lucide-react";
 
 function UpcomingEvents() {
   const queryParams = { pageSize: 3, sortedBy: "date", order: "desc" };
@@ -47,26 +48,26 @@ function UpcomingEvents() {
   const SkeletonUpcomingCard = () => (
     <div>
       <Card>
-        <div className="flex justify-between relative">
-          <div className="text-md max-sm:text-sm flex flex-col gap-2 pl-5 flex-1">
-            <Skeleton width={180} height={24} />
-            <Skeleton width={100} height={20} />
-            <div className="flex flex-row gap-5 max-sm:block text-gray-600">
-              <div className="flex flex-1 gap-1 items-center">
-                <Skeleton width={140} height={20} />
-              </div>
-              <div className="flex flex-1 items-center">
-                <Skeleton width={180} height={20} />
-              </div>
+        <div className="flex items-start gap-4 p-4">
+          <div className="flex flex-col justify-between gap-2 flex-1">
+            <Skeleton width="100%" height={28} />
+            <Skeleton width={100} height={24} />
+            <div className="flex flex-row gap-4">
+              <Skeleton width={120} height={20} />
+              <Skeleton width={80} height={20} />
             </div>
-            <div className="flex flex-1 gap-1 items-center text-gray-600">
-              <Skeleton width={220} height={20} />
+            <Skeleton width="90%" height={20} />
+            <div className="flex gap-2 items-center">
+              <Skeleton width={80} height={28} />
+              <Skeleton width={20} height={20} />
             </div>
-            <Skeleton width={80} height={24} />
           </div>
-          <div className="flex self-center rounded-xl w-32 max-md:w-28 overflow-hidden ring-1 ring-gray-200 shadow-sm">
-            <Skeleton variant="rounded" width={128} height={128} />
-          </div>
+          <Skeleton
+            variant="rectangular"
+            width={128}
+            height={128}
+            className="rounded-xl"
+          />
         </div>
       </Card>
     </div>
@@ -75,8 +76,10 @@ function UpcomingEvents() {
   return (
     <div className="h-full">
       <ModalActivity
-        title="What’s Coming Up"
+        title="What's Coming Up"
         subtile="Approved and scheduled to happen soon"
+        viewMore={true}
+        path="/dashboard/opportunities"
       >
         {(isLoading || isFetching) && (
           <>
@@ -86,10 +89,22 @@ function UpcomingEvents() {
           </>
         )}
         {isError && (
-          <p className="px-4 py-2 text-red-500">No upcoming events.</p>
+          <div className="text-center py-8 flex flex-col gap-4 items-center">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+              <BellOff className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">
+              Failed to load upcoming events.
+            </p>
+          </div>
         )}
         {!isLoading && !isFetching && !isError && cards.length === 0 && (
-          <p className="px-4 py-2 text-gray-500">No upcoming events.</p>
+          <div className="text-center py-8 flex flex-col gap-4 items-center">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+              <BellOff className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">No upcoming events.</p>
+          </div>
         )}
         {!isLoading &&
           !isFetching &&

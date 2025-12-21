@@ -6,6 +6,7 @@ import RecentActivity from "../../components/ModalActivity/RecentActivity";
 import { useAuth } from "../../hook/useAuth";
 import { ROLES } from "../../constant/role";
 import NewEventsAnnounced from "./NewEventsAnnounced";
+import PendingEventAd from "./PendingEventAd";
 import TrendingEvent from "../../components/TrendingEvent/TrendingEvent";
 import RequestCard from "../../components/RequestEventAd/RequestCard";
 import RequestCardOverview from "../../components/RequestEventAd/RequestCardOverview";
@@ -33,7 +34,7 @@ export default function Overview() {
         )}
         {user.role === ROLES.ADMIN && (
           <>
-            <NewEventsAnnounced className="basis-1/2" />
+            <PendingEventAd className="basis-1/2" />
             <GrowthMetric className="basis-1/2" />
           </>
         )}
