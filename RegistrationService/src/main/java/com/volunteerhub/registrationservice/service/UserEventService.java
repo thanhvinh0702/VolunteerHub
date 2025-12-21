@@ -137,15 +137,25 @@ public class UserEventService {
         return userEventMapper.toResponseDtoPage(userEvents);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SYSTEM') or @userEventService.canViewEventRegistrations(#userId, #eventId)")
     public Page<UserEventResponse> findAllUsers(String userId, Long eventId, Integer pageNum, Integer pageSize) {
-        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
-        if (!eventSnapshot.getOwnerId().equals(userId) && !isParticipant(userId, eventId)) {
-            throw new AccessDeniedException("Insufficient permission to read registration of event with id " + eventId);
-        }
+//        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
+//        if (!eventSnapshot.getOwnerId().equals(userId) && !isParticipant(userId, eventId)) ||  {
+//            throw new AccessDeniedException("Insufficient permission to read registration of event with id " + eventId);
+//        }
         PageNumAndSizeResponse pageNumAndSizeResponse = PaginationValidation.validate(pageNum, pageSize);
         Page<UserEvent> userEvents = userEventRepository.findAllByEventIdAndStatuses(eventId, List.of(UserEventStatus.APPROVED, UserEventStatus.COMPLETED),
                 PageRequest.of(pageNumAndSizeResponse.getPageNum(), pageNumAndSizeResponse.getPageSize()));
         return userEventMapper.toResponseDtoPage(userEvents);
+    }
+
+    public boolean canViewEventRegistrations(String userId, Long eventId) {
+        EventSnapshot eventSnapshot = eventSnapshotService.findEntityById(eventId);
+
+        if (eventSnapshot.getOwnerId().equals(userId)) return true;
+        if (isParticipant(userId, eventId)) return true;
+
+        return false;
     }
 
     public List<String> findUserIdsByEventId(String userId, Long eventId, Integer pageNum, Integer pageSize) {
