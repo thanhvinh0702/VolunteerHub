@@ -110,5 +110,5 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     FROM UserEvent ue
     WHERE ue.userId= :userId
 """)
-    Object[] countStatsUserId(@Param("userId") String userId);
+    Object countStatsUserId(@Param("userId") String userId);
 }
