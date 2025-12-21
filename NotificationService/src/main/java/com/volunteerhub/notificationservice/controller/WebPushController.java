@@ -27,6 +27,7 @@ public class WebPushController {
         return webPushService.getPublicKey();
     }
 
+
     @PostMapping("/subscribe")
     public ResponseEntity<Void> subscribe(@RequestBody Subscription subscription) {
 
@@ -49,13 +50,13 @@ public class WebPushController {
     }
 
     @PostMapping("/broadcast")
-    public void broadcast(@RequestBody String message) {
+    public ResponseEntity<Void> broadcast(@RequestBody String message) {
         List<Subscription> allSubs = subscriptionRepository.findAll();
         for (Subscription sub : allSubs) {
             webPushService.sendNotification(sub, message);
         }
+        return ResponseEntity.ok().build();
     }
-
     @PostMapping("/test-send")
     public void sendTestMessage() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
