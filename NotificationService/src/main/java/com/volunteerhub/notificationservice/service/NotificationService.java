@@ -60,7 +60,7 @@ public class NotificationService {
 
     private void push(Notification notification) {
         try {
-            Map<String, Object> pushPayload = Map.of(
+            Map<String, Object> pushPayload = payload(
                     "title", resolveTitle(notification.getType()),
                     "body", buildBody(notification),
                     "contextId", notification.getContextId(),
