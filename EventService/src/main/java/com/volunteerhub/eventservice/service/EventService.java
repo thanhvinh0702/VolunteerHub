@@ -237,7 +237,7 @@ public class EventService {
         }
 
         if (status != null && ownerId == null) {
-            Page<Event> events = eventRepository.searchEventsByRegexAndStatus(keyword.trim(), status, PageRequest.of(page, size));
+            Page<Event> events = eventRepository.searchEventsByRegexAndStatus(keyword.trim(), status.name(), PageRequest.of(page, size));
             return eventMapper.toDtoPage(events);
         }
 
@@ -246,7 +246,7 @@ public class EventService {
             return eventMapper.toDtoPage(events);
         }
 
-        Page<Event> events = eventRepository.searchEventsByRegexAndOwnerIdAndStatus(keyword.trim(), ownerId, status, PageRequest.of(page, size));
+        Page<Event> events = eventRepository.searchEventsByRegexAndOwnerIdAndStatus(keyword.trim(), ownerId, status.name(), PageRequest.of(page, size));
         return eventMapper.toDtoPage(events);
     }
 
