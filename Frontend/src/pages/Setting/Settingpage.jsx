@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "../../components/Card.jsx/Card";
-// import NotificationButton from "../../components/Notification/NotificationButton";
+import NotificationButton from "../../components/Notification/NotificationButton";
 import {
   Edit2,
   Save,
@@ -1102,9 +1102,9 @@ export default function Settingpage() {
                   Enable push notifications to receive updates about your
                   upcoming events and activities.
                 </p>
-                {/* <div className="mt-4">
+                <div className="mt-4">
                   <NotificationButton />
-                </div> */}
+                </div>
               </Card>
             </div>
           </div>
