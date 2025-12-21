@@ -2,6 +2,7 @@ package com.volunteerhub.notificationservice.service;
 
 
 import com.volunteerhub.notificationservice.model.Subscription;
+import com.volunteerhub.notificationservice.repository.SubscriptionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import nl.martijndwars.webpush.Notification;
@@ -11,10 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Security;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class WebPushService {
+    private final SubscriptionRepository subscriptionRepository;
     @Value("${vapid.public.key}")
     private String publicKey;
 
@@ -46,7 +49,15 @@ public class WebPushService {
             );
             pushService.send(notification);
         } catch (Exception e) {
-            e.printStackTrace();
+            subscriptionRepository.delete(subscription);
         }
     }
+
+    public void pushToUser(String userId, String payloadJson) {
+        List<Subscription> subs = subscriptionRepository.findByUserId(userId);
+        for (Subscription sub : subs) {
+            sendNotification(sub, payloadJson);
+        }
+    }
+
 }
