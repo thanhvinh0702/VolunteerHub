@@ -337,9 +337,7 @@ public class UserEventService {
     }
 
     public Map<String, Long> countStatsUserId(String userId) {
-        Object result = userEventRepository.countStatsUserId(userId);
-
-        Object[] row = (Object[]) result;
+        Object[] row = (Object[]) userEventRepository.countStatsUserId(userId);
 
         return Map.of(
                 "pending", row[0] != null ? ((Number) row[0]).longValue() : 0L,
