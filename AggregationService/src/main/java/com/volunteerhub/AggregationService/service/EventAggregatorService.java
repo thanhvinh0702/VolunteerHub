@@ -71,13 +71,13 @@ public class EventAggregatorService {
                 .build();
     }
 
-    public PageResponse<AggregatedEventResponse> searchAggregatedEvents(String keyword, Integer pageNum, Integer pageSize) {
-        PageResponse<EventResponse> events = eventClient.searchEvents(keyword, pageNum, pageSize);
+    public PageResponse<AggregatedEventResponse> searchAggregatedEvents(String keyword, EventStatus status, Integer pageNum, Integer pageSize) {
+        PageResponse<EventResponse> events = eventClient.searchEvents(keyword, status, pageNum, pageSize);
         return enrichEventsPage(events);
     }
 
-    public PageResponse<AggregatedEventResponse> searchAggregatedOwnedEvents(String keyword, Integer pageNum, Integer pageSize) {
-        PageResponse<EventResponse> events = eventClient.searchOwnedEvents(keyword, pageNum, pageSize);
+    public PageResponse<AggregatedEventResponse> searchAggregatedOwnedEvents(String keyword, EventStatus status, Integer pageNum, Integer pageSize) {
+        PageResponse<EventResponse> events = eventClient.searchOwnedEvents(keyword, status, pageNum, pageSize);
         return enrichEventsPage(events);
     }
 
