@@ -18,7 +18,15 @@ function EventManager() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["event-manager"],
+    queryKey: [
+      "ownedEvents",
+      "pagination",
+      0,
+      10,
+      "createdAt",
+      "desc",
+      "PENDING",
+    ],
     queryFn: mockEventManagerData,
     staleTime: 1000 * 60,
   });

@@ -30,28 +30,30 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.oauth2ResourceServer(j ->
-                        j.authenticationManagerResolver(
-                                new CustomAuthenticationManagerResolver(
-                                        new CustomJwtAuthenticationConverter(),
-                                        new GoogleJwtAuthenticationConverter(),
-                                    googleIssuer, googleJwkUri,
-                                    volunteerHubIssuer, volunteerHubJwkUri)
-                        ));
+        http.oauth2ResourceServer(j -> j.authenticationManagerResolver(
+                new CustomAuthenticationManagerResolver(
+                        new CustomJwtAuthenticationConverter(),
+                        new GoogleJwtAuthenticationConverter(),
+                        googleIssuer, googleJwkUri,
+                        volunteerHubIssuer, volunteerHubJwkUri)));
         http.cors(c -> {
             CorsConfigurationSource source = request -> {
                 CorsConfiguration corsConfiguration = new CorsConfiguration();
-                corsConfiguration.setAllowedOrigins(List.of(allowedOrigins));
-                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+                // Split comma-separated origins if multiple
+                String[] origins = allowedOrigins.split(",");
+                corsConfiguration.setAllowedOrigins(List.of(origins));
+                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 corsConfiguration.setAllowedHeaders(List.of("*"));
+                corsConfiguration.setAllowCredentials(true);
+                corsConfiguration.setMaxAge(3600L);
                 return corsConfiguration;
             };
             c.configurationSource(source);
         });
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
-        );
+                        .requestMatchers("/api/v1/notifications/web-push/public-key").permitAll()
+                        .anyRequest().authenticated());
         return http.build();
     }
 

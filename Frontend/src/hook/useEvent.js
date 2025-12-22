@@ -134,7 +134,7 @@ export const useOwnedEvents = (params) => {
 
 export const useOwnedEventsPagination = (params) => {
     const queryClient = useQueryClient();
-    const { pageNum = 0, pageSize = 10, sortedBy = "startTime", order = "desc", status } = params || {};
+    const { pageNum = 0, pageSize = 10, sortedBy = "createdAt", order = "desc", status } = params || {};
 
     const query = useQuery({
         queryKey: [...OWNED_EVENTS_QUERY_KEY, 'pagination', pageNum, pageSize, sortedBy, order, status],

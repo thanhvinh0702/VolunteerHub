@@ -165,6 +165,7 @@ function OpportunitiesEvent() {
     pageSize,
     ...debouncedParams,
     status: "APPROVED",
+    order: "desc",
   });
 
   // Hook cho search by name

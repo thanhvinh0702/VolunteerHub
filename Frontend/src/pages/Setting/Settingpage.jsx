@@ -1025,9 +1025,9 @@ export default function Settingpage() {
                 className="border border-slate-200 bg-white px-6 py-6 shadow-lg shadow-blue-100/70"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-slate-900">
+                  <h4 className="text-base font-semibold text-slate-900">
                     Profile Health
-                  </h3>
+                  </h4>
                   <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
                     {profileCompletion}% complete
                   </span>
@@ -1065,9 +1065,9 @@ export default function Settingpage() {
                 animate={false}
                 className="border border-slate-200 bg-white px-6 py-6 shadow-lg shadow-slate-200/70"
               >
-                <h3 className="text-base font-semibold text-slate-900">
+                <h4 className="text-base font-semibold text-slate-900">
                   Contact Summary
-                </h3>
+                </h4>
                 <div className="mt-4 space-y-4 text-sm text-slate-600">
                   <div className="flex items-center gap-3">
                     <Mail className="h-4 w-4 text-blue-500" />
@@ -1094,10 +1094,10 @@ export default function Settingpage() {
                 animate={false}
                 className="border border-slate-200 bg-white px-6 py-6 shadow-lg shadow-slate-200/70"
               >
-                <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+                <h5 className="flex items-center gap-2 text-base font-semibold text-slate-900">
                   <Bell className="h-4 w-4 text-blue-500" />
                   Notification Settings
-                </h3>
+                </h5>
                 <p className="mt-2 text-sm text-slate-500">
                   Enable push notifications to receive updates about your
                   upcoming events and activities.

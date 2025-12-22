@@ -8,6 +8,7 @@ import { LOGIN_LINK } from "../constant/constNavigate";
 import { getUserInfo } from "../services/userService";
 import { useProfileCompleteness } from "../hook/useUser";
 import ProfileCompletionBanner from "../components/Banner/ProfileCompletionBanner";
+import NotificationPermissionPrompt from "../components/Notification/NotificationPermissionPrompt";
 import { ArrowUp } from "lucide-react";
 
 export default function MainLayout() {
@@ -158,6 +159,9 @@ export default function MainLayout() {
           <ArrowUp className="w-6 h-6" />
         </button>
       )}
+
+      {/* Notification Permission Prompt */}
+      <NotificationPermissionPrompt />
     </div>
   );
 }

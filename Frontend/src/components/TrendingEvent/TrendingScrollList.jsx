@@ -53,20 +53,27 @@ export default function TrendingCardList() {
   }
 
   return (
-    <div className="w-full shadow-sm mt-5 mb-5 rounded-2xl px-4 pt-3 pb-4">
-      <div className="font-jost flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 text-2xl font-bold text-gray-800 mb-6">
-        <div className="flex flex-row gap-2 items-center">
-          <span className="text-xl sm:text-xl">Trending Events</span>
-          <div className="text-red-400 bg-orange-200 rounded-2xl p-1">
-            <FlameKindling className="animate-pulse" />
+    <div className="w-full bg-gradient-to-r from-red-500 via-orange-500 to-pink-500 shadow-lg mt-5 mb-5 rounded-2xl px-2 sm:px-2 pt-2 pb-2">
+      <div className="font-jost flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
+        <div className="flex flex-row gap-3 items-center">
+          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-2.5">
+            <FlameKindling className="w-7 h-7 text-white animate-pulse" />
+          </div>
+          <div>
+            <p className="text-xl sm:text-3xl font-bold text-white flex items-center gap-2">
+              Trending Events
+            </p>
+            <p className="text-white/90 text-sm mt-0.5">
+              Hottest volunteer opportunities right now
+            </p>
           </div>
         </div>
-        <div
+        <button
           onClick={handleShowMore}
-          className="text-xs sm:text-sm cursor-pointer bg-gradient-to-r from-purple-500 to-blue-400 text-white px-3 py-1.5 rounded-2xl hover:scale-105 active:scale-95 duration-200 transition-all whitespace-nowrap"
+          className="text-sm font-semibold cursor-pointer bg-white text-red-600 px-5 py-2.5 rounded-xl hover:scale-105 hover:shadow-xl active:scale-95 duration-200 transition-all whitespace-nowrap"
         >
-          Show more
-        </div>
+          Show more →
+        </button>
       </div>
 
       <div className="mb-2 relative flex items-center gap-2">
