@@ -272,7 +272,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
       <a href="https://github.com/yourusername">
         <img src="https://via.placeholder.com/100" width="100px;" alt=""/>
         <br />
-        <sub><b>Your Name</b></sub>
+        <sub><b>Hoang Thanh Vinh</b></sub>
       </a>
       <br />
       <sub>Full Stack Developer</sub>
@@ -327,3 +327,4 @@ If you find this project useful, please give it a ⭐️ on GitHub!
 [⬆ Back to Top](#-volunteerhub)
 
 </div>
+
