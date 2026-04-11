@@ -71,26 +71,26 @@ export const dashboardConfig = {
       label: "Total Users",
       value: "0",
       icon: <FiUsers className="text-blue-500" />,
-      useAnalytics: "totalUsers", // API: /api/v1/analytics/total-users
+      useAnalytics: "totalUsers", // API: /v1/analytics/total-users
     },
     {
       label: "Total Managers",
       value: "0",
       icon: <FiAward className="text-green-500" />,
-      useAnalytics: "totalManagers", // API: /api/v1/analytics/total-managers
+      useAnalytics: "totalManagers", // API: /v1/analytics/total-managers
     },
     {
       label: "Total Events",
       value: "0",
       icon: <FiCalendar className="text-purple-500" />,
-      useAnalytics: "eventStatsCount", // API: /api/v1/analytics/total_events
+      useAnalytics: "eventStatsCount", // API: /v1/analytics/total_events
     },
     {
       label: "Events Count",
       value: "0",
       growth: "+12%", // Hardcoded growth percentage
       icon: <FiTrendingUp className="text-orange-500" />,
-      useAnalytics: "eventStatsCount", // API: /api/v1/events/stats/count
+      useAnalytics: "eventStatsCount", // API: /v1/events/stats/count
     },
   ],
 };

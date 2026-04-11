@@ -38,13 +38,19 @@ public class SecurityConfig {
                         volunteerHubIssuer, volunteerHubJwkUri)));
         http.cors(c -> {
             CorsConfigurationSource source = request -> {
+                String origin = request.getHeader("Origin");
                 CorsConfiguration corsConfiguration = new CorsConfiguration();
-                // Split comma-separated origins if multiple
-                String[] origins = allowedOrigins.split(",");
-                corsConfiguration.setAllowedOrigins(List.of(origins));
+                if (origin == null || origin.isBlank()) {
+                    // Mobile / native client — no Origin header, allow all without credentials
+                    corsConfiguration.addAllowedOriginPattern("*");
+                    corsConfiguration.setAllowCredentials(false);
+                } else {
+                    String[] origins = allowedOrigins.split(",");
+                    corsConfiguration.setAllowedOrigins(List.of(origins));
+                    corsConfiguration.setAllowCredentials(true);
+                }
                 corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 corsConfiguration.setAllowedHeaders(List.of("*"));
-                corsConfiguration.setAllowCredentials(true);
                 corsConfiguration.setMaxAge(3600L);
                 return corsConfiguration;
             };

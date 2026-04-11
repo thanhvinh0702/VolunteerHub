@@ -6,7 +6,7 @@ const AnalysisService = {
     // Analytic tỉ lệ apply (manager)
     getApplicationRate: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/application-rate");
+            const response = await axiosClient.get("/v1/analytics/application-rate");
             return response;
         } catch (error) {
             console.error("Error fetching application rate:", error);
@@ -17,7 +17,7 @@ const AnalysisService = {
     // Analytic tỉ lệ approved (manager)
     getApprovalRate: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/approval-rate");
+            const response = await axiosClient.get("/v1/analytics/approval-rate");
             return response;
         } catch (error) {
             console.error("Error fetching approval rate:", error);
@@ -28,7 +28,7 @@ const AnalysisService = {
     // Count events mới (user)
     getMyParticipatedEvents: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/my-stats/participated-events");
+            const response = await axiosClient.get("/v1/analytics/my-stats/participated-events");
             return response;
         } catch (error) {
             console.error("Error fetching participated events:", error);
@@ -39,7 +39,7 @@ const AnalysisService = {
     // Lấy thống kê status events của user (approved, completed, pending)
     getMyStatusEvents: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/registrations/my-stats/status-events");
+            const response = await axiosClient.get("/v1/registrations/my-stats/status-events");
             return response;
         } catch (error) {
             console.error("Error fetching my status events:", error);
@@ -52,7 +52,7 @@ const AnalysisService = {
     // Số users (admin ms dc xem)
     getTotalUsers: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/total-users");
+            const response = await axiosClient.get("/v1/analytics/total-users");
             return response;
         } catch (error) {
             console.error("Error fetching total users:", error);
@@ -63,7 +63,7 @@ const AnalysisService = {
     // Số managers (admin ms dc xem)
     getTotalManagers: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/total-managers");
+            const response = await axiosClient.get("/v1/analytics/total-managers");
             return response;
         } catch (error) {
             console.error("Error fetching total managers:", error);
@@ -74,7 +74,7 @@ const AnalysisService = {
     // Số event mới manager
     getTotalEvents: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/total_events");
+            const response = await axiosClient.get("/v1/analytics/total_events");
             return response;
         } catch (error) {
             console.error("Error fetching total events:", error);
@@ -85,7 +85,7 @@ const AnalysisService = {
     // Số active event mới manager
     getTotalActiveEvents: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/analytics/total-active-events");
+            const response = await axiosClient.get("/v1/analytics/total-active-events");
             return response;
         } catch (error) {
             console.error("Error fetching total active events:", error);
@@ -96,7 +96,7 @@ const AnalysisService = {
     // Thống kê tổng số events (cho admin)
     getEventStatsCount: async () => {
         try {
-            const response = await axiosClient.get("/api/v1/events/stats/count");
+            const response = await axiosClient.get("/v1/events/stats/count");
             return response;
         } catch (error) {
             console.error("Error fetching event stats count:", error);
@@ -110,7 +110,7 @@ const AnalysisService = {
     getEventParticipantsJson: async (eventId) => {
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/registrations/export/participants?eventId=${eventId}&format=json`
+                `/v1/aggregated/registrations/export/participants?eventId=${eventId}&format=json`
             );
             return response;
         } catch (error) {
@@ -124,7 +124,7 @@ const AnalysisService = {
         console.log("eventId", eventId);
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/registrations/export/participants?eventId=${eventId}`,
+                `/v1/aggregated/registrations/export/participants?eventId=${eventId}`,
                 {
                     responseType: 'blob',
                 }
@@ -142,7 +142,7 @@ const AnalysisService = {
     exportAllEventsJson: async () => {
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/events/export?format=json`
+                `/v1/aggregated/events/export?format=json`
             );
             return response;
         } catch (error) {
@@ -155,7 +155,7 @@ const AnalysisService = {
     exportAllEventsCsv: async () => {
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/events/export`,
+                `/v1/aggregated/events/export`,
                 {
                     responseType: 'blob',
                 }
@@ -173,7 +173,7 @@ const AnalysisService = {
     exportAllUsersJson: async () => {
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/export/users?format=json`
+                `/v1/aggregated/export/users?format=json`
             );
             return response;
         } catch (error) {
@@ -186,7 +186,7 @@ const AnalysisService = {
     exportAllUsersCsv: async () => {
         try {
             const response = await axiosClient.get(
-                `/api/v1/aggregated/export/users`,
+                `/v1/aggregated/export/users`,
                 {
                     responseType: 'blob',
                 }

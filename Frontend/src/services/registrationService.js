@@ -1,8 +1,8 @@
 import { EVENT_STATUS } from "../pages/EventManager/eventManagerData";
 import axiosClient from "./axiosClient";
-const REGISTRATION_BASE_URL = "/api/v1/registrations";
-const AGGREGATED_REGISTRATION_BASE_URL = "/api/v1/aggregated/registrations";
-const AGGREGATED_EVENT_BASE_URL = "/api/v1/aggregated/events";
+const REGISTRATION_BASE_URL = "/v1/registrations";
+const AGGREGATED_REGISTRATION_BASE_URL = "/v1/aggregated/registrations";
+const AGGREGATED_EVENT_BASE_URL = "/v1/aggregated/events";
 export const registerEventList = async (params) => {
     try {
         console.log('API call with params:', params);
@@ -20,7 +20,6 @@ export const registerEventList = async (params) => {
             }
         };
     } catch (error) {
-        ơ
         console.error("Error fetching registered events:", error);
         throw error;
     }
@@ -72,7 +71,7 @@ export const checkUserParticipation = async (eventId) => {
 };
 // export const listUserOfAnEvent = async (eventId, params) => {
 //     try {
-//         const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}`, { params });
+//         const response = await axiosClient.get(`/v1/aggregated/registrations/events/${eventId}`, { params });
 //         console.log("Participant list response:", response);
 //         return response;
 //     } catch (error) {
@@ -86,7 +85,7 @@ export const checkUserParticipation = async (eventId) => {
 
 export const listUserOfAnEvent = async (eventId, params = {}) => {
     try {
-        const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}`, { params });
+        const response = await axiosClient.get(`/v1/aggregated/registrations/events/${eventId}`, { params });
         console.log("Participant list response:", response);
 
         // Handle paginated response: { content, totalElements, totalPages, number, size }
@@ -125,7 +124,7 @@ export const listUserOfAnEvent = async (eventId, params = {}) => {
 
 export const listUserOfAnEventAprovedAndCompleted = async (eventId, params = {}) => {
     try {
-        const response = await axiosClient.get(`api/v1/aggregated/registrations/events/${eventId}/participants`, { params });
+        const response = await axiosClient.get(`/v1/aggregated/registrations/events/${eventId}/participants`, { params });
         console.log("Participant list response:", response);
 
         // Handle paginated response: { content, totalElements, totalPages, number, size }
@@ -249,7 +248,7 @@ export const UserApprovedList = async (eventId) => {
 export const listUserAllEventManagement = async (params) => {
     try {
         console.log('API call with params:', params);
-        const response = await axiosClient.get(`api/v1/aggregated/manager/registrations`, { params });
+        const response = await axiosClient.get(`/v1/aggregated/manager/registrations`, { params });
         console.log('API response:', response);
         const data = response?.data ?? response;
         if (data?.content) {

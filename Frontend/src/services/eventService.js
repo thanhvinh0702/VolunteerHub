@@ -1,7 +1,8 @@
 import axiosClient from "./axiosClient";
 
-const EVENT_BASE_URL = "api/v1/events";
-const EVENT_AGGREGATED_BASE_URL = "api/v1/aggregated/events";
+/** Relative to axios baseURL `.../api` — do not prefix with `api/v1` or URL becomes `/api/api/v1/...` */
+const EVENT_BASE_URL = "/v1/events";
+const EVENT_AGGREGATED_BASE_URL = "/v1/aggregated/events";
 
 
 export const getEvents = async (params = {}) => {
@@ -90,9 +91,7 @@ export const updateEvent = async (eventId, payload) => {
     }
     // If caller already built FormData, send it as-is
     if (payload instanceof FormData) {
-        const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, payload, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, payload);
         return response;
     }
 
@@ -117,9 +116,7 @@ export const updateEvent = async (eventId, payload) => {
         }
     }
 
-    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData);
     return response;
 };
 
@@ -178,7 +175,7 @@ export const searchEventByName = async (params = {}) => {
 
 export const searchEventByNameForManager = async (params = {}) => {
     const { keyword, pageNum = 0, pageSize = 6 } = params;
-    const response = await axiosClient.get(`/api/v1/aggregated/events/owned/search`, {
+    const response = await axiosClient.get(`/v1/aggregated/events/owned/search`, {
         params: { keyword, pageNum, pageSize }
     });
     console.log('Search API response:', response);
@@ -232,9 +229,7 @@ export const cancelEventRegistration = async (eventId) => {
         new Blob([JSON.stringify(payload)], { type: "application/json" })
     );
 
-    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axiosClient.put(`${EVENT_BASE_URL}/${eventId}`, formData);
     return response;
 };
 

@@ -7,58 +7,58 @@ const CommunityService = {
         if (pageNum !== undefined) params.pageNum = pageNum;
         if (pageSize !== undefined) params.pageSize = pageSize;
 
-        return axiosClient.get(`/api/v1/aggregated/events/${eventId}/posts`, { params });
+        return axiosClient.get(`/v1/aggregated/events/${eventId}/posts`, { params });
     },
 
 
     getPostById: (eventId, postId) => {
-        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}`);
+        return axiosClient.get(`/v1/events/${eventId}/posts/${postId}`);
     },
 
 
     createPost: (eventId, postData) => {
-        return axiosClient.post(`/api/v1/events/${eventId}/posts`, postData);
+        return axiosClient.post(`/v1/events/${eventId}/posts`, postData);
     },
 
 
     updatePost: (eventId, postId, postData) => {
-        return axiosClient.put(`/api/v1/events/${eventId}/posts/${postId}`, postData);
+        return axiosClient.put(`/v1/events/${eventId}/posts/${postId}`, postData);
     },
 
 
     deletePost: (eventId, postId) => {
-        return axiosClient.delete(`/api/v1/events/${eventId}/posts/${postId}`);
+        return axiosClient.delete(`/v1/events/${eventId}/posts/${postId}`);
     },
 
     // ==================== COMMENT APIs ====================
 
     getAllComments: (eventId, postId) => {
-        return axiosClient.get(`/api/v1/aggregated/events/${eventId}/posts/${postId}/comments`);
+        return axiosClient.get(`/v1/aggregated/events/${eventId}/posts/${postId}/comments`);
     },
 
 
     createComment: (eventId, postId, commentData) => {
-        return axiosClient.post(`/api/v1/events/${eventId}/posts/${postId}/comments`, commentData);
+        return axiosClient.post(`/v1/events/${eventId}/posts/${postId}/comments`, commentData);
     },
 
 
     updateComment: (eventId, postId, commentId, commentData) => {
-        return axiosClient.put(`/api/v1/events/${eventId}/posts/${postId}/comments/${commentId}`, commentData);
+        return axiosClient.put(`/v1/events/${eventId}/posts/${postId}/comments/${commentId}`, commentData);
     },
 
     deleteComment: (eventId, postId, commentId) => {
-        return axiosClient.delete(`/api/v1/events/${eventId}/posts/${postId}/comments/${commentId}`);
+        return axiosClient.delete(`/v1/events/${eventId}/posts/${postId}/comments/${commentId}`);
     },
 
     // ==================== REACTION APIs ====================
     // Get reaction counts for a post
     getAllReactions: (eventId, postId) => {
-        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/reactions/count`);
+        return axiosClient.get(`/v1/events/${eventId}/posts/${postId}/reactions/count`);
     },
 
     // Get current user's reaction for a post
     getMyReaction: (eventId, postId) => {
-        return axiosClient.get(`/api/v1/events/${eventId}/posts/${postId}/reactions`);
+        return axiosClient.get(`/v1/events/${eventId}/posts/${postId}/reactions`);
     },
 
     // PUT to create/update reaction (upsert)
@@ -67,15 +67,15 @@ const CommunityService = {
         console.log("Event ID:", eventId);
         console.log("Post ID:", postId);
         console.log("Reaction Data:", reactionData);
-        return axiosClient.put(`/api/v1/events/${eventId}/posts/${postId}/reactions`, reactionData);
+        return axiosClient.put(`/v1/events/${eventId}/posts/${postId}/reactions`, reactionData);
     },
 
     updateReaction: (eventId, postId, reactionId, reactionData) => {
-        return axiosClient.put(`/api/v1/events/${eventId}/posts/${postId}/reactions/${reactionId}`, reactionData);
+        return axiosClient.put(`/v1/events/${eventId}/posts/${postId}/reactions/${reactionId}`, reactionData);
     },
 
     deleteReaction: (eventId, postId, reactionId) => {
-        return axiosClient.delete(`/api/v1/events/${eventId}/posts/${postId}/reactions/${reactionId}`);
+        return axiosClient.delete(`/v1/events/${eventId}/posts/${postId}/reactions/${reactionId}`);
     },
 };
 

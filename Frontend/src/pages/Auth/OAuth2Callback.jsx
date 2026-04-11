@@ -10,6 +10,81 @@ import {
   getProfileCompleteness,
 } from "../../services/userService";
 
+/**
+ * OAuth authorization codes are single-use. React 18 Strict Mode runs effects
+ * twice in development, which would exchange the same code twice → invalid_grant.
+ * Reuse the same in-flight promise per code + flow.
+ */
+const tokenExchangeInflight = new Map();
+
+function exchangeCodeForToken(code, isGoogleOAuth) {
+  const key = `${isGoogleOAuth ? "google" : "volunteerhub"}:${code}`;
+  if (tokenExchangeInflight.has(key)) {
+    return tokenExchangeInflight.get(key);
+  }
+
+  const promise = (async () => {
+    if (isGoogleOAuth) {
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code: code,
+          client_id: import.meta.env.VITE_GG_CLIENT_ID,
+          client_secret: import.meta.env.VITE_GG_CLIENT_SECRET,
+          redirect_uri: "http://localhost:3000/login/oauth2/code/google",
+        }),
+      });
+      const tokenData = await tokenResponse.json();
+      return { ok: tokenResponse.ok, tokenData };
+    }
+
+    const oauthClientId =
+      import.meta.env.VITE_OAUTH_CLIENT_ID ||
+      "7fcdbb6c-fc1d-4921-a52d-0466557b6132";
+    const oauthClientSecret =
+      import.meta.env.VITE_OAUTH_CLIENT_SECRET ||
+      "f584278e-be8a-4f55-9c64-8e7be8f9e846";
+    const oauthRedirectUri =
+      import.meta.env.VITE_OAUTH_REDIRECT_URI ||
+      "http://localhost:3000/login/oauth2/code/volunteerhub";
+    const authServerBaseUrl =
+      import.meta.env.VITE_API_LOGIN || "http://localhost:7070";
+
+    const tokenResponse = await fetch(`${authServerBaseUrl}/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization:
+          "Basic " + btoa(`${oauthClientId}:${oauthClientSecret}`),
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: oauthRedirectUri,
+      }),
+    });
+
+    let tokenData = {};
+    try {
+      tokenData = await tokenResponse.json();
+    } catch {
+      /* ignore non-JSON bodies */
+    }
+    return { ok: tokenResponse.ok, tokenData };
+  })();
+
+  tokenExchangeInflight.set(key, promise);
+  promise.finally(() => {
+    setTimeout(() => tokenExchangeInflight.delete(key), 5 * 60 * 1000);
+  });
+
+  return promise;
+}
+
 export default function OAuth2Callback() {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState(null);
@@ -53,52 +128,19 @@ export default function OAuth2Callback() {
         // Determine if this is Google OAuth or custom OAuth
         const isGoogleOAuth = currentPath.includes("/login/oauth2/code/google");
 
-        let tokenResponse;
+        const { ok: tokenOk, tokenData } = await exchangeCodeForToken(
+          code,
+          isGoogleOAuth
+        );
 
-        if (isGoogleOAuth) {
-          // Exchange Google authorization code for token directly with Google
-          console.log("Processing Google OAuth callback");
-          tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-              grant_type: "authorization_code",
-              code: code,
-              client_id: import.meta.env.VITE_GG_CLIENT_ID,
-              client_secret: import.meta.env.VITE_GG_CLIENT_SECRET,
-              redirect_uri: "http://localhost:3000/login/oauth2/code/google",
-            }),
-          });
-        } else {
-          // Exchange code for token (Custom OAuth - VolunteerHub)
-          console.log("Processing VolunteerHub OAuth callback");
-          tokenResponse = await fetch("http://localhost:7070/oauth2/token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              // Basic Auth: base64(client_id:client_secret)
-              Authorization: "Basic " + btoa(import.meta.env.VITE_CUSTOM_AUTH),
-            },
-            body: new URLSearchParams({
-              grant_type: "authorization_code",
-              code: code,
-              redirect_uri:
-                "http://localhost:3000/login/oauth2/code/volunteerhub",
-            }),
-          });
-        }
-
-        if (!tokenResponse.ok) {
-          const errorData = await tokenResponse.json();
-          console.error("Token exchange failed:", errorData);
+        if (!tokenOk) {
+          console.error("Token exchange failed:", tokenData);
           throw new Error(
-            errorData.error_description || "Failed to exchange code for token"
+            tokenData.error_description ||
+              tokenData.error ||
+              "Failed to exchange code for token"
           );
         }
-
-        const tokenData = await tokenResponse.json();
         console.log("Token received successfully", tokenData);
 
         let userInfo;

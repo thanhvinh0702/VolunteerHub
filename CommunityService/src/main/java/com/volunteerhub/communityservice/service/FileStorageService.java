@@ -32,10 +32,14 @@ public class FileStorageService {
         String uniqueID = UUID.randomUUID().toString();
         String objectName = uniqueID + "_" + file.getOriginalFilename();
 
-        // Upload to Firebase Storage
+        // Upload to Firebase Storage with public-read ACL
         BlobId blobId = BlobId.of(bucketName, objectName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-        storage.create(blobInfo, file.getBytes());
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(file.getContentType())
+                .build();
+        storage.createFrom(blobInfo,
+                new java.io.ByteArrayInputStream(file.getBytes()),
+                Storage.BlobWriteOption.predefinedAcl(Storage.PredefinedAcl.PUBLIC_READ));
 
         // Return public URL
         String encodedObjectName = URLEncoder.encode(objectName, StandardCharsets.UTF_8);

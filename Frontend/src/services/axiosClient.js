@@ -1,8 +1,15 @@
 import axios from "axios";
 // Import store để dùng hàm logout khi token hết hạn
 import { useAuth } from "../hook/useAuth";
+
+/** Gateway base should end with `/api` once. Collapse accidental `/api/api`. */
+function resolveApiBase() {
+    const raw = (import.meta.env.VITE_API_URL || "http://localhost:8080/api").replace(/\/+$/, "");
+    return raw.replace(/\/api\/api$/i, "/api");
+}
+
 const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api", // Thay bằng URL API của bạn
+    baseURL: resolveApiBase(),
     headers: {
         "Content-Type": "application/json",
     },
@@ -22,6 +29,11 @@ axiosClient.interceptors.request.use(
         // Don't set Content-Type for FormData, let browser set it with boundary
         if (config.data instanceof FormData) {
             delete config.headers["Content-Type"];
+            delete config.headers.common?.["Content-Type"];
+            const method = config.method?.toLowerCase();
+            if (method && config.headers[method]) {
+                delete config.headers[method]["Content-Type"];
+            }
         }
 
         return config;
