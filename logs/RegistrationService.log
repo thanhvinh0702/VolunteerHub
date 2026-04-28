@@ -1,0 +1,232 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.volunteerhub:RegistrationService >----------------
+[INFO] Building RegistrationService 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ RegistrationService >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ RegistrationService ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ RegistrationService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ RegistrationService ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/RegistrationService/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ RegistrationService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ RegistrationService <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ RegistrationService ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T10:06:33.226+07:00  INFO 29970 --- [RegistrationService] [           main] c.v.r.RegistrationServiceApplication     : Starting RegistrationServiceApplication using Java 21.0.10 with PID 29970 (/teamspace/studios/this_studio/VolunteerHub/RegistrationService/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/RegistrationService)
+2026-04-28T10:06:33.234+07:00  INFO 29970 --- [RegistrationService] [           main] c.v.r.RegistrationServiceApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T10:06:40.497+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:06:40.506+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-28T10:06:41.481+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 912 ms. Found 2 JPA repository interfaces.
+2026-04-28T10:06:41.610+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:06:41.632+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-28T10:06:41.766+07:00  INFO 29970 --- [RegistrationService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.registrationservice.repository.EventSnapshotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:41.792+07:00  INFO 29970 --- [RegistrationService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.registrationservice.repository.UserEventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:41.793+07:00  INFO 29970 --- [RegistrationService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 87 ms. Found 0 Redis repository interfaces.
+2026-04-28T10:06:43.873+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=98e4d212-1cba-3a19-b96b-acad222b8517
+2026-04-28T10:06:46.675+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8084 (http)
+2026-04-28T10:06:46.774+07:00  INFO 29970 --- [RegistrationService] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T10:06:46.774+07:00  INFO 29970 --- [RegistrationService] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T10:06:47.168+07:00  INFO 29970 --- [RegistrationService] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T10:06:47.172+07:00  INFO 29970 --- [RegistrationService] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 13358 ms
+2026-04-28T10:06:49.410+07:00  INFO 29970 --- [RegistrationService] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-28T10:06:49.885+07:00  INFO 29970 --- [RegistrationService] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2026-04-28T10:06:50.127+07:00  INFO 29970 --- [RegistrationService] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-28T10:06:52.261+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-28T10:06:52.446+07:00  INFO 29970 --- [RegistrationService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-28T10:06:53.403+07:00  INFO 29970 --- [RegistrationService] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7178d811
+2026-04-28T10:06:53.419+07:00  INFO 29970 --- [RegistrationService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-28T10:06:53.682+07:00  WARN 29970 --- [RegistrationService] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-28T10:06:53.805+07:00  INFO 29970 --- [RegistrationService] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-28T10:06:59.363+07:00  INFO 29970 --- [RegistrationService] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    create table event_snapshot (
+        event_id bigint not null,
+        capacity integer not null,
+        owner_id varchar(255) not null,
+        status smallint not null check (status between 0 and 2),
+        primary key (event_id)
+    )
+Hibernate: 
+    create table user_event (
+        id bigint generated by default as identity,
+        completed_at timestamp(6),
+        created_at timestamp(6) not null,
+        event_id bigint,
+        note varchar(255),
+        reviewed_at timestamp(6),
+        status varchar(255) not null check (status in ('PENDING','APPROVED','REJECTED','COMPLETED','ABSENT')),
+        updated_at timestamp(6) not null,
+        user_id varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create index idx_user_event_event_id 
+       on user_event (event_id)
+Hibernate: 
+    create index idx_user_event_user_id 
+       on user_event (user_id)
+Hibernate: 
+    alter table if exists user_event 
+       drop constraint if exists uk_user_event_user_id_event_id
+2026-04-28T10:06:59.642+07:00  WARN 29970 --- [RegistrationService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-28T10:06:59.643+07:00  WARN 29970 --- [RegistrationService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk_user_event_user_id_event_id" of relation "user_event" does not exist, skipping
+Hibernate: 
+    alter table if exists user_event 
+       add constraint uk_user_event_user_id_event_id unique (user_id, event_id)
+Hibernate: 
+    alter table if exists user_event 
+       add constraint FK3uvd3orx1d50sms469ialvyqd 
+       foreign key (event_id) 
+       references event_snapshot 
+       on delete cascade
+2026-04-28T10:06:59.660+07:00  INFO 29970 --- [RegistrationService] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-28T10:07:00.761+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-28T10:07:07.754+07:00  WARN 29970 --- [RegistrationService] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-28T10:07:07.970+07:00  WARN 29970 --- [RegistrationService] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 464f2a0d-3b46-4382-a650-af77091e414a
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-28T10:07:07.994+07:00  INFO 29970 --- [RegistrationService] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-04-28T10:07:10.628+07:00  INFO 29970 --- [RegistrationService] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T10:07:10.710+07:00  WARN 29970 --- [RegistrationService] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T10:07:10.826+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T10:07:10.866+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T10:07:10.871+07:00  INFO 29970 --- [RegistrationService] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:07:10.883+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T10:07:10.884+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:07:11.525+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:07:11.537+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T10:07:11.540+07:00  INFO 29970 --- [RegistrationService] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T10:07:11.546+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345631545 with initial instances count: 2
+2026-04-28T10:07:11.561+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application REGISTRATIONSERVICE with eureka with status UP
+2026-04-28T10:07:11.564+07:00  INFO 29970 --- [RegistrationService] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345631564, current=UP, previous=STARTING]
+2026-04-28T10:07:11.569+07:00  INFO 29970 --- [RegistrationService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_REGISTRATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:RegistrationService:8084: registering service...
+2026-04-28T10:07:11.617+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8084 (http) with context path '/'
+2026-04-28T10:07:11.622+07:00  INFO 29970 --- [RegistrationService] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8084
+2026-04-28T10:07:11.632+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [localhost:5672]
+2026-04-28T10:07:11.678+07:00  INFO 29970 --- [RegistrationService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_REGISTRATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:RegistrationService:8084 - registration status: 204
+2026-04-28T10:07:11.706+07:00  INFO 29970 --- [RegistrationService] [           main] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#4230d4f:0/SimpleConnection@2702326d [delegate=amqp://guest@127.0.0.1:5672/, localPort=50452]
+2026-04-28T10:07:11.814+07:00  INFO 29970 --- [RegistrationService] [           main] c.v.r.RegistrationServiceApplication     : Started RegistrationServiceApplication in 43.52 seconds (process running for 47.555)
+2026-04-28T10:12:10.886+07:00  INFO 29970 --- [RegistrationService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:15:41.830+07:00  INFO 29970 --- [RegistrationService] [nio-8084-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.831+07:00  INFO 29970 --- [RegistrationService] [nio-8084-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T10:15:41.833+07:00  INFO 29970 --- [RegistrationService] [nio-8084-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+Hibernate: 
+    select
+        sum(case 
+            when ue1_0.status='PENDING' 
+                then 1 
+            else 0 
+    end),
+    sum(case 
+        when ue1_0.status='APPROVED' 
+            then 1 
+        else 0 
+end),
+sum(case 
+    when ue1_0.status='COMPLETED' 
+        then 1 
+    else 0 
+end) 
+from
+    user_event ue1_0 
+where
+    ue1_0.user_id=?
+Hibernate: 
+    select
+        ue1_0.event_id,
+        sum(case 
+            when ue1_0.status in (?, ?) 
+                then 1 
+            else 0 
+    end),
+    sum(case 
+        when ue1_0.status='PENDING' 
+            then 1 
+        else 0 
+end) 
+from
+    user_event ue1_0 
+where
+    (
+        cast(? as timestamp(6)) is null 
+        or ue1_0.created_at>=?
+    ) 
+    and (
+        cast(? as timestamp(6)) is null 
+        or ue1_0.created_at<=?
+    ) 
+group by
+    ue1_0.event_id 
+order by
+    ue1_0.event_id desc 
+fetch
+    first ? rows only
+Hibernate: 
+    select
+        ue1_0.id,
+        ue1_0.completed_at,
+        ue1_0.created_at,
+        ue1_0.event_id,
+        ue1_0.note,
+        ue1_0.reviewed_at,
+        ue1_0.status,
+        ue1_0.updated_at,
+        ue1_0.user_id 
+    from
+        user_event ue1_0 
+    join
+        event_snapshot es1_0 
+            on es1_0.event_id=ue1_0.event_id 
+    where
+        es1_0.owner_id=? 
+        and (
+            ? is null 
+            or ue1_0.event_id=?
+        ) 
+        and (
+            ? is null 
+            or ue1_0.status=?
+        ) 
+    order by
+        ue1_0.created_at desc 
+    fetch
+        first ? rows only
+2026-04-28T10:17:10.887+07:00  INFO 29970 --- [RegistrationService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

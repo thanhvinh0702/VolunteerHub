@@ -76,16 +76,16 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestPart @Validated(OnCreate.class) EventRequest eventRequest,
-                                                     @RequestPart(required = false) MultipartFile imageFile) throws IOException {
+    public ResponseEntity<EventResponse> createEvent(@RequestPart("eventRequest") @Validated(OnCreate.class) EventRequest eventRequest,
+                                                     @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return new ResponseEntity<>(eventService.createEvent(auth.getName(), eventRequest, imageFile), HttpStatus.CREATED);
     }
 
     @PutMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long eventId,
-                                                     @RequestPart @Validated(OnUpdate.class) EventRequest eventRequest,
-                                                     @RequestPart(required = false) MultipartFile imageFile) throws IOException {
+                                                     @RequestPart("eventRequest") @Validated(OnUpdate.class) EventRequest eventRequest,
+                                                     @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(eventService.updateEvent(auth.getName(), eventId, eventRequest, imageFile));
     }

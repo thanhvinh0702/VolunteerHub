@@ -1,0 +1,413 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.volunteerhub:EventService >--------------------
+[INFO] Building EventService 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ EventService >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ EventService ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ EventService ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 28 source files with javac [debug parameters release 21] to target/classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ EventService ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/EventService/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ EventService ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ EventService <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ EventService ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T10:07:01.800+07:00  INFO 31454 --- [EventService] [           main] c.v.e.EventServiceApplication            : Starting EventServiceApplication using Java 21.0.10 with PID 31454 (/teamspace/studios/this_studio/VolunteerHub/EventService/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/EventService)
+2026-04-28T10:07:01.809+07:00  INFO 31454 --- [EventService] [           main] c.v.e.EventServiceApplication            : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T10:07:05.768+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:07:05.770+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-28T10:07:06.344+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 556 ms. Found 3 JPA repository interfaces.
+2026-04-28T10:07:06.413+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:07:06.415+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-28T10:07:06.461+07:00  INFO 31454 --- [EventService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.eventservice.repository.AddressRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:06.477+07:00  INFO 31454 --- [EventService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.eventservice.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:06.478+07:00  INFO 31454 --- [EventService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.eventservice.repository.EventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:06.478+07:00  INFO 31454 --- [EventService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 49 ms. Found 0 Redis repository interfaces.
+2026-04-28T10:07:07.297+07:00  INFO 31454 --- [EventService] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=997bb072-f949-318d-95c6-ce8af3b1d227
+2026-04-28T10:07:08.611+07:00  INFO 31454 --- [EventService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8082 (http)
+2026-04-28T10:07:08.652+07:00  INFO 31454 --- [EventService] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T10:07:08.653+07:00  INFO 31454 --- [EventService] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T10:07:09.028+07:00  INFO 31454 --- [EventService] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T10:07:09.033+07:00  INFO 31454 --- [EventService] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 7015 ms
+2026-04-28T10:07:10.011+07:00  INFO 31454 --- [EventService] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-28T10:07:10.115+07:00  INFO 31454 --- [EventService] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2026-04-28T10:07:10.157+07:00  INFO 31454 --- [EventService] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-28T10:07:10.534+07:00  INFO 31454 --- [EventService] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-28T10:07:10.574+07:00  INFO 31454 --- [EventService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-28T10:07:10.793+07:00  INFO 31454 --- [EventService] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3095d06b
+2026-04-28T10:07:10.796+07:00  INFO 31454 --- [EventService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-28T10:07:10.839+07:00  WARN 31454 --- [EventService] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-28T10:07:10.883+07:00  INFO 31454 --- [EventService] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-28T10:07:12.613+07:00  INFO 31454 --- [EventService] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    create table address (
+        id bigint generated by default as identity,
+        district varchar(255) not null,
+        province varchar(255) not null,
+        street varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table badge (
+        id bigint generated by default as identity,
+        created_at timestamp(6) not null,
+        description varchar(255) not null,
+        event_id bigint,
+        title varchar(255) not null,
+        updated_at timestamp(6) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table category (
+        id bigint generated by default as identity,
+        description varchar(255),
+        name varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table event (
+        id bigint generated by default as identity,
+        address_id bigint,
+        approved_by varchar(255),
+        capacity integer not null,
+        category_id bigint,
+        created_at timestamp(6),
+        description varchar(1000),
+        end_time timestamp(6) not null,
+        image_url text,
+        name varchar(255) not null,
+        optional varchar(255),
+        owner_id varchar(255) not null,
+        registration_deadline timestamp(6) not null,
+        start_time timestamp(6) not null,
+        status varchar(255) not null check (status in ('PENDING','APPROVED','REJECTED')),
+        updated_at timestamp(6),
+        primary key (id)
+    )
+Hibernate: 
+    alter table if exists address 
+       drop constraint if exists UKjwxme4q0mrlmyw8rkrpe8j4gw
+2026-04-28T10:07:12.722+07:00  WARN 31454 --- [EventService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-28T10:07:12.722+07:00  WARN 31454 --- [EventService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukjwxme4q0mrlmyw8rkrpe8j4gw" of relation "address" does not exist, skipping
+Hibernate: 
+    alter table if exists address 
+       add constraint UKjwxme4q0mrlmyw8rkrpe8j4gw unique (province, district, street)
+Hibernate: 
+    create index idx_category_name 
+       on category (name)
+Hibernate: 
+    alter table if exists category 
+       drop constraint if exists UK46ccwnsi9409t36lurvtyljak
+2026-04-28T10:07:12.731+07:00  WARN 31454 --- [EventService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-28T10:07:12.732+07:00  WARN 31454 --- [EventService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk46ccwnsi9409t36lurvtyljak" of relation "category" does not exist, skipping
+Hibernate: 
+    alter table if exists category 
+       add constraint UK46ccwnsi9409t36lurvtyljak unique (name)
+Hibernate: 
+    alter table if exists badge 
+       add constraint FKg1obp0qmph3p81hw46gxee2ed 
+       foreign key (event_id) 
+       references event
+Hibernate: 
+    alter table if exists event 
+       add constraint FKbnsudi2pgjak7feycwo8297xi 
+       foreign key (address_id) 
+       references address
+Hibernate: 
+    alter table if exists event 
+       add constraint FK751x8cp2x1h1fay38u2p5gpkr 
+       foreign key (category_id) 
+       references category
+2026-04-28T10:07:12.744+07:00  INFO 31454 --- [EventService] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-28T10:07:13.147+07:00  INFO 31454 --- [EventService] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-28T10:07:14.720+07:00  WARN 31454 --- [EventService] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-28T10:07:14.825+07:00  WARN 31454 --- [EventService] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 43158253-30b0-4815-b97d-b3fdc004dd3e
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-28T10:07:14.835+07:00  INFO 31454 --- [EventService] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-04-28T10:07:16.357+07:00  INFO 31454 --- [EventService] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T10:07:16.421+07:00  WARN 31454 --- [EventService] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T10:07:16.458+07:00  INFO 31454 --- [EventService] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T10:07:16.480+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T10:07:16.484+07:00  INFO 31454 --- [EventService] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:07:16.492+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:07:16.492+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:07:16.492+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:07:16.493+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:07:16.493+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:07:16.493+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T10:07:16.493+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:07:16.832+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:07:16.835+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T10:07:16.837+07:00  INFO 31454 --- [EventService] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T10:07:16.839+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345636838 with initial instances count: 2
+2026-04-28T10:07:16.850+07:00  INFO 31454 --- [EventService] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application EVENTSERVICE with eureka with status UP
+2026-04-28T10:07:16.851+07:00  INFO 31454 --- [EventService] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345636851, current=UP, previous=STARTING]
+2026-04-28T10:07:16.854+07:00  INFO 31454 --- [EventService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_EVENTSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:EventService:8082: registering service...
+2026-04-28T10:07:16.899+07:00  INFO 31454 --- [EventService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8082 (http) with context path '/'
+2026-04-28T10:07:16.903+07:00  INFO 31454 --- [EventService] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8082
+2026-04-28T10:07:16.915+07:00  INFO 31454 --- [EventService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_EVENTSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:EventService:8082 - registration status: 204
+2026-04-28T10:07:16.925+07:00  INFO 31454 --- [EventService] [           main] c.v.e.EventServiceApplication            : Started EventServiceApplication in 16.905 seconds (process running for 20.49)
+2026-04-28T10:09:06.141+07:00  INFO 31454 --- [EventService] [nio-8082-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:06.142+07:00  INFO 31454 --- [EventService] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T10:09:06.145+07:00  INFO 31454 --- [EventService] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.status=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.status=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.status=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.status=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+2026-04-28T10:12:16.495+07:00  INFO 31454 --- [EventService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+Hibernate: 
+    select
+        count(*) 
+    from
+        event e1_0
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.status=? 
+        and e1_0.owner_id=? 
+    order by
+        e1_0.name desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.owner_id=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+2026-04-28T10:17:16.496+07:00  INFO 31454 --- [EventService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+Hibernate: 
+    select
+        e1_0.id,
+        e1_0.address_id,
+        e1_0.approved_by,
+        e1_0.capacity,
+        e1_0.category_id,
+        e1_0.created_at,
+        e1_0.description,
+        e1_0.end_time,
+        e1_0.image_url,
+        e1_0.name,
+        e1_0.optional,
+        e1_0.owner_id,
+        e1_0.registration_deadline,
+        e1_0.start_time,
+        e1_0.status,
+        e1_0.updated_at 
+    from
+        event e1_0 
+    where
+        1=1 
+        and e1_0.owner_id=? 
+    order by
+        e1_0.created_at desc 
+    offset
+        ? rows 
+    fetch
+        first ? rows only

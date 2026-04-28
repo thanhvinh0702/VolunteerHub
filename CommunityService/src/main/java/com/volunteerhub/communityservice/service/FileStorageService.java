@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -29,24 +30,25 @@ public class FileStorageService {
             throw new IllegalArgumentException("File is empty. Please upload a valid file");
         }
 
+        String downloadToken = UUID.randomUUID().toString();
         String uniqueID = UUID.randomUUID().toString();
         String objectName = uniqueID + "_" + file.getOriginalFilename();
 
-        // Upload to Firebase Storage with public-read ACL
         BlobId blobId = BlobId.of(bucketName, objectName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(file.getContentType())
+                .setMetadata(Map.of("firebaseStorageDownloadTokens", downloadToken))
                 .build();
         storage.createFrom(blobInfo,
-                new java.io.ByteArrayInputStream(file.getBytes()),
-                Storage.BlobWriteOption.predefinedAcl(Storage.PredefinedAcl.PUBLIC_READ));
+                new java.io.ByteArrayInputStream(file.getBytes()));
 
-        // Return public URL
-        String encodedObjectName = URLEncoder.encode(objectName, StandardCharsets.UTF_8);
+        String encodedObjectName = encodeUrlPart(objectName);
+        String encodedToken = encodeUrlPart(downloadToken);
         return String.format(
-                "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media&token=%s",
                 bucketName,
-                encodedObjectName
+                encodedObjectName,
+                encodedToken
         );
     }
 
@@ -58,9 +60,15 @@ public class FileStorageService {
         List<String> urls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            urls.add(uploadFile(file));
+            if (file != null && !file.isEmpty()) {
+                urls.add(uploadFile(file));
+            }
         }
 
         return urls;
+    }
+
+    private String encodeUrlPart(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 }
