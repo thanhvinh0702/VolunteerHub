@@ -87,7 +87,7 @@ export default function ReactionBar({
           onReact={(r) => {
             onReact?.(post.id, r);
 
-            
+
             // Skip if mutation is already pending to avoid race condition
             if (isPending) {
               console.log("=== MUTATION PENDING ===");
@@ -100,17 +100,17 @@ export default function ReactionBar({
 
             if (eventId && post?.id) {
               if (r === null) {
-                // User wants to remove reaction 
-                
+                // User wants to remove reaction
+
                 if (currentReactionKey) {
                   const enumType = toEnumType(currentReactionKey);
-                  
+
                   createReaction(enumType);
-                } 
+                }
               } else {
                 // User selected a reaction → create/update
                 const enumType = toEnumType(r);
-                
+
                 if (currentReactionKey && currentReactionKey !== r) {
                   console.log(
                     "Expected: BE will UPDATE from",
@@ -121,7 +121,7 @@ export default function ReactionBar({
                 } else if (currentReactionKey === r) {
                   console.log("Expected: BE will TOGGLE OFF (same reaction)");
                 }
-                
+
                 createReaction(enumType);
               }
             }

@@ -1,0 +1,664 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.volunteerhub:AggregationService >-----------------
+[INFO] Building AggregationService 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ AggregationService >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ AggregationService ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ AggregationService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ AggregationService ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/AggregationService/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ AggregationService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ AggregationService <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ AggregationService ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T03:06:30.395Z  INFO 29862 --- [AggregationService] [           main] c.v.A.AggregationServiceApplication      : Starting AggregationServiceApplication using Java 21.0.10 with PID 29862 (/teamspace/studios/this_studio/VolunteerHub/AggregationService/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/AggregationService)
+2026-04-28T03:06:30.436Z  INFO 29862 --- [AggregationService] [           main] c.v.A.AggregationServiceApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T03:06:35.419Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientsRegistrar$1  : Identified candidate component class: file [/teamspace/studios/this_studio/VolunteerHub/AggregationService/target/classes/com/volunteerhub/AggregationService/client/CommunityClient.class]
+2026-04-28T03:06:35.422Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientsRegistrar$1  : Identified candidate component class: file [/teamspace/studios/this_studio/VolunteerHub/AggregationService/target/classes/com/volunteerhub/AggregationService/client/EventClient.class]
+2026-04-28T03:06:35.425Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientsRegistrar$1  : Identified candidate component class: file [/teamspace/studios/this_studio/VolunteerHub/AggregationService/target/classes/com/volunteerhub/AggregationService/client/RegistrationClient.class]
+2026-04-28T03:06:35.441Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientsRegistrar$1  : Identified candidate component class: file [/teamspace/studios/this_studio/VolunteerHub/AggregationService/target/classes/com/volunteerhub/AggregationService/client/UserClient.class]
+2026-04-28T03:06:38.682Z  INFO 29862 --- [AggregationService] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=c9fcef4f-e0cd-3194-af79-64e01b689e59
+2026-04-28T03:06:40.927Z  INFO 29862 --- [AggregationService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8087 (http)
+2026-04-28T03:06:41.059Z  INFO 29862 --- [AggregationService] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T03:06:41.061Z  INFO 29862 --- [AggregationService] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T03:06:41.464Z  INFO 29862 --- [AggregationService] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T03:06:41.467Z  INFO 29862 --- [AggregationService] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 10625 ms
+2026-04-28T03:06:41.978Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : Creating a FeignClientFactoryBean.
+2026-04-28T03:06:43.324Z  INFO 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'COMMUNITYSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T03:06:43.667Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : Creating a FeignClientFactoryBean.
+2026-04-28T03:06:43.842Z  INFO 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'USERSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T03:06:43.965Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : Creating a FeignClientFactoryBean.
+2026-04-28T03:06:44.199Z  INFO 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'EVENTSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T03:06:44.313Z DEBUG 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : Creating a FeignClientFactoryBean.
+2026-04-28T03:06:44.509Z  INFO 29862 --- [AggregationService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'REGISTRATIONSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T03:06:48.370Z  INFO 29862 --- [AggregationService] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T03:06:48.628Z  WARN 29862 --- [AggregationService] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T03:06:48.873Z  INFO 29862 --- [AggregationService] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T03:06:49.143Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T03:06:49.195Z  INFO 29862 --- [AggregationService] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T03:06:49.262Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T03:06:49.268Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T03:06:49.271Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T03:06:49.272Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T03:06:49.272Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T03:06:49.272Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T03:06:49.272Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T03:06:51.784Z  INFO 29862 --- [AggregationService] [           main] c.n.d.s.t.d.RedirectingEurekaHttpClient  : Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://localhost:8761/eureka/}, exception=I/O error on GET request for "http://localhost:8761/eureka/apps/": Connect to http://localhost:8761 failed: Connection refused stacktrace=org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8761/eureka/apps/": Connect to http://localhost:8761 failed: Connection refused
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:926)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:906)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:841)
+	at org.springframework.web.client.RestTemplate.exchange(RestTemplate.java:702)
+	at org.springframework.cloud.netflix.eureka.http.RestTemplateEurekaHttpClient.getApplicationsInternal(RestTemplateEurekaHttpClient.java:174)
+	at org.springframework.cloud.netflix.eureka.http.RestTemplateEurekaHttpClient.getApplications(RestTemplateEurekaHttpClient.java:162)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137)
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:121)
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:80)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137)
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134)
+	at com.netflix.discovery.DiscoveryClient.getAndStoreFullRegistry(DiscoveryClient.java:1046)
+	at com.netflix.discovery.DiscoveryClient.fetchRegistry(DiscoveryClient.java:961)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:410)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:245)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:240)
+	at org.springframework.cloud.netflix.eureka.CloudEurekaClient.<init>(CloudEurekaClient.java:68)
+	at org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration$RefreshableEurekaClientConfiguration.eurekaClient(EurekaClientAutoConfiguration.java:324)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:172)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:89)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:169)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:378)
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:373)
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:177)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:375)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.aop.target.SimpleBeanTargetSource.getTarget(SimpleBeanTargetSource.java:35)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getTargetObject(EurekaRegistration.java:128)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getEurekaClient(EurekaRegistration.java:116)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281)
+	at org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean.invoke(GenericScope.java:480)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration$$SpringCGLIB$$0.getEurekaClient(<generated>)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry.maybeInitializeClient(EurekaServiceRegistry.java:83)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry.register(EurekaServiceRegistry.java:66)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration.start(EurekaAutoServiceRegistration.java:89)
+	at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:405)
+	at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:394)
+	at org.springframework.context.support.DefaultLifecycleProcessor$LifecycleGroup.start(DefaultLifecycleProcessor.java:586)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.context.support.DefaultLifecycleProcessor.startBeans(DefaultLifecycleProcessor.java:364)
+	at org.springframework.context.support.DefaultLifecycleProcessor.onRefresh(DefaultLifecycleProcessor.java:310)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:1009)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:630)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.volunteerhub.AggregationService.AggregationServiceApplication.main(AggregationServiceApplication.java:14)
+Caused by: org.apache.hc.client5.http.HttpHostConnectException: Connect to http://localhost:8761 failed: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:215)
+	at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:497)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:164)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:174)
+	at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:144)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ProtocolExec.execute(ProtocolExec.java:195)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ContentCompressionExec.execute(ContentCompressionExec.java:151)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.HttpRequestRetryExec.execute(HttpRequestRetryExec.java:112)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:87)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:55)
+	at org.apache.hc.client5.http.classic.HttpClient.executeOpen(HttpClient.java:183)
+	at org.springframework.http.client.HttpComponentsClientHttpRequest.executeInternal(HttpComponentsClientHttpRequest.java:99)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:71)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:81)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:117)
+	at org.springframework.cloud.netflix.eureka.http.RestTemplateTransportClientFactory.lambda$restTemplate$2(RestTemplateTransportClientFactory.java:145)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:81)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:900)
+	... 65 more
+
+2026-04-28T03:06:51.784Z  WARN 29862 --- [AggregationService] [           main] c.n.d.s.t.d.RetryableEurekaHttpClient    : Request execution failed with message: I/O error on GET request for "http://localhost:8761/eureka/apps/": Connect to http://localhost:8761 failed: Connection refused
+2026-04-28T03:06:51.785Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 - was unable to refresh its cache! This periodic background refresh will be retried in 30 seconds. status = Cannot execute request on any known server stacktrace = com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134)
+	at com.netflix.discovery.DiscoveryClient.getAndStoreFullRegistry(DiscoveryClient.java:1046)
+	at com.netflix.discovery.DiscoveryClient.fetchRegistry(DiscoveryClient.java:961)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:410)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:245)
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:240)
+	at org.springframework.cloud.netflix.eureka.CloudEurekaClient.<init>(CloudEurekaClient.java:68)
+	at org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration$RefreshableEurekaClientConfiguration.eurekaClient(EurekaClientAutoConfiguration.java:324)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:172)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:89)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:169)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:378)
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:373)
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:177)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:375)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.aop.target.SimpleBeanTargetSource.getTarget(SimpleBeanTargetSource.java:35)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getTargetObject(EurekaRegistration.java:128)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getEurekaClient(EurekaRegistration.java:116)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281)
+	at org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean.invoke(GenericScope.java:480)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration$$SpringCGLIB$$0.getEurekaClient(<generated>)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry.maybeInitializeClient(EurekaServiceRegistry.java:83)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry.register(EurekaServiceRegistry.java:66)
+	at org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration.start(EurekaAutoServiceRegistration.java:89)
+	at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:405)
+	at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:394)
+	at org.springframework.context.support.DefaultLifecycleProcessor$LifecycleGroup.start(DefaultLifecycleProcessor.java:586)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at org.springframework.context.support.DefaultLifecycleProcessor.startBeans(DefaultLifecycleProcessor.java:364)
+	at org.springframework.context.support.DefaultLifecycleProcessor.onRefresh(DefaultLifecycleProcessor.java:310)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:1009)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:630)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.volunteerhub.AggregationService.AggregationServiceApplication.main(AggregationServiceApplication.java:14)
+
+2026-04-28T03:06:51.785Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Initial registry fetch from primary servers failed
+2026-04-28T03:06:51.785Z  WARN 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Using default backup registry implementation which does not do anything.
+2026-04-28T03:06:51.798Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Initial registry fetch from backup servers failed
+2026-04-28T03:06:51.807Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T03:06:51.827Z  INFO 29862 --- [AggregationService] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T03:06:51.860Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345611837 with initial instances count: 0
+2026-04-28T03:06:51.884Z  INFO 29862 --- [AggregationService] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application AGGREGATIONSERVICE with eureka with status UP
+2026-04-28T03:06:51.894Z  INFO 29862 --- [AggregationService] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345611894, current=UP, previous=STARTING]
+2026-04-28T03:06:51.911Z  INFO 29862 --- [AggregationService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087: registering service...
+2026-04-28T03:06:52.089Z  INFO 29862 --- [AggregationService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8087 (http) with context path '/'
+2026-04-28T03:06:52.096Z  INFO 29862 --- [AggregationService] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8087
+2026-04-28T03:06:52.168Z  INFO 29862 --- [AggregationService] [           main] c.v.A.AggregationServiceApplication      : Started AggregationServiceApplication in 26.106 seconds (process running for 29.744)
+2026-04-28T03:06:52.203Z  INFO 29862 --- [AggregationService] [foReplicator-%d] c.n.d.s.t.d.RedirectingEurekaHttpClient  : Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://localhost:8761/eureka/}, exception=I/O error on POST request for "http://localhost:8761/eureka/apps/AGGREGATIONSERVICE": Connect to http://localhost:8761 failed: Connection refused stacktrace=org.springframework.web.client.ResourceAccessException: I/O error on POST request for "http://localhost:8761/eureka/apps/AGGREGATIONSERVICE": Connect to http://localhost:8761 failed: Connection refused
+	at org.springframework.web.client.RestTemplate.createResourceAccessException(RestTemplate.java:926)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:906)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:841)
+	at org.springframework.web.client.RestTemplate.exchange(RestTemplate.java:702)
+	at org.springframework.cloud.netflix.eureka.http.RestTemplateEurekaHttpClient.register(RestTemplateEurekaHttpClient.java:87)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:121)
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:80)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59)
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76)
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56)
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:828)
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:125)
+	at com.netflix.discovery.InstanceInfoReplicator$2.run(InstanceInfoReplicator.java:105)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.apache.hc.client5.http.HttpHostConnectException: Connect to http://localhost:8761 failed: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:751)
+	at org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:215)
+	at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:497)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:164)
+	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:174)
+	at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:144)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ProtocolExec.execute(ProtocolExec.java:195)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.ContentCompressionExec.execute(ContentCompressionExec.java:151)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.HttpRequestRetryExec.execute(HttpRequestRetryExec.java:112)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+	at org.apache.hc.client5.http.impl.classic.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:87)
+	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:55)
+	at org.apache.hc.client5.http.classic.HttpClient.executeOpen(HttpClient.java:183)
+	at org.springframework.http.client.HttpComponentsClientHttpRequest.executeInternal(HttpComponentsClientHttpRequest.java:99)
+	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:71)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:81)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:117)
+	at org.springframework.cloud.netflix.eureka.http.RestTemplateTransportClientFactory.lambda$restTemplate$2(RestTemplateTransportClientFactory.java:145)
+	at org.springframework.http.client.InterceptingClientHttpRequest$InterceptingRequestExecution.execute(InterceptingClientHttpRequest.java:88)
+	at org.springframework.http.client.InterceptingClientHttpRequest.executeInternal(InterceptingClientHttpRequest.java:72)
+	at org.springframework.http.client.AbstractBufferingClientHttpRequest.executeInternal(AbstractBufferingClientHttpRequest.java:48)
+	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:81)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:900)
+	... 22 more
+
+2026-04-28T03:06:52.204Z  WARN 29862 --- [AggregationService] [foReplicator-%d] c.n.d.s.t.d.RetryableEurekaHttpClient    : Request execution failed with message: I/O error on POST request for "http://localhost:8761/eureka/apps/AGGREGATIONSERVICE": Connect to http://localhost:8761 failed: Connection refused
+2026-04-28T03:06:52.206Z  WARN 29862 --- [AggregationService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 - registration failed Cannot execute request on any known server
+
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:828) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:125) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.InstanceInfoReplicator$2.run(InstanceInfoReplicator.java:105) ~[eureka-client-2.0.4.jar:2.0.4]
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-04-28T03:06:52.228Z  WARN 29862 --- [AggregationService] [foReplicator-%d] c.n.discovery.InstanceInfoReplicator     : There was a problem with the instance info replicator
+
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:76) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:828) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:125) ~[eureka-client-2.0.4.jar:2.0.4]
+	at com.netflix.discovery.InstanceInfoReplicator$2.run(InstanceInfoReplicator.java:105) ~[eureka-client-2.0.4.jar:2.0.4]
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-04-28T03:07:21.807Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T03:07:21.808Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T03:07:21.880Z  INFO 29862 --- [AggregationService] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T03:07:21.915Z  INFO 29862 --- [AggregationService] [beatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 - Re-registering apps/AGGREGATIONSERVICE
+2026-04-28T03:07:21.916Z  INFO 29862 --- [AggregationService] [beatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087: registering service...
+2026-04-28T03:07:21.929Z  INFO 29862 --- [AggregationService] [beatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 - registration status: 204
+2026-04-28T03:09:05.948Z  INFO 29862 --- [AggregationService] [nio-8087-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T03:09:05.948Z  INFO 29862 --- [AggregationService] [nio-8087-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T03:09:05.950Z  INFO 29862 --- [AggregationService] [nio-8087-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-04-28T03:09:05.993Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.993Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.993Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.993Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.994Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:05.998Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> GET http://EVENTSERVICE/api/v1/events?pageNum=0&pageSize=5&status=APPROVED&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:09:05.998Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] accept-encoding: gzip
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> GET http://EVENTSERVICE/api/v1/events?pageNum=0&pageSize=10&status=APPROVED&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYmYiOjE3NzcyODY5MTcsInVzZXJfaWQiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJyb2xlcyI6W3sicm9sZSI6IlVTRVIifV0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NzA3MCIsIm5hbWUiOiJ1c2VyIiwiZXhwIjoxNzc3MzczMzE3LCJpYXQiOjE3NzcyODY5MTcsImp0aSI6IjgxMTc5Zjg5LTNjY2MtNDUyOS05NGY1LWIzNWE4M2I5NGExNiIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIn0.eMPUCKu-5LsuMqD9FNjMDcaRJhtpLVZRXPelJZot3BG2Yt3MAmLVHzjJfPEX8APCQ9ldRmxLxQv3E8dIH_zb8SAQAxeRs37u44bU7rJIkaF22DMEGZ4Zd2J7GawmxfkqH1NeaSB3JgtU5mcoF8V8mWCjho7YbToLw1fgHd53TZlFNrftRuYKQ2tiMTjiJyLg_kwNa2u8bxtsfrXhr9dkCLlkTGCQVQ0rfK0G3Hz1cKRRoZ-hIPiWOPl85PoeAnHNRnYvt7tvuCMAqUu-9y0HuFTamkqNowjKI2MWRE2aTtNNEZOlHdHjEo0pNvlteYTNoZo0nhFULcEjONe_7eTEQg
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] accept-encoding: gzip
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYmYiOjE3NzcyODY5MTcsInVzZXJfaWQiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJyb2xlcyI6W3sicm9sZSI6IlVTRVIifV0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NzA3MCIsIm5hbWUiOiJ1c2VyIiwiZXhwIjoxNzc3MzczMzE3LCJpYXQiOjE3NzcyODY5MTcsImp0aSI6IjgxMTc5Zjg5LTNjY2MtNDUyOS05NGY1LWIzNWE4M2I5NGExNiIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIn0.eMPUCKu-5LsuMqD9FNjMDcaRJhtpLVZRXPelJZot3BG2Yt3MAmLVHzjJfPEX8APCQ9ldRmxLxQv3E8dIH_zb8SAQAxeRs37u44bU7rJIkaF22DMEGZ4Zd2J7GawmxfkqH1NeaSB3JgtU5mcoF8V8mWCjho7YbToLw1fgHd53TZlFNrftRuYKQ2tiMTjiJyLg_kwNa2u8bxtsfrXhr9dkCLlkTGCQVQ0rfK0G3Hz1cKRRoZ-hIPiWOPl85PoeAnHNRnYvt7tvuCMAqUu-9y0HuFTamkqNowjKI2MWRE2aTtNNEZOlHdHjEo0pNvlteYTNoZo0nhFULcEjONe_7eTEQg
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] user-agent: okhttp/4.12.0
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-id: 44544fbb-5974-4551-ad78-88854efc9745
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] user-agent: okhttp/4.12.0
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-role: ROLE_USER
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-id: 44544fbb-5974-4551-ad78-88854efc9745
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-role: ROLE_USER
+2026-04-28T03:09:05.999Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- HTTP/1.1 200 (375ms)
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- HTTP/1.1 200 (375ms)
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] content-type: application/json
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] date: Tue, 28 Apr 2026 03:09:06 GMT
+2026-04-28T03:09:06.375Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] expires: 0
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] keep-alive: timeout=60
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] pragma: no-cache
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] transfer-encoding: chunked
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-content-type-options: nosniff
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-frame-options: DENY
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-xss-protection: 0
+2026-04-28T03:09:06.376Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] 
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] content-type: application/json
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] date: Tue, 28 Apr 2026 03:09:06 GMT
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] expires: 0
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] keep-alive: timeout=60
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] pragma: no-cache
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] transfer-encoding: chunked
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-content-type-options: nosniff
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-frame-options: DENY
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] {"content":[],"page":{"size":5,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-xss-protection: 0
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-1] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- END HTTP (76-byte body)
+2026-04-28T03:09:06.377Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] 
+2026-04-28T03:09:06.378Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] {"content":[],"page":{"size":10,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:09:06.378Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-2] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- END HTTP (77-byte body)
+2026-04-28T03:09:11.544Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.544Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.544Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.544Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.545Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.545Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.545Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.545Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.546Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.546Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> GET http://EVENTSERVICE/api/v1/events?pageNum=0&pageSize=10&status=APPROVED&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] accept-encoding: gzip
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYmYiOjE3NzcyODY5MTcsInVzZXJfaWQiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJyb2xlcyI6W3sicm9sZSI6IlVTRVIifV0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NzA3MCIsIm5hbWUiOiJ1c2VyIiwiZXhwIjoxNzc3MzczMzE3LCJpYXQiOjE3NzcyODY5MTcsImp0aSI6IjgxMTc5Zjg5LTNjY2MtNDUyOS05NGY1LWIzNWE4M2I5NGExNiIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIn0.eMPUCKu-5LsuMqD9FNjMDcaRJhtpLVZRXPelJZot3BG2Yt3MAmLVHzjJfPEX8APCQ9ldRmxLxQv3E8dIH_zb8SAQAxeRs37u44bU7rJIkaF22DMEGZ4Zd2J7GawmxfkqH1NeaSB3JgtU5mcoF8V8mWCjho7YbToLw1fgHd53TZlFNrftRuYKQ2tiMTjiJyLg_kwNa2u8bxtsfrXhr9dkCLlkTGCQVQ0rfK0G3Hz1cKRRoZ-hIPiWOPl85PoeAnHNRnYvt7tvuCMAqUu-9y0HuFTamkqNowjKI2MWRE2aTtNNEZOlHdHjEo0pNvlteYTNoZo0nhFULcEjONe_7eTEQg
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] user-agent: okhttp/4.12.0
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-id: 44544fbb-5974-4551-ad78-88854efc9745
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-role: ROLE_USER
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:09:11.547Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> GET http://EVENTSERVICE/api/v1/events?pageNum=0&pageSize=5&status=APPROVED&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] accept-encoding: gzip
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYmYiOjE3NzcyODY5MTcsInVzZXJfaWQiOiI0NDU0NGZiYi01OTc0LTQ1NTEtYWQ3OC04ODg1NGVmYzk3NDUiLCJyb2xlcyI6W3sicm9sZSI6IlVTRVIifV0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NzA3MCIsIm5hbWUiOiJ1c2VyIiwiZXhwIjoxNzc3MzczMzE3LCJpYXQiOjE3NzcyODY5MTcsImp0aSI6IjgxMTc5Zjg5LTNjY2MtNDUyOS05NGY1LWIzNWE4M2I5NGExNiIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIn0.eMPUCKu-5LsuMqD9FNjMDcaRJhtpLVZRXPelJZot3BG2Yt3MAmLVHzjJfPEX8APCQ9ldRmxLxQv3E8dIH_zb8SAQAxeRs37u44bU7rJIkaF22DMEGZ4Zd2J7GawmxfkqH1NeaSB3JgtU5mcoF8V8mWCjho7YbToLw1fgHd53TZlFNrftRuYKQ2tiMTjiJyLg_kwNa2u8bxtsfrXhr9dkCLlkTGCQVQ0rfK0G3Hz1cKRRoZ-hIPiWOPl85PoeAnHNRnYvt7tvuCMAqUu-9y0HuFTamkqNowjKI2MWRE2aTtNNEZOlHdHjEo0pNvlteYTNoZo0nhFULcEjONe_7eTEQg
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] user-agent: okhttp/4.12.0
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-id: 44544fbb-5974-4551-ad78-88854efc9745
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-user-role: ROLE_USER
+2026-04-28T03:09:11.548Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- HTTP/1.1 200 (14ms)
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] content-type: application/json
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] date: Tue, 28 Apr 2026 03:09:11 GMT
+2026-04-28T03:09:11.562Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] expires: 0
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] keep-alive: timeout=60
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] pragma: no-cache
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] transfer-encoding: chunked
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-content-type-options: nosniff
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-frame-options: DENY
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-xss-protection: 0
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- HTTP/1.1 200 (14ms)
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] connection: keep-alive
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] content-type: application/json
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] date: Tue, 28 Apr 2026 03:09:11 GMT
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] expires: 0
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] keep-alive: timeout=60
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] pragma: no-cache
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] transfer-encoding: chunked
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-content-type-options: nosniff
+2026-04-28T03:09:11.563Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] 
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] {"content":[],"page":{"size":10,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- END HTTP (77-byte body)
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-frame-options: DENY
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] x-xss-protection: 0
+2026-04-28T03:09:11.564Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] 
+2026-04-28T03:09:11.565Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] {"content":[],"page":{"size":5,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:09:11.565Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-4] c.v.A.client.EventClient                 : [EventClient#getAllEvents] <--- END HTTP (76-byte body)
+2026-04-28T03:11:49.283Z  INFO 29862 --- [AggregationService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T03:15:42.135Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.135Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.135Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.136Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.136Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.137Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> GET http://EVENTSERVICE/api/v1/events/owned?pageNum=0&pageSize=2&status=APPROVED&sortedBy=name&order=desc HTTP/1.1
+2026-04-28T03:15:42.137Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept: application/json, text/plain, */*
+2026-04-28T03:15:42.137Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-encoding: gzip, deflate, br, zstd
+2026-04-28T03:15:42.138Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-language: en-US,en;q=0.9,vi;q=0.8
+2026-04-28T03:15:42.138Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] authorization: Bearer eyJraWQiOiJjNGQ1ZTI3ZS0xMzRmLTQ4YzgtOGFlNi01OTJjYmVkZDA0ZTAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJhdWQiOiI3ZmNkYmI2Yy1mYzFkLTQ5MjEtYTUyZC0wNDY2NTU3YjYxMzIiLCJuYmYiOjE3NzczNDYxMDYsInVzZXJfaWQiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJzY29wZSI6WyJvcGVuaWQiXSwicm9sZXMiOlt7InJvbGUiOiJNQU5BR0VSIn1dLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYW1lIjoibWFuYWdlciIsImV4cCI6MTc3NzQzMjUwNiwiaWF0IjoxNzc3MzQ2MTA2LCJqdGkiOiJlM2I1MzYxMi05YTg2LTQyZmUtODQ0ZS0wY2NjOWJmMmQ4NTQiLCJlbWFpbCI6IjIzMDIwMTcwQHZudS5lZHUudm4ifQ.P7WYw9dJMSIFd8XQs1cez-k4ZXUEa03XrIXn_72V2ljpKGBECZ-XZ5P5KrjOoWRdXB30DvJV1X2JINwVXPw8dOMR3rlxVEDzErMTekGH5yZcHpHxVwTUZvpw1RMcp-0L8E5c2OCRBExRv5p4mqUBPD0Pwy5OtsVWi5OZMt8YXzRRYhKxkj8jeUK7kvpllSPnelSZBEUZRIrJQ8wBK3xW5Z_RWQe8DVvfvP5qDmtC0x1Jh97ERYMBiH1rAxYm6AsJuJbqEcnwKW5fMrRhr63ewURhMq80XQLfJlIMSir-6HFDhISY6XJgBtCD7PrSH1Eym9bV-fjwQGtnWFK8Lzx18g
+2026-04-28T03:15:42.138Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:15:42.138Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:15:42.139Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] origin: http://localhost:3000
+2026-04-28T03:15:42.139Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] referer: http://localhost:3000/
+2026-04-28T03:15:42.139Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"
+2026-04-28T03:15:42.139Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-mobile: ?0
+2026-04-28T03:15:42.140Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-platform: "Linux"
+2026-04-28T03:15:42.140Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-dest: empty
+2026-04-28T03:15:42.140Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-mode: cors
+2026-04-28T03:15:42.140Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-site: same-site
+2026-04-28T03:15:42.140Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+2026-04-28T03:15:42.141Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-id: 1dc1844f-25ac-42ea-8058-bff58bbffc38
+2026-04-28T03:15:42.141Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-role: ROLE_MANAGER
+2026-04-28T03:15:42.141Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:15:42.164Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- HTTP/1.1 200 (22ms)
+2026-04-28T03:15:42.165Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:15:42.165Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:15:42.165Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] content-type: application/json
+2026-04-28T03:15:42.165Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] date: Tue, 28 Apr 2026 03:15:42 GMT
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] expires: 0
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] keep-alive: timeout=60
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] pragma: no-cache
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] transfer-encoding: chunked
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-content-type-options: nosniff
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-frame-options: DENY
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-xss-protection: 0
+2026-04-28T03:15:42.166Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] 
+2026-04-28T03:15:42.167Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] {"content":[],"page":{"size":2,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:15:42.167Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-7] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- END HTTP (76-byte body)
+2026-04-28T03:15:42.186Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.187Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.187Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.188Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] ---> GET http://REGISTRATIONSERVICE/api/v1/registrations/events/registration-count?pageNum=0&pageSize=50&days=30 HTTP/1.1
+2026-04-28T03:15:42.189Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] accept: application/json, text/plain, */*
+2026-04-28T03:15:42.189Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] accept-encoding: gzip, deflate, br, zstd
+2026-04-28T03:15:42.190Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] accept-language: en-US,en;q=0.9,vi;q=0.8
+2026-04-28T03:15:42.190Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] authorization: Bearer eyJraWQiOiJjNGQ1ZTI3ZS0xMzRmLTQ4YzgtOGFlNi01OTJjYmVkZDA0ZTAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJhdWQiOiI3ZmNkYmI2Yy1mYzFkLTQ5MjEtYTUyZC0wNDY2NTU3YjYxMzIiLCJuYmYiOjE3NzczNDYxMDYsInVzZXJfaWQiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJzY29wZSI6WyJvcGVuaWQiXSwicm9sZXMiOlt7InJvbGUiOiJNQU5BR0VSIn1dLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYW1lIjoibWFuYWdlciIsImV4cCI6MTc3NzQzMjUwNiwiaWF0IjoxNzc3MzQ2MTA2LCJqdGkiOiJlM2I1MzYxMi05YTg2LTQyZmUtODQ0ZS0wY2NjOWJmMmQ4NTQiLCJlbWFpbCI6IjIzMDIwMTcwQHZudS5lZHUudm4ifQ.P7WYw9dJMSIFd8XQs1cez-k4ZXUEa03XrIXn_72V2ljpKGBECZ-XZ5P5KrjOoWRdXB30DvJV1X2JINwVXPw8dOMR3rlxVEDzErMTekGH5yZcHpHxVwTUZvpw1RMcp-0L8E5c2OCRBExRv5p4mqUBPD0Pwy5OtsVWi5OZMt8YXzRRYhKxkj8jeUK7kvpllSPnelSZBEUZRIrJQ8wBK3xW5Z_RWQe8DVvfvP5qDmtC0x1Jh97ERYMBiH1rAxYm6AsJuJbqEcnwKW5fMrRhr63ewURhMq80XQLfJlIMSir-6HFDhISY6XJgBtCD7PrSH1Eym9bV-fjwQGtnWFK8Lzx18g
+2026-04-28T03:15:42.190Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] connection: keep-alive
+2026-04-28T03:15:42.190Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:15:42.190Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] origin: http://localhost:3000
+2026-04-28T03:15:42.193Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] referer: http://localhost:3000/
+2026-04-28T03:15:42.193Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"
+2026-04-28T03:15:42.193Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-ch-ua-mobile: ?0
+2026-04-28T03:15:42.193Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-ch-ua-platform: "Linux"
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-fetch-dest: empty
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-fetch-mode: cors
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] sec-fetch-site: same-site
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] x-user-id: 1dc1844f-25ac-42ea-8058-bff58bbffc38
+2026-04-28T03:15:42.197Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] x-user-role: ROLE_MANAGER
+2026-04-28T03:15:42.198Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] ---> END HTTP (0-byte body)
+2026-04-28T03:15:42.205Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.205Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:42.207Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] ---> GET http://REGISTRATIONSERVICE/api/v1/registrations/internal/manager?pageNum=0&pageSize=10 HTTP/1.1
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] accept: application/json, text/plain, */*
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] accept-encoding: gzip, deflate, br, zstd
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] accept-language: en-US,en;q=0.9,vi;q=0.8
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] authorization: Bearer eyJraWQiOiJjNGQ1ZTI3ZS0xMzRmLTQ4YzgtOGFlNi01OTJjYmVkZDA0ZTAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJhdWQiOiI3ZmNkYmI2Yy1mYzFkLTQ5MjEtYTUyZC0wNDY2NTU3YjYxMzIiLCJuYmYiOjE3NzczNDYxMDYsInVzZXJfaWQiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJzY29wZSI6WyJvcGVuaWQiXSwicm9sZXMiOlt7InJvbGUiOiJNQU5BR0VSIn1dLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYW1lIjoibWFuYWdlciIsImV4cCI6MTc3NzQzMjUwNiwiaWF0IjoxNzc3MzQ2MTA2LCJqdGkiOiJlM2I1MzYxMi05YTg2LTQyZmUtODQ0ZS0wY2NjOWJmMmQ4NTQiLCJlbWFpbCI6IjIzMDIwMTcwQHZudS5lZHUudm4ifQ.P7WYw9dJMSIFd8XQs1cez-k4ZXUEa03XrIXn_72V2ljpKGBECZ-XZ5P5KrjOoWRdXB30DvJV1X2JINwVXPw8dOMR3rlxVEDzErMTekGH5yZcHpHxVwTUZvpw1RMcp-0L8E5c2OCRBExRv5p4mqUBPD0Pwy5OtsVWi5OZMt8YXzRRYhKxkj8jeUK7kvpllSPnelSZBEUZRIrJQ8wBK3xW5Z_RWQe8DVvfvP5qDmtC0x1Jh97ERYMBiH1rAxYm6AsJuJbqEcnwKW5fMrRhr63ewURhMq80XQLfJlIMSir-6HFDhISY6XJgBtCD7PrSH1Eym9bV-fjwQGtnWFK8Lzx18g
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] connection: keep-alive
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] origin: http://localhost:3000
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] referer: http://localhost:3000/
+2026-04-28T03:15:42.210Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-ch-ua-mobile: ?0
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-ch-ua-platform: "Linux"
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-fetch-dest: empty
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-fetch-mode: cors
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] sec-fetch-site: same-site
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] x-user-id: 1dc1844f-25ac-42ea-8058-bff58bbffc38
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] x-user-role: ROLE_MANAGER
+2026-04-28T03:15:42.211Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] ---> END HTTP (0-byte body)
+2026-04-28T03:15:42.315Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] <--- HTTP/1.1 200 (117ms)
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] connection: keep-alive
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] content-type: application/json
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] date: Tue, 28 Apr 2026 03:15:42 GMT
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] expires: 0
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] keep-alive: timeout=60
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] pragma: no-cache
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] transfer-encoding: chunked
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] x-content-type-options: nosniff
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] x-frame-options: DENY
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] x-xss-protection: 0
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] 
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] {"content":[],"totalElements":0,"totalPages":0,"number":0,"size":50}
+2026-04-28T03:15:42.316Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-8] c.v.A.client.RegistrationClient          : [RegistrationClient#getEventsParticipantCounts] <--- END HTTP (68-byte body)
+2026-04-28T03:15:42.346Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] <--- HTTP/1.1 200 (134ms)
+2026-04-28T03:15:42.346Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:15:42.346Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] connection: keep-alive
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] content-type: application/json
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] date: Tue, 28 Apr 2026 03:15:42 GMT
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] expires: 0
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] keep-alive: timeout=60
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] pragma: no-cache
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] transfer-encoding: chunked
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] x-content-type-options: nosniff
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] x-frame-options: DENY
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] x-xss-protection: 0
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] 
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] []
+2026-04-28T03:15:42.347Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-9] c.v.A.client.RegistrationClient          : [RegistrationClient#getRegistrationsByOwnerId] <--- END HTTP (2-byte body)
+2026-04-28T03:15:44.050Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:44.050Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:44.050Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:44.050Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> GET http://EVENTSERVICE/api/v1/events/owned?pageNum=0&pageSize=6&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept: application/json, text/plain, */*
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-encoding: gzip, deflate, br, zstd
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-language: en-US,en;q=0.9,vi;q=0.8
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] authorization: Bearer eyJraWQiOiJjNGQ1ZTI3ZS0xMzRmLTQ4YzgtOGFlNi01OTJjYmVkZDA0ZTAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJhdWQiOiI3ZmNkYmI2Yy1mYzFkLTQ5MjEtYTUyZC0wNDY2NTU3YjYxMzIiLCJuYmYiOjE3NzczNDYxMDYsInVzZXJfaWQiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJzY29wZSI6WyJvcGVuaWQiXSwicm9sZXMiOlt7InJvbGUiOiJNQU5BR0VSIn1dLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYW1lIjoibWFuYWdlciIsImV4cCI6MTc3NzQzMjUwNiwiaWF0IjoxNzc3MzQ2MTA2LCJqdGkiOiJlM2I1MzYxMi05YTg2LTQyZmUtODQ0ZS0wY2NjOWJmMmQ4NTQiLCJlbWFpbCI6IjIzMDIwMTcwQHZudS5lZHUudm4ifQ.P7WYw9dJMSIFd8XQs1cez-k4ZXUEa03XrIXn_72V2ljpKGBECZ-XZ5P5KrjOoWRdXB30DvJV1X2JINwVXPw8dOMR3rlxVEDzErMTekGH5yZcHpHxVwTUZvpw1RMcp-0L8E5c2OCRBExRv5p4mqUBPD0Pwy5OtsVWi5OZMt8YXzRRYhKxkj8jeUK7kvpllSPnelSZBEUZRIrJQ8wBK3xW5Z_RWQe8DVvfvP5qDmtC0x1Jh97ERYMBiH1rAxYm6AsJuJbqEcnwKW5fMrRhr63ewURhMq80XQLfJlIMSir-6HFDhISY6XJgBtCD7PrSH1Eym9bV-fjwQGtnWFK8Lzx18g
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:15:44.051Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] origin: http://localhost:3000
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] referer: http://localhost:3000/
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-mobile: ?0
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-platform: "Linux"
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-dest: empty
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-mode: cors
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-site: same-site
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-id: 1dc1844f-25ac-42ea-8058-bff58bbffc38
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-role: ROLE_MANAGER
+2026-04-28T03:15:44.052Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- HTTP/1.1 200 (15ms)
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] content-type: application/json
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] date: Tue, 28 Apr 2026 03:15:44 GMT
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] expires: 0
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] keep-alive: timeout=60
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] pragma: no-cache
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] transfer-encoding: chunked
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-content-type-options: nosniff
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-frame-options: DENY
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-xss-protection: 0
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] 
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] {"content":[],"page":{"size":6,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:15:44.068Z DEBUG 29862 --- [AggregationService] [io-8087-exec-10] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- END HTTP (76-byte body)
+2026-04-28T03:16:49.284Z  INFO 29862 --- [AggregationService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T03:18:44.652Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:18:44.652Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:18:44.652Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:18:44.652Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] feign.template.Template                  : Explicit slash decoding specified, decoding all slashes in uri
+2026-04-28T03:18:44.653Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> GET http://EVENTSERVICE/api/v1/events/owned?pageNum=0&pageSize=6&sortedBy=createdAt&order=desc HTTP/1.1
+2026-04-28T03:18:44.653Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept: application/json, text/plain, */*
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-encoding: gzip, deflate, br, zstd
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] accept-language: en-US,en;q=0.9,vi;q=0.8
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] authorization: Bearer eyJraWQiOiJjNGQ1ZTI3ZS0xMzRmLTQ4YzgtOGFlNi01OTJjYmVkZDA0ZTAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJhdWQiOiI3ZmNkYmI2Yy1mYzFkLTQ5MjEtYTUyZC0wNDY2NTU3YjYxMzIiLCJuYmYiOjE3NzczNDYxMDYsInVzZXJfaWQiOiIxZGMxODQ0Zi0yNWFjLTQyZWEtODA1OC1iZmY1OGJiZmZjMzgiLCJzY29wZSI6WyJvcGVuaWQiXSwicm9sZXMiOlt7InJvbGUiOiJNQU5BR0VSIn1dLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwNzAiLCJuYW1lIjoibWFuYWdlciIsImV4cCI6MTc3NzQzMjUwNiwiaWF0IjoxNzc3MzQ2MTA2LCJqdGkiOiJlM2I1MzYxMi05YTg2LTQyZmUtODQ0ZS0wY2NjOWJmMmQ4NTQiLCJlbWFpbCI6IjIzMDIwMTcwQHZudS5lZHUudm4ifQ.P7WYw9dJMSIFd8XQs1cez-k4ZXUEa03XrIXn_72V2ljpKGBECZ-XZ5P5KrjOoWRdXB30DvJV1X2JINwVXPw8dOMR3rlxVEDzErMTekGH5yZcHpHxVwTUZvpw1RMcp-0L8E5c2OCRBExRv5p4mqUBPD0Pwy5OtsVWi5OZMt8YXzRRYhKxkj8jeUK7kvpllSPnelSZBEUZRIrJQ8wBK3xW5Z_RWQe8DVvfvP5qDmtC0x1Jh97ERYMBiH1rAxYm6AsJuJbqEcnwKW5fMrRhr63ewURhMq80XQLfJlIMSir-6HFDhISY6XJgBtCD7PrSH1Eym9bV-fjwQGtnWFK8Lzx18g
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] host: cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:8087
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] origin: http://localhost:3000
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] referer: http://localhost:3000/
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-mobile: ?0
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-ch-ua-platform: "Linux"
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-dest: empty
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-mode: cors
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] sec-fetch-site: same-site
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+2026-04-28T03:18:44.654Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-id: 1dc1844f-25ac-42ea-8058-bff58bbffc38
+2026-04-28T03:18:44.655Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-user-role: ROLE_MANAGER
+2026-04-28T03:18:44.655Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] ---> END HTTP (0-byte body)
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- HTTP/1.1 200 (15ms)
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] cache-control: no-cache, no-store, max-age=0, must-revalidate
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] connection: keep-alive
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] content-type: application/json
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] date: Tue, 28 Apr 2026 03:18:44 GMT
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] expires: 0
+2026-04-28T03:18:44.670Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] keep-alive: timeout=60
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] pragma: no-cache
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] transfer-encoding: chunked
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-content-type-options: nosniff
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-frame-options: DENY
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] x-xss-protection: 0
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] 
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] {"content":[],"page":{"size":6,"number":0,"totalElements":0,"totalPages":0}}
+2026-04-28T03:18:44.671Z DEBUG 29862 --- [AggregationService] [nio-8087-exec-3] c.v.A.client.EventClient                 : [EventClient#getAllOwnedEvents] <--- END HTTP (76-byte body)

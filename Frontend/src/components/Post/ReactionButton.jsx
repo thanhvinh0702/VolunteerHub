@@ -76,7 +76,7 @@ export default function ReactionButton({
     // if bar was open (due to hover)
     if (showBar) return;
     if (current) {
-      clear(); 
+      clear();
     } else {
       choose("like"); // Add like reaction
     }

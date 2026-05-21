@@ -12,22 +12,22 @@ import {
 } from "./useAnalysis";
 // --- 1. ĐỊNH NGHĨA DỮ LIỆU GIẢ ---
 const MOCK_API_RESPONSES = {
-    // USER
-    "/api/v1/users/users/me": { value: 150, unit: " hrs" },
-    "/api/v1/users/users/me/events-completed": { value: 25 },
+    // USER (paths relative to axios base …/api)
+    "/v1/users/users/me": { value: 150, unit: " hrs" },
+    "/v1/users/users/me/events-completed": { value: 25 },
 
-    "/api/v1/users/users/me/this-month": { value: 12 },
+    "/v1/users/users/me/this-month": { value: 12 },
 
     // MANAGER
-    "/api/v1/users/users/me/total-events": { value: 8 },
-    "/api/v1/users/users/me/active-events": { value: 3 },
-    "/api/v1/users/users/me/total-volunteers": { value: 42 },
-    "/api/v1/users/users/me/pending-applications": { value: 7 },
+    "/v1/users/users/me/total-events": { value: 8 },
+    "/v1/users/users/me/active-events": { value: 3 },
+    "/v1/users/users/me/total-volunteers": { value: 42 },
+    "/v1/users/users/me/pending-applications": { value: 7 },
 
     // ADMIN
-    "/api/v1/users/admin/users/all": { value: 1024 },
-    "/api/v1/users/admin/active-organizations": { value: 45 },
-    "/api/v1/users/admin/active-events": { value: 12 },
+    "/v1/users/admin/users/all": { value: 1024 },
+    "/v1/users/admin/active-organizations": { value: 45 },
+    "/v1/users/admin/active-events": { value: 12 },
 };
 
 // --- 2. HÀM FETCH THÔNG MINH (Chuyển đổi giữa Mock và Real) ---
@@ -163,7 +163,7 @@ export const useDashboardStats = (role) => {
                     error = totalEventsQuery.error;
                     break;
                 case "eventStatsCount":
-                    // API /api/v1/events/stats/count trả về số lượng events
+                    // API /v1/events/stats/count trả về số lượng events
                     analyticsData = eventStatsCountQuery.data;
                     isLoading = eventStatsCountQuery.isLoading;
                     isError = eventStatsCountQuery.isError;

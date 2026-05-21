@@ -16,7 +16,7 @@ import {
   getStatusColor,
   STATUS_CONFIG,
   EVENT_STATUS,
-} from "../../pages/EventManager/eventManagerData";
+} from "../../constant/eventStatus";
 import { useNavigate } from "react-router-dom";
 import {
   useApproveEvent,

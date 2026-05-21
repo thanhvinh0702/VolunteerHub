@@ -8,7 +8,7 @@ const ANALYTICS_QUERY_KEY = ["analytics"];
 /**
  * Hook để lấy analytics cho Manager (3 APIs)
  * - Application Rate
- * - Approval Rate  
+ * - Approval Rate
  * - My Participated Events
  */
 export const useManagerAnalytics = () => {
@@ -197,4 +197,3 @@ export const useEventParticipantsJson = (eventId, options = {}) => {
         ...options,
     });
 };
-

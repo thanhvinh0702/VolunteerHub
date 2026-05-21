@@ -1,0 +1,173 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.volunteerhub:CommunityService >------------------
+[INFO] Building CommunityService 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ CommunityService >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ CommunityService ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ CommunityService ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 38 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ CommunityService ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/CommunityService/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ CommunityService ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ CommunityService <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ CommunityService ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T10:06:59.486+07:00  INFO 31267 --- [CommunityService] [           main] c.v.c.CommunityServiceApplication        : Starting CommunityServiceApplication using Java 21.0.10 with PID 31267 (/teamspace/studios/this_studio/VolunteerHub/CommunityService/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/CommunityService)
+2026-04-28T10:06:59.504+07:00  INFO 31267 --- [CommunityService] [           main] c.v.c.CommunityServiceApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T10:07:02.968+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:07:02.974+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-28T10:07:03.390+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 391 ms. Found 3 JPA repository interfaces.
+2026-04-28T10:07:03.426+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:07:03.427+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-28T10:07:03.454+07:00  INFO 31267 --- [CommunityService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.communityservice.repository.CommentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:03.455+07:00  INFO 31267 --- [CommunityService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.communityservice.repository.PostRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:03.456+07:00  INFO 31267 --- [CommunityService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.communityservice.repository.ReactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:07:03.456+07:00  INFO 31267 --- [CommunityService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 0 Redis repository interfaces.
+2026-04-28T10:07:04.215+07:00  INFO 31267 --- [CommunityService] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=7b6caa40-cd52-3f34-95df-7fb0d9be2b1d
+2026-04-28T10:07:05.664+07:00  INFO 31267 --- [CommunityService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8083 (http)
+2026-04-28T10:07:05.711+07:00  INFO 31267 --- [CommunityService] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T10:07:05.714+07:00  INFO 31267 --- [CommunityService] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T10:07:06.194+07:00  INFO 31267 --- [CommunityService] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T10:07:06.201+07:00  INFO 31267 --- [CommunityService] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 6407 ms
+2026-04-28T10:07:06.899+07:00  INFO 31267 --- [CommunityService] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-28T10:07:06.968+07:00  INFO 31267 --- [CommunityService] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2026-04-28T10:07:07.018+07:00  INFO 31267 --- [CommunityService] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-28T10:07:07.497+07:00  INFO 31267 --- [CommunityService] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-28T10:07:07.549+07:00  INFO 31267 --- [CommunityService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-28T10:07:07.880+07:00  INFO 31267 --- [CommunityService] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5cc075da
+2026-04-28T10:07:07.884+07:00  INFO 31267 --- [CommunityService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-28T10:07:07.951+07:00  WARN 31267 --- [CommunityService] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-28T10:07:07.985+07:00  INFO 31267 --- [CommunityService] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-28T10:07:10.172+07:00  INFO 31267 --- [CommunityService] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    create table comment (
+        id bigint generated by default as identity,
+        content varchar(255) not null,
+        created_at timestamp(6) not null,
+        owner_id varchar(255) not null,
+        parent_id bigint,
+        post_id bigint,
+        updated_at timestamp(6) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table post (
+        id bigint generated by default as identity,
+        content varchar(255) not null,
+        created_at timestamp(6) not null,
+        event_id bigint not null,
+        image_urls jsonb,
+        owner_id varchar(255) not null,
+        updated_at timestamp(6) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table reaction (
+        id bigint generated by default as identity,
+        created_at timestamp(6) not null,
+        owner_id varchar(255) not null,
+        post_id bigint,
+        type varchar(255) not null check (type in ('LIKE','LOVE','HAHA','WOW','SAD','ANGRY')),
+        updated_at timestamp(6) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create index idx_comment_post_id 
+       on comment (post_id)
+Hibernate: 
+    create index idx_post_event_id 
+       on post (event_id)
+Hibernate: 
+    create index idx_reaction_post_id 
+       on reaction (post_id)
+Hibernate: 
+    alter table if exists reaction 
+       drop constraint if exists uk_owner_post
+2026-04-28T10:07:10.294+07:00  WARN 31267 --- [CommunityService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-28T10:07:10.295+07:00  WARN 31267 --- [CommunityService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk_owner_post" of relation "reaction" does not exist, skipping
+Hibernate: 
+    alter table if exists reaction 
+       add constraint uk_owner_post unique (owner_id, post_id)
+Hibernate: 
+    alter table if exists comment 
+       add constraint FKde3rfu96lep00br5ov0mdieyt 
+       foreign key (parent_id) 
+       references comment
+Hibernate: 
+    alter table if exists comment 
+       add constraint FKs1slvnkuemjsq2kj4h3vhx7i1 
+       foreign key (post_id) 
+       references post
+Hibernate: 
+    alter table if exists reaction 
+       add constraint FKathfhl7fif9f9mggdjhg7ktdt 
+       foreign key (post_id) 
+       references post
+2026-04-28T10:07:10.311+07:00  INFO 31267 --- [CommunityService] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-28T10:07:10.807+07:00  INFO 31267 --- [CommunityService] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-28T10:07:12.005+07:00  WARN 31267 --- [CommunityService] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-28T10:07:12.166+07:00  INFO 31267 --- [CommunityService] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'REGISTRATIONSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T10:07:13.412+07:00  WARN 31267 --- [CommunityService] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: abfce283-9a11-44e1-a91d-744cf34d6b48
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-28T10:07:13.423+07:00  INFO 31267 --- [CommunityService] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-04-28T10:07:14.621+07:00  INFO 31267 --- [CommunityService] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T10:07:14.671+07:00  WARN 31267 --- [CommunityService] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T10:07:14.721+07:00  INFO 31267 --- [CommunityService] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T10:07:14.751+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T10:07:14.756+07:00  INFO 31267 --- [CommunityService] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:07:14.767+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:07:14.767+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:07:14.767+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:07:14.768+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:07:14.768+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:07:14.768+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T10:07:14.768+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:07:15.167+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:07:15.171+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T10:07:15.177+07:00  INFO 31267 --- [CommunityService] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T10:07:15.180+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345635179 with initial instances count: 2
+2026-04-28T10:07:15.189+07:00  INFO 31267 --- [CommunityService] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application COMMUNITYSERVICE with eureka with status UP
+2026-04-28T10:07:15.189+07:00  INFO 31267 --- [CommunityService] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345635189, current=UP, previous=STARTING]
+2026-04-28T10:07:15.193+07:00  INFO 31267 --- [CommunityService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_COMMUNITYSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:CommunityService:8083: registering service...
+2026-04-28T10:07:15.218+07:00  INFO 31267 --- [CommunityService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8083 (http) with context path '/'
+2026-04-28T10:07:15.219+07:00  INFO 31267 --- [CommunityService] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8083
+2026-04-28T10:07:15.245+07:00  INFO 31267 --- [CommunityService] [           main] c.v.c.CommunityServiceApplication        : Started CommunityServiceApplication in 18.369 seconds (process running for 22.44)
+2026-04-28T10:07:15.266+07:00  INFO 31267 --- [CommunityService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_COMMUNITYSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:CommunityService:8083 - registration status: 204
+2026-04-28T10:12:14.770+07:00  INFO 31267 --- [CommunityService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:17:14.771+07:00  INFO 31267 --- [CommunityService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

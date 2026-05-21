@@ -14,7 +14,7 @@ const NotificationButton = () => {
   const fetchNotifications = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/notifications?pageNum=0&pageSize=10`,
+        `${API_BASE_URL}/v1/notifications?pageNum=0&pageSize=10`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -60,7 +60,7 @@ const NotificationButton = () => {
 
       // Lấy Public Key từ Backend
       const keyRes = await fetch(
-        `${API_BASE_URL}/api/v1/notifications/web-push/public-key`
+        `${API_BASE_URL}/v1/notifications/web-push/public-key`
       );
       if (!keyRes.ok) {
         throw new Error(`Failed to fetch public key: ${keyRes.status}`);
@@ -87,7 +87,7 @@ const NotificationButton = () => {
 
         // Lưu subscription vào DB qua Backend
         const response = await fetch(
-          `${API_BASE_URL}/api/v1/notifications/web-push/subscribe`,
+          `${API_BASE_URL}/v1/notifications/web-push/subscribe`,
           {
             method: "POST",
             headers: {

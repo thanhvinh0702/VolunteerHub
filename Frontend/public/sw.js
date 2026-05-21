@@ -106,7 +106,7 @@ self.addEventListener("pushsubscriptionchange", (event) => {
                     : '/api';
 
                 // Send new subscription to backend
-                return fetch(`${apiUrl}/api/v1/notifications/web-push/subscribe`, {
+                return fetch(`${apiUrl}/v1/notifications/web-push/subscribe`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -125,5 +125,3 @@ self.addEventListener("pushsubscriptionchange", (event) => {
             })
     );
 });
-
-

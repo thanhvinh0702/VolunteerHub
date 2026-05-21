@@ -46,5 +46,3 @@ function ProfileCompletionBanner({ missingFields, onDismiss }) {
 }
 
 export default ProfileCompletionBanner;
-
-

@@ -60,8 +60,12 @@ const NotificationPermissionPrompt = () => {
           await navigator.serviceWorker.ready;
         }
 
-        // Get public key from backend
-        const keyRes = await fetch("/api/v1/notifications/web-push/public-key");
+        // Get public key from backend (full gateway URL — not same-origin /api/...)
+        const apiBase =
+          import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+        const keyRes = await fetch(
+          `${apiBase}/v1/notifications/web-push/public-key`
+        );
         const publicKey = await keyRes.text();
 
         // Subscribe to push notifications
@@ -71,7 +75,7 @@ const NotificationPermissionPrompt = () => {
         });
 
         // Save subscription to backend
-        await fetch("/api/v1/notifications/web-push/subscribe", {
+        await fetch(`${apiBase}/v1/notifications/web-push/subscribe`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

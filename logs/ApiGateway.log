@@ -1,0 +1,620 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.volunteerhub:ApiGateway >---------------------
+[INFO] Building ApiGateway 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ ApiGateway >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ ApiGateway ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ ApiGateway ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ ApiGateway ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/ApiGateway/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ ApiGateway ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ ApiGateway <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ ApiGateway ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T10:06:31.121+07:00  INFO 29863 --- [ApiGateway] [           main] c.v.apigateway.ApiGatewayApplication     : Starting ApiGatewayApplication using Java 21.0.10 with PID 29863 (/teamspace/studios/this_studio/VolunteerHub/ApiGateway/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/ApiGateway)
+2026-04-28T10:06:31.163+07:00  INFO 29863 --- [ApiGateway] [           main] c.v.apigateway.ApiGatewayApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T10:06:39.417+07:00  INFO 29863 --- [ApiGateway] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:06:39.450+07:00  INFO 29863 --- [ApiGateway] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-28T10:06:39.682+07:00  INFO 29863 --- [ApiGateway] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 93 ms. Found 0 Redis repository interfaces.
+2026-04-28T10:06:41.955+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=ad37f5f4-dc8d-3d80-acbc-88f5fe6c1730
+2026-04-28T10:06:43.855+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-28T10:06:44.015+07:00  INFO 29863 --- [ApiGateway] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T10:06:44.019+07:00  INFO 29863 --- [ApiGateway] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T10:06:44.390+07:00  INFO 29863 --- [ApiGateway] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T10:06:44.395+07:00  INFO 29863 --- [ApiGateway] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 11543 ms
+2026-04-28T10:06:51.298+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'USERSERVICE' URL not provided. Will try picking an instance via load-balancing.
+2026-04-28T10:06:53.078+07:00 TRACE 29863 --- [ApiGateway] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	{ [/error]}: error(HttpServletRequest)
+	{ [/error], produces [text/html]}: errorHtml(HttpServletRequest,HttpServletResponse)
+2026-04-28T10:06:53.162+07:00 DEBUG 29863 --- [ApiGateway] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 2 mappings in 'requestMappingHandlerMapping'
+2026-04-28T10:06:53.186+07:00 DEBUG 29863 --- [ApiGateway] [           main] o.s.w.s.h.BeanNameUrlHandlerMapping      : Detected 0 mappings in 'beanNameHandlerMapping'
+2026-04-28T10:06:53.322+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=userservice delegate=/api/v1/users/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.323+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=communityservice delegate=/api/v1/events/{eventId}/posts/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.323+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=eventservice delegate=/api/v1/events/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.325+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=notificationservice delegate=/api/v1/notifications/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.325+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=registrationservice delegate=/api/v1/registrations/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.325+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=aggregationservice delegate=/api/v1/aggregated/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.327+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped RouterFunction routeId=analyticservice delegate=/api/v1/analytics/** => {
+ GET -> ProxyExchangeHandlerFunction
+ POST -> ProxyExchangeHandlerFunction
+ PUT -> ProxyExchangeHandlerFunction
+ DELETE -> ProxyExchangeHandlerFunction
+}
+2026-04-28T10:06:53.328+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.f.support.RouterFunctionMapping  : Mapped Never -> org.springframework.cloud.gateway.server.mvc.config.RouterFunctionHolderFactory$$Lambda/0x00007b58e86b0fc0@75d7297d
+2026-04-28T10:06:53.428+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped [/webjars/**] onto ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-28T10:06:53.438+07:00 TRACE 29863 --- [ApiGateway] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped [/**] onto ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-04-28T10:06:53.438+07:00 DEBUG 29863 --- [ApiGateway] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-04-28T10:06:54.409+07:00 DEBUG 29863 --- [ApiGateway] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-04-28T10:06:54.714+07:00 DEBUG 29863 --- [ApiGateway] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-04-28T10:06:55.880+07:00  INFO 29863 --- [ApiGateway] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T10:06:56.092+07:00  WARN 29863 --- [ApiGateway] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T10:06:56.236+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T10:06:56.371+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T10:06:56.397+07:00  INFO 29863 --- [ApiGateway] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:06:56.434+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:06:56.434+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:06:56.435+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:06:56.436+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:06:56.439+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:06:56.439+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T10:06:56.439+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:06:58.788+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:06:58.791+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T10:06:58.805+07:00  INFO 29863 --- [ApiGateway] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T10:06:58.823+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345618819 with initial instances count: 0
+2026-04-28T10:06:58.831+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application APIGATEWAY with eureka with status UP
+2026-04-28T10:06:58.831+07:00  INFO 29863 --- [ApiGateway] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345618831, current=UP, previous=STARTING]
+2026-04-28T10:06:58.837+07:00  INFO 29863 --- [ApiGateway] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_APIGATEWAY/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:ApiGateway:8080: registering service...
+2026-04-28T10:06:58.914+07:00  INFO 29863 --- [ApiGateway] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-04-28T10:06:58.920+07:00  INFO 29863 --- [ApiGateway] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8080
+2026-04-28T10:06:58.973+07:00  INFO 29863 --- [ApiGateway] [           main] c.v.apigateway.ApiGatewayApplication     : Started ApiGatewayApplication in 32.662 seconds (process running for 36.522)
+2026-04-28T10:06:59.475+07:00  INFO 29863 --- [ApiGateway] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_APIGATEWAY/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:ApiGateway:8080 - registration status: 204
+2026-04-28T10:07:28.790+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:07:28.790+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:07:28.790+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:07:28.790+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:07:28.790+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:07:28.791+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application version is -1: false
+2026-04-28T10:07:28.791+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:07:28.816+07:00  INFO 29863 --- [ApiGateway] [reshExecutor-%d] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:09:04.841+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:04.842+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T10:09:04.842+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : No MultipartResolver 'multipartResolver' declared
+2026-04-28T10:09:04.843+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver@58940a2e
+2026-04-28T10:09:04.843+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.theme.FixedThemeResolver@3bfc8a3
+2026-04-28T10:09:04.844+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected DefaultRequestToViewNameTranslator
+2026-04-28T10:09:04.844+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected SessionFlashMapManager
+2026-04-28T10:09:04.845+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-04-28T10:09:04.845+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-04-28T10:09:04.859+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:04.860+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:04.860+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:05.108+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:05.110+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:05.111+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:05.111+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:05.114+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@4dcac7bd
+2026-04-28T10:09:05.663+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:05.827+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.828+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:05.828+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.832+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events?pageNum=0&pageSize=10&status=APPROVED&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:05.833+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.834+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:05.834+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.835+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@53ee6b06
+2026-04-28T10:09:05.850+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.850+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:05.850+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.855+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events?pageNum=0&pageSize=5&status=APPROVED&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:05.858+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.858+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:05.859+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:05.860+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@29534fc
+2026-04-28T10:09:05.869+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:05.869+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:05.876+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:05.877+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:05.884+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:05.885+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:05.887+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:05.887+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:05.917+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:05.920+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND, headers={masked}
+2026-04-28T10:09:06.419+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:06.419+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:06.421+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:09:06.422+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:09:11.517+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.518+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:11.518+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.518+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.520+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:11.520+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.523+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events?pageNum=0&pageSize=5&status=APPROVED&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events?pageNum=0&pageSize=10&status=APPROVED&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@7bd329b7
+2026-04-28T10:09:11.524+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.525+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:11.525+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events"
+2026-04-28T10:09:11.525+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@6fa1e8f9
+2026-04-28T10:09:11.527+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:11.528+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:11.537+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:11.537+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:11.537+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:11.538+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:11.570+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:11.570+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:09:11.571+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:11.571+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:09:52.892+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:52.892+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:52.892+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:52.895+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:52.896+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:52.896+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:09:52.896+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:09:52.896+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@32c4c5b2
+2026-04-28T10:09:52.898+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:09:52.907+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:09:52.907+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:09:52.916+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:09:52.916+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND, headers={masked}
+2026-04-28T10:11:56.443+07:00  INFO 29863 --- [ApiGateway] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:15:07.187+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:07.187+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.187+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:07.187+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:07.188+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.188+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:07.414+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.414+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.414+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.422+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:07.422+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.422+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.422+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.423+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@4a42c96e
+2026-04-28T10:15:07.425+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:15:07.439+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:15:07.440+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:07.451+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:07.452+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND, headers={masked}
+2026-04-28T10:15:07.673+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.673+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.673+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.676+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:07.677+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.677+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:07.677+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:07.677+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@e54d96f
+2026-04-28T10:15:07.679+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:15:07.686+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:15:07.686+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:07.694+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:07.694+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND, headers={masked}
+2026-04-28T10:15:07.712+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users"
+2026-04-28T10:15:07.712+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:07.712+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:07.712+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP OPTIONS /api/v1/users/users"
+2026-04-28T10:15:07.914+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users"
+2026-04-28T10:15:07.915+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:07.915+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:07.915+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP OPTIONS /api/v1/users/users"
+2026-04-28T10:15:07.931+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:07.932+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:07.932+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:07.932+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:07.935+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : POST "/api/v1/users/users", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:07.936+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:07.937+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:07.937+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:07.937+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:07.937+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@6722fd55
+2026-04-28T10:15:07.939+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:15:07.947+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : USER NOT FOUND
+2026-04-28T10:15:07.947+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:08.056+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:08.057+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 201 CREATED, headers={masked}
+2026-04-28T10:15:08.135+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:08.136+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:08.136+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:08.136+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:08.141+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : POST "/api/v1/users/users", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:08.142+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:08.142+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "POST"
+2026-04-28T10:15:08.142+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "POST" matches against value "POST"
+2026-04-28T10:15:08.142+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "POST" matches against "HTTP POST /api/v1/users/users"
+2026-04-28T10:15:08.143+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@251e0ae4
+2026-04-28T10:15:08.145+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-7] c.v.a.filter.AuthenticationHeaderFilter  : CACHE MISS, RESORTING TO USER SERVICE THROUGH HTTP
+2026-04-28T10:15:08.595+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-7] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:08.623+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:08.623+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 201 CREATED, headers={masked}
+2026-04-28T10:15:09.480+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.480+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:09.480+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.705+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.705+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:09.705+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.708+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me/validate-profile", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:09.709+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.709+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:09.709+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:09.709+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@64c14369
+2026-04-28T10:15:09.711+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-6] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:09.723+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:09.723+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:10.483+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.483+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.483+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.487+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me/validate-profile", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:10.487+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.487+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.487+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.487+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@221d8e29
+2026-04-28T10:15:10.489+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:10.499+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:10.500+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:10.502+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.503+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.503+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.506+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:10.507+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.507+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.507+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.507+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@376f8f42
+2026-04-28T10:15:10.509+07:00  INFO 29863 --- [ApiGateway] [io-8080-exec-10] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:10.518+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:10.519+07:00 DEBUG 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:10.932+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.933+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.933+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.935+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me/validate-profile", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:10.936+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.936+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.936+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:10.936+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@1fcd4c73
+2026-04-28T10:15:10.938+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:10.946+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:10.947+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:10.966+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.966+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.966+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.969+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:10.969+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.969+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:10.969+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:10.970+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@2dd285ec
+2026-04-28T10:15:10.971+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:10.978+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:10.979+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:40.166+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:40.166+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "PUT"
+2026-04-28T10:15:40.166+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "POST" does not match against value "PUT"
+2026-04-28T10:15:40.167+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "PUT" matches against value "PUT"
+2026-04-28T10:15:40.167+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "PUT" matches against "HTTP OPTIONS /api/v1/users/users/me"
+2026-04-28T10:15:40.388+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP PUT /api/v1/users/users/me"
+2026-04-28T10:15:40.388+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "PUT"
+2026-04-28T10:15:40.388+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "POST" does not match against value "PUT"
+2026-04-28T10:15:40.388+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "PUT" matches against value "PUT"
+2026-04-28T10:15:40.388+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "PUT" matches against "HTTP PUT /api/v1/users/users/me"
+2026-04-28T10:15:40.391+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : PUT "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP PUT /api/v1/users/users/me"
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" does not match against value "PUT"
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "POST" does not match against value "PUT"
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "PUT" matches against value "PUT"
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "PUT" matches against "HTTP PUT /api/v1/users/users/me"
+2026-04-28T10:15:40.392+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@1a902007
+2026-04-28T10:15:40.395+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:40.501+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:40.501+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:40.763+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:40.763+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:40.763+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:40.765+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:40.765+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:40.765+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:40.766+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:40.766+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:40.766+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:40.766+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:40.767+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@4a559ec7
+2026-04-28T10:15:40.769+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me/validate-profile", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:40.769+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:40.770+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:40.770+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me/validate-profile"
+2026-04-28T10:15:40.770+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@41f5f1a5
+2026-04-28T10:15:40.771+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:40.773+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-7] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:40.786+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:40.786+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:40.792+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:40.792+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:41.006+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.006+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.006+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.009+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.009+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.009+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.009+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.009+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@155d4fd3
+2026-04-28T10:15:41.011+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-9] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.021+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:41.021+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:41.239+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.240+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.240+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.242+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.243+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.243+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.243+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:41.243+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@31f8b817
+2026-04-28T10:15:41.245+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-6] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.253+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:41.253+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/registrations/**" matches against "HTTP OPTIONS /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP OPTIONS /api/v1/analytics/total_events"
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.291+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/analytics/total_events"
+2026-04-28T10:15:41.470+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/events/**" matches against "HTTP OPTIONS /api/v1/events/stats/count"
+2026-04-28T10:15:41.471+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.471+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/events/stats/count"
+2026-04-28T10:15:41.502+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP OPTIONS /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.502+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.502+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.505+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP OPTIONS /api/v1/analytics/total-users"
+2026-04-28T10:15:41.505+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.505+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP OPTIONS /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.505+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.506+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.506+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/analytics/total-users"
+2026-04-28T10:15:41.510+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP OPTIONS /api/v1/aggregated/events/owned"
+2026-04-28T10:15:41.510+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.510+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/aggregated/events/owned"
+2026-04-28T10:15:41.512+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP OPTIONS /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:41.512+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.512+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:41.688+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP OPTIONS /api/v1/aggregated/events/trending"
+2026-04-28T10:15:41.688+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.689+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/aggregated/events/trending"
+2026-04-28T10:15:41.723+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/registrations/**" matches against "HTTP GET /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.723+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.723+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.726+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/registrations/my-stats/status-events", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.727+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/registrations/**" matches against "HTTP GET /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.727+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.727+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/registrations/my-stats/status-events"
+2026-04-28T10:15:41.727+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@31e67e44
+2026-04-28T10:15:41.728+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:41.729+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.729+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:41.729+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.730+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.730+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.730+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/events/**" matches against "HTTP GET /api/v1/events/stats/count"
+2026-04-28T10:15:41.730+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.730+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/events/stats/count"
+2026-04-28T10:15:41.731+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total_events", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.732+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:41.732+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.732+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:41.732+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@652a0d5
+2026-04-28T10:15:41.734+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/events/stats/count", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.736+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/events/**" matches against "HTTP GET /api/v1/events/stats/count"
+2026-04-28T10:15:41.735+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.737+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.737+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.737+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-active-events", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.738+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.739+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.739+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.739+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/events/stats/count"
+2026-04-28T10:15:41.739+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@d24a79d
+2026-04-28T10:15:41.740+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:41.740+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@4392a74c
+2026-04-28T10:15:41.742+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-managers", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.743+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.743+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.744+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:41.744+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@6a55d975
+2026-04-28T10:15:41.754+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-6] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.774+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.776+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-2] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.806+07:00  INFO 29863 --- [ApiGateway] [io-8080-exec-10] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.806+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.855+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:41.856+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:41.908+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:41.908+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.909+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:41.912+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-users", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:41.913+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:41.913+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:41.913+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:41.914+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@7fcfccc7
+2026-04-28T10:15:41.916+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:41.951+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:41.953+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:41.953+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:41.953+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:42.018+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.018+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:42.116+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:42.117+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.118+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:42.122+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events/owned?pageNum=0&pageSize=2&status=APPROVED&sortedBy=name&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:42.122+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:42.122+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.122+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:42.123+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@4b8900dc
+2026-04-28T10:15:42.125+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:42.171+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.172+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:42.172+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:42.172+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.172+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:42.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/trending"
+2026-04-28T10:15:42.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/trending"
+2026-04-28T10:15:42.176+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events/trending?days=30&pageNum=0&pageSize=10", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:42.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/trending"
+2026-04-28T10:15:42.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/trending"
+2026-04-28T10:15:42.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@5fd45e7d
+2026-04-28T10:15:42.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/manager/registrations", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:42.179+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:42.179+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:42.179+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:42.181+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/manager/registrations"
+2026-04-28T10:15:42.181+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@e9b60eb
+2026-04-28T10:15:42.188+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-8] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:42.332+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.333+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:42.356+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.363+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:42.377+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.378+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:42.386+07:00 TRACE 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:42.386+07:00 DEBUG 29863 --- [ApiGateway] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:43.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:43.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.173+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:43.174+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:43.174+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.174+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:43.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-managers", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:43.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:43.177+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-managers"
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@2a78c199
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-users", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.178+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-users"
+2026-04-28T10:15:43.179+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@14d83a8c
+2026-04-28T10:15:43.180+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-9] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:43.183+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-1] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:43.191+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:43.191+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:43.191+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:43.191+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:43.601+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:43.601+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.601+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:43.605+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total-active-events", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:43.606+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:43.606+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.606+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total-active-events"
+2026-04-28T10:15:43.606+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@3cfc860
+2026-04-28T10:15:43.607+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:43.607+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.607+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:43.610+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-3] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:43.610+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/analytics/total_events", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:43.612+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/analytics/**" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:43.612+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.612+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/analytics/total_events"
+2026-04-28T10:15:43.612+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@59567e32
+2026-04-28T10:15:43.617+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:43.623+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:43.623+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:43.633+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:43.633+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 403 FORBIDDEN, headers={masked}
+2026-04-28T10:15:43.814+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP OPTIONS /api/v1/aggregated/events/owned"
+2026-04-28T10:15:43.814+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.814+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-6] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP OPTIONS /api/v1/aggregated/events/owned"
+2026-04-28T10:15:43.815+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:43.816+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.816+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:43.819+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/users/me", parameters={}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:43.819+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/users/**" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:43.819+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:43.819+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/users/users/me"
+2026-04-28T10:15:43.820+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@107cf57d
+2026-04-28T10:15:43.822+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-7] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:43.834+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:43.835+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:15:44.039+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:44.040+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:44.040+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:44.043+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events/owned?pageNum=0&pageSize=6&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:15:44.044+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:44.044+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:15:44.044+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:15:44.044+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@45a07874
+2026-04-28T10:15:44.046+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-4] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:15:44.072+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:15:44.073+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}
+2026-04-28T10:16:56.444+07:00  INFO 29863 --- [ApiGateway] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:18:44.633+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:18:44.634+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:18:44.634+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:18:44.637+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/aggregated/events/owned?pageNum=0&pageSize=6&sortedBy=createdAt&order=desc", parameters={masked}, headers={masked} in DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:18:44.638+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Nested predicate "/api/v1/aggregated/**" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:18:44.638+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.function.RequestPredicates       : Method "GET" matches against value "GET"
+2026-04-28T10:18:44.638+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.servlet.function.RouterFunctions   : Predicate "GET" matches against "HTTP GET /api/v1/aggregated/events/owned"
+2026-04-28T10:18:44.638+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.w.s.f.support.RouterFunctionMapping  : Mapped to org.springframework.web.servlet.function.HandlerFilterFunction$$Lambda/0x00007b58e87f2d18@10bfaaae
+2026-04-28T10:18:44.642+07:00  INFO 29863 --- [ApiGateway] [nio-8080-exec-5] c.v.a.filter.AuthenticationHeaderFilter  : VALID REQUEST, PASSING REQUEST TO DOWNSTREAM SERVICE
+2026-04-28T10:18:44.674+07:00 TRACE 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : No view rendering, null ModelAndView returned.
+2026-04-28T10:18:44.674+07:00 DEBUG 29863 --- [ApiGateway] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK, headers={masked}

@@ -219,5 +219,3 @@ function VolunteerParticipationTrends() {
 }
 
 export default VolunteerParticipationTrends;
-
-

@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const API_BASE_URL = "api/v1/notifications";
+const API_BASE_URL = "/v1/notifications";
 
 // Lấy danh sách notifications với pagination
 export const fetchNotifications = async ({ pageParam = 0, pageSize = 10 }) => {
@@ -71,4 +71,3 @@ export const markAllAsRead = async () => {
         throw error;
     }
 };
-

@@ -1,0 +1,108 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.volunteerhub:ServiceDiscovery >------------------
+[INFO] Building ServiceDiscovery 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ ServiceDiscovery >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ ServiceDiscovery ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ ServiceDiscovery ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ ServiceDiscovery ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/ServiceDiscovery/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ ServiceDiscovery ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ ServiceDiscovery <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ ServiceDiscovery ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T03:06:28.797Z  INFO 29747 --- [ServiceDiscovery] [           main] c.v.s.ServiceDiscoveryApplication        : Starting ServiceDiscoveryApplication using Java 21.0.10 with PID 29747 (/teamspace/studios/this_studio/VolunteerHub/ServiceDiscovery/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/ServiceDiscovery)
+2026-04-28T03:06:28.813Z  INFO 29747 --- [ServiceDiscovery] [           main] c.v.s.ServiceDiscoveryApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T03:06:38.327Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=db3c069a-01ac-3adb-a008-bc8015d2d2ef
+2026-04-28T03:06:40.368Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8761 (http)
+2026-04-28T03:06:40.469Z  INFO 29747 --- [ServiceDiscovery] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T03:06:40.480Z  INFO 29747 --- [ServiceDiscovery] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T03:06:40.969Z  INFO 29747 --- [ServiceDiscovery] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T03:06:40.982Z  INFO 29747 --- [ServiceDiscovery] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 11575 ms
+2026-04-28T03:06:48.238Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-04-28T03:06:48.265Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+2026-04-28T03:06:49.629Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-04-28T03:06:49.638Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-04-28T03:06:50.557Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2026-04-28T03:06:54.574Z  WARN 29747 --- [ServiceDiscovery] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T03:06:54.728Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T03:06:54.966Z  INFO 29747 --- [ServiceDiscovery] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T03:06:54.970Z  INFO 29747 --- [ServiceDiscovery] [           main] com.netflix.discovery.DiscoveryClient    : Client configured to neither register nor query for data.
+2026-04-28T03:06:54.985Z  INFO 29747 --- [ServiceDiscovery] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345614976 with initial instances count: 0
+2026-04-28T03:06:55.320Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.eureka.DefaultEurekaServerContext    : Initializing ...
+2026-04-28T03:06:55.339Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.eureka.cluster.PeerEurekaNodes       : Adding new peer nodes [http://localhost:8761/eureka/]
+2026-04-28T03:06:55.984Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-04-28T03:06:55.991Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+2026-04-28T03:06:55.992Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-04-28T03:06:55.993Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-04-28T03:06:56.280Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.eureka.cluster.PeerEurekaNodes       : Replica node URL:  http://localhost:8761/eureka/
+2026-04-28T03:06:56.317Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.e.registry.AbstractInstanceRegistry  : Finished initializing remote region registries. All known remote regions: []
+2026-04-28T03:06:56.328Z  INFO 29747 --- [ServiceDiscovery] [           main] c.n.eureka.DefaultEurekaServerContext    : Initialized
+2026-04-28T03:06:56.408Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-04-28T03:06:56.673Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application SERVICEDISCOVERY with eureka with status UP
+2026-04-28T03:06:56.700Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : isAws returned false
+2026-04-28T03:06:56.700Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : Initialized server context
+2026-04-28T03:06:56.700Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Got 1 instances from neighboring DS node
+2026-04-28T03:06:56.700Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Renew threshold is: 1
+2026-04-28T03:06:56.701Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Changing status to UP
+2026-04-28T03:06:56.704Z  INFO 29747 --- [ServiceDiscovery] [       Thread-9] e.s.EurekaServerInitializerConfiguration : Started Eureka Server
+2026-04-28T03:06:56.762Z  INFO 29747 --- [ServiceDiscovery] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8761 (http) with context path '/'
+2026-04-28T03:06:56.773Z  INFO 29747 --- [ServiceDiscovery] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8761
+2026-04-28T03:06:56.847Z  INFO 29747 --- [ServiceDiscovery] [           main] c.v.s.ServiceDiscoveryApplication        : Started ServiceDiscoveryApplication in 32.138 seconds (process running for 36.828)
+2026-04-28T03:06:58.074Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T03:06:58.076Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T03:06:58.087Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 9 ms
+2026-04-28T03:06:59.446Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-2] c.n.e.registry.AbstractInstanceRegistry  : Registered instance APIGATEWAY/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:ApiGateway:8080 with status UP (replication=false)
+2026-04-28T03:06:59.593Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-4] c.n.e.registry.AbstractInstanceRegistry  : Registered instance ANALYTICSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AnalyticService:8089 with status UP (replication=false)
+2026-04-28T03:07:00.566Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-5] c.n.e.registry.AbstractInstanceRegistry  : Registered instance APIGATEWAY/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:ApiGateway:8080 with status UP (replication=true)
+2026-04-28T03:07:00.568Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-5] c.n.e.registry.AbstractInstanceRegistry  : Registered instance ANALYTICSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AnalyticService:8089 with status UP (replication=true)
+2026-04-28T03:07:06.570Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-7] c.n.e.registry.AbstractInstanceRegistry  : Registered instance NOTIFICATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:NotificationService:8085 with status UP (replication=false)
+2026-04-28T03:07:07.097Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-8] c.n.e.registry.AbstractInstanceRegistry  : Registered instance NOTIFICATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:NotificationService:8085 with status UP (replication=true)
+2026-04-28T03:07:10.057Z  INFO 29747 --- [ServiceDiscovery] [io-8761-exec-10] c.n.e.registry.AbstractInstanceRegistry  : Registered instance USERSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:UserService:8081 with status UP (replication=false)
+2026-04-28T03:07:10.578Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-1] c.n.e.registry.AbstractInstanceRegistry  : Registered instance USERSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:UserService:8081 with status UP (replication=true)
+2026-04-28T03:07:11.676Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-2] c.n.e.registry.AbstractInstanceRegistry  : Registered instance REGISTRATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:RegistrationService:8084 with status UP (replication=false)
+2026-04-28T03:07:12.195Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-4] c.n.e.registry.AbstractInstanceRegistry  : Registered instance REGISTRATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:RegistrationService:8084 with status UP (replication=true)
+2026-04-28T03:07:15.261Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-6] c.n.e.registry.AbstractInstanceRegistry  : Registered instance COMMUNITYSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:CommunityService:8083 with status UP (replication=false)
+2026-04-28T03:07:15.788Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-7] c.n.e.registry.AbstractInstanceRegistry  : Registered instance COMMUNITYSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:CommunityService:8083 with status UP (replication=true)
+2026-04-28T03:07:16.914Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-9] c.n.e.registry.AbstractInstanceRegistry  : Registered instance EVENTSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:EventService:8082 with status UP (replication=false)
+2026-04-28T03:07:17.426Z  INFO 29747 --- [ServiceDiscovery] [io-8761-exec-10] c.n.e.registry.AbstractInstanceRegistry  : Registered instance EVENTSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:EventService:8082 with status UP (replication=true)
+2026-04-28T03:07:21.848Z  WARN 29747 --- [ServiceDiscovery] [nio-8761-exec-3] c.n.e.registry.AbstractInstanceRegistry  : DS: Registry: lease doesn't exist, registering resource: AGGREGATIONSERVICE - cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087
+2026-04-28T03:07:21.848Z  WARN 29747 --- [ServiceDiscovery] [nio-8761-exec-3] c.n.eureka.resources.InstanceResource    : Not Found (Renew): AGGREGATIONSERVICE - cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087
+2026-04-28T03:07:21.927Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-2] c.n.e.registry.AbstractInstanceRegistry  : Registered instance AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 with status UP (replication=false)
+2026-04-28T03:07:22.441Z  INFO 29747 --- [ServiceDiscovery] [nio-8761-exec-4] c.n.e.registry.AbstractInstanceRegistry  : Registered instance AGGREGATIONSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:AggregationService:8087 with status UP (replication=true)
+2026-04-28T03:07:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:08:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:09:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:10:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:11:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:12:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:13:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:14:56.702Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:15:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:16:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:17:56.701Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-04-28T03:18:56.702Z  INFO 29747 --- [ServiceDiscovery] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms

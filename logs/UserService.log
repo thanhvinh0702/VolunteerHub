@@ -1,0 +1,939 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.volunteerhub:UserService:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: com.volunteerhub:volunteerhub-common:jar -> duplicate declaration of version 0.0.1-SNAPSHOT @ line 80, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --------------------< com.volunteerhub:UserService >--------------------
+[INFO] Building UserService 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.7:run (default-cli) > test-compile @ UserService >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ UserService ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ UserService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ UserService ---
+[INFO] skip non existing resourceDirectory /teamspace/studios/this_studio/VolunteerHub/UserService/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ UserService ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.7:run (default-cli) < test-compile @ UserService <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.7:run (default-cli) @ UserService ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.7)
+
+2026-04-28T10:06:31.887+07:00  INFO 29923 --- [UserService] [           main] c.v.userservice.UserServiceApplication   : Starting UserServiceApplication using Java 21.0.10 with PID 29923 (/teamspace/studios/this_studio/VolunteerHub/UserService/target/classes started by zeus in /teamspace/studios/this_studio/VolunteerHub/UserService)
+2026-04-28T10:06:31.895+07:00  INFO 29923 --- [UserService] [           main] c.v.userservice.UserServiceApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T10:06:40.904+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:06:40.920+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-28T10:06:42.119+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 1136 ms. Found 4 JPA repository interfaces.
+2026-04-28T10:06:42.226+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-28T10:06:42.232+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-28T10:06:42.362+07:00  INFO 29923 --- [UserService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.userservice.repository.AddressRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:42.366+07:00  INFO 29923 --- [UserService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.userservice.repository.UserBadgeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:42.369+07:00  INFO 29923 --- [UserService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.userservice.repository.UserLoginHistoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:42.374+07:00  INFO 29923 --- [UserService] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.volunteerhub.userservice.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-28T10:06:42.380+07:00  INFO 29923 --- [UserService] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 92 ms. Found 0 Redis repository interfaces.
+2026-04-28T10:06:44.235+07:00  INFO 29923 --- [UserService] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=0dbfeb3f-bee7-38ff-b101-67a58d848d98
+2026-04-28T10:06:48.704+07:00  INFO 29923 --- [UserService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-04-28T10:06:48.841+07:00  INFO 29923 --- [UserService] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-28T10:06:48.849+07:00  INFO 29923 --- [UserService] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.48]
+2026-04-28T10:06:49.586+07:00  INFO 29923 --- [UserService] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-28T10:06:49.606+07:00  INFO 29923 --- [UserService] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 17392 ms
+2026-04-28T10:06:52.984+07:00  INFO 29923 --- [UserService] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-28T10:06:53.302+07:00  INFO 29923 --- [UserService] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.33.Final
+2026-04-28T10:06:53.553+07:00  INFO 29923 --- [UserService] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-28T10:06:55.528+07:00  INFO 29923 --- [UserService] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-28T10:06:55.727+07:00  INFO 29923 --- [UserService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-28T10:06:56.534+07:00  INFO 29923 --- [UserService] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@27575bcd
+2026-04-28T10:06:56.536+07:00  INFO 29923 --- [UserService] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-28T10:06:56.646+07:00  WARN 29923 --- [UserService] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-28T10:06:56.728+07:00  INFO 29923 --- [UserService] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 16.13
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-28T10:07:01.106+07:00  INFO 29923 --- [UserService] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    create table address (
+        id bigint generated by default as identity,
+        district varchar(255) not null,
+        province varchar(255) not null,
+        street varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table user_badge (
+        id bigint generated by default as identity,
+        badge_id bigint not null,
+        created_at timestamp(6),
+        user_id varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table user_login_history (
+        id bigint generated by default as identity,
+        created_at timestamp(6),
+        ip_address varchar(255) not null,
+        user_id varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table users (
+        id varchar(255) not null,
+        address_id bigint,
+        auth_provider varchar(255) not null,
+        avatar_url varchar(255),
+        bio varchar(255),
+        created_at timestamp(6),
+        date_of_birth date,
+        email varchar(255) not null,
+        full_name varchar(255) not null,
+        is_dark_mode boolean default false not null,
+        phone_number varchar(15),
+        role varchar(255) not null check (role in ('USER','MANAGER','ADMIN')),
+        skills jsonb,
+        status varchar(255) not null check (status in ('ACTIVE','BANNED')),
+        total_events integer not null,
+        updated_at timestamp(6),
+        username varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    alter table if exists address 
+       drop constraint if exists UKjwxme4q0mrlmyw8rkrpe8j4gw
+2026-04-28T10:07:01.298+07:00  WARN 29923 --- [UserService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-28T10:07:01.298+07:00  WARN 29923 --- [UserService] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukjwxme4q0mrlmyw8rkrpe8j4gw" of relation "address" does not exist, skipping
+Hibernate: 
+    alter table if exists address 
+       add constraint UKjwxme4q0mrlmyw8rkrpe8j4gw unique (province, district, street)
+Hibernate: 
+    alter table if exists user_badge 
+       add constraint FKa96xbjeyiemypugmi9g8x8fiu 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists user_login_history 
+       add constraint FKthvsfa8x1rhm6fbi1ysbsnsac 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists users 
+       add constraint FKditu6lr4ek16tkxtdsne0gxib 
+       foreign key (address_id) 
+       references address
+2026-04-28T10:07:01.320+07:00  INFO 29923 --- [UserService] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-28T10:07:02.280+07:00  INFO 29923 --- [UserService] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-28T10:07:05.678+07:00  WARN 29923 --- [UserService] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-28T10:07:06.033+07:00  WARN 29923 --- [UserService] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0b4895d2-46ec-45fd-8d0e-061c1b2bbdcc
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-28T10:07:06.064+07:00  INFO 29923 --- [UserService] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-04-28T10:07:08.870+07:00  INFO 29923 --- [UserService] [           main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-04-28T10:07:08.971+07:00  WARN 29923 --- [UserService] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-04-28T10:07:09.054+07:00  INFO 29923 --- [UserService] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-04-28T10:07:09.108+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-04-28T10:07:09.114+07:00  INFO 29923 --- [UserService] [           main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-28T10:07:09.133+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-04-28T10:07:09.134+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-04-28T10:07:09.134+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-04-28T10:07:09.136+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-04-28T10:07:09.136+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-04-28T10:07:09.136+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-04-28T10:07:09.137+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-04-28T10:07:09.880+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-04-28T10:07:09.889+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-04-28T10:07:09.895+07:00  INFO 29923 --- [UserService] [           main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-04-28T10:07:09.900+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1777345629899 with initial instances count: 2
+2026-04-28T10:07:09.927+07:00  INFO 29923 --- [UserService] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application USERSERVICE with eureka with status UP
+2026-04-28T10:07:09.928+07:00  INFO 29923 --- [UserService] [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1777345629928, current=UP, previous=STARTING]
+2026-04-28T10:07:09.931+07:00  INFO 29923 --- [UserService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_USERSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:UserService:8081: registering service...
+2026-04-28T10:07:10.020+07:00  INFO 29923 --- [UserService] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2026-04-28T10:07:10.024+07:00  INFO 29923 --- [UserService] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8081
+2026-04-28T10:07:10.069+07:00  INFO 29923 --- [UserService] [foReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_USERSERVICE/cs-01kq8ze0t4jwfstbpqzrhypf2w.us-central1-c.c.lightning-ai-prod.internal:UserService:8081 - registration status: 204
+2026-04-28T10:07:10.072+07:00  INFO 29923 --- [UserService] [           main] c.v.userservice.UserServiceApplication   : Started UserServiceApplication in 42.907 seconds (process running for 46.786)
+2026-04-28T10:09:05.730+07:00  INFO 29923 --- [UserService] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-28T10:09:05.731+07:00  INFO 29923 --- [UserService] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-28T10:09:05.733+07:00  INFO 29923 --- [UserService] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-28T10:12:09.139+07:00  INFO 29923 --- [UserService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username,
+        b1_0.user_id,
+        b1_0.id,
+        b1_0.badge_id,
+        b1_0.created_at 
+    from
+        users u1_0 
+    left join
+        user_badge b1_0 
+            on u1_0.id=b1_0.user_id 
+    where
+        u1_0.id=?
+Hibernate: 
+    insert 
+    into
+        users
+        (address_id, auth_provider, avatar_url, bio, created_at, date_of_birth, email, full_name, is_dark_mode, phone_number, role, skills, status, total_events, updated_at, username, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username,
+        b1_0.user_id,
+        b1_0.id,
+        b1_0.badge_id,
+        b1_0.created_at 
+    from
+        users u1_0 
+    left join
+        user_badge b1_0 
+            on u1_0.id=b1_0.user_id 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        ulh1_0.user_id,
+        ulh1_0.id,
+        ulh1_0.created_at,
+        ulh1_0.ip_address 
+    from
+        user_login_history ulh1_0 
+    where
+        ulh1_0.user_id=?
+Hibernate: 
+    update
+        users 
+    set
+        address_id=?,
+        auth_provider=?,
+        avatar_url=?,
+        bio=?,
+        date_of_birth=?,
+        email=?,
+        full_name=?,
+        is_dark_mode=?,
+        phone_number=?,
+        role=?,
+        skills=?,
+        status=?,
+        total_events=?,
+        updated_at=?,
+        username=? 
+    where
+        id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.district,
+        a1_0.province,
+        a1_0.street 
+    from
+        address a1_0 
+    where
+        a1_0.province=? 
+        and a1_0.district=? 
+        and a1_0.street=?
+Hibernate: 
+    insert 
+    into
+        address
+        (district, province, street) 
+    values
+        (?, ?, ?)
+Hibernate: 
+    update
+        users 
+    set
+        address_id=?,
+        auth_provider=?,
+        avatar_url=?,
+        bio=?,
+        date_of_birth=?,
+        email=?,
+        full_name=?,
+        is_dark_mode=?,
+        phone_number=?,
+        role=?,
+        skills=?,
+        status=?,
+        total_events=?,
+        updated_at=?,
+        username=? 
+    where
+        id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.district,
+        a1_0.province,
+        a1_0.street 
+    from
+        address a1_0 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.district,
+        a1_0.province,
+        a1_0.street 
+    from
+        address a1_0 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.district,
+        a1_0.province,
+        a1_0.street 
+    from
+        address a1_0 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.address_id,
+        u1_0.auth_provider,
+        u1_0.avatar_url,
+        u1_0.bio,
+        u1_0.created_at,
+        u1_0.date_of_birth,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.is_dark_mode,
+        u1_0.phone_number,
+        u1_0.role,
+        u1_0.skills,
+        u1_0.status,
+        u1_0.total_events,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.district,
+        a1_0.province,
+        a1_0.street 
+    from
+        address a1_0 
+    where
+        a1_0.id=?
+2026-04-28T10:17:09.140+07:00  INFO 29923 --- [UserService] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

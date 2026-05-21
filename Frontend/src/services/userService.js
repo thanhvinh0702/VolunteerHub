@@ -1,5 +1,7 @@
 import axiosClient from "./axiosClient";
 
+/** Paths use `/v1/...` because axios `baseURL` is `.../api` (avoid `/api/api/v1/...`). */
+
 const createUserProfile = async (data) => {
     try {
         // Use axiosClient instead of useApi to get Bearer token from interceptor
@@ -14,7 +16,7 @@ const createUserProfile = async (data) => {
             avatarUrl: data.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (data.username || data.email),
         }
         console.log("Creating user profile with data hh:", payload);
-        const res = await axiosClient.post("api/v1/users/users", payload);
+        const res = await axiosClient.post("/v1/users/users", payload);
 
         return res.data;
     } catch (error) {
@@ -26,7 +28,7 @@ const createUserProfile = async (data) => {
 
 const getUserInfo = async () => {
     try {
-        const user = await axiosClient.get("api/v1/users/users/me");
+        const user = await axiosClient.get("/v1/users/users/me");
         return user;
     } catch (error) {
         console.error("Error fetching user info:", error);
@@ -36,7 +38,7 @@ const getUserInfo = async () => {
 
 const updateUserInfo = async (userData) => {
     try {
-        const user = await axiosClient.put("api/v1/users/users/me", userData);
+        const user = await axiosClient.put("/v1/users/users/me", userData);
         console.log("DONE updating user info:", user);
         return user;
     } catch (error) {
@@ -47,7 +49,7 @@ const updateUserInfo = async (userData) => {
 
 const getProfileCompleteness = async () => {
     try {
-        const completeness = await axiosClient.get("/api/v1/users/users/me/validate-profile");
+        const completeness = await axiosClient.get("/v1/users/users/me/validate-profile");
         return completeness;
     } catch (error) {
         console.error("Error fetching profile completeness:", error);
@@ -65,7 +67,7 @@ const getProfileCompleteness = async () => {
 
 const getAllUsers = async () => {
     try {
-        const users = await axiosClient.get("/api/v1/users/admin/users/all");
+        const users = await axiosClient.get("/v1/users/admin/users/all");
         return users;
     } catch (error) {
         console.error("Error fetching all users:", error);
@@ -75,7 +77,7 @@ const getAllUsers = async () => {
 
 const banUser = async (userId) => {
     try {
-        const response = await axiosClient.put(`/api/v1/users/admin/${userId}/ban`);
+        const response = await axiosClient.put(`/v1/users/admin/${userId}/ban`);
         return response;
     } catch (error) {
         console.error("Error banning user:", error);
@@ -85,7 +87,7 @@ const banUser = async (userId) => {
 
 const unbanUser = async (userId) => {
     try {
-        const response = await axiosClient.put(`/api/v1/users/admin/${userId}/unban`);
+        const response = await axiosClient.put(`/v1/users/admin/${userId}/unban`);
         return response;
     } catch (error) {
         console.error("Error unbanning user:", error);
