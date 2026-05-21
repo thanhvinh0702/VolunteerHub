@@ -1,0 +1,9 @@
+**/target/
+**/node_modules/
+**/dist/
+logs/
+.git/
+.vscode/
+.service-pids
+*.log
+RegistrationService/docs/
