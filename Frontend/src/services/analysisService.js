@@ -200,4 +200,3 @@ const AnalysisService = {
 };
 
 export default AnalysisService;
-

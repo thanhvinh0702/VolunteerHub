@@ -102,4 +102,3 @@ function formatFieldName(field) {
 }
 
 export default ProfileRequiredModal;
-

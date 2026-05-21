@@ -43,7 +43,7 @@ function RecentActivityCard({
         <div className="flex items-start gap-4 p-4">
           {/* Content */}
           <div className="flex-1 min-w-0 space-y-2">
-             
+
             <h3 className="font-semibold text-gray-900 text-lg line-clamp-2">
               {title}
             </h3>

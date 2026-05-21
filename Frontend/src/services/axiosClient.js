@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useAuthStore } from "../store/authStore";
+// Import store để dùng hàm logout khi token hết hạn
+import { useAuth } from "../hook/useAuth";
 
 /** Gateway base should end with `/api` once. Collapse accidental `/api/api`. */
 function resolveApiBase() {
@@ -56,8 +57,8 @@ axiosClient.interceptors.response.use(
 
             console.warn("Token hết hạn hoặc không hợp lệ. Đang logout...");
 
-            // axios interceptors run outside React components, so call Zustand directly.
-            await useAuthStore.getState().logout();
+            // GỌI HÀM LOGOUT TỪ ZUSTAND STORE
+            await useAuth.logout();
 
             //Điều hướng về trang landing
             window.location.href = "/";

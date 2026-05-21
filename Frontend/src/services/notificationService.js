@@ -71,4 +71,3 @@ export const markAllAsRead = async () => {
         throw error;
     }
 };
-

@@ -10,7 +10,7 @@ function FormLogin() {
   return (
     <div>
       <div
-        className="flex flex-col justify-around gap-4 font-semibold max-md:text-lg w-[100%] m-auto mr-20 p-4 
+        className="flex flex-col justify-around gap-4 font-semibold max-md:text-lg w-[100%] m-auto mr-20 p-4
         "
       >
         <div className="flex flex-col gap-0 justify-center items-center relative">

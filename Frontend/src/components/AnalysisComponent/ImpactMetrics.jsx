@@ -29,7 +29,7 @@ function ImpactMetrics() {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
       <h3 className="text-lg font-semibold text-gray-900 mb-6">Impact Metrics</h3>
-      
+
       <div className="space-y-6">
         {metrics.map((metric, index) => {
           const Icon = metric.icon;
@@ -44,7 +44,7 @@ function ImpactMetrics() {
                 </div>
               </div>
               <p className={`text-3xl font-bold ${metric.color}`}>{metric.value}</p>
-              
+
               {/* Decorative line */}
               {index < metrics.length - 1 && (
                 <div className="w-full h-px bg-gray-200 mt-4" />
@@ -72,5 +72,3 @@ function ImpactMetrics() {
 }
 
 export default ImpactMetrics;
-
-

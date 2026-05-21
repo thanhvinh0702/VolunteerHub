@@ -39,7 +39,7 @@ export default function CommentList({
   if (comments.length === 0) {
     return (
       <div className="text-sm text-gray-500 text-center py-8">
-        No comments yet. 
+        No comments yet.
       </div>
     );
   }

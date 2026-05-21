@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
 import EventManagerCard from "../../components/Project/eventManagerCard";
-import { mockEventManagerData, EVENT_STATUS } from "./eventManagerData";
+import { EVENT_STATUS } from "../../../constant/eventStatus";
 import DropdownSelect from "../../components/Dropdown/DropdownSelect";
 import CreateEvent from "../../components/Form/CreateEvent";
 import useClickOutside from "../../hook/ClickOutside";
+import { useEventPaginationAdmin } from "../../../hook/useEvent";
 
 function EventManager() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,23 +13,17 @@ function EventManager() {
   const [openCreateForm, setOpenCreateForm] = useState(false);
 
   const {
-    data: events,
+    data,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: [
-      "ownedEvents",
-      "pagination",
-      0,
-      10,
-      "createdAt",
-      "desc",
-      "PENDING",
-    ],
-    queryFn: mockEventManagerData,
-    staleTime: 1000 * 60,
+  } = useEventPaginationAdmin({
+    pageNum: 0,
+    pageSize: 100,
+    status: filterStatus === "all" ? undefined : filterStatus,
   });
+
+  const events = data?.data || [];
 
   useEffect(() => {
     if (openCreateForm) {
